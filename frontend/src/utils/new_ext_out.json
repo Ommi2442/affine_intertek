@@ -1,0 +1,973 @@
+{
+  "Page 1": {
+    "Report Identification": {
+      "REPORT_NUMBER": null,
+      "DATE_OF_ISSUE": null,
+      "TOTAL_NUMBER_OF_PAGES": null
+    },
+    "Testing Laboratory Details": {
+      "NAME_OF_TESTING_LABORATORY_PREPARING_THE_REPORT": null,
+      "APPLICANT_S_NAME": null,
+      "ADDRESS": null,
+      "TEST_SPECIFICATION": null
+    }
+  },
+  "Page 2": {
+    "Test Item Details": {
+      "TEST_ITEM_DESCRIPTION": null,
+      "TRADE_MARK": null,
+      "MANUFACTURER": null,
+      "MODEL_TYPE_REFERENCE": null,
+      "RATINGS": null
+    },
+    "Responsible Testing Laboratory": {
+      "CB_TESTING_LABORATORY": null,
+      "TESTING_LOCATION_ADDRESS": null,
+      "TESTED_BY_NAME_FUNCTION_SIGNATURE": null,
+      "APPROVED_BY_NAME_FUNCTION_SIGNATURE": null
+    },
+    "Testing Procedure: CTF Stage 1": {
+      "TESTING_PROCEDURE_CTF_STAGE_1": null
+    },
+    "Testing Procedure: CTF Stage 2": {
+      "TESTING_PROCEDURE_CTF_STAGE_2": null,
+      "TESTED_BY_NAME_SIGNATURE": null,
+      "WITNESSED_BY_NAME_FUNCTION_SIGNATURE": null
+    }
+  },
+  "Page 3": {
+    "Approval and Supervision Details": {
+      "SUPERVISED_BY_NAME_FUNCTION_SIGNATURE": "Prof. Mohd. Zafaruddin\nDirector\nDirectorate of Translation and Publications\nMaulana Azad National Urdu University"
+    },
+    "Testing Procedures": {
+      "TESTING_PROCEDURE_CTF_STAGE_3": "It involves the rehearsal of whatever preparation the teacher did in the first and second stage related to lesson plan, materials, illustrations, learner activities, imagining the situation in the classroom and having a rehearsal.",
+      "TESTING_PROCEDURE_CTF_STAGE_4": "It deals with teachers self-evaluation through reflective journals, learner evaluation, or evaluation by the colleagues."
+    }
+  },
+  "Page 4": {
+    "List of Attachments": {
+      "DOCUMENT_NO": null,
+      "DOCUMENTS_INCLUDED_ATTACHED_TO_THIS_REPORT_DESCRIPTION": null,
+      "PAGE_NO": [
+        "107",
+        "108",
+        "109",
+        "91",
+        "94",
+        "95",
+        "96",
+        "93",
+        "94",
+        "152",
+        "153",
+        "154",
+        "155",
+        "156",
+        "157",
+        "89",
+        "90"
+      ]
+    },
+    "Documents Referenced by This Report": {
+      "DOCUMENT_NAME_OR_NO": [
+        "4.3.3 Elements of Prose",
+        "4.3.4 Objectives of Teaching Prose",
+        "3.5 Writing Skills",
+        "3.6 Introduction to Phonetics",
+        "5.5.10 Lesson Plan Format Based on CCE",
+        "5.6 Micro-teaching",
+        "Unit 2 Different Approaches/Theories to Language Learning and Teaching"
+      ],
+      "DOCUMENTS_DESCRIPTION": [
+        "Prose is organized in paragraphs and they have important elements of fiction. They are plot, character, theme, setting, the point of view, style, and figures of speech.",
+        "Prose teaching is meant for language learning. It is through prose teaching that learners learn reading comprehension, pronunciation, vocabulary, content words, and grammar.",
+        "Writing is one of the most important productive skills in language teaching and learning. Writing is also an essential part of the process of language production.",
+        "Phonetics is the scientific study and classification of sounds. The English language has 44 sounds, which consist of 20 vowel sounds and 24 consonant sounds.",
+        "The lesson plan format based on CCE involves pre-reading, reading, post-reading, and editing activities for prose, poetry, and story lessons.",
+        "Micro-teaching is a teacher training technique which aims at modifying teachers' behavior according to specific objectives. It is a controlled practice that makes it possible to concentrate on teaching behavior in the learner-teacher training program.",
+        "This unit discusses various methods and approaches used in language teaching, starting from the Grammar-Translation method to the Natural approach, including traditional and humanistic approaches."
+      ]
+    }
+  },
+  "Page 5": {
+    "Clause and Comment": {
+      "CLAUSE": null,
+      "COMMENT": null
+    }
+  },
+  "Page 6": {
+    "Test Report History": {
+      "REPORT_REF_NO": null,
+      "ITEM": null
+    },
+    "Tests Performed and Testing Location": {
+      "TESTS_PERFORMED_NAME_OF_TEST_AND_TEST_CLAUSE": null,
+      "TESTING_LOCATION": null
+    },
+    "Summary of Compliance with National Differences": {
+      "INSERT_STANDARD_NUMBER_AND_EDITION": [
+        "National Policy on Education (With Modifications Undertaken In 1992), page no. 40",
+        "National Curriculum Framework (2005)",
+        "Programme of Action (1992), page no 94 – 98",
+        "Teaching of Indian Language, Position paper, NCERT, 2006",
+        "National Policy on Education (With Modifications Undertaken In 1992), page no. 39"
+      ]
+    },
+    "Uncertainty of Measurement for the Tests": {
+      "PROCEDURE_NUMBER": null,
+      "ISSUE_DATE": null,
+      "TITLE": null
+    }
+  },
+  "Page 7": {
+    "Copy of Marking Plate": {
+      "COPY_OF_MARKING_PLATE": null
+    }
+  },
+  "Page 8": {
+    "Test Item Particulars": {
+      "TEST_ITEM_PARTICULARS": null,
+      "DESCRIPTION_OF_EQUIPMENT_FUNCTION": null,
+      "POLLUTION_DEGREE": null,
+      "OVERALL_SIZE_OF_EQUIPMENT_W_X_D_X_H": null,
+      "MASS_OF_EQUIPMENT_KG": null,
+      "MARKED_DEGREE_OF_PROTECTION_TO_IEC_60529": null,
+      "POSSIBLE_TEST_CASE_VERDICTS": null
+    }
+  },
+  "Page 9": {
+    "Testing Details": {
+      "TESTING": null,
+      "DATE_OF_RECEIPT_OF_TEST_ITEM": null,
+      "DATE_S_OF_PERFORMANCE_OF_TESTS": null
+    },
+    "Factory Information": {
+      "NAME_AND_ADDRESS_OF_FACTORY_IES": null
+    }
+  },
+  "Page 10": {
+    "General Product Information and Other Remarks": {
+      "DESCRIPTION_OF_UNIT": [
+        "The course \"Pedagogy of English\" is an endeavor to develop an understanding of the nature of English language and the importance of teaching of English. The course will enable the teachers to comprehend the theory & practices of teaching of English and critically reflect on their practices in order to make teaching more effective and innovative.",
+        "The course comprises of five units.",
+        "Unit 1 discusses the characteristics and functions of language. It gives an insight into the aims and objectives of teaching English. This unit also touches upon the status and scope of English in the global and Indian context.",
+        "Unit 2 deals with the historical background of language teaching. Different approaches, methods and techniques used in language teaching are also discussed in this unit.",
+        "Unit 3 focuses on the development of linguistic skills used for communication, such as listening, speaking, reading and writing.",
+        "Unit 4 describes the objectives and methods of teaching prose and poetry. This unit also sheds light on the use of multimedia, online resources and social networking sites in teaching of English language.",
+        "The last unit discusses the importance of planning in teaching English. The unit focuses on the preparation of year plan, unit plan and lesson plan. The unit also deals with the concept and important core skills of microteaching."
+      ]
+    },
+    "Description of Model Differences": {
+      "MODEL_DIFFERENCES": [
+        "In a traditional classroom: 1. teaching begins with parts of the whole–emphasizes basic skills; 2. the curriculum is fixed; 3. textbooks and workbooks are given importance; 4. teacher gives/learners receives; 5. the teacher assumes directive and authoritative role; 6. assessment is through testing; 7. knowledge is inert; and 8. learners work individually.",
+        "In a constructivist classroom: 1. teaching begins with the whole – expanding to parts; 2. learner interests are pursued; 3. teachers use primary sources or manipulative materials; 4. learning is interaction – building on what learners already know; 5. learners are actively involved; 6. teacher facilitates and guides; 7. assessment includes observation and portfolios; and 8. learners work in groups."
+      ]
+    },
+    "Description of Special Features": {
+      "SPECIAL_FEATURES": null
+    }
+  },
+  "Page 11": {
+    "Tests in Single Fault Conditions": {
+      "RESULT_REMARK": null,
+      "VERDICT": null
+    }
+  },
+  "Page 12": {
+    "Requirement Test and Results Details": {
+      "REQUIREMENT_TEST": null
+    }
+  },
+  "Page 13": {
+    "Field-Wiring Terminal Boxes": {
+      "CABLE_TEMPERATURE_RATING_MARKED": null
+    }
+  },
+  "Page 14": {
+    "Equipment Ratings": {
+      "SUPPLY_VOLTAGE_OR_VOLTAGE_RANGE": null,
+      "FREQUENCY_OR_FREQUENCY_RANGE": null,
+      "POWER_OR_CURRENT_RATING": null,
+      "RATING_OF_INSULATION": null,
+      "RANGE_OF_ENVIRONMENTAL_CONDITIONS": null,
+      "MAINS_SUPPLY_VOLTAGE_FLUCTUATIONS": null,
+      "OVERVOLTAGE_CATEGORY": null,
+      "WET_LOCATION": null,
+      "DEGREE_OF_INGRESS_PROTECTION": null,
+      "IMPACT_RATING": null,
+      "IK_CODE": null,
+      "SYMBOL_14_OF_TABLE_1": null,
+      "RATED_ENERGY_LEVEL": null,
+      "TEST_METHOD": null
+    }
+  },
+  "Page 15": {
+    "Transformer Protective Bonding Screen": {
+      "SEE_FORM_A.11": null
+    },
+    "Protective Impedance": {
+      "SEE_FORM_A.12": null,
+      "SEE_FORM_A.15": null,
+      "SEE_TABLE_1.A_AND_FORM_A.12": null
+    },
+    "Current- or Voltage-Limiting Devices": {
+      "SEE_FORM_A.13": null,
+      "SEE_FORM_A.6": null
+    }
+  },
+  "Page 32": {
+    "Provisions for lifting and carrying": {
+      "EQUIPMENT_WEIGHT": null,
+      "DIRECTIONS": null,
+      "RATEDFOR_MAXIMUM_LOAD": null,
+      "HANDLES_OR_GRIPS": null
+    },
+    "Wall mounting": {
+      "MOUNTING_BRACKETS_TEST_WEIGHT": null,
+      "TWO_TIMES_WEIGHT_TEST_RESULT": null
+    }
+  },
+  "Page 37": {
+    "Temperatures of Windings": {
+      "FORM_A.26B": null
+    },
+    "Other Temperature Measurements": {
+      "FORM_A.26A": null
+    },
+    "Resistance to Heat": {
+      "FORM_A.16": "Stanza-3\nPre-reading\nReading\nPost-reading",
+      "FORM_A.27": "Reading segment-4\nPre-reading\nReading\nPost-reading",
+      "FORM_A.28": "Exercises\nEditing",
+      "FORM_A.29": "Project work"
+    }
+  },
+  "Page 43": {
+    "MAINS Transformers Tested Outside Equipment": {
+      "FORM_A39": "Formative Evaluation: It is the tool used by the teacher to continuously monitor the learner's progress in a fearless and supportive environment. It involves regular descriptive feedback by providing a chance to the learners to reflect on their performance and improve upon it. A regular formative test raises the self-confidence and self-esteem of the learners and improves their performance tremendously. Formative tests focus on the process of teaching and learning. It helps the teacher to modify the methods, techniques and strategies of teaching. It is conducted several times throughout the year.",
+      "FORM_A40": "Summative Evaluation: Summative assessments are used to evaluate learner learning, skill acquisition, and academic achievement at the end of a project, unit, course, semester, program, or school year. It is a graded test and marked according to the grades or scale. It certifies the level of achievement at a given point of time."
+    },
+    "Printed Wiring Boards": {
+      "FORM_A23": null
+    },
+    "Circuits Used to Limit Transient Overvoltages": {
+      "FORM_A41": null
+    }
+  },
+  "Page 46": {
+    "Clause Information": {
+      "REQUIREMENT_TEST_2": null,
+      "REQUIREMENT_TEST_3": null,
+      "RESULT_REMARK_2": null
+    },
+    "Testing in Single Fault Condition — Results": {
+      "TEST_SUBCLAUSE": null,
+      "FAULT_NO": null,
+      "FAULT_DESCRIPTION": null,
+      "TD_4_4_3_NOTE": null,
+      "TD_4_4_3_NOTE_2": null,
+      "TD_4_4_3_NOTE_3": null,
+      "TD_4_4_3_NOTE_4": null,
+      "HOW_WAS_TEST_TERMINATED_COMMENTS": null,
+      "HOW_WAS_TEST_TERMINATED_COMMENTS_2": null,
+      "MEETS_4_4_4": null,
+      "MEETS_4_4_4_2": null
+    }
+  },
+  "Page 48": {
+    "Mains Supply Details": {
+      "MARKED_RATING": null,
+      "PHASE": null,
+      "FREQUENCY": null,
+      "CURRENT": null,
+      "POWER": null,
+      "POWER_VA": null
+    }
+  },
+  "Page 49": {
+    "Durability of markings (5.3)": {
+      "REQUIREMENT_TEST_1": null,
+      "REQUIREMENT_TEST_4": null,
+      "RESULT_REMARK_1": null
+    },
+    "Marking location": {
+      "IDENTIFICATION_5_1_2_1": null,
+      "IDENTIFICATION_5_1_2_2": null,
+      "IDENTIFICATION_5_1_2_3": null,
+      "IDENTIFICATION_5_1_2_4": null,
+      "IDENTIFICATION_5_1_2_5": null,
+      "MAINS_SUPPLY_5_1_3_1": null,
+      "MAINS_SUPPLY_5_1_3_2": null,
+      "MAINS_SUPPLY_5_1_3_3": null,
+      "MAINS_SUPPLY_5_1_3_4": null,
+      "MAINS_SUPPLY_5_1_3_5": null,
+      "FUSES_5_1_4_1": null,
+      "FUSES_5_1_4_2": null,
+      "FUSES_5_1_4_3": null,
+      "FUSES_5_1_4_4": null,
+      "FUSES_5_1_4_5": null,
+      "TERMINALS_OPERATING_DEVICES_5_1_5_1": null,
+      "TERMINALS_OPERATING_DEVICES_5_1_5_2": null,
+      "TERMINALS_OPERATING_DEVICES_5_1_5_3": null,
+      "TERMINALS_OPERATING_DEVICES_5_1_5_4": null,
+      "TERMINALS_OPERATING_DEVICES_5_1_5_5": null,
+      "SWITCHES_CIRCUIT_BREAKERS_5_1_6_1": null,
+      "SWITCHES_CIRCUIT_BREAKERS_5_1_6_2": null,
+      "SWITCHES_CIRCUIT_BREAKERS_5_1_6_3": null,
+      "SWITCHES_CIRCUIT_BREAKERS_5_1_6_4": null,
+      "SWITCHES_CIRCUIT_BREAKERS_5_1_6_5": null,
+      "DOUBLE_REINFORCED_EQUIPMENT_5_1_7_1": null,
+      "DOUBLE_REINFORCED_EQUIPMENT_5_1_7_2": null,
+      "DOUBLE_REINFORCED_EQUIPMENT_5_1_7_3": null,
+      "DOUBLE_REINFORCED_EQUIPMENT_5_1_7_4": null,
+      "DOUBLE_REINFORCED_EQUIPMENT_5_1_7_5": null,
+      "FIELD_WIRING_TERMINAL_BOXES_5_1_8_1": null,
+      "FIELD_WIRING_TERMINAL_BOXES_5_1_8_2": null,
+      "FIELD_WIRING_TERMINAL_BOXES_5_1_8_3": null,
+      "FIELD_WIRING_TERMINAL_BOXES_5_1_8_4": null,
+      "FIELD_WIRING_TERMINAL_BOXES_5_1_8_5": null,
+      "WARNING_MARKING_5_2_1": null,
+      "WARNING_MARKING_5_2_2": null,
+      "WARNING_MARKING_5_2_3": null,
+      "WARNING_MARKING_5_2_4": null
+    }
+  },
+  "Page 50": {
+    "Durability of Markings": {
+      "WARNING_MARKING_5_2_5": null
+    },
+    "Battery Charging (13.2.2)": {
+      "BATTERY_CHARGING_13_2_2_2": null,
+      "BATTERY_CHARGING_13_2_2_3": null,
+      "BATTERY_CHARGING_13_2_2_4": null,
+      "BATTERY_CHARGING_13_2_2_5": null
+    }
+  },
+  "Page 51": {
+    "Table of Accessible Parts": {
+      "EXCEPTIONS_RESULT_REMARK": null,
+      "EXCEPTIONS_RESULT_REMARK_2": null,
+      "DETERMINATION_OF_ACCESSIBLE_PARTS_RESULT_REMARK": null,
+      "DETERMINATION_OF_ACCESSIBLE_PARTS_RESULT_REMARK_2": null,
+      "DESCRIPTION": null,
+      "DETERMINATION_METHOD_HOD_NOTE_5_3": null,
+      "DETERMINATION_METHOD_HOD_NOTE_5_4": null,
+      "EXCEPTION_UNDER_6_1_2_NOTE_4_3": null,
+      "EXCEPTION_UNDER_6_1_2_NOTE_4_4": null,
+      "ITEM_2": null,
+      "DESCRIPTION_2": null
+    }
+  },
+  "Page 53": {
+    "Item Details": {
+      "VOLTAGE": null,
+      "CAPACITANCE": null,
+      "10_S_5_S_TEST_NOTE": null,
+      "COMMENTS": null
+    }
+  },
+  "Page 54": {
+    "Requirement Test": {
+      "REQUIREMENT_REMARK_1": null,
+      "REQUIREMENT_REMARK_2": null,
+      "REQUIREMENT_REMARK_3": null,
+      "REQUIREMENT_REMARK_4": null,
+      "REQUIREMENT_TEST_5": null,
+      "REQUIREMENT_REMARK_5": null,
+      "REQUIREMENT_TEST_6": null,
+      "REQUIREMENT_REMARK_6": null,
+      "REQUIREMENT_TEST_7": null
+    },
+    "Values in Single Fault Condition": {
+      "VOLTAGE_E_V_RMS": null,
+      "VOLTAGE_E_V_PEAK": null,
+      "VOLTAGE_E_V_DC": null,
+      "TRANSIENT_SIENT_S": null,
+      "CURRENT_TEST_CIRCUIT_A1_A2_A3_1": null,
+      "CURRENT_TEST_CIRCUIT_A1_A2_A3_2": null,
+      "CURRENT_T_MA_RMS": null,
+      "CURRENT_MA_PEAK": null,
+      "CURRENT_MA_DC": null,
+      "CAPACITANCE_F_SEE_NOTE": null,
+      "COMMENTS_1": null,
+      "COMMENTS_2": null
+    }
+  },
+  "Page 55": {
+    "Requirement Tests and Results": {
+      "RESULT_REMARK_3": null,
+      "RESULT_REMARK_4": null,
+      "RESULT_REMARK_5": null,
+      "RESULT_REMARK_6": null
+    }
+  },
+  "Page 56": {
+    "General Test Information": {
+      "CT": null
+    },
+    "Cross-sectional Area of Bonding Conductors": {
+      "CONDUCTOR_LOCATION": null,
+      "CROSS_SECTIONAL_AREA_MM2": null
+    },
+    "Tightening Torque Test": {
+      "SIZE_OF_SCREW": null,
+      "TIGHTENING_TORQUE_NM": null
+    }
+  },
+  "Page 57": {
+    "Cross-Sectional Area of Bonding Conductors": {
+      "CROSS_SECTIONAL_AREA": null
+    }
+  },
+  "Page 58": {
+    "Bonding Impedance of Plug-connected Equipment": {
+      "ACCESSIBLE_PART_UNDER_TEST_1": null,
+      "TEST_CURRENT_A1": null,
+      "VOLTAGE_ATTAINED_AFTER_1_MIN_V1": null,
+      "CALCULATED_RESISTANCE_MAXIMUM_0_1_OR_0_2_NOTE_1_1": null,
+      "ACCESSIBLE_PART_UNDER_TEST_2": null,
+      "TEST_CURRENT_A2": null,
+      "VOLTAGE_ATTAINED_AFTER_1_MIN_V2": null,
+      "ACCESSIBLE_PART_UNDER_TEST_3": null,
+      "TEST_CURRENT_A3": null,
+      "VOLTAGE_ATTAINED_AFTER_1_MIN_V3": null
+    },
+    "Bonding Impedance of Permanently Connected Equipment": {
+      "ACCESSIBLE_PART_UNDER_TEST_4": null,
+      "VOLTAGE_ATTAINED_AFTER_1_MIN_MAXIMUM_10_V1": null,
+      "VERDICT_CT_2": null,
+      "ACCESSIBLE_PART_UNDER_TEST_5": null,
+      "VOLTAGE_ATTAINED_AFTER_1_MIN_MAXIMUM_10_V2": null,
+      "ACCESSIBLE_PART_UNDER_TEST_6": null,
+      "VOLTAGE_ATTAINED_AFTER_1_MIN_MAXIMUM_10_V3": null,
+      "ACCESSIBLE_PART_UNDER_TEST_7": null,
+      "VOLTAGE_ATTAINED_AFTER_1_MIN_MAXIMUM_10_V4": null
+    }
+  },
+  "Page 59": {
+    "Accessible Part Under Test": {
+      "ACCESSIBLE_PART_UNDER_TEST_8": null,
+      "ACCESSIBLE_PART_UNDER_TEST_9": null,
+      "TEST_CURRENT_SEE_NOTE_A_1": null,
+      "TEST_CURRENT_SEE_NOTE_A_2": null,
+      "TEST_CURRENT_SEE_NOTE_A_3": null,
+      "VOLTAGE_ATTAINED_AFTER_1_MIN_MAXIMUM_10_V_5": null,
+      "VOLTAGE_ATTAINED_AFTER_1_MIN_MAXIMUM_10_V_6": null,
+      "VOLTAGE_ATTAINED_AFTER_1_MIN_MAXIMUM_10_V_7": null,
+      "VOLTAGE_ATTAINED_AFTER_1_MIN_MAXIMUM_10_V_8": null,
+      "CALCULATED_RESISTANCE_MAXIMUM_0_1": null,
+      "VERDICT_CT_3": null
+    }
+  },
+  "Page 60": {
+    "Table: Protective Impedance - Single Component": {
+      "COMPONENT": null,
+      "LOCATION": null,
+      "WORKING_VOLTAGE_V": null,
+      "CURRENT_A": null,
+      "POWER_DISSIPATION_W": null,
+      "RATED": null
+    }
+  },
+  "Page 62": {
+    "Insulation Requirements": {
+      "TABLE_INSULATION_REQUIREMENTS_BLOCK_DIAGRAM_OF_SYSTEM_FORM_A_14": null,
+      "LOCATION_A": null,
+      "LOCATION_B": null,
+      "LOCATION_C": null,
+      "LOCATION_D": null,
+      "LOCATION_E": null,
+      "LOCATION_F": null
+    }
+  },
+  "Page 64": {
+    "Insulation Requirements - Clearances and Creepages": {
+      "INSULATION_TYPE": null,
+      "WORKING_VOLTAGE_NOTE_2": null,
+      "CLEARANCE": null,
+      "CREEPAGE_DISTANCE": null,
+      "CTI": null
+    },
+    "Input Supply Information": {
+      "INPUT_SUPPLY_VOLTAGE": null
+    }
+  },
+  "Page 65": {
+    "Insulation Requirements - Clearances and Creepages": {
+      "AREA": [
+        "Continuous Comprehensive Evaluation (CCE)",
+        "Formative and Summative Assessment",
+        "Evaluation of Scholastic Areas",
+        "Evaluation of Co-Scholastic areas",
+        "Academic Standards and Competencies",
+        "Teaching Prose Based on CCE Method",
+        "Introduction to Phonetics",
+        "Role of Language Laboratory in Acquisition of Language Skills"
+      ]
+    }
+  },
+  "Page 67": {
+    "Components and Subassemblies": {
+      "COMPONENTS_AND_SUBASSEMBLIES": null
+    },
+    "Temperature Cycling Test": {
+      "TYPE": null,
+      "CONSTRUCTION": null,
+      "POTTING_COMPOUND": null,
+      "CREEPAGE_DISTANCES_MEASURED": null,
+      "CLEARANCES_MEASURED": null,
+      "THICKNESS_THROUGH_INSULATION": null,
+      "ADHESIVE_TEST_PASS_FAIL": null,
+      "TEST_TEMPERATURE_T_C": null,
+      "CYCLE_1_FROM": null,
+      "CYCLE_1_TO": null,
+      "CYCLE_2_FROM": null,
+      "CYCLE_2_TO": null,
+      "CYCLE_3_FROM": null,
+      "CYCLE_3_TO": null,
+      "CYCLE_4_FROM": null,
+      "CYCLE_4_TO": null,
+      "CYCLE_5_FROM": null,
+      "CYCLE_5_TO": null
+    }
+  },
+  "Page 68": {
+    "Reliability of Potted Components": {
+      "CYCLE_6_FROM": null,
+      "CYCLE_6_TO": null,
+      "CYCLE_7_FROM": null,
+      "CYCLE_7_TO": null,
+      "CYCLE_8_FROM": null,
+      "CYCLE_8_TO": null,
+      "CYCLE_9_FROM": null,
+      "CYCLE_9_TO": null,
+      "CYCLE_10_FROM": null,
+      "CYCLE_10_TO": null,
+      "BASIC_INSULATION_V_RMS": null,
+      "SUPPLEMENTARY_INSULATION_V_RMS": null,
+      "REINFORCED_INSULATION_V_RMS": null
+    }
+  },
+  "Page 69": {
+    "General Information": {
+      "VERDICT_CT": null
+    },
+    "Dielectric Strength Tests": {
+      "M": null,
+      "TEST_VOLTAGE_CORRECTION_FACTOR_SEE_TABLE_10": null
+    },
+    "Form References": {
+      "LOCATION_OR_REFERENCES_FROM_FORMS_A_1_AND_A_14": null
+    }
+  },
+  "Page 71": {
+    "General Test Requirements": {
+      "REQUIREMENT_TE": null
+    },
+    "TABLE: Cord Anchorage": {
+      "LOCATION_N": null,
+      "MASS_KG": null,
+      "PULL_N": null,
+      "TORQUE_NM": null
+    },
+    "Dielectric Strength Test": {
+      "DIELECTRIC_STRENGTH_TEST_FOR_1_MIN_6_8_3_1": null,
+      "V_RMS": null
+    }
+  },
+  "Page 73": {
+    "Protection Against Mechanical Hazards": {
+      "LIMITATION_OF_FORCE_AND_PRESSURE": null,
+      "GAP_LIMITATIONS_BETWEEN_MOVING_PARTS": null
+    }
+  },
+  "Page 74": {
+    "Protection Against Mechanical Hazards": {
+      "GAP_LIMITATIONS_BEWEEN_MOVING_PARTS": null
+    },
+    "Supplementary Information": {
+      "SUPPLEMENTARY_INFORMATION": [
+        "Reading and listening are considered as receptive skills and writing and speaking are considered as productive skills in language teaching and learning.",
+        "Listening skill complements speaking skill and reading skill complements writing skill.",
+        "The majority of the schools in India still dominantly practice reading and writing as a core component of teaching and listening and speaking as a peripheral activity.",
+        "Intensive listening: It is a listening activity with a particular purpose/objective. In this listening activity, in order to get specific information, a listener fully concentrates to receive the text/materials. For example, classroom listening activity by the learners for examination purpose; instructions given by the guardians at home; or given by the coach at the playground, etc. is the process of intensive listening.",
+        "Extensive Listening: It is a listening activity which is casually performed by the listeners with a low level of concentration, motivation and without specific objectives. A listening activity which is long and exhaustive is considered as extensive listening. For example, routine classroom listening activity, listening in the day to day communication, simple chat while walking, etc. are the process of extensive listening.",
+        "Critical Listening: It is intensive listening along with judging the listening materials with a positive and negative aspect of listening materials. Many textbooks refer critical listening as a part of intensive listening, but the evaluation of listening material beyond the level of mere intensive listening."
+      ]
+    }
+  },
+  "Page 75": {
+    "Stability Testing": {
+      "EQUIPMENT_HEIGHT_MASS": null,
+      "EQUIPMENT_CONTAINERS_LOADED": null,
+      "CASTORS_AT_UNFAVOURABLE_POSITION": null,
+      "DOORS_DRAWERS_AND_MOVABLE_ARMS_CLOSED": null,
+      "DOORS_AND_DRAWERS_AT_UNFAVOURABLE_POSITION": null,
+      "TILT_ANGLE": null,
+      "CASTOR_SUPPORT_FOOT": null,
+      "CASTOR_SUPPORT_FOOT_REMOVED": null
+    },
+    "Wall Mounting Testing": {
+      "EQUIPMENT_MOUNTED_AS_SPECIFIED_BY_MANUFACTURER": null,
+      "EQUIPMENT_MOUNTED_AT_PLASTERBOARD_DRYWALL": null
+    }
+  },
+  "Page 76": {
+    "Fastener and Load Testing": {
+      "MORE_THAN_ONE_FASTENER_USED": null,
+      "TEST_MAINTAINED_AFTER_5_S_TO_10_S_TO_FULL_LOAD": null,
+      "MOUNTING_BRACKETS": null
+    }
+  },
+  "Page 77": {
+    "Enclosure Rigidity Test": {
+      "PREPARATION_FOR_THE_TEST": null,
+      "OPERATED_AT_AMBIENT_TEMPERATURE": null
+    },
+    "Impact Test": {
+      "CORRESPONDING_IK_CODE": null,
+      "COOLED_TO_TEMPERATURE": null
+    }
+  },
+  "Page 78": {
+    "Hand-Held Equipment and Direct Plug-In Equipment (Section 8.3.2)": {
+      "MATERIAL_OF_ENCLOSURE": null,
+      "COOLED_TO_TEMPERATURE_UNIT": null,
+      "COMMENTS_1_SIDE": null,
+      "COMMENTS_2_SIDE": null,
+      "VERDICT_SIDE": null,
+      "COMMENTS_1_EDGE": null,
+      "COMMENTS_2_EDGE": null,
+      "VERDICT_EDGE": null,
+      "COMMENTS_1_CORNER": null,
+      "COMMENTS_2_CORNER": null,
+      "VERDICT_CORNER": null
+    }
+  },
+  "Page 80": {
+    "Protection against the spread of fire": {
+      "SOURCE_OF_HAZARD_OR_AREA_OF_THE_EQUIPMENT_CONSIDERED_CIRCUIT_COMPONENT_LIQUID_ETC": null,
+      "PROTECTION_METHOD_9_1_A_B_OR_C": null,
+      "PROTECTION_DETAILS": null
+    }
+  },
+  "Page 82": {
+    "TABLE: Constructional requirements": {
+      "MATERIAL_TESTED": null,
+      "GENERIC_NAME": null,
+      "MATERIAL_MANUFACTURER": null,
+      "COLOUR": null,
+      "CONDITIONING_DETAILS": null,
+      "THICKNESS_OF_SPECIMEN": null,
+      "DURATION_OF_FLAMING_AFTER_FIRST_APPLICATION": null,
+      "DURATION_OF_FLAMING_PLUS_GLOWING_AFTER_SECOND_APPLICATION": null,
+      "SPECIMEN_BURNS_TO_HOLDING_CLAMP": null
+    }
+  },
+  "Page 83": {
+    "Sample Tests": {
+      "COTTON_IGNITED": null,
+      "SAMPLE_RESULT": null
+    }
+  },
+  "Page 88": {
+    "Flammable Liquids Details": {
+      "TYPE_OF_LIQUID": null,
+      "9_5_FLAMMABLE_LIQUIDS": null
+    }
+  },
+  "Page 89": {
+    "Temperature Measurements": {
+      "SURFACE_TEMPERATURE_LIMITS_NORMAL_CONDITION_AND_OR_SINGLE_FAULT_CONDITION": null,
+      "TEMPERATURE_OF_WINDINGS_NORMAL_CONDITION_AND_OR_SINGLE_FAULT_CONDITION": null,
+      "OTHER_TEMPERATURE_MEASUREMENTS": null
+    },
+    "Operating Conditions": {
+      "TEST_ROOM_AMBIENT_TEMPERATURE_E_TA": null,
+      "TEST_DURATION": null
+    },
+    "Part / Location Details": {
+      "PART_LOCATION": null
+    }
+  },
+  "Page 90": {
+    "Operating Conditions": {
+      "OPERATING_CONDITIONS": null,
+      "TEST_ROOM_AMBIENT_TEMPERATURE_TA": null
+    }
+  },
+  "Page 91": {
+    "Temperature Measurement Table": {
+      "TEST_ROOM_AMBIENT_TEMPERATURE": null,
+      "PART_DESIGNATION": null
+    }
+  },
+  "Page 93": {
+    "Resistance to Heat of Non-Metallic Enclosures": {
+      "TEST_METHOD_USED": null,
+      "TEMPERATURE_DURING_TESTS": null,
+      "DIELECTRIC_STRENGTH_TEST_6_8": null
+    }
+  },
+  "Page 95": {
+    "Insulating Material Tests": {
+      "PART": null,
+      "TEST_TEMPERATURE_C": null,
+      "IMPRESSION_DIAMETER_MM": null,
+      "VICAT_SOFTENING_TEMPERATURE_C": null,
+      "THICKNESS_OF_SAMPLE_MM": null
+    }
+  },
+  "Page 97": {
+    "General Information": {
+      "RESULT_REMARK_7": "Scholastic subjects are assessed using two modes: Formative Assessment (FA) and Summative Assessment (SA). Formative Assessment usually comprises of Class Tests, Homework, Quizzes, Projects, and Assignments directed throughout the year. Summative Assessment measures how much a learner has learnt from the class through an examination/test conducted at the end of a term. For institutions following the CCE grading system, typically an academic year is divided into two terms. Each term will have two FAs and one SA. The Weightage allotted to each term and assessment is as follows: Term 1 Term 2 FA1 FA2 SA1 FA3 FA4 SA2 Weightage 10% 10% 30% 10% 10% 30% Term Weightage FA1+FA2+SA1=50% FA3+FA4+SA2=50% On the whole: Formative Assessments (FA) = FA1+FA2+ FA3+FA4 = 40% Summative Assessments (SA) = SA1+SA2 = 60% Scholastic Assessment grades are generally given on a 9 point grading scale."
+    },
+    "Table 8: Mechanical Resistance": {
+      "VERDICT_2": null,
+      "PROTECTION_AGAINST_HAZARDS_FROM_FLUIDS_AND_SOLID_FOREIGN_OBJECTS": null
+    },
+    "Clause 8 and Clause 11 Tests": {
+      "CLAUSE_8_TESTS": null,
+      "CLAUSE_8_TESTS_2": null,
+      "REQUIREMENT_TEST_8_2": null,
+      "REQUIREMENT_TEST_9": null,
+      "REQUIREMENT_TEST_10": null,
+      "REQUIREMENT_TEST_11": null,
+      "REQUIREMENT_TEST_12": null,
+      "REQUIREMENT_TEST_13": null,
+      "REQUIREMENT_TEST_14": null,
+      "RESULT_REMARK_8": null,
+      "RESULT_11": null,
+      "RESULT_REMARK_10": null,
+      "RESULT_REMARK_11": null,
+      "RESULT_REMARK_12": null,
+      "RESULT_REMARK_13": null,
+      "RESULT_REMARK_14": null,
+      "RESULT_14": null
+    }
+  },
+  "Page 98": {
+    "Clause Tests": {
+      "WORKING_VOLTAGE_RMS_DC": null,
+      "TEST_VOLTAGE_RMS_PEAK_DC": null
+    }
+  },
+  "Page 99": {
+    "Voltage Test Details": {
+      "VERDICT_3": null
+    }
+  },
+  "Page 100": {
+    "Leakage and rupture at high pressure": {
+      "MAXIMUM_PERMISSIBLE_WORKING_PRESSURE_MPA": null,
+      "TEST_PRESSURE_MPA": null,
+      "LEAKAGE_YES_NO": null,
+      "DEFORMATION_YES_NO": null,
+      "BURST_YES_NO": null
+    }
+  },
+  "Page 102": {
+    "Ionizing Radiation (12.2.1.2)": {
+      "LOCATIONS_TESTED_1": null,
+      "LOCATIONS_TESTED_2": null,
+      "MEASURED_VALUES_USV_H": null,
+      "LOCATIONS_TESTED_3": null,
+      "MEASURED_VALUES_USV_H_2": null,
+      "COMMENTS_3": null,
+      "COMMENTS_4": null,
+      "LOCATIONS_TESTED_4": null
+    },
+    "Non-Ionizing Radiation (12.2.1.3)": {
+      "LOCATIONS_TESTED_5": null,
+      "LOCATIONS_TESTED_6": null,
+      "MEASURED_VALUES_USV_H_3": null,
+      "VERDICT_4": null,
+      "COMMENTS_5": null,
+      "COMMENTS_6": null
+    }
+  },
+  "Page 104": {
+    "Sound Level Test Results": {
+      "MEASURED_MAXIMUM_SOUND_PRESSURE_LEVEL_DB_A": null,
+      "CALCULATED_MAXIMUM_SOUND_POWER_LEVEL": null
+    }
+  },
+  "Page 105": {
+    "TABLE: Sound level": {
+      "MEASURED_VALUES": [
+        "The English language has 44 sounds, which consist of 20 vowel sounds and 24 consonant sounds.",
+        "Out of 20 vowel sounds, 12 are pure vowel sounds and 8 are diphthongs."
+      ]
+    }
+  },
+  "Page 107": {
+    "TABLE: Batteries and battery charging": {
+      "BATTERY_LOAD_AND_CHARGING_CIRCUIT_DIAGRAM": null,
+      "BATTERY_TYPE": null,
+      "BATTERY_MANUFACTURER_MODEL_CATALOGUE_NO": null,
+      "BATTERY_RATINGS": null,
+      "REVERSE_POLARITY_INSTALLMENT_TEST": null
+    }
+  },
+  "Page 109": {
+    "Overtemperature Protection Devices": {
+      "COMPONENT_1": "Formative and Summative Assessment",
+      "TYPE_NOTE": "Formative Evaluation",
+      "TYPE_NOTE_1": "Summative Evaluation",
+      "VERDICT_1": "Formative tests focus on the process of teaching and learning. It helps the teacher to modify the methods, techniques and strategies of teaching.",
+      "COMPONENT_2": "Evaluation of Scholastic Areas",
+      "COMPONENT_3": "Evaluation of Co-Scholastic areas"
+    }
+  },
+  "Page 111": {
+    "Clause Information": {
+      "PLACEHOLDER_CLAUSE": null
+    },
+    "MAINS Transformers": {
+      "PLACEHOLDER_VERDICT": null
+    },
+    "Transformer Details": {
+      "PLACEHOLDER_TYPE": null,
+      "PLACEHOLDER_MANUFACTURER": null
+    },
+    "Optional Insulation Specification": {
+      "PLACEHOLDER_OPTIONAL_INSULATION_CLASS": null
+    },
+    "Winding and Testing": {
+      "PLACEHOLDER_WINDING_IDENTIFICATION": null,
+      "PLACEHOLDER_TYPE_OF_PROTECTOR_FOR_WINDING": null,
+      "PLACEHOLDER_ELAPSED_TIME": null,
+      "PLACEHOLDER_CURRENT_A_PRIMARY": null,
+      "PLACEHOLDER_SECONDARY": null,
+      "PLACEHOLDER_WINDING_TEMPERATURE_PRIMARY": null,
+      "PLACEHOLDER_SECONDARY_NOTE_2": null,
+      "PLACEHOLDER_TISSUE_PAPER_CHEESECLOTH_OK": null,
+      "PLACEHOLDER_VOLTAGE_TESTS_NOTE_3": null
+    }
+  },
+  "Page 112": {
+    "Mains Transformer Test": {
+      "PLACEHOLDER_PRIMARY_TO_SECONDARY": null,
+      "PLACEHOLDER_PRIMARY_TO_CORE": null,
+      "PLACEHOLDER_SECONDARY_TO_SECONDARY": null,
+      "PLACEHOLDER_SECONDARY_TO_CORE": null
+    }
+  },
+  "Page 113": {
+    "Mains Transformer": {
+      "WINDING_IDENTIFICATION": null,
+      "TYPE_OF_PROTECTOR_FOR_WINDING_NOTE_1": null,
+      "ELAPSED_TIME": null,
+      "CURRENT_A_PRIMARY": null,
+      "SECONDARY": null,
+      "WINDING_TEMPERATURE_C_PRIMARY": null,
+      "SEE_NOTE_2_SECONDARY": null,
+      "TISSUE_PAPER_CHEESECLOTH_OK_PASS_FAIL": null,
+      "VOLTAGE_TESTS_SEE_NOTE_3": null,
+      "PRIMARY_TO_SECONDARY": null,
+      "PRIMARY_TO_CORE": null,
+      "SECONDARY_TO_SECONDARY": null,
+      "OPTIONAL_INSULATION_CLASS_IEC_60085_OF_THE_LOWEST_RATED_WINDING": null
+    }
+  },
+  "Page 114": {
+    "Mains Transformer Testing": {
+      "SECONDARY_TO_CORE": null
+    }
+  },
+  "Page 115": {
+    "Table: Circuits Used to Limit Transient Overvoltages": {
+      "CIRCUIT_DESIGNATION": null,
+      "MAINS_VOLTAGE_V_RMS": null,
+      "TEST_VOLTAGE_V": null,
+      "tm_C": null,
+      "TTC_M_C": null,
+      "TMAX_C": null,
+      "IGNITED_YES_NO": null,
+      "SAFELY_SUPPRESSED_YES_NO": null,
+      "PROPERLY_FUNCTIONAL_YES_NO": null
+    }
+  },
+  "Page 117": {
+    "Technical Properties": {
+      "MANUFACTURER": null,
+      "TYPE": null,
+      "FLAMMABILITY_RATING": null
+    }
+  },
+  "Page 118": {
+    "TABLE: Additional or special tests conducted": {
+      "CLAUSE_AND_NAME_OF_TEST": null,
+      "TEST_TYPE_AND_CONDITION": null,
+      "OBSERVED_RESULTS": null,
+      "OBSERVED_RESULTS_2": null,
+      "OBSERVED_RESULTS_3": null
+    }
+  },
+  "Page 120": {
+    "Table 1.A - List of components and circuits relied on for safety": {
+      "UNIQUE_COMPONENT_REFERENCE_OR_LOCATION_1": null,
+      "UNIQUE_COMPONENT_REFERENCE_OR_LOCATION_2": null,
+      "APPLICATION_FUNCTION": null,
+      "MANUFACTURER_TRADEMARK_NOTE_1_1": null,
+      "MANUFACTURER_TRADEMARK_NOTE_1_2": null,
+      "TYPE_MODEL_1": null,
+      "TYPE_MODEL_2": null,
+      "TECHNICAL_DATA_NOTE_2_1": null,
+      "TECHNICAL_DATA_NOTE_2_2": null,
+      "STANDARD": null,
+      "MARKS_OF_CONFORMITY_EVIDENCE_OF_ACCEPTANCE_NOTE_3_AND_4_1": null,
+      "MARKS_OF_CONFORMITY_EVIDENCE_OF_ACCEPTANCE_NOTE_3_AND_4_2": null
+    }
+  },
+  "Page 122": {
+    "List of test equipment used": {
+      "LIST_OF_TEST_EQUIPMENT_USED": null,
+      "PLACEHOLDER_LIST_OF_TEST_EQUIPMENT_USED": null
+    },
+    "Completed list of used test equipment": {
+      "COMPLETED_LIST_OF_USED_TEST_EQUIPMENT": null,
+      "A_COMPLETED_LIST_OF_USED_TEST_EQUIPMENT": null
+    }
+  },
+  "Page 124": {
+    "Page Details and Removal Notes": {
+      "CTF_STAGE_1_OR_2_NOT_USED": null,
+      "NOTE_PAGE_REMOVAL_CTF_STAGE": null,
+      "NOTE_CTF_STAGE_1_OR_2": null,
+      "PLACEHOLDER_NOTE_CTF_STAGE_1_OR_2": null
+    },
+    "Measurement and Testing": {
+      "MEASUREMENT_TESTING": null,
+      "TESTING_MEASURING_EQUIPMENT_MATERIAL_USED_EQUIPMENT_ID": null,
+      "RANGE_USED": null,
+      "LAST_CALIBRATION_DATE": null,
+      "CALIBRATION_DUE_DATE": null
+    }
+  },
+  "Page 125": {
+    "Statement of Measurement Uncertainty": {
+      "STATEMENT_OF_MEASUREMENT_UNCERTAINTY": null,
+      "PLACEHOLDER_STATEMENT_OF_MEASUREMENT_UNCERTAINTY": null,
+      "TEST_REPORT_STATEMENT_UNCERTAINTY": null
+    }
+  },
+  "Page 128": {
+    "Clause Information": {
+      "CLAUSE_NUMB": null,
+      "PARAMETER_MEASUREMENT_TEST_METHOD": null,
+      "REQUIREMENT_PERCENT_OR_K": [
+        "Formative Assessments (FA) = FA1+FA2+ FA3+FA4 = 40%",
+        "Summative Assessments (SA) = SA1+SA2 = 60%",
+        "FA1+FA2+SA1=50%",
+        "FA3+FA4+SA2=50%"
+      ],
+      "CALCULATED_U_OF_M": null
+    },
+    "Calculation Notes": {
+      "CALCULATIONS_ON_FILE_NOTE": null,
+      "CALCULATIONS_ON_FILE_WITH_NCB": null,
+      "NOTE_CALCULATIONS_LEADING_TO_REPORTED_VALUE": null,
+      "PLACEHOLDER_NOTE_CALCULATIONS_ON_FILE": null
+    }
+  }
+}

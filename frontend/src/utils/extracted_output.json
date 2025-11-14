@@ -1,0 +1,290 @@
+{
+  "Page 1": {
+    "Report Identification": {
+      "REPORT_NUMBER": "S239800.01",
+      "DATE_OF_ISSUE": "18 September 2022",
+      "TOTAL_NUMBER_OF_PAGES": 135
+    },
+    "Testing Laboratory Information": {
+      "TESTING_LABORATORY_NAME": [
+        "ITL (Product Testing) Ltd."
+      ],
+      "APPLICANT_NAME": [
+        "Flight Medical Innovations Ltd."
+      ],
+      "APPLICANT_ADDRESS": [
+        "7 Hatnufa St., Petach Tikva 4951025, Israel"
+      ]
+    },
+    "Test Specification": {
+      "TEST_SPECIFICATION": {
+        "Standard": "IEC 60601-1:2005, AMD1:2012",
+        "Test procedure": "PM120",
+        "Non-standard test method": "N/A",
+        "TRF template used": "IECEE OD-2020-F1:2020, Ed.1.3",
+        "Test Report Form No": "IEC60601_1S",
+        "Test Report Form(s) Originator": "UL(US)",
+        "Master TRF": "2020-12-17"
+      }
+    }
+  },
+  "Page 2": {
+    "Test Item Details": {
+      "TEST_ITEM_DESCRIPTION": "Critical Care Lung Ventilator",
+      "TRADE_MARK": null,
+      "MANUFACTURER": "Same as applicant",
+      "MODEL_TYPE_REFERENCE": [
+        "Ventoux 8''",
+        "Ventoux 12''"
+      ],
+      "RATINGS": [
+        "100-240Vac, 50-60Hz, 6A Max.",
+        "DC input: 11-30Vdc, 4.8A Max.",
+        "21.6Vdc, 3400 mAh (from Li-Ion rechargeable batteries x2)",
+        "Input O2 pressure: 2.4-6.2 bar, 35-90 PSI"
+      ]
+    },
+    "Responsible Testing Laboratory": {
+      "CB_TESTING_LABORATORY": "ITL (Product Testing) Ltd.",
+      "TESTING_LOCATION_ADDRESS": "1 Bat Sheva St., Lod 7110603, Israel",
+      "TESTED_BY_NAME_FUNCTION": "Slava Shapira, Safety Department Engineer",
+      "TESTED_BY_SIGNATURE": null,
+      "APPROVED_BY_NAME_FUNCTION": "Slava Pilyagin, Safety Department Team Leader",
+      "APPROVED_BY_SIGNATURE": null
+    },
+    "Testing Procedure: CTF Stage 1": {
+      "CTF_STAGE1_TESTING_LOCATION": null,
+      "CTF_STAGE1_TESTED_BY_NAME_FUNCTION": null,
+      "CTF_STAGE1_TESTED_BY_SIGNATURE": null,
+      "CTF_STAGE1_APPROVED_BY_NAME_FUNCTION": null,
+      "CTF_STAGE1_APPROVED_BY_SIGNATURE": null
+    },
+    "Testing Procedure: CTF Stage 2": {
+      "CTF_STAGE2_TESTING_LOCATION": null,
+      "CTF_STAGE2_TESTED_BY_NAME": null,
+      "CTF_STAGE2_TESTED_BY_SIGNATURE": null,
+      "CTF_STAGE2_WITNESSED_BY_NAME_FUNCTION": null,
+      "CTF_STAGE2_WITNESSED_BY_SIGNATURE": null,
+      "CTF_STAGE2_APPROVED_BY_NAME_FUNCTION": null,
+      "CTF_STAGE2_APPROVED_BY_SIGNATURE": null
+    },
+    "Testing Procedure: CTF Stage 3": {
+      "CTF_STAGE3_TESTING_LOCATION": null,
+      "CTF_STAGE3_TESTED_BY_NAME_FUNCTION": null,
+      "CTF_STAGE3_TESTED_BY_SIGNATURE": null,
+      "CTF_STAGE3_WITNESSED_BY_NAME_FUNCTION": null,
+      "CTF_STAGE3_WITNESSED_BY_SIGNATURE": null,
+      "CTF_STAGE3_APPROVED_BY_NAME_FUNCTION": null,
+      "CTF_STAGE3_APPROVED_BY_SIGNATURE": null
+    },
+    "Testing Procedure: CTF Stage 4": {
+      "CTF_STAGE4_TESTING_LOCATION": null,
+      "CTF_STAGE4_TESTED_BY_NAME_FUNCTION": null,
+      "CTF_STAGE4_TESTED_BY_SIGNATURE": null,
+      "CTF_STAGE4_WITNESSED_BY_NAME_FUNCTION": null,
+      "CTF_STAGE4_WITNESSED_BY_SIGNATURE": null,
+      "CTF_STAGE4_APPROVED_BY_NAME_FUNCTION": null,
+      "CTF_STAGE4_APPROVED_BY_SIGNATURE": null
+    }
+  },
+  "Page 3": {
+    "Approval Details": {
+      "CTF_STAGE4_SUPERVISED_BY_NAME_FUNCTION": null,
+      "CTF_STAGE4_SUPERVISED_BY_SIGNATURE": null
+    }
+  },
+  "Page 4": {
+    "List of Attachments": {
+      "DOCUMENT_NO_ROW_1": "DOC-0428-A03",
+      "DOCUMENT_DESCRIPTION_ROW_1": "Ventoux Risk Analysis 30.03.22d",
+      "PAGE_NO_ROW_1": 90
+    },
+    "Documents Referenced by this Report": {
+      "DOC_NAME_NO_ROW_1": "DOC-0489 A02",
+      "DOC_DESCRIPTION_ROW_1": "Ventoux Software Design Document (SDD)",
+      "DOC_PAGE_NO_ROW_1": 75
+    }
+  },
+  "Page 5": {
+    "Summary of Testing": {
+      "SUMMARY_CLAUSE": [
+        "4.11 Power consumption (input) single phase",
+        "5.9.2 Determination of applied parts and accessible parts",
+        "7.1.2; 7.1.3 Durability and legibility of marking",
+        "8.4.3 Measurement of voltage or calculation of stored charge 1 s after disconnection of plug from mains supply",
+        "8.7 Leakage current",
+        "8.8.3 Dielectric strength",
+        "8.8.4.1 Ball pressure test",
+        "9.4.2.1 Instability - overbalance",
+        "11.1.1 Normal heating",
+        "11.6.5 Ingress of water or particulate matter (IP34)",
+        "11.6.6 Cleaning",
+        "11.8 Interruption of power supply",
+        "13.2 Single Fault Conditions",
+        "15.3 Mechanical Strength tests"
+      ],
+      "SUMMARY_COMMENT": [
+        "Tests performed (name of test and test clause):",
+        "The product fulfils the requirements of US (US National standard AAMI / ANSI ES60601-1:2005/(R)2012 and A1:2012, C1:2009/(r)2012 and A2:2010/(r)2012)",
+        "The product fulfils the requirements of IEC 60601-1: 2005 + CORR. 1:2006 + CORR. 2:2007 + AM1:2012",
+        "Statement concerning the uncertainty of the measurement systems used for the tests:",
+        "Internal procedure used for type testing through which traceability of the measuring uncertainty has been established:"
+      ]
+    }
+  },
+  "Page 6": {
+    "Test Report History": {
+      "REPORT_REF_NO_ROW_1": "S239800.01",
+      "REPORT_REF_NO_ROW_2": "ITL052M-11_v1_21.12.20S",
+      "REPORT_ITEM_ROW_1": "Critical Care Lung Ventilator",
+      "REPORT_ITEM_ROW_2": "Ventoux 8'', Ventoux 12''"
+    },
+    "Tests Performed": {
+      "TESTS_PERFORMED": [
+        "4.11 Power consumption (input) single phase",
+        "5.9.2 Determination of applied parts and accessible parts",
+        "7.1.2; 7.1.3 Durability and legibility of marking",
+        "8.4.3 Measurement of voltage or calculation of stored charge 1 s after disconnection of plug from mains supply",
+        "8.7 Leakage current",
+        "8.8.3 Dielectric strength",
+        "8.8.4.1 Ball pressure test",
+        "9.4.2.1 Instability - overbalance",
+        "11.1.1 Normal heating",
+        "11.6.5 Ingress of water or particulate matter (IP34)",
+        "11.6.6 Cleaning",
+        "11.8 Interruption of power supply",
+        "13.2 Single Fault Conditions",
+        "15.3 Mechanical Strength tests"
+      ],
+      "TESTING_LOCATION": [
+        "ITL (Product Testing) Ltd., 1 Bat Sheva St., Lod 7110603, Israel"
+      ]
+    },
+    "Summary of Compliance": {
+      "STANDARD_REQUIREMENT": [
+        "IEC 60601-1:2005, AMD1:2012",
+        "IEC 60601-1: 2005 + CORR. 1:2006 + CORR. 2:2007 + AM1:2012",
+        "US National standard AAMI / ANSI ES60601-1:2005/(R)2012 and A1:2012, C1:2009/(r)2012 and A2:2010/(r)2012",
+        "EN 60601-1:2006 + A11:2011 + A1:2013",
+        "ISO 14971 Cl. 4.2-4.4, 5, 6.2-6.5",
+        "ISO 14971 Cl. 4.3",
+        "ISO 14971 Cl. 6.1",
+        "ISO 14971 Cl. 6.3",
+        "ISO 80000-1",
+        "IEC 60529",
+        "IEC 60227-1",
+        "IEC 60245-1",
+        "IEC 60417-5009",
+        "IEC 62304",
+        "IEC 60601-1-6",
+        "IEC 60601-1-8",
+        "ISO 80601-2-12",
+        "ISO 80601-2-55",
+        "ISO 80601-2-61",
+        "ISO 80601-2-84",
+        "EN 794-3"
+      ]
+    },
+    "Uncertainty Statement": {
+      "PROCEDURE_NUMBER": "PM 196",
+      "ISSUE_DATE": "4 June 2019",
+      "PROCEDURE_TITLE": "Measurement Uncertainty"
+    }
+  },
+  "Page 7": {
+    "Copy of Marking Plate": {
+      "MARKING_PLATE_IMAGE": "See attached copy of Marking Plate"
+    }
+  },
+  "Page 8": {
+    "Test Item Particulars": {
+      "EQUIPMENT_FUNCTION_DESCRIPTION": "The Ventoux Ventilator is intended to provide continuous or intermittent mechanical ventilation support for the care of individuals who require mechanical ventilation. Specifically, the Ventoux is applicable for adult, and pediatric (i.e., infant, child, and adolescent) patients who weigh at least 5 kg. The Ventoux Ventilator provides auto-leak compensation up to 100L/min allowing acute non-invasive ventilation. The Ventoux Ventilator is a restricted medical device intended for use by qualified, trained personnel under the direction of a physician; it is suitable for use in hospitals, sub-acute emergency rooms, and emergency response applications. Ventoux is intended for use on one patient at a time and is not intended to ventilate multiple patients at once.",
+      "POLLUTION_DEGREE": "2",
+      "ENVIRONMENTAL_CONDITIONS": "Temperature: -18-50 °C, Relative Humidity: 15-95%, Atmospheric Pressure: 70-110 kPa",
+      "OVERALL_SIZE": null,
+      "EQUIPMENT_MASS_KG": null,
+      "DEGREE_OF_PROTECTION_IP": "IP34"
+    },
+    "Test Case Details": {
+      "POSSIBLE_TEST_CASE_VERDICTS": [
+        "test case does not apply to the test object: N/A",
+        "test object does meet the requirement: P (Pass)",
+        "test object was not evaluated for the requirement: N/E (collateral standards only)",
+        "test object does not meet the requirement: F (Fail)"
+      ],
+      "TESTING_INFO": {
+        "Testing location": "ITL (Product Testing) Ltd., 1 Bat Sheva St., Lod 7110603, Israel",
+        "Tested by": "Slava Shapira, Safety Department Engineer",
+        "Approved by": "Slava Pilyagin, Safety Department Team Leader"
+      },
+      "DATE_OF_RECEIPT": "14.11.2021",
+      "DATE_OF_TESTS": "14.11.2021 – 06.03.2022"
+    },
+    "Manufacturer's Declaration": {
+      "FACTORY_NAME_AND_ADDRESS": "Same as applicant"
+    }
+  },
+  "Page 10": {
+    "Tests": {
+      "FORM_A.1": null,
+      "FORM_A.6": null,
+      "FORM_A.39": null,
+      "FORM_A.26A": null,
+      "FORM_A.2GB": null,
+      "FORM_A.40": null,
+      "FORM_A.18": null
+    }
+  },
+  "Page 11": {
+    "Mains Supply": {
+      "RATED_MAINS_FREQUENCY_OR_RANGE_OF_FREQUENCIES": [
+        "50/60 Hz"
+      ],
+      "SYMBOL_1": null,
+      "RATED_SUPPLY_VOLTAGE_OR_RANGE": [
+        "100-240Vac"
+      ],
+      "MAINS_VOLTAGE": [
+        "240VAC"
+      ]
+    }
+  },
+  "Page 12": {
+    "Fuse Marking": {
+      "OPERATOR_REPLACEABLE_FUSE_MARKING": [
+        {
+          "Voltage": "250V",
+          "Current": "8A",
+          "Operating Speed": "Time-Lag type",
+          "Breaking Capacity": "100A@500VAC"
+        }
+      ]
+    },
+    "Equipment Rating Information": {
+      "MAX_RATED_CURRENT_OR_POWER": [
+        "250V, 8A",
+        "Time-Lag type, Interrupting Rating: 100A@500VAC"
+      ],
+      "SYMBOL_14_DETAILS_IN_DOCUMENTATION": null
+    },
+    "Terminal Identification": {
+      "MAINS_SUPPLY_TERMINAL_IDENTIFIED": "No supply terminals",
+      "FUNCTIONAL_EARTH_TERMINAL": "No functional earth terminals",
+      "PROTECTIVE_CONDUCTOR_TERMINAL": "No protective earth",
+      "HAZARDOUS_LIVE_TERMINAL": null,
+      "PART_OF_APPLIANCE_INLET": "Earth pin of APPLIANCE INLET forming supply connection to ME EQUIPMENT regarded as PROTECTIVE EARTH TERMINAL"
+    }
+  },
+  "Page 13": {
+    "Field-wiring terminal boxes": {
+      "TERMINAL_OR_ENCLOSURE_TEMPERATURE": null,
+      "CABLE_TEMPERATURE_RATING": null
+    },
+    "Durability of markings": {
+      "MARKINGS_DURABILITY_DOCUMENT": [
+        "Marking rubbed by hand, first for 15 s with a cloth rag soaked with distilled water, then for 15 s with a cloth rag soaked with ethanol 96%, and then for 15 s with a cloth rag soaked with isopropyl alcohol."
+      ]
+    }
+  },
+  "Page 14": {}
+}
