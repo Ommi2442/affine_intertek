@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Grid,
   Card,
@@ -9,8 +9,100 @@ import {
   Button,
   Divider,
 } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { trackPromise } from 'react-promise-tracker';
+import LoginService from './LoginService';
 
-export default function LoginPage() {
+export default function LoginPage({ setIsAdmin, msalInstance }) {
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [loginFailed, setLoginFailed] = useState(false);
+
+  const submitHandler = async () => {
+    let userAccount;
+    try {
+      const accounts = msalInstance.getAllAccounts();
+
+      if (accounts.length > 0) {
+        const userAccount = accounts[0];
+
+        const silentRequest = {
+          scopes: [
+            // Scopes here
+          ],
+          account: userAccount,
+        };
+
+        try {
+          const response = await msalInstance.acquireTokenSilent(silentRequest);
+          // console.log(response)
+          localStorage.setItem('msalResponse', JSON.stringify(response));
+          localStorage.setItem('accessToken', response.accessToken);
+          localStorage.setItem('email', response.account.username);
+          localStorage.setItem('name', response.account.name);
+          localStorage.setItem('logintype', 'sso');
+          // console.log(response.account?.name)
+          // Extract user information
+          const userInformation = {
+            name: userAccount.name,
+            email: userAccount.username, // Assuming the email is stored in the username field
+            accessToken: response.accessToken,
+            expirationTime: response.expiresOn,
+            lastLoggedIn: new Date().toISOString(), // You can replace this with the actual last login time
+          };
+
+          // Call ssologinFunction with user information
+          ssologinFunction(userInformation);
+        } catch (silentError) {
+          console.error('Silent login failed:', silentError);
+
+          // Handle silent login failure, you can fall back to interactive login if needed
+          // ...
+        }
+      } else {
+        try {
+          await msalInstance.loginRedirect({
+            scopes: ['user.read'],
+          });
+        } catch (interactiveError) {
+          console.error('Interactive login failed:', interactiveError);
+        }
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+  };
+
+  const ssologinFunction = (userInfo) => {
+    setLoading(true);
+    trackPromise(
+      LoginService.ssouserdata(userInfo)
+        .then((response) => {
+          // Process the response if needed
+          const { role, balance } = response.data;
+          localStorage.setItem('role', role);
+          // localStorage.setItem("status",status)
+          if (response.data.status !== 1) {
+            setLoginFailed(true);
+            sessionStorage.clear();
+            localStorage.clear();
+          } else {
+            setLoginFailed(false);
+            setIsAdmin(role === 'Admin');
+            navigate('/layout/chat');
+          }
+          setLoading(false);
+        })
+        .catch((err) => {
+          alert(err.response.data.error);
+          setLoading(false);
+          setLoginFailed(true);
+          sessionStorage.clear();
+          localStorage.clear();
+        })
+    );
+  };
+
   return (
     <Grid
       container
@@ -168,13 +260,16 @@ export default function LoginPage() {
                 variant="body2"
                 sx={{ textAlign: 'center', color: 'gray', paddingBottom: '5%' }}
               >
-                Continue with your{' '}
-                <a
-                  href="#"
-                  style={{ color: '#1976d2', textDecoration: 'underline' }}
+                <button
+                  type="button"
+                  className="btn btn-primary login-btn mt-1"
+                  style={{ height: '47px' }}
+                  onClick={submitHandler}
                 >
-                  work email - SSO login
-                </a>
+                  <span style={{ color: '#ffff' }}>
+                    Continue with your work email - SSO Login
+                  </span>
+                </button>
               </Typography>
             </Grid>
           </CardContent>
