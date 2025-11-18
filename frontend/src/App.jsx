@@ -1,67 +1,51 @@
 import React, { useEffect, useState } from 'react';
-import './App.css';
-import HomePage from './pages/HomePage/HomePage';
-import Navbar from './components/NavBar';
-import { PublicClientApplication } from '@azure/msal-browser';
-import msalConfig from './pages/LoginPage/config/msalConfig';
-import LoginPage from './pages/LoginPage/LoginPage';
-import ProtectedRoute from './routes/ProtectedRoute';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { MsalProvider } from '@azure/msal-react';
 
-function App() {
-  const msalInstance = new PublicClientApplication(msalConfig);
-  const [initialized, setInitialized] = useState(false);
+import { msalInstance } from './msalInstance'; // ✅ using shared instance
+import LoginPage from './pages/LoginPage/LoginPage';
+import Navbar from './components/NavBar';
+import ProtectedRoute from './routes/ProtectedRoute';
+import HomePage from './pages/HomePage/HomePage';
+import UploadFilePage from './pages/UploadFilePage/UploadFilePage';
+import BasicModal from './components/Modal';
 
+function App() {
+  const [initialized, setInitialized] = useState(false);
+  console.log('msalApp', msalInstance);
   useEffect(() => {
-    const initializeMsal = async () => {
+    const init = async () => {
       await msalInstance.initialize();
       await msalInstance.handleRedirectPromise();
       setInitialized(true);
     };
-
-    initializeMsal();
+    init();
   }, []);
 
-  function signOutClickHandler() {
-    let logintype = localStorage.getItem('logintype');
-    sessionStorage.clear();
-    localStorage.clear();
-    if (logintype == 'sso') {
-      msalInstance.logoutRedirect();
-    } else {
-      window.location.href = '/login';
-    }
-  }
-
   const router = createBrowserRouter([
+    { path: '/', element: <LoginPage msalInstance={msalInstance} /> },
+    { path: '/upload', element: <UploadFilePage /> },
+    { path: '/modal', element: <BasicModal /> },
+
     {
-      path: '/',
-      element: <LoginPage msalInstance={msalInstance} />,
-    },
-    {
-      path: '/login',
-      element: <LoginPage msalInstance={msalInstance} />,
-    },
-    {
-      path: 'layout',
+      path: '/layout',
       element: (
-        <ProtectedRoute redirectTo={'/'}>
-          <Navbar signOutClickHandler={signOutClickHandler} />
+        <ProtectedRoute redirectTo="/login">
+          <Navbar />
         </ProtectedRoute>
       ),
-      children: [{}],
     },
   ]);
 
   return (
-    <>
-      {initialized && (
-        <MsalProvider instance={msalInstance}>
+    initialized && (
+      <MsalProvider instance={msalInstance}>
+        {/* <HomePage /> */}
+        <div style={{ width: '100%', height: '100%' }}>
           <RouterProvider router={router} />
-        </MsalProvider>
-      )}
-    </>
+        </div>
+      </MsalProvider>
+    )
   );
 }
 
