@@ -25,7 +25,7 @@ router = APIRouter()
 
 from api.users.models import User
 @router.post("/welcome")
-async def welcome_application(data: EmailRequest,user_data:User):
+async def welcome_application(data: EmailRequest):
     try:
         query = "SELECT * FROM users u WHERE u.email = @email"
         existing_user = list(COSMOS_DB_TestContainer.query_items(
