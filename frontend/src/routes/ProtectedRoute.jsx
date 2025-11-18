@@ -1,13 +1,13 @@
-import React from 'react'
-import { useNavigate,Navigate } from 'react-router-dom';
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useMsal } from '@azure/msal-react';
 
-const ProtectedRoute: React.FC<{
-  redirectTo: string;
-  children: React.ReactNode;
-}> = ({ redirectTo, children }) => {
-    const accessToken = localStorage.getItem("accessToken"); 
-    return !! accessToken ? <>{children}</> : <Navigate to={redirectTo} />;
+const ProtectedRoute = ({ redirectTo, children }) => {
+  const { accounts } = useMsal();
+
+  const isLoggedIn = accounts && accounts.length > 0;
+
+  return isLoggedIn ? children : <Navigate to={redirectTo} />;
 };
 
-
-export default ProtectedRoute
+export default ProtectedRoute;

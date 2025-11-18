@@ -13,17 +13,18 @@ import { useDispatch } from 'react-redux';
 import { trackPromise } from 'react-promise-tracker';
 import LoginService from './LoginService';
 
-export default function LoginPage({ setIsAdmin, msalInstance }) {
+export default function LoginPage({ msalInstance }) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [loginFailed, setLoginFailed] = useState(false);
-
+  console.log('msaldataonlogin', msalInstance);
   const submitHandler = async () => {
     let userAccount;
+    console.log('msal', msalInstance);
     try {
-      const accounts = msalInstance.getAllAccounts();
-
-      if (accounts.length > 0) {
+      const accounts = msalInstance?.getAllAccounts();
+      console.log('acoounts', accounts);
+      if (accounts?.length > 0) {
         const userAccount = accounts[0];
 
         const silentRequest = {
@@ -88,8 +89,6 @@ export default function LoginPage({ setIsAdmin, msalInstance }) {
             localStorage.clear();
           } else {
             setLoginFailed(false);
-            setIsAdmin(role === 'Admin');
-            navigate('/layout/chat');
           }
           setLoading(false);
         })
@@ -106,7 +105,7 @@ export default function LoginPage({ setIsAdmin, msalInstance }) {
   return (
     <Grid
       container
-      spacing={2}
+      spacing={1}
       sx={{
         width: '100%',
         height: '100%',
@@ -121,11 +120,12 @@ export default function LoginPage({ setIsAdmin, msalInstance }) {
         xs={12}
         md={6}
         sx={{
-          width: '60%',
+          width: '50%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           padding: 2,
+          height: '100%',
         }}
       >
         <Box
@@ -139,7 +139,7 @@ export default function LoginPage({ setIsAdmin, msalInstance }) {
         >
           <Box
             component="img"
-            src="/images/writing_image.jpg" // big image
+            src="/images/intertek_login_image.png" // big image
             alt="Login Illustration"
             sx={{
               width: '100%',
@@ -194,9 +194,10 @@ export default function LoginPage({ setIsAdmin, msalInstance }) {
               <Typography
                 sx={{
                   fontWeight: 550,
-                  paddingBottom: '10%',
-                  paddingTop: '10%',
+                  paddingBottom: '2%',
+                  paddingTop: '3%',
                   fontSize: '1.3rem',
+                  textAlign: 'center',
                 }}
               >
                 Log In
@@ -259,17 +260,9 @@ export default function LoginPage({ setIsAdmin, msalInstance }) {
               <Typography
                 variant="body2"
                 sx={{ textAlign: 'center', color: 'gray', paddingBottom: '5%' }}
+                onClick={submitHandler}
               >
-                <button
-                  type="button"
-                  className="btn btn-primary login-btn mt-1"
-                  style={{ height: '47px' }}
-                  onClick={submitHandler}
-                >
-                  <span style={{ color: '#ffff' }}>
-                    Continue with your work email - SSO Login
-                  </span>
-                </button>
+                Continue with your work email - SSO Login
               </Typography>
             </Grid>
           </CardContent>
