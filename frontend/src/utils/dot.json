@@ -1,0 +1,334 @@
+{
+  "Tables": [
+    {
+      "Table": 0,
+      "Items": [
+        {
+          "Question_row": 0,
+          "Question_column": 3,
+          "Field": "Test Report Issued under the responsibility of:",
+          "Answer_row": 0,
+          "Answer_column": 4,
+          "Value": "",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 1,
+          "Question_column": 0,
+          "Answer_row": null,
+          "Answer_column": null,
+          "Task_type": ""
+        },
+        {
+          "Question_row": 3,
+          "Question_column": 0,
+          "Field": "Report Number",
+          "Answer_row": 3,
+          "Answer_column": 2,
+          "Value": "",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 4,
+          "Question_column": 0,
+          "Field": "Date of Issue",
+          "Answer_row": 4,
+          "Answer_column": 2,
+          "Value": "",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 5,
+          "Question_column": 0,
+          "Field": "Total Number of Pages",
+          "Answer_row": 5,
+          "Answer_column": 2,
+          "Value": "",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 7,
+          "Question_column": 0,
+          "Field": "Name of Testing Laboratory preparing the Report",
+          "Answer_row": 7,
+          "Answer_column": 1,
+          "Value": "",
+          "Task_type": "extraction"
+        },
+        {
+          "Question_row": 8,
+          "Question_column": 0,
+          "Field": "Applicant's Name",
+          "Answer_row": 8,
+          "Answer_column": 1,
+          "Value": "",
+          "Task_type": "extraction"
+        },
+        {
+          "Question_row": 9,
+          "Question_column": 0,
+          "Field": "Address",
+          "Answer_row": 9,
+          "Answer_column": 1,
+          "Value": "",
+          "Task_type": "extraction"
+        },
+        {
+          "Question_row": 10,
+          "Question_column": 0,
+          "Field": "Test Specification",
+          "Answer_row": null,
+          "Answer_column": null,
+          "Value": "",
+          "Task_type": "extraction"
+        },
+        {
+          "Question_row": 11,
+          "Question_column": 0,
+          "Field": "Standard",
+          "Answer_row": 11,
+          "Answer_column": 1,
+          "Value": "IEC 61010-1:2010, IEC 61010-1:2010/AMD1:2016",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 12,
+          "Question_column": 0,
+          "Field": "Test procedure",
+          "Answer_row": 12,
+          "Answer_column": 1,
+          "Value": "CB Scheme",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 13,
+          "Question_column": 0,
+          "Field": "Non-standard test method",
+          "Answer_row": 13,
+          "Answer_column": 1,
+          "Value": "N/A",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 14,
+          "Question_column": 0,
+          "Field": "TRF template used",
+          "Answer_row": 14,
+          "Answer_column": 1,
+          "Value": "IECEE OD-2020-F1:2020, Ed.1.3",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 15,
+          "Question_column": 0,
+          "Field": "Test Report Form No.",
+          "Answer_row": 15,
+          "Answer_column": 1,
+          "Value": "IEC61010_1P",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 16,
+          "Question_column": 0,
+          "Field": "Test Report Form(s) Originator",
+          "Answer_row": 16,
+          "Answer_column": 1,
+          "Value": "VDE Prüf- und Zertifizierungsinstitut GmbH",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 17,
+          "Question_column": 0,
+          "Field": "Master TRF",
+          "Answer_row": 17,
+          "Answer_column": 1,
+          "Value": "2021-04-12",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 18,
+          "Question_column": 0,
+          "Field": "Copyright © 2021 IEC System of Conformity Assessment Schemes for Electrotechnical Equipment and Components (IECEE System). All rights reserved.",
+          "Answer_row": 18,
+          "Answer_column": 0,
+          "Value": "This publication may be reproduced in whole or in part for non-commercial purposes as long as the IECEE is acknowledged as copyright owner and source of the material. IECEE takes no responsibility for and will not assume liability for damages resulting from the reader's interpretation of the reproduced material due to its placement and context.\nIf this Test Report Form is used by non-IECEE members, the IECEE/IEC logo and the reference to the CB Scheme procedure shall be removed.\nThis report is not valid as a CB Test Report unless signed by an approved IECEE Testing Laboratory and appended to a CB Test Certificate issued by an NCB in accordance with IECEE 02.",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 19,
+          "Question_column": 0,
+          "Field": "General disclaimer",
+          "Answer_row": 20,
+          "Answer_column": 0,
+          "Value": "The test results presented in this report relate only to the object tested.\nThis report shall not be reproduced, except in full, without the written approval of the Issuing NCB. The authenticity of this Test Report and its contents can be verified by contacting the NCB, responsible for this Test Report.",
+          "Task_type": ""
+        }
+      ]
+    },
+    {
+      "Table": 1,
+      "Items": [
+        {
+          "Question_row": 0,
+          "Question_column": 3,
+          "Field": "Test111 Report Issued under the responsibility of:",
+          "Answer_row": 0,
+          "Answer_column": 4,
+          "Value": "",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 1,
+          "Question_column": 0,
+          "Answer_row": null,
+          "Answer_column": null,
+          "Task_type": ""
+        },
+        {
+          "Question_row": 3,
+          "Question_column": 0,
+          "Field": "Report Number",
+          "Answer_row": 3,
+          "Answer_column": 2,
+          "Value": "",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 4,
+          "Question_column": 0,
+          "Field": "Date of Issue",
+          "Answer_row": 4,
+          "Answer_column": 2,
+          "Value": "",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 5,
+          "Question_column": 0,
+          "Field": "Total Number of Pages",
+          "Answer_row": 5,
+          "Answer_column": 2,
+          "Value": "",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 7,
+          "Question_column": 0,
+          "Field": "Name of Testing Laboratory preparing the Report",
+          "Answer_row": 7,
+          "Answer_column": 1,
+          "Value": "",
+          "Task_type": "extraction"
+        },
+        {
+          "Question_row": 8,
+          "Question_column": 0,
+          "Field": "Applicant's Name",
+          "Answer_row": 8,
+          "Answer_column": 1,
+          "Value": "",
+          "Task_type": "extraction"
+        },
+        {
+          "Question_row": 9,
+          "Question_column": 0,
+          "Field": "Address",
+          "Answer_row": 9,
+          "Answer_column": 1,
+          "Value": "",
+          "Task_type": "extraction"
+        },
+        {
+          "Question_row": 10,
+          "Question_column": 0,
+          "Field": "Test Specification",
+          "Answer_row": null,
+          "Answer_column": null,
+          "Value": "",
+          "Task_type": "extraction"
+        },
+        {
+          "Question_row": 11,
+          "Question_column": 0,
+          "Field": "Standard",
+          "Answer_row": 11,
+          "Answer_column": 1,
+          "Value": "IEC 61010-1:2010, IEC 61010-1:2010/AMD1:2016",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 12,
+          "Question_column": 0,
+          "Field": "Test procedure",
+          "Answer_row": 12,
+          "Answer_column": 1,
+          "Value": "CB Scheme",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 13,
+          "Question_column": 0,
+          "Field": "Non-standard test method",
+          "Answer_row": 13,
+          "Answer_column": 1,
+          "Value": "N/A",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 14,
+          "Question_column": 0,
+          "Field": "TRF template used",
+          "Answer_row": 14,
+          "Answer_column": 1,
+          "Value": "IECEE OD-2020-F1:2020, Ed.1.3",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 15,
+          "Question_column": 0,
+          "Field": "Test Report Form No.",
+          "Answer_row": 15,
+          "Answer_column": 1,
+          "Value": "IEC61010_1P",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 16,
+          "Question_column": 0,
+          "Field": "Test Report Form(s) Originator",
+          "Answer_row": 16,
+          "Answer_column": 1,
+          "Value": "VDE Prüf- und Zertifizierungsinstitut GmbH",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 17,
+          "Question_column": 0,
+          "Field": "Master TRF",
+          "Answer_row": 17,
+          "Answer_column": 1,
+          "Value": "2021-04-12",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 18,
+          "Question_column": 0,
+          "Field": "Copyright © 2021 IEC System of Conformity Assessment Schemes for Electrotechnical Equipment and Components (IECEE System). All rights reserved.",
+          "Answer_row": 18,
+          "Answer_column": 0,
+          "Value": "This publication may be reproduced in whole or in part for non-commercial purposes as long as the IECEE is acknowledged as copyright owner and source of the material. IECEE takes no responsibility for and will not assume liability for damages resulting from the reader's interpretation of the reproduced material due to its placement and context.\nIf this Test Report Form is used by non-IECEE members, the IECEE/IEC logo and the reference to the CB Scheme procedure shall be removed.\nThis report is not valid as a CB Test Report unless signed by an approved IECEE Testing Laboratory and appended to a CB Test Certificate issued by an NCB in accordance with IECEE 02.",
+          "Task_type": ""
+        },
+        {
+          "Question_row": 19,
+          "Question_column": 0,
+          "Field": "General disclaimer",
+          "Answer_row": 20,
+          "Answer_column": 0,
+          "Value": "The test results presented in this report relate only to the object tested.\nThis report shall not be reproduced, except in full, without the written approval of the Issuing NCB. The authenticity of this Test Report and its contents can be verified by contacting the NCB, responsible for this Test Report.",
+          "Task_type": ""
+        }
+      ]
+    }
+  ]
+}

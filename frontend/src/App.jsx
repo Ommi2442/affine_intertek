@@ -2,17 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { MsalProvider } from '@azure/msal-react';
 
-import { msalInstance } from './msalInstance'; // ✅ using shared instance
+import { msalInstance } from './msalInstance';
+
 import LoginPage from './pages/LoginPage/LoginPage';
-import Navbar from './components/NavBar';
 import ProtectedRoute from './routes/ProtectedRoute';
+
+import MainLayout from './layout/MainLayout';
 import HomePage from './pages/HomePage/HomePage';
 import UploadFilePage from './pages/UploadFilePage/UploadFilePage';
-import BasicModal from './components/Modal';
+import ReportPage from './pages/ReportPage/ReportPage';
+import Dashboard from './pages/Dashboard/Dashboard';
 
 function App() {
   const [initialized, setInitialized] = useState(false);
-  console.log('msalApp', msalInstance);
+
   useEffect(() => {
     const init = async () => {
       await msalInstance.initialize();
@@ -23,27 +26,29 @@ function App() {
   }, []);
 
   const router = createBrowserRouter([
+    // ❌ Login Page: NO NAVBAR
     { path: '/', element: <LoginPage msalInstance={msalInstance} /> },
-    { path: '/upload', element: <UploadFilePage /> },
-    { path: '/modal', element: <BasicModal /> },
 
+    // Protected Layout (Navbar + Outlet)
     {
-      path: '/layout',
+      path: '/',
       element: (
-        <ProtectedRoute redirectTo="/login">
-          <Navbar />
+        <ProtectedRoute>
+          <MainLayout />
         </ProtectedRoute>
       ),
+      children: [
+        { path: 'dashboard', element: <Dashboard /> },
+        { path: 'create-project', element: <UploadFilePage /> },
+        { path: 'report-page', element: <ReportPage /> },
+      ],
     },
   ]);
 
   return (
     initialized && (
       <MsalProvider instance={msalInstance}>
-        {/* <HomePage /> */}
-        <div style={{ width: '100%', height: '100%' }}>
-          <RouterProvider router={router} />
-        </div>
+        <RouterProvider router={router} />
       </MsalProvider>
     )
   );

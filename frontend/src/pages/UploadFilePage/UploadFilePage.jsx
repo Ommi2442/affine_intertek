@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button, Typography, Stack, Paper, Card } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const UploadFilePage = () => {
   const [files, setFiles] = useState({
@@ -7,7 +8,10 @@ const UploadFilePage = () => {
     trfTemplate: null,
     cdrTemplate: null,
     letterTemplate: null,
+    standardDocument: null,
   });
+
+  const Navigate = useNavigate();
 
   const handleFileChange = (e, key) => {
     setFiles({
@@ -17,6 +21,7 @@ const UploadFilePage = () => {
   };
 
   const handleGenerate = () => {
+    Navigate('/report-page');
     console.log('Uploaded Files:', files);
   };
 
@@ -33,13 +38,11 @@ const UploadFilePage = () => {
     >
       {/* Card stays perfectly centered */}
       <Card
-        elevation={3}
         sx={{
-          width: '50%',
+          width: '70%',
           p: 3,
           borderRadius: 2,
           alignItems: 'center',
-          border: '1px solid black',
         }}
       >
         {/* Header */}
@@ -50,7 +53,7 @@ const UploadFilePage = () => {
         {/* Main Layout */}
         <Box sx={{ display: 'flex', gap: 3 }}>
           {/* Left Section */}
-          <Box sx={{ width: '65%' }}>
+          <Box sx={{ width: '70%' }}>
             <Typography variant="h6" mb={2} fontWeight={500}>
               Upload Source Files
             </Typography>
@@ -58,7 +61,10 @@ const UploadFilePage = () => {
             <Stack spacing={2}>
               {/* Source File */}
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography sx={{ width: '40%' }}>Source Files:</Typography>
+                <Typography sx={{ width: '50%' }}>
+                  Source Documents:
+                  <div>(multiple Files)</div>
+                </Typography>
                 <Button variant="outlined" component="label" fullWidth>
                   {files.sourceFile
                     ? files.sourceFile.name
@@ -73,7 +79,10 @@ const UploadFilePage = () => {
 
               {/* TRF Template */}
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography sx={{ width: '40%' }}>TRF Template:</Typography>
+                <Typography sx={{ width: '50%' }}>
+                  TRF Template:
+                  <div>(word input)</div>
+                </Typography>
                 <Button variant="outlined" component="label" fullWidth>
                   {files.trfTemplate
                     ? files.trfTemplate.name
@@ -88,7 +97,9 @@ const UploadFilePage = () => {
 
               {/* CDR Template */}
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography sx={{ width: '40%' }}>CDR Template:</Typography>
+                <Typography sx={{ width: '50%' }}>
+                  CDR Template:<div>(Excel Input)</div>{' '}
+                </Typography>
                 <Button variant="outlined" component="label" fullWidth>
                   {files.cdrTemplate
                     ? files.cdrTemplate.name
@@ -103,7 +114,9 @@ const UploadFilePage = () => {
 
               {/* Letter Template */}
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography sx={{ width: '40%' }}>Letter Template:</Typography>
+                <Typography sx={{ width: '50%' }}>
+                  Letter Template:<div>(Word Input)</div>
+                </Typography>
                 <Button variant="outlined" component="label" fullWidth>
                   {files.letterTemplate
                     ? files.letterTemplate.name
@@ -116,14 +129,32 @@ const UploadFilePage = () => {
                 </Button>
               </Box>
 
+              {/* Standard Template */}
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography sx={{ width: '50%' }}>
+                  Standard Document:
+                </Typography>
+                <Button variant="outlined" component="label" fullWidth>
+                  {files.standardDocument
+                    ? files.standardDocument.name
+                    : 'Upload Standard Doc'}
+                  <input
+                    type="file"
+                    hidden
+                    onChange={(e) => handleFileChange(e, 'standardDocument')}
+                  />
+                </Button>
+              </Box>
+
+              <div style={{ marginTop: '10%' }}></div>
               {/* Generate Button */}
               <Button
                 variant="contained"
                 onClick={handleGenerate}
                 sx={{
-                  backgroundColor: 'black',
+                  backgroundColor: '#0d99ff',
                   color: 'white',
-                  '&:hover': { backgroundColor: '#333' },
+                  '&:hover': { backgroundColor: '#0b91f0ff' },
                 }}
               >
                 Generate
@@ -135,7 +166,7 @@ const UploadFilePage = () => {
           <Paper
             elevation={1}
             sx={{
-              width: '35%',
+              width: '30%',
               p: 2,
               borderRadius: 2,
             }}

@@ -12,15 +12,18 @@ import {
 import { useDispatch } from 'react-redux';
 import { trackPromise } from 'react-promise-tracker';
 import LoginService from './LoginService';
+import { useNavigate } from 'react-router-dom';
 
 export default function LoginPage({ msalInstance }) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [loginFailed, setLoginFailed] = useState(false);
   console.log('msaldataonlogin', msalInstance);
+  const Navigate = useNavigate();
   const submitHandler = async () => {
     let userAccount;
     console.log('msal', msalInstance);
+    Navigate('/dashboard');
     try {
       const accounts = msalInstance?.getAllAccounts();
       console.log('acoounts', accounts);
@@ -75,31 +78,33 @@ export default function LoginPage({ msalInstance }) {
   };
 
   const ssologinFunction = (userInfo) => {
-    setLoading(true);
-    trackPromise(
-      LoginService.ssouserdata(userInfo)
-        .then((response) => {
-          // Process the response if needed
-          const { role, balance } = response.data;
-          localStorage.setItem('role', role);
-          // localStorage.setItem("status",status)
-          if (response.data.status !== 1) {
-            setLoginFailed(true);
-            sessionStorage.clear();
-            localStorage.clear();
-          } else {
-            setLoginFailed(false);
-          }
-          setLoading(false);
-        })
-        .catch((err) => {
-          alert(err.response.data.error);
-          setLoading(false);
-          setLoginFailed(true);
-          sessionStorage.clear();
-          localStorage.clear();
-        })
-    );
+    console.log('userinfo', userInfo);
+    Navigate('/dashboard');
+    // setLoading(true);
+    // trackPromise(
+    //   LoginService.ssouserdata(userInfo)
+    //     .then((response) => {
+    //       // Process the response if needed
+    //       const { role, balance } = response.data;
+    //       localStorage.setItem('role', role);
+    //       // localStorage.setItem("status",status)
+    //       if (response.data.status !== 1) {
+    //         setLoginFailed(true);
+    //         sessionStorage.clear();
+    //         localStorage.clear();
+    //       } else {
+    //         setLoginFailed(false);
+    //       }
+    //       setLoading(false);
+    //     })
+    //     .catch((err) => {
+    //       alert(err.response.data.error);
+    //       setLoading(false);
+    //       setLoginFailed(true);
+    //       sessionStorage.clear();
+    //       localStorage.clear();
+    //     })
+    // );
   };
 
   return (

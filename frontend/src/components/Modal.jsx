@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Box, Button, Modal, TextField, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const style = {
   position: 'absolute',
@@ -13,17 +14,14 @@ const style = {
   p: 4,
 };
 
-export default function BasicModal() {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
+export default function BasicModal({ open, handleClose }) {
+  const Navigate = useNavigate();
+  const closeOnSubmit = () => {
+    handleClose();
+    Navigate('/create-project');
+  };
   return (
     <>
-      <Button variant="outlined" onClick={handleOpen}>
-        Create Project
-      </Button>
-
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
           <Typography variant="h6" mb={2}>
@@ -36,6 +34,7 @@ export default function BasicModal() {
           <TextField fullWidth label="Project ID" margin="normal" />
 
           <Button
+            onClick={closeOnSubmit}
             variant="contained"
             fullWidth
             sx={{

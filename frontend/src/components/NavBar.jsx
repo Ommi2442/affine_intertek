@@ -4,28 +4,38 @@ import {
   Toolbar,
   Typography,
   Box,
-  Select,
-  MenuItem,
   IconButton,
+  Menu,
+  MenuItem,
+  Button,
+  Badge,
 } from '@mui/material';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-const Navbar = ({ signOutClickHandler }) => {
-  const [selectedItem, setSelectedItem] = useState('Create');
-  const Navigate = useNavigate();
-  const handleChange = (event) => {
-    setSelectedItem(event.target.value);
-  };
+const Navbar = ({ signOutClickHandler, openProjectModal }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const customLogout = () => {
+  // Detect active tab
+  const currentTab = location.pathname.includes('dashboard')
+    ? 'dashboard'
+    : 'create';
+
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const openMenu = (e) => setAnchorEl(e.currentTarget);
+  const closeMenu = () => setAnchorEl(null);
+
+  const handleLogout = () => {
     const logintype = localStorage.getItem('logintype');
     if (logintype === 'sso') {
       signOutClickHandler();
     } else {
       sessionStorage.clear();
       localStorage.clear();
-      Navigate('/');
+      navigate('/');
     }
   };
 
@@ -45,40 +55,83 @@ const Navbar = ({ signOutClickHandler }) => {
           <img
             src="/images/intertek_logo.svg"
             alt="Logo"
-            style={{ width: '50%' }}
+            style={{ width: '120px' }}
           />
         </Box>
 
-        {/* MIDDLE: Dashboard Display + Select */}
+        {/* MIDDLE: Tabs */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="h6" sx={{ color: 'black', fontWeight: 600 }}>
-            {selectedItem}
-          </Typography>
-
-          <Select
-            value={selectedItem}
-            onChange={handleChange}
-            size="small"
+          {/* Dashboard Tab */}
+          <Button
+            onClick={() => navigate('/dashboard')}
             sx={{
-              backgroundColor: '#f5f5f5',
-              borderRadius: 1,
-              minWidth: 150,
+              textTransform: 'none',
+              backgroundColor:
+                currentTab === 'dashboard' ? '#E0F3FF' : 'transparent',
+              color: currentTab === 'dashboard' ? '#03A9F4' : 'black',
+              padding: '8px 20px',
+              borderRadius: '8px',
+              fontWeight: 600,
+              '&:hover': {
+                backgroundColor:
+                  currentTab === 'dashboard' ? '#E0F3FF' : '#f2f2f2',
+              },
             }}
           >
-            <MenuItem value="Create">Create</MenuItem>
-            <MenuItem value="Dashboard">Dashboard</MenuItem>
-            <MenuItem value="Users">Users</MenuItem>
-            <MenuItem value="Analytics">Analytics</MenuItem>
-          </Select>
+            Dashboard
+          </Button>
+
+          {/* Create Project Tab */}
+          <Button
+            onClick={openProjectModal}
+            sx={{
+              textTransform: 'none',
+              backgroundColor:
+                currentTab === 'create' ? '#E0F3FF' : 'transparent',
+              color: currentTab === 'create' ? '#03A9F4' : 'black',
+              padding: '8px 20px',
+              borderRadius: '8px',
+              fontWeight: 600,
+              '&:hover': {
+                backgroundColor:
+                  currentTab === 'create' ? '#E0F3FF' : '#f2f2f2',
+              },
+            }}
+          >
+            Create Project
+          </Button>
         </Box>
 
-        {/* RIGHT: Account Icon */}
-        <IconButton>
-          <AccountCircleIcon sx={{ color: 'black' }} />
-        </IconButton>
-        <div>
-          <button onClick={customLogout}>Logout</button>
-        </div>
+        {/* RIGHT: Notification + Profile */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {/* Notification Icon */}
+          <IconButton>
+            <Badge badgeContent={0} color="error">
+              <NotificationsIcon sx={{ color: 'black', fontSize: 26 }} />
+            </Badge>
+          </IconButton>
+
+          {/* Profile Icon */}
+          <IconButton onClick={openMenu}>
+            <AccountCircleIcon sx={{ color: 'black', fontSize: 32 }} />
+          </IconButton>
+
+          {/* Dropdown Menu */}
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={closeMenu}
+          >
+            <MenuItem
+              onClick={() => {
+                closeMenu();
+                handleLogout();
+              }}
+            >
+              Logout
+            </MenuItem>
+          </Menu>
+        </Box>
       </Toolbar>
     </AppBar>
   );

@@ -15,205 +15,138 @@ import {
   Pagination,
 } from '@mui/material';
 
-const LOCAL_STORAGE_KEY = 'editable_json_report';
+// If you want to import your uploaded json directly, uncomment and use this path:
+// import jsonData from "/mnt/data/dot.json";
 
-const DataTable = ({ jsonData, onDataChange }) => {
-  const [editableData, setEditableData] = useState({});
-  const [visiblePages, setVisiblePages] = useState(3);
-  const [loading, setLoading] = useState(false);
+const STORAGE_KEY = 'report_tables_saved_v1';
+
+const DataTable = ({ jsonData }) => {
+  // if caller doesn't pass jsonData, try to load from file path (fallback)
+  // Note: In many React setups importing from /mnt/data won't work at runtime — prefer passing jsonData as prop.
+  const fallbackJson = typeof jsonData === 'undefined' ? null : jsonData;
+
+  const [tables, setTables] = useState([]);
+  const [visiblePages, setVisiblePages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
-  const observerRef = useRef(null);
   const containerRef = useRef(null);
+  const observerRef = useRef(null);
   const pageRefs = useRef({});
 
-  // Load saved data or fallback to json
+  // Load saved data OR jsonData.Tables on mount
   useEffect(() => {
-    const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-
-    if (savedData) {
-      try {
-        const parsedSaved = JSON.parse(savedData);
-
-        // If the incoming JSON is different from the saved one → use new JSON
-        if (JSON.stringify(parsedSaved) !== JSON.stringify(jsonData)) {
-          setEditableData(jsonData);
-          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(jsonData));
-        } else {
-          setEditableData(parsedSaved);
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setTables(parsed);
+        } else if (parsed?.Tables) {
+          setTables(parsed.Tables);
         }
-      } catch (e) {
-        console.error('Error parsing saved JSON:', e);
-        setEditableData(jsonData);
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(jsonData));
+      } else if (fallbackJson?.Tables) {
+        setTables(fallbackJson.Tables);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(fallbackJson.Tables));
+      } else if (jsonData?.Tables) {
+        // if jsonData prop passed
+        setTables(jsonData.Tables);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(jsonData.Tables));
+      } else {
+        setTables([]);
       }
-    } else {
-      // No local data, use latest JSON
-      setEditableData(jsonData);
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(jsonData));
+    } catch (err) {
+      console.error('Error loading saved tables:', err);
+      if (jsonData?.Tables) {
+        setTables(jsonData.Tables);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(jsonData.Tables));
+      }
     }
-  }, [jsonData]);
 
-  // Save edits to localStorage
+    setVisiblePages(1);
+  }, [jsonData, fallbackJson]);
+
+  // Save to localStorage
+  const saveToStorage = (updatedTables) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTables));
+    } catch (err) {
+      console.error('Error saving to storage:', err);
+    }
+  };
+
+  // Update value - uses real indices
+  const handleValueChange = (tableIndex, itemIndex, newValue) => {
+    setTables((prev) => {
+      const updated = prev.map((t, ti) =>
+        ti === tableIndex
+          ? {
+              ...t,
+              Items: t.Items.map((it, ii) =>
+                ii === itemIndex ? { ...it, Value: newValue } : it
+              ),
+            }
+          : t
+      );
+      saveToStorage(updated);
+      return updated;
+    });
+  };
+
+  // Infinite scroll: observe sentinel and increase visiblePages
   useEffect(() => {
-    if (Object.keys(editableData).length > 0) {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(editableData));
-    }
-  }, [editableData]);
-
-  // Handle field edit
-  const handleValueChange = (path, newValue) => {
-    const keys = path.split('.');
-    const updatedData = structuredClone(editableData);
-    let current = updatedData;
-    for (let i = 0; i < keys.length - 1; i++) {
-      if (!current[keys[i]]) current[keys[i]] = {};
-      current = current[keys[i]];
-    }
-    current[keys[keys.length - 1]] = newValue;
-    setEditableData(updatedData);
-    if (onDataChange) onDataChange(updatedData);
-  };
-
-  // Render array values
-  const renderArray = (arr, path) => {
-    if (!Array.isArray(arr)) return null;
-    if (arr.length > 0 && typeof arr[0] === 'object') {
-      return arr.map((obj, idx) => (
-        <Box key={`${path}.${idx}`} sx={{ marginY: 2 }}>
-          <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-            {`Item ${idx + 1}`}
-          </Typography>
-          {renderTable(obj, `${path}.${idx}`)}
-        </Box>
-      ));
-    }
-    return (
-      <TextField
-        fullWidth
-        variant="outlined"
-        size="small"
-        value={arr.join(', ')}
-        onChange={(e) =>
-          handleValueChange(
-            path,
-            e.target.value.split(',').map((v) => v.trim())
-          )
-        }
-      />
-    );
-  };
-
-  // Render nested tables
-  const renderTable = (data, parentPath = '') => {
-    if (!data || typeof data !== 'object') return null;
-    return (
-      <TableContainer
-        component={Paper}
-        sx={{ mb: 3, backgroundColor: '#fafafa' }}
-      >
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', width: '35%' }}>
-                Field
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Value</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {Object.entries(data).map(([key, value]) => {
-              const path = parentPath ? `${parentPath}.${key}` : key;
-              if (typeof value === 'object' && !Array.isArray(value)) {
-                return (
-                  <TableRow key={path}>
-                    <TableCell
-                      colSpan={2}
-                      sx={{ background: '#f5f5f5', fontWeight: 'bold' }}
-                    >
-                      {key}
-                      {renderTable(value, path)}
-                    </TableCell>
-                  </TableRow>
-                );
-              }
-              if (Array.isArray(value)) {
-                return (
-                  <TableRow key={path}>
-                    <TableCell sx={{ fontWeight: 500 }}>{key}</TableCell>
-                    <TableCell>{renderArray(value, path)}</TableCell>
-                  </TableRow>
-                );
-              }
-              return (
-                <TableRow key={path}>
-                  <TableCell sx={{ fontWeight: 500 }}>{key}</TableCell>
-                  <TableCell>
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      size="small"
-                      value={value || ''}
-                      onChange={(e) => handleValueChange(path, e.target.value)}
-                    />
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  };
-
-  // Infinite scroll logic (fixed)
-  useEffect(() => {
-    if (!observerRef.current) return;
+    const sentinel = observerRef.current;
+    if (!sentinel) return;
+    if (!tables || tables.length === 0) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const last = entries[0];
-        const totalPages = Object.keys(editableData).length; // fixed
-
-        if (last.isIntersecting && !loading && visiblePages < totalPages) {
+        const e = entries[0];
+        if (e.isIntersecting && visiblePages < tables.length && !loading) {
           setLoading(true);
+          // load 1 more page at a time (you can increase)
           setTimeout(() => {
-            setVisiblePages((prev) => Math.min(prev + 3, totalPages));
+            setVisiblePages((p) => Math.min(p + 1, tables.length));
             setLoading(false);
-          }, 500);
+          }, 300);
         }
       },
-      { threshold: 0.3 } // trigger earlier
+      { root: containerRef.current, threshold: 0.1 }
     );
 
-    observer.observe(observerRef.current);
+    observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [loading, visiblePages, editableData]);
+  }, [tables, visiblePages, loading]);
 
-  // Scroll listener to sync pagination
+  // Update active pagination on scroll
   useEffect(() => {
-    const handleScroll = () => {
-      const positions = Object.entries(pageRefs.current).map(([page, ref]) => ({
-        page,
-        top: ref?.offsetTop || 0,
-      }));
+    const el = containerRef.current;
+    if (!el) return;
 
-      const scrollPos = containerRef.current.scrollTop;
-      let current = 1;
-      for (let i = 0; i < positions.length; i++) {
-        if (scrollPos + 150 >= positions[i].top)
-          current = Number(positions[i].page);
+    const onScroll = () => {
+      const scrollTop = el.scrollTop;
+      let active = 1;
+
+      // determine the highest page whose top is <= scrollTop + offset
+      const offset = 160; // tweak if header/padding differ
+      for (let p = 1; p <= visiblePages; p++) {
+        const ref = pageRefs.current[p];
+        if (ref) {
+          if (scrollTop + offset >= ref.offsetTop) {
+            active = p;
+          }
+        }
       }
-      setCurrentPage(current);
+
+      setCurrentPage(active);
     };
 
-    const ref = containerRef.current;
-    if (ref) ref.addEventListener('scroll', handleScroll);
-    return () => ref?.removeEventListener('scroll', handleScroll);
-  }, []);
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [visiblePages]);
 
-  // Scroll to a specific page
-  const handlePageChange = (event, page) => {
+  // Pagination click -> scroll to page
+  const handlePageChange = (e, page) => {
     setCurrentPage(page);
     const ref = pageRefs.current[page];
     if (ref && containerRef.current) {
@@ -224,14 +157,6 @@ const DataTable = ({ jsonData, onDataChange }) => {
     }
   };
 
-  const pageEntries = Object.entries(editableData).slice(0, visiblePages);
-
-  // Reset all data
-  const handleReset = () => {
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
-    setEditableData(jsonData);
-  };
-
   return (
     <Box
       ref={containerRef}
@@ -239,104 +164,171 @@ const DataTable = ({ jsonData, onDataChange }) => {
         height: '85vh',
         overflowY: 'auto',
         padding: 3,
-        background: '#f9f9f9',
+        background: '#ffffff',
         position: 'relative',
       }}
     >
-      {/* Sticky header with pagination */}
+      {/* Sticky header */}
       <Box
         sx={{
           position: 'sticky',
           top: 0,
-          background: '#f9f9f9',
-          zIndex: 3,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingBottom: 1,
-          borderBottom: '2px solid #ddd',
+          background: '#ffffff',
+          zIndex: 10,
+          borderBottom: '2px solid #e0e0e0',
+          py: 1,
           mb: 2,
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-          📄 Report
-        </Typography>
-
-        <Pagination
-          count={Object.keys(editableData).length}
-          page={currentPage}
-          onChange={handlePageChange}
-          color="primary"
-          size="small"
-          sx={{ marginRight: 2 }}
-        />
-
-        <button
-          style={{
-            background: '#e53935',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            padding: '6px 12px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            px: 1,
           }}
-          onClick={handleReset}
         >
-          Reset Form
-        </button>
+          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+            Report
+          </Typography>
+
+          {/* top pagination (optional) */}
+          {/* <Pagination
+            count={tables.length || 1}
+            page={currentPage}
+            onChange={handlePageChange}
+            color="primary"
+            size="small"
+          /> */}
+        </Box>
       </Box>
 
-      {/* Render visible pages */}
-      {pageEntries.map(([pageKey, sections], index) => (
+      {/* Render visible tables (Page 1 = Table 0) */}
+      {(tables || []).slice(0, visiblePages).map((table, tableIndex) => (
         <Box
-          key={pageKey}
-          ref={(el) => (pageRefs.current[index + 1] = el)}
-          sx={{ mb: 5 }}
+          key={tableIndex}
+          ref={(el) => (pageRefs.current[tableIndex + 1] = el)}
+          sx={{ mb: 6 }}
         >
           <Typography
             variant="h6"
             sx={{
-              fontWeight: 'bold',
-              color: '#333',
+              fontWeight: '700',
               mb: 2,
-              borderBottom: '2px solid #ccc',
-              pb: '4px',
+              borderBottom: '2px solid #f0f0f0',
+              pb: 1,
             }}
           >
-            {pageKey}
+            Page {tableIndex + 1} (Table {table.Table})
           </Typography>
 
-          {Object.entries(sections).map(([sectionTitle, sectionData]) => (
-            <Box key={sectionTitle} sx={{ mb: 4 }}>
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  fontWeight: 'bold',
-                  color: '#555',
-                  mb: 1,
-                  mt: 2,
-                }}
-              >
-                {sectionTitle}
-              </Typography>
-              {renderTable(sectionData, `${pageKey}.${sectionTitle}`)}
-            </Box>
-          ))}
+          <TableContainer component={Paper} sx={{ mb: 3 }}>
+            <Table
+              size="small"
+              sx={{
+                tableLayout: 'fixed',
+                width: '100%',
+                borderCollapse: 'separate',
+              }}
+            >
+              <TableHead>
+                <TableRow>
+                  {/* Fixed width Field column: 35% */}
+                  <TableCell sx={{ fontWeight: '700', width: '35%' }}>
+                    Field
+                  </TableCell>
 
-          <Divider sx={{ mt: 3, mb: 3 }} />
+                  {/* Value column takes remaining 65% */}
+                  <TableCell sx={{ fontWeight: '700', width: '65%' }}>
+                    Value
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+
+              <TableBody>
+                {table.Items.map((item, itemIndex) => {
+                  // if Field is empty, skip rendering (keeps original indices intact)
+                  if (!item.Field) return null;
+
+                  return (
+                    <TableRow key={itemIndex}>
+                      <TableCell
+                        sx={{
+                          verticalAlign: 'top',
+                          whiteSpace: 'normal',
+                        }}
+                      >
+                        {item.Field}
+                      </TableCell>
+
+                      <TableCell sx={{ width: '65%' }}>
+                        <TextField
+                          fullWidth
+                          multiline
+                          minRows={1}
+                          maxRows={5}
+                          size="small"
+                          sx={{
+                            width: '100%',
+                            '& .MuiInputBase-input': {
+                              whiteSpace: 'normal', // FULL text visible
+                            },
+                          }}
+                          value={item.Value ?? ''}
+                          onChange={(e) =>
+                            handleValueChange(
+                              tableIndex,
+                              itemIndex,
+                              e.target.value
+                            )
+                          }
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <Divider sx={{ mb: 3 }} />
         </Box>
       ))}
 
-      {/* Show loader only if more pages left */}
-      {loading && visiblePages < Object.keys(editableData).length && (
-        <Box display="flex" justifyContent="center" my={2}>
-          <CircularProgress />
+      {/* Sentinel placed before sticky bottom pagination so observer can detect end of content */}
+      <div ref={observerRef} style={{ height: 90 }} />
+
+      {/* Sticky bottom pagination */}
+
+      <Box
+        sx={{
+          position: 'sticky',
+          bottom: 0,
+          background: '#ffffff',
+          zIndex: 12,
+          borderTop: '2px solid #e0e0e0',
+          py: 2,
+          height: '50px',
+          mt: 2,
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
+        <Pagination
+          count={tables.length || 1}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+          size="small"
+        />
+      </Box>
+
+      {/* Loader indicator */}
+      {loading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+          <CircularProgress size={28} />
         </Box>
       )}
-
-      {/* Sentinel */}
-      <div ref={observerRef} style={{ height: '50px' }} />
     </Box>
   );
 };

@@ -1,9 +1,9 @@
 const msalConfig = {
   auth: {
-    clientId: 'ba584753-5f5b-4e2d-9da2-3a722e97686d',
+    clientId: 'b3c486e5-cc94-441e-91fc-8a7c068ce579',
     authority:
-      'https://login.microsoftonline.com/9be81a95-7870-42f4-bb8d-a44ada88130a',
-    redirectUri: 'http://localhost:5173/layout/chat',
+      'https://login.microsoftonline.com/cec3b02a-ea8c-40ed-a66f-a89023ac3286',
+    redirectUri: 'http://localhost:5173/layout',
     postLogoutRedirectUri: 'http://localhost:5173/login',
   },
 };
