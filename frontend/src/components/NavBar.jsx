@@ -9,12 +9,24 @@ import {
   IconButton,
 } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { useNavigate } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar = ({ signOutClickHandler }) => {
   const [selectedItem, setSelectedItem] = useState('Create');
-
+  const Navigate = useNavigate();
   const handleChange = (event) => {
     setSelectedItem(event.target.value);
+  };
+
+  const customLogout = () => {
+    const logintype = localStorage.getItem('logintype');
+    if (logintype === 'sso') {
+      signOutClickHandler();
+    } else {
+      sessionStorage.clear();
+      localStorage.clear();
+      Navigate('/');
+    }
   };
 
   return (
@@ -64,6 +76,9 @@ const Navbar = () => {
         <IconButton>
           <AccountCircleIcon sx={{ color: 'black' }} />
         </IconButton>
+        <div>
+          <button onClick={customLogout}>Logout</button>
+        </div>
       </Toolbar>
     </AppBar>
   );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Grid,
   Card,
@@ -9,12 +9,103 @@ import {
   Button,
   Divider,
 } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { trackPromise } from 'react-promise-tracker';
+import LoginService from './LoginService';
 
-export default function LoginPage() {
+export default function LoginPage({ msalInstance }) {
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [loginFailed, setLoginFailed] = useState(false);
+  console.log('msaldataonlogin', msalInstance);
+  const submitHandler = async () => {
+    let userAccount;
+    console.log('msal', msalInstance);
+    try {
+      const accounts = msalInstance?.getAllAccounts();
+      console.log('acoounts', accounts);
+      if (accounts?.length > 0) {
+        const userAccount = accounts[0];
+
+        const silentRequest = {
+          scopes: [
+            // Scopes here
+          ],
+          account: userAccount,
+        };
+
+        try {
+          const response = await msalInstance.acquireTokenSilent(silentRequest);
+          // console.log(response)
+          localStorage.setItem('msalResponse', JSON.stringify(response));
+          localStorage.setItem('accessToken', response.accessToken);
+          localStorage.setItem('email', response.account.username);
+          localStorage.setItem('name', response.account.name);
+          localStorage.setItem('logintype', 'sso');
+          // console.log(response.account?.name)
+          // Extract user information
+          const userInformation = {
+            name: userAccount.name,
+            email: userAccount.username, // Assuming the email is stored in the username field
+            accessToken: response.accessToken,
+            expirationTime: response.expiresOn,
+            lastLoggedIn: new Date().toISOString(), // You can replace this with the actual last login time
+          };
+
+          // Call ssologinFunction with user information
+          ssologinFunction(userInformation);
+        } catch (silentError) {
+          console.error('Silent login failed:', silentError);
+
+          // Handle silent login failure, you can fall back to interactive login if needed
+          // ...
+        }
+      } else {
+        try {
+          await msalInstance.loginRedirect({
+            scopes: ['user.read'],
+          });
+        } catch (interactiveError) {
+          console.error('Interactive login failed:', interactiveError);
+        }
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+  };
+
+  const ssologinFunction = (userInfo) => {
+    setLoading(true);
+    trackPromise(
+      LoginService.ssouserdata(userInfo)
+        .then((response) => {
+          // Process the response if needed
+          const { role, balance } = response.data;
+          localStorage.setItem('role', role);
+          // localStorage.setItem("status",status)
+          if (response.data.status !== 1) {
+            setLoginFailed(true);
+            sessionStorage.clear();
+            localStorage.clear();
+          } else {
+            setLoginFailed(false);
+          }
+          setLoading(false);
+        })
+        .catch((err) => {
+          alert(err.response.data.error);
+          setLoading(false);
+          setLoginFailed(true);
+          sessionStorage.clear();
+          localStorage.clear();
+        })
+    );
+  };
+
   return (
     <Grid
       container
-      spacing={2}
+      spacing={1}
       sx={{
         width: '100%',
         height: '100%',
@@ -29,11 +120,12 @@ export default function LoginPage() {
         xs={12}
         md={6}
         sx={{
-          width: '60%',
+          width: '50%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           padding: 2,
+          height: '100%',
         }}
       >
         <Box
@@ -47,7 +139,7 @@ export default function LoginPage() {
         >
           <Box
             component="img"
-            src="/images/writing_image.jpg" // big image
+            src="/images/intertek_login_image.png" // big image
             alt="Login Illustration"
             sx={{
               width: '100%',
@@ -102,9 +194,10 @@ export default function LoginPage() {
               <Typography
                 sx={{
                   fontWeight: 550,
-                  paddingBottom: '10%',
-                  paddingTop: '10%',
+                  paddingBottom: '2%',
+                  paddingTop: '3%',
                   fontSize: '1.3rem',
+                  textAlign: 'center',
                 }}
               >
                 Log In
@@ -167,14 +260,9 @@ export default function LoginPage() {
               <Typography
                 variant="body2"
                 sx={{ textAlign: 'center', color: 'gray', paddingBottom: '5%' }}
+                onClick={submitHandler}
               >
-                Continue with your{' '}
-                <a
-                  href="#"
-                  style={{ color: '#1976d2', textDecoration: 'underline' }}
-                >
-                  work email - SSO login
-                </a>
+                Continue with your work email - SSO Login
               </Typography>
             </Grid>
           </CardContent>
