@@ -7,7 +7,7 @@ import uuid, os
 from db.database import *
 from fastapi import APIRouter, HTTPException
 from db.database import COSMOS_DB_project_Container
-from projects.models import Project
+from projects.models import Project,ProjectCreate
 from azure.cosmos import exceptions
 router = APIRouter()
 
@@ -29,17 +29,32 @@ def standard_response(status: str, message: str, data: dict = None):
         response["data"] = data
     return response
 
-@router.post("/create", status_code=201)
-async def create_project(project: Project):
+@router.post("/create")
+async def create_project(payload: ProjectCreate):
     try:
-        project.id = str(uuid.uuid4())
-        print("Database name used:", COSMOS_DB_project_Container)
-        import time
-        print("Container name used:", COSMOS_DB_project_Container)
-        time.sleep(0)  # Simulate delay for debugging
-        project.Project_Id = generate_project_id()
-        COSMOS_DB_project_Container.create_item(project.dict())
-        return standard_response("success", "Project created successfully", {"Cosmos_id": project.id, "Project_Id": project.Project_Id})
+        # ------ Auto Generated Fields ------
+        new_project = Project(
+            id=str(uuid.uuid4()),
+            Project_Id=generate_project_id(),
+            Proj_Name="string",
+            Standard=payload.Standard,
+            Client_Name=payload.Client_Name,
+            Product=payload.Product,
+            Proj_Created_On=str(datetime.utcnow()),
+            Proj_Created_By="SYSTEM",
+        )
+
+        # Save to Cosmos
+        COSMOS_DB_project_Container.create_item(new_project.dict())
+
+        return {
+            "status": "success",
+            "message": "Project created successfully",
+            "data": {
+                "id": new_project.id,
+                "Project_Id": new_project.Project_Id
+            }
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -69,14 +84,23 @@ async def get_all_projects():
     try:
         query = """
         SELECT 
-            c.Project_Id,c.Standard,c.Client_Name,c.Proj_Created_On,c.TRF_Generated,c.CDR_Generated,c.Letter_Generated FROM c
+            c.Project_Id,
+            c.Standard,
+            c.Client_Name,
+            c.Proj_Created_On,
+            c.TRF_Generated,
+            c.CDR_Generated,
+            c.Letter_Generated
+        FROM c
         """
+
         items = list(
             COSMOS_DB_project_Container.query_items(
                 query=query,
                 enable_cross_partition_query=True
             )
         )
+
         return {
             "status": "success",
             "count": len(items),
@@ -127,27 +151,21 @@ async def delete_project(project_id: str):
         props = COSMOS_DB_project_Container.read()
         pk_path = props["partitionKey"]["paths"][0]
         pk_name = pk_path.lstrip("/")             
-
         print("Partition key-name ->", pk_name)
         query = "SELECT * FROM c WHERE c.Project_Id = @pid"
         params = [{"name": "@pid", "value": project_id}]
-
         items = list(COSMOS_DB_project_Container.query_items(
             query=query,
             parameters=params,
             enable_cross_partition_query=True
         ))
-
         if not items:
             raise HTTPException(status_code=404, detail="Project not found")
-
         item = items[0]
         COSMOS_DB_project_Container.delete_item(
             item=item["id"],
             partition_key=item[pk_name]
         )
-
         return {"status": "success", "message": "Project deleted successfully"}
-
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
