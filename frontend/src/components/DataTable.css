@@ -1,0 +1,198 @@
+/* Container */
+.dt-container {
+  height: 85vh;
+  overflow-y: auto;
+  padding: 24px; /* MUI spacing 3 */
+  background: #ffffff;
+  position: relative;
+}
+
+/* Sticky header */
+.dt-sticky-header {
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  z-index: 10;
+  border-bottom: 2px solid #e0e0e0;
+  padding-top: 8px; /* py:1 */
+  padding-bottom: 8px;
+  margin-bottom: 16px; /* mb:2 */
+}
+
+.dt-header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 8px; /* px:1 */
+  padding-right: 8px;
+}
+
+.dt-header-title {
+  font-weight: 700;
+}
+
+/* Page wrapper / title */
+.dt-page {
+  margin-bottom: 24px; /* consistent with previous spacing */
+}
+
+.dt-page-title {
+  font-weight: 700;
+  margin-bottom: 16px; /* mb:2 */
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 8px;
+}
+
+/* Table container */
+.dt-table-container {
+  margin-bottom: 24px; /* mb:3 */
+}
+
+/* Table */
+.dt-table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: separate;
+}
+
+/* Table head cells */
+.dt-thead-cell {
+  font-weight: 700;
+  padding: 8px 16px;
+}
+
+.dt-field-header {
+  width: 35%;
+}
+
+.dt-value-header {
+  width: 65%;
+}
+
+/* Field and value cells */
+.dt-field-cell {
+  vertical-align: top;
+  white-space: normal;
+  padding: 12px 16px;
+  width: 35%;
+}
+
+.dt-value-cell {
+  width: 65%;
+  position: relative;
+  padding: 0; /* original had p:0 */
+}
+
+/* Value row that holds multiple value columns */
+.dt-value-row {
+  display: flex;
+  flex-direction: row;
+}
+
+/* Value column (individual value cell within grouped field) */
+/* padding: p:1 -> 8px; position: relative */
+.dt-value-column {
+  flex: 1;
+  padding: 8px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* add border-left to all value columns except first */
+.dt-value-column + .dt-value-column {
+  border-left: 1px solid #ddd;
+}
+
+/* Textarea inside value column */
+.dt-textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 36px;
+  max-height: 160px;
+  padding: 8px 48px 8px 12px; /* reserve space for hover icons on right */
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  box-sizing: border-box;
+}
+
+/* Hover actions (approve/comment/bookmark) */
+.dt-hover-actions {
+  position: absolute;
+  top: -28px; /* moved up so it doesn't overlap textarea */
+  right: 6px;
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2px;
+  border-radius: 6px;
+  align-items: center;
+  z-index: 10;
+  /* subtle shadow similar to MUI boxShadow:1 */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* Icon colors */
+.dt-icon-approve {
+  color: green;
+}
+.dt-icon-comment {
+  color: #1976d2;
+}
+.dt-icon-bookmark {
+  color: #ff9800;
+}
+
+/* Comment preview text */
+.dt-comment-caption {
+  color: #444;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Divider spacing */
+.dt-divider {
+  margin-bottom: 24px; /* mb:3 */
+}
+
+/* Sentinel for intersection observer */
+.dt-sentinel {
+  height: 90px;
+}
+
+/* Pagination sticky wrapper */
+.dt-pagination-wrapper {
+  position: sticky;
+  bottom: 0;
+  background: #ffffff;
+  z-index: 12;
+  border-top: 2px solid #e0e0e0;
+  padding-top: 16px; /* py:2 */
+  padding-bottom: 16px;
+  height: 50px;
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Loading spinner box */
+.dt-loading {
+  display: flex;
+  justify-content: center;
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+/* Dialog textarea */
+.dt-dialog-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 8px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
