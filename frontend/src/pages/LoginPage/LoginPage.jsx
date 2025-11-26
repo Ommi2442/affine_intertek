@@ -195,7 +195,7 @@ export default function LoginPage({ msalInstance }) {
               />
             </Grid>
 
-            <Grid sx={{ height: '100%' }}>
+            <Grid sx={{ height: '100%', paddingTop: '30%' }}>
               <Typography
                 sx={{
                   fontWeight: 550,
@@ -207,25 +207,7 @@ export default function LoginPage({ msalInstance }) {
               >
                 Log In
               </Typography>
-              <TextField
-                fullWidth
-                label="Email ID"
-                variant="outlined"
-                margin="normal"
-                size="small"
-              />
-              <Typography
-                sx={{
-                  color: 'red',
-                  textAlign: 'left',
-                  paddingLeft: '2%',
-                  mb: 2,
-                  fontSize: '0.7rem',
-                }}
-              >
-                Please enter your email address using the format
-                name@example.com
-              </Typography>
+
               <Button
                 fullWidth
                 variant="contained"
@@ -233,42 +215,27 @@ export default function LoginPage({ msalInstance }) {
                 sx={{
                   mt: 2,
                   mb: 2,
-                  py: 1.2,
+                  py: 1,
                   fontWeight: 'bold',
-                  backgroundColor: '#0d99ff',
-                  '&:hover': { backgroundColor: '#125ea3' },
+                  backgroundColor: '#0c0c0cff',
+                  '&:hover': { backgroundColor: '#212222ff' },
                 }}
-              >
-                Sign In
-              </Button>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  width: '100%',
-                  my: 1.5, // margin top & bottom
-                }}
-              >
-                <Divider sx={{ flexGrow: 1 }} />
-                <Typography
-                  sx={{
-                    mx: 2, // space between lines and text
-                    color: 'gray',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                  }}
-                >
-                  or
-                </Typography>
-                <Divider sx={{ flexGrow: 1 }} />
-              </Box>
-              <Typography
-                variant="body2"
-                sx={{ textAlign: 'center', color: 'gray', paddingBottom: '5%' }}
                 onClick={submitHandler}
               >
-                Continue with your work email - SSO Login
-              </Typography>
+                <Box
+                  component="img"
+                  src="/images/microsoft_logo.png"
+                  alt="Microsoft Logo"
+                  sx={{
+                    width: '4%',
+                    height: '4%',
+                    pr: 1,
+                    objectFit: 'cover',
+                    borderRadius: '1%',
+                  }}
+                />{' '}
+                Login with Microsoft SSO
+              </Button>
             </Grid>
           </CardContent>
         </Card>

@@ -13,44 +13,45 @@ import {
   Button,
   InputAdornment,
   IconButton,
+  MenuItem,
+  Select,
 } from '@mui/material';
+
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArchiveIcon from '@mui/icons-material/Archive';
 
-// Import your JSON file
 import dashboardData from '../../utils/dashboard.json';
+import { fetchProjectsRequest } from '../../redux/features/dashboard/dashboardSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
-const ROWS_PER_PAGE = 7;
-
-// Convert true/false → Yes/No + colors
 const renderYesNo = (value) => {
   const val = value === true || value === 'true';
-
   return (
-    <Box
-      sx={{
-        color: val ? 'green' : 'red',
-        textAlign: 'center',
-        width: '100%',
-      }}
-    >
+    <Box sx={{ color: val ? 'green' : 'red', textAlign: 'center' }}>
       {val ? 'Yes' : 'No'}
     </Box>
   );
 };
 
 const Dashboard = () => {
+  const dispatch = useDispatch();
+
+  const dashboardState = useSelector((state) => state.dashboard || {});
+  const { projects = [], loading = false, error = null } = dashboardState;
+
+  console.log('projects', projects);
   const [data, setData] = useState([]);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(7);
 
   useEffect(() => {
-    setData(dashboardData);
-  }, []);
+    //setData(dashboardData);
+    dispatch(fetchProjectsRequest());
+  }, [dispatch]);
 
-  // Filter data by search
   const filtered = data.filter(
     (item) =>
       item.Client_Name.toLowerCase().includes(search.toLowerCase()) ||
@@ -58,16 +59,16 @@ const Dashboard = () => {
       item.Pro_Id?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filtered.length / ROWS_PER_PAGE);
+  const totalPages = Math.ceil(filtered.length / rowsPerPage);
 
   const paginated = filtered.slice(
-    (page - 1) * ROWS_PER_PAGE,
-    page * ROWS_PER_PAGE
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage
   );
 
   return (
     <Box sx={{ p: 3 }}>
-      {/* Top Bar */}
+      {/* HEADER */}
       <Box
         sx={{
           display: 'flex',
@@ -97,35 +98,33 @@ const Dashboard = () => {
         />
       </Box>
 
-      {/* Table */}
+      {/* TABLE */}
       <TableContainer component={Paper}>
         <Table>
-          <TableHead
-            sx={{ bgcolor: '#f5f5f5', width: '100%', textAlign: 'center' }}
-          >
+          <TableHead sx={{ bgcolor: '#f5f5f5' }}>
             <TableRow>
-              <TableCell>
+              <TableCell align="center">
                 <b>Standard</b>
               </TableCell>
-              <TableCell>
+              <TableCell align="center">
                 <b>Client Name</b>
               </TableCell>
-              <TableCell>
+              <TableCell align="center">
                 <b>Product ID</b>
               </TableCell>
-              <TableCell>
+              <TableCell align="center">
                 <b>Created On</b>
               </TableCell>
-              <TableCell>
+              <TableCell align="center">
                 <b>TRF Generated</b>
               </TableCell>
-              <TableCell>
+              <TableCell align="center">
                 <b>CDR Generated</b>
               </TableCell>
-              <TableCell>
+              <TableCell align="center">
                 <b>Letter Generated</b>
               </TableCell>
-              <TableCell>
+              <TableCell align="center">
                 <b>Actions</b>
               </TableCell>
             </TableRow>
@@ -133,26 +132,31 @@ const Dashboard = () => {
 
           <TableBody>
             {paginated.map((row, index) => (
-              <TableRow key={index} sx={{ textAlign: 'center', width: '100%' }}>
-                <TableCell>{row.Standard}</TableCell>
-                <TableCell>{row.Client_Name}</TableCell>
-                <TableCell>{row.Pro_Id}</TableCell>
-                <TableCell>{row.Proj_Created_On}</TableCell>
+              <TableRow key={index}>
+                <TableCell align="center">{row.Standard}</TableCell>
+                <TableCell align="center">{row.Client_Name}</TableCell>
+                <TableCell align="center">{row.Pro_Id}</TableCell>
+                <TableCell align="center">{row.Proj_Created_On}</TableCell>
 
-                <TableCell>{renderYesNo(row.TRF_Generated)}</TableCell>
-                <TableCell>{renderYesNo(row.CDR_Generated)}</TableCell>
-                <TableCell>{renderYesNo(row.Letter_Generated)}</TableCell>
+                <TableCell align="center">
+                  {renderYesNo(row.TRF_Generated)}
+                </TableCell>
+                <TableCell align="center">
+                  {renderYesNo(row.CDR_Generated)}
+                </TableCell>
+                <TableCell align="center">
+                  {renderYesNo(row.Letter_Generated)}
+                </TableCell>
 
-                {/* EDIT / DELETE in text */}
-                <TableCell>
+                <TableCell align="center">
                   <IconButton>
-                    <EditIcon sx={{ color: 'grey' }} />
+                    <EditIcon sx={{ color: 'black' }} />
                   </IconButton>
                   <IconButton>
-                    <ArchiveIcon sx={{ color: 'grey' }} />
+                    <ArchiveIcon sx={{ color: 'black' }} />
                   </IconButton>
                   <IconButton>
-                    <DeleteIcon sx={{ color: 'grey' }} />
+                    <DeleteIcon sx={{ color: 'black' }} />
                   </IconButton>
                 </TableCell>
               </TableRow>
@@ -169,36 +173,56 @@ const Dashboard = () => {
         </Table>
       </TableContainer>
 
-      {/* Pagination */}
+      {/* PAGINATION + ROWS PER PAGE */}
       <Box
         sx={{
           mt: 3,
           display: 'flex',
-          justifyContent: 'center',
-          gap: 3,
+          justifyContent: 'space-between',
+          alignItems: 'center',
         }}
       >
-        <Button
-          variant="contained"
-          color="primary"
-          disabled={page === 1}
-          onClick={() => setPage(page - 1)}
-        >
-          Previous
-        </Button>
+        {/* LEFT SIDE: Rows per page */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography>Rows per page:</Typography>
 
-        <Typography sx={{ mt: 1, fontWeight: 'bold' }}>
-          Page {page} of {totalPages}
-        </Typography>
+          <Select
+            value={rowsPerPage}
+            size="small"
+            onChange={(e) => {
+              setRowsPerPage(e.target.value);
+              setPage(1);
+            }}
+          >
+            <MenuItem value={5}>5</MenuItem>
+            <MenuItem value={7}>7</MenuItem>
+            <MenuItem value={10}>10</MenuItem>
+            <MenuItem value={20}>20</MenuItem>
+          </Select>
+        </Box>
 
-        <Button
-          variant="contained"
-          color="primary"
-          disabled={page === totalPages}
-          onClick={() => setPage(page + 1)}
-        >
-          Next
-        </Button>
+        {/* RIGHT SIDE: Pagination */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+          <Button
+            variant="contained"
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
+            Previous
+          </Button>
+
+          <Typography sx={{ fontWeight: 'bold' }}>
+            Page {page} of {totalPages}
+          </Typography>
+
+          <Button
+            variant="contained"
+            disabled={page === totalPages}
+            onClick={() => setPage(page + 1)}
+          >
+            Next
+          </Button>
+        </Box>
       </Box>
     </Box>
   );

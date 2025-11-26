@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Box,
   Table,
@@ -10,326 +10,406 @@ import {
   Paper,
   Typography,
   Divider,
-  TextField,
   CircularProgress,
   Pagination,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  IconButton,
 } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
+import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 
-// If you want to import your uploaded json directly, uncomment and use this path:
-// import jsonData from "/mnt/data/dot.json";
+import './DataTable.css';
+import jsonFromFile from '../utils/final_payload.json';
 
-const STORAGE_KEY = 'report_tables_saved_v1';
+const STORAGE_KEY = 'report_tables_saved_v3';
 
-const DataTable = ({ jsonData }) => {
-  // if caller doesn't pass jsonData, try to load from file path (fallback)
-  // Note: In many React setups importing from /mnt/data won't work at runtime — prefer passing jsonData as prop.
-  const fallbackJson = typeof jsonData === 'undefined' ? null : jsonData;
+function debounce(fn, wait) {
+  let t = null;
+  return (...args) => {
+    if (t) clearTimeout(t);
+    t = setTimeout(() => fn(...args), wait);
+  };
+}
 
-  const [tables, setTables] = useState([]);
+const DataTable = ({ jsonData = jsonFromFile, onBookmarkClick, onApprove }) => {
+  const tablesRef = useRef([]);
   const [visiblePages, setVisiblePages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [renderTick, setRenderTick] = useState(0);
+
+  const [hovered, setHovered] = useState({ table: null, row: null });
+
+  const [isCommentOpen, setIsCommentOpen] = useState(false);
+  const [currentCommentText, setCurrentCommentText] = useState('');
+  const commentTargetRef = useRef({ table: null, row: null });
 
   const containerRef = useRef(null);
   const observerRef = useRef(null);
   const pageRefs = useRef({});
 
-  // Load saved data OR jsonData.Tables on mount
+  const saveToStorageDebounced = useRef(
+    debounce((data) => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (e) {
+        console.error('save error', e);
+      }
+    }, 800)
+  ).current;
+
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          setTables(parsed);
+          tablesRef.current = parsed;
         } else if (parsed?.Tables) {
-          setTables(parsed.Tables);
+          tablesRef.current = parsed.Tables;
+        } else if (jsonData?.Tables) {
+          tablesRef.current = jsonData.Tables;
+        } else {
+          tablesRef.current = [];
         }
-      } else if (fallbackJson?.Tables) {
-        setTables(fallbackJson.Tables);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(fallbackJson.Tables));
       } else if (jsonData?.Tables) {
-        // if jsonData prop passed
-        setTables(jsonData.Tables);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(jsonData.Tables));
+        tablesRef.current = jsonData.Tables;
+        saveToStorageDebounced(tablesRef.current);
       } else {
-        setTables([]);
+        tablesRef.current = [];
       }
     } catch (err) {
-      console.error('Error loading saved tables:', err);
-      if (jsonData?.Tables) {
-        setTables(jsonData.Tables);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(jsonData.Tables));
-      }
+      console.error('Data load error', err);
+      tablesRef.current = jsonData?.Tables ?? [];
     }
-
     setVisiblePages(1);
-  }, [jsonData, fallbackJson]);
+    setRenderTick((t) => t + 1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jsonData]);
 
-  // Save to localStorage
-  const saveToStorage = (updatedTables) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTables));
-    } catch (err) {
-      console.error('Error saving to storage:', err);
-    }
-  };
+  const persistRef = useCallback(() => {
+    saveToStorageDebounced(tablesRef.current);
+  }, [saveToStorageDebounced]);
 
-  // Update value - uses real indices
-  const handleValueChange = (tableIndex, itemIndex, newValue) => {
-    setTables((prev) => {
-      const updated = prev.map((t, ti) =>
-        ti === tableIndex
-          ? {
-              ...t,
-              Items: t.Items.map((it, ii) =>
-                ii === itemIndex ? { ...it, Value: newValue } : it
-              ),
-            }
-          : t
-      );
-      saveToStorage(updated);
-      return updated;
-    });
-  };
-
-  // Infinite scroll: observe sentinel and increase visiblePages
-  useEffect(() => {
-    const sentinel = observerRef.current;
-    if (!sentinel) return;
-    if (!tables || tables.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const e = entries[0];
-        if (e.isIntersecting && visiblePages < tables.length && !loading) {
-          setLoading(true);
-          // load 1 more page at a time (you can increase)
-          setTimeout(() => {
-            setVisiblePages((p) => Math.min(p + 1, tables.length));
-            setLoading(false);
-          }, 300);
-        }
-      },
-      { root: containerRef.current, threshold: 0.1 }
-    );
-
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [tables, visiblePages, loading]);
-
-  // Update active pagination on scroll
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    const onScroll = () => {
-      const scrollTop = el.scrollTop;
-      let active = 1;
-
-      // determine the highest page whose top is <= scrollTop + offset
-      const offset = 160; // tweak if header/padding differ
-      for (let p = 1; p <= visiblePages; p++) {
-        const ref = pageRefs.current[p];
-        if (ref) {
-          if (scrollTop + offset >= ref.offsetTop) {
-            active = p;
-          }
-        }
-      }
-
-      setCurrentPage(active);
+  const updateCell = (tableIndex, itemIndex, newValue) => {
+    const tables = tablesRef.current;
+    if (!tables?.[tableIndex]) return;
+    tables[tableIndex].Items[itemIndex] = {
+      ...tables[tableIndex].Items[itemIndex],
+      value: newValue,
     };
+    persistRef();
+    setRenderTick((t) => t + 1);
+  };
 
-    el.addEventListener('scroll', onScroll, { passive: true });
-    return () => el.removeEventListener('scroll', onScroll);
-  }, [visiblePages]);
+  const getVisibleTables = () => {
+    return (tablesRef.current || []).slice(0, visiblePages);
+  };
 
-  // Pagination click -> scroll to page
-  const handlePageChange = (e, page) => {
-    setCurrentPage(page);
-    const ref = pageRefs.current[page];
-    if (ref && containerRef.current) {
-      containerRef.current.scrollTo({
-        top: ref.offsetTop,
-        behavior: 'smooth',
+  const handleBookmark = (tableIndex, itemIndex) => {
+    const item = tablesRef.current?.[tableIndex]?.Items?.[itemIndex];
+    if (!item) return;
+    const payload = {
+      field: item.field ?? item.Field ?? 'Field',
+      value: item.value ?? item.Value ?? '',
+      tableIndex,
+      itemIndex,
+    };
+    if (typeof onBookmarkClick === 'function') onBookmarkClick(payload);
+  };
+
+  const handleApprove = (tableIndex, itemIndex) => {
+    const item = tablesRef.current?.[tableIndex]?.Items?.[itemIndex];
+    if (!item) return;
+    if (typeof onApprove === 'function') {
+      onApprove({
+        tableIndex,
+        itemIndex,
+        field: item.field ?? item.Field,
+        value: item.value ?? item.Value,
       });
     }
   };
 
-  return (
-    <Box
-      ref={containerRef}
-      sx={{
-        height: '85vh',
-        overflowY: 'auto',
-        padding: 3,
-        background: '#ffffff',
-        position: 'relative',
-      }}
-    >
-      {/* Sticky header */}
-      <Box
-        sx={{
-          position: 'sticky',
-          top: 0,
-          background: '#ffffff',
-          zIndex: 10,
-          borderBottom: '2px solid #e0e0e0',
-          py: 1,
-          mb: 2,
-        }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            px: 1,
-          }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-            Report
-          </Typography>
+  const openComment = (tableIndex, itemIndex) => {
+    const item = tablesRef.current?.[tableIndex]?.Items?.[itemIndex];
+    commentTargetRef.current = { table: tableIndex, row: itemIndex };
+    setCurrentCommentText(item?._comment ?? '');
+    setIsCommentOpen(true);
+  };
 
-          {/* top pagination (optional) */}
-          {/* <Pagination
-            count={tables.length || 1}
+  const saveComment = () => {
+    const { table, row } = commentTargetRef.current;
+    if (table == null) {
+      setIsCommentOpen(false);
+      return;
+    }
+    const tables = tablesRef.current;
+    tables[table].Items[row] = {
+      ...tables[table].Items[row],
+      _comment: currentCommentText,
+    };
+    persistRef();
+    setIsCommentOpen(false);
+    setRenderTick((t) => t + 1);
+  };
+
+  useEffect(() => {
+    const sentinel = observerRef.current;
+    if (!sentinel) return;
+    if (!tablesRef.current || tablesRef.current.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const e = entries[0];
+        if (
+          e.isIntersecting &&
+          visiblePages < tablesRef.current.length &&
+          !loading
+        ) {
+          setLoading(true);
+          setTimeout(() => {
+            setVisiblePages((p) => Math.min(p + 1, tablesRef.current.length));
+            setLoading(false);
+          }, 250);
+        }
+      },
+      { root: containerRef.current, threshold: 0.15 }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [visiblePages, loading]);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      const scrollTop = el.scrollTop;
+      let active = 1;
+      const offset = 160;
+      for (let p = 1; p <= visiblePages; p++) {
+        const ref = pageRefs.current[p];
+        if (ref && scrollTop + offset >= ref.offsetTop) active = p;
+      }
+      setCurrentPage(active);
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [visiblePages]);
+
+  const handlePageChange = (e, page) => {
+    setCurrentPage(page);
+    const ref = pageRefs.current[page];
+    if (ref && containerRef.current) {
+      containerRef.current.scrollTo({ top: ref.offsetTop, behavior: 'smooth' });
+    }
+  };
+
+  const visibleTables = getVisibleTables();
+
+  return (
+    <>
+      <div className="dt-container" ref={containerRef}>
+        <div className="dt-sticky-header">
+          <div className="dt-header-inner">
+            <Typography variant="h6" className="dt-header-title">
+              Report
+            </Typography>
+          </div>
+        </div>
+
+        {(visibleTables || []).map((table, tableIndex) => {
+          const realTableIndex = tableIndex;
+          return (
+            <div
+              className="dt-page"
+              key={realTableIndex}
+              ref={(el) => (pageRefs.current[realTableIndex + 1] = el)}
+            >
+              <Typography className="dt-page-title">
+                Page {realTableIndex + 1} (Table {table.Table})
+              </Typography>
+
+              <TableContainer component={Paper} className="dt-table-container">
+                <Table size="small" className="dt-table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell className="dt-thead-cell dt-field-header">
+                        Field
+                      </TableCell>
+                      <TableCell className="dt-thead-cell dt-value-header">
+                        Value
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+
+                  <TableBody>
+                    {(() => {
+                      const grouped = {};
+                      table.Items.forEach((item, idx) => {
+                        const field = item.field ?? item.Field ?? '';
+                        if (!field) return;
+                        if (!grouped[field]) grouped[field] = [];
+                        grouped[field].push({ ...item, __originalIndex: idx });
+                      });
+
+                      return Object.entries(grouped).map(
+                        ([field, rows], groupIndex) => (
+                          <TableRow key={groupIndex}>
+                            <TableCell className="dt-field-cell">
+                              {field}
+                            </TableCell>
+
+                            <TableCell className="dt-value-cell">
+                              <div className="dt-value-row">
+                                {rows.map((r, innerIdx) => {
+                                  const realIndex = r.__originalIndex;
+                                  const value = r.value ?? r.Value ?? '';
+
+                                  return (
+                                    <div
+                                      key={innerIdx}
+                                      className="dt-value-column"
+                                      onMouseEnter={() =>
+                                        setHovered({
+                                          table: realTableIndex,
+                                          row: realIndex,
+                                        })
+                                      }
+                                      onMouseLeave={() =>
+                                        setHovered({ table: null, row: null })
+                                      }
+                                    >
+                                      <textarea
+                                        className="dt-textarea"
+                                        value={value}
+                                        onChange={(e) =>
+                                          updateCell(
+                                            realTableIndex,
+                                            realIndex,
+                                            e.target.value
+                                          )
+                                        }
+                                        rows={1}
+                                      />
+
+                                      {hovered.table === realTableIndex &&
+                                        hovered.row === realIndex && (
+                                          <div className="dt-hover-actions">
+                                            <IconButton
+                                              size="small"
+                                              onClick={() =>
+                                                handleApprove(
+                                                  realTableIndex,
+                                                  realIndex
+                                                )
+                                              }
+                                              aria-label="approve"
+                                            >
+                                              <CheckCircleIcon className="dt-icon-approve" />
+                                            </IconButton>
+
+                                            <IconButton
+                                              size="small"
+                                              onClick={() =>
+                                                openComment(
+                                                  realTableIndex,
+                                                  realIndex
+                                                )
+                                              }
+                                              aria-label="comment"
+                                            >
+                                              <ChatBubbleOutlineOutlinedIcon className="dt-icon-comment" />
+                                            </IconButton>
+
+                                            <IconButton
+                                              size="small"
+                                              onClick={() =>
+                                                handleBookmark(
+                                                  realTableIndex,
+                                                  realIndex
+                                                )
+                                              }
+                                              aria-label="bookmark"
+                                            >
+                                              <MenuBookOutlinedIcon className="dt-icon-bookmark" />
+                                            </IconButton>
+                                          </div>
+                                        )}
+
+                                      {r._comment && (
+                                        <Typography
+                                          variant="caption"
+                                          className="dt-comment-caption"
+                                        >
+                                          💬 {r._comment}
+                                        </Typography>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )
+                      );
+                    })()}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+
+              <Divider className="dt-divider" />
+            </div>
+          );
+        })}
+
+        <div ref={observerRef} className="dt-sentinel" />
+
+        <div className="dt-pagination-wrapper">
+          <Pagination
+            count={tablesRef.current?.length || 1}
             page={currentPage}
             onChange={handlePageChange}
             color="primary"
             size="small"
-          /> */}
-        </Box>
-      </Box>
+          />
+        </div>
 
-      {/* Render visible tables (Page 1 = Table 0) */}
-      {(tables || []).slice(0, visiblePages).map((table, tableIndex) => (
-        <Box
-          key={tableIndex}
-          ref={(el) => (pageRefs.current[tableIndex + 1] = el)}
-          sx={{ mb: 6 }}
-        >
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: '700',
-              mb: 2,
-              borderBottom: '2px solid #f0f0f0',
-              pb: 1,
-            }}
-          >
-            Page {tableIndex + 1} (Table {table.Table})
-          </Typography>
+        {loading && (
+          <div className="dt-loading">
+            <CircularProgress size={28} />
+          </div>
+        )}
+      </div>
 
-          <TableContainer component={Paper} sx={{ mb: 3 }}>
-            <Table
-              size="small"
-              sx={{
-                tableLayout: 'fixed',
-                width: '100%',
-                borderCollapse: 'separate',
-              }}
-            >
-              <TableHead>
-                <TableRow>
-                  {/* Fixed width Field column: 35% */}
-                  <TableCell sx={{ fontWeight: '700', width: '35%' }}>
-                    Field
-                  </TableCell>
-
-                  {/* Value column takes remaining 65% */}
-                  <TableCell sx={{ fontWeight: '700', width: '65%' }}>
-                    Value
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {table.Items.map((item, itemIndex) => {
-                  // if Field is empty, skip rendering (keeps original indices intact)
-                  if (!item.Field) return null;
-
-                  return (
-                    <TableRow key={itemIndex}>
-                      <TableCell
-                        sx={{
-                          verticalAlign: 'top',
-                          whiteSpace: 'normal',
-                        }}
-                      >
-                        {item.Field}
-                      </TableCell>
-
-                      <TableCell sx={{ width: '65%' }}>
-                        <TextField
-                          fullWidth
-                          multiline
-                          minRows={1}
-                          maxRows={5}
-                          size="small"
-                          sx={{
-                            width: '100%',
-                            '& .MuiInputBase-input': {
-                              whiteSpace: 'normal', // FULL text visible
-                            },
-                          }}
-                          value={item.Value ?? ''}
-                          onChange={(e) =>
-                            handleValueChange(
-                              tableIndex,
-                              itemIndex,
-                              e.target.value
-                            )
-                          }
-                        />
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          <Divider sx={{ mb: 3 }} />
-        </Box>
-      ))}
-
-      {/* Sentinel placed before sticky bottom pagination so observer can detect end of content */}
-      <div ref={observerRef} style={{ height: 90 }} />
-
-      {/* Sticky bottom pagination */}
-
-      <Box
-        sx={{
-          position: 'sticky',
-          bottom: 0,
-          background: '#ffffff',
-          zIndex: 12,
-          borderTop: '2px solid #e0e0e0',
-          py: 2,
-          height: '50px',
-          mt: 2,
-          display: 'flex',
-          justifyContent: 'center',
-        }}
+      <Dialog
+        open={isCommentOpen}
+        onClose={() => setIsCommentOpen(false)}
+        fullWidth
+        maxWidth="sm"
       >
-        <Pagination
-          count={tables.length || 1}
-          page={currentPage}
-          onChange={handlePageChange}
-          color="primary"
-          size="small"
-        />
-      </Box>
-
-      {/* Loader indicator */}
-      {loading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
-          <CircularProgress size={28} />
-        </Box>
-      )}
-    </Box>
+        <DialogTitle>Add Comment</DialogTitle>
+        <DialogContent>
+          <textarea
+            className="dt-dialog-textarea"
+            value={currentCommentText}
+            onChange={(e) => setCurrentCommentText(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsCommentOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={saveComment}>
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

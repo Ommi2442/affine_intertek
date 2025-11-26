@@ -1,6 +1,8 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button, Modal, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { createProjectApi } from '../redux/api/createProjectApi';
 
 const style = {
   position: 'absolute',
@@ -15,11 +17,31 @@ const style = {
 };
 
 export default function BasicModal({ open, handleClose }) {
-  const Navigate = useNavigate();
-  const closeOnSubmit = () => {
-    handleClose();
-    Navigate('/create-project');
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    standard: '',
+    clientName: '',
+    product: '',
+    projectId: '',
+  });
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
+
+  const closeOnSubmit = async () => {
+    try {
+      // Call API and wait for completion
+      //await createProjectApi(form);
+      handleClose();
+      navigate('/create-project');
+    } catch (err) {
+      console.error('Create Project Failed', err);
+      alert('Error creating project');
+    }
+  };
+
   return (
     <>
       <Modal open={open} onClose={handleClose}>
@@ -28,10 +50,30 @@ export default function BasicModal({ open, handleClose }) {
             Create Project
           </Typography>
 
-          <TextField fullWidth label="Standard" margin="normal" />
-          <TextField fullWidth label="Client Name" margin="normal" />
-          <TextField fullWidth label="Product" margin="normal" />
-          <TextField fullWidth label="Project ID" margin="normal" />
+          <TextField
+            fullWidth
+            label="Standard"
+            margin="normal"
+            onChange={handleChange}
+          />
+          <TextField
+            fullWidth
+            label="Client Name"
+            margin="normal"
+            onChange={handleChange}
+          />
+          <TextField
+            fullWidth
+            label="Product"
+            margin="normal"
+            onChange={handleChange}
+          />
+          <TextField
+            fullWidth
+            label="Project ID"
+            margin="normal"
+            onChange={handleChange}
+          />
 
           <Button
             onClick={closeOnSubmit}
