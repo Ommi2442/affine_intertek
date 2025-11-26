@@ -32,7 +32,6 @@ def standard_response(status: str, message: str, data: dict = None):
 @router.post("/create")
 async def create_project(payload: ProjectCreate):
     try:
-        # ------ Auto Generated Fields ------
         new_project = Project(
             id=str(uuid.uuid4()),
             Project_Id=generate_project_id(),
@@ -43,8 +42,6 @@ async def create_project(payload: ProjectCreate):
             Proj_Created_On=str(datetime.utcnow()),
             Proj_Created_By="SYSTEM",
         )
-
-        # Save to Cosmos
         COSMOS_DB_project_Container.create_item(new_project.dict())
 
         return {
