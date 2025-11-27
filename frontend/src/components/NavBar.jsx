@@ -29,14 +29,11 @@ const Navbar = ({ signOutClickHandler, openProjectModal }) => {
   const closeMenu = () => setAnchorEl(null);
 
   const handleLogout = () => {
-    const logintype = localStorage.getItem('logintype');
-    if (logintype === 'sso') {
-      signOutClickHandler();
-    } else {
+
       sessionStorage.clear();
       localStorage.clear();
       navigate('/');
-    }
+    
   };
 
   return (

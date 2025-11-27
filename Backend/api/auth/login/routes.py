@@ -151,6 +151,7 @@ def verify_otp(data: OTPVerifyRequest):
 @router.post("/sso-login")
 async def sso_login(data: EmailRequest):
     try:
+        # Check if user exists
         query = "SELECT * FROM users u WHERE u.email = @email"
         existing_user = list(COSMOS_DB_users_Container.query_items(
             query=query,
@@ -158,22 +159,30 @@ async def sso_login(data: EmailRequest):
             enable_cross_partition_query=True
         ))
 
-        if existing_user:
-            raise HTTPException(status_code=400, detail="User already registered")
+        # If user does NOT exist -> create user first time
+        if not existing_user:
+            new_user = {
+                "id": data.email,
+                "email": data.email,
+                "name": data.name,
+                "user_role": ["Creator", "Reviewer"],
+                "accessToken": data.accessToken,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+            }
+            COSMOS_DB_users_Container.create_item(body=new_user)
+            user_role = new_user["user_role"]
 
-        new_user = {
-            "id": data.email,
-            "email": data.email,
-            "user_role": ["Creator","Reviewver"],
-            "created_at": datetime.now(timezone.utc).isoformat(),
-        }
-        COSMOS_DB_users_Container.create_item(body=new_user)
+        else:
+            # If user exists, do NOT register again
+            user_role = existing_user[0].get("user_role", ["Reviewer"])
+
+        # ALWAYS CREATE ACCESS TOKEN FOR LOGIN
         expiry = timedelta(minutes=5)
 
         access_token = create_access_token(
             data={
                 "sub": data.email,
-                "role": "user",
+                "role": user_role,
             },
             expires_delta=expiry
         )
@@ -181,11 +190,11 @@ async def sso_login(data: EmailRequest):
         return {
             "status": "success",
             "message": "Login successful",
-            "access_token": access_token
+            "access_token": access_token,
+            "role": user_role
         }
 
-    except HTTPException:
-        raise
     except Exception as e:
         logging.error(f"Error in sso_login: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
