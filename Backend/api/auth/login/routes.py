@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from datetime import datetime, timedelta, timezone
 from .models import EmailRequest, OTPVerifyRequest
 from .utils import generate_otp, encrypt_otp, decrypt_otp, send_email
-from db.database import COSMOS_DB_TestContainer
+from db.database import COSMOS_DB_users_Container
 from api.auth.jwt_auth.utils import create_access_token 
 import hmac
 import logging
@@ -28,7 +28,7 @@ from api.users.models import User
 async def welcome_application(data: EmailRequest):
     try:
         query = "SELECT * FROM users u WHERE u.email = @email"
-        existing_user = list(COSMOS_DB_TestContainer.query_items(
+        existing_user = list(COSMOS_DB_users_Container.query_items(
             query=query,
             parameters=[{"name": "@email", "value": data.email}],
             enable_cross_partition_query=True
@@ -45,7 +45,7 @@ async def welcome_application(data: EmailRequest):
         }
         
         
-        COSMOS_DB_TestContainer.create_item(body=new_user)
+        COSMOS_DB_users_Container.create_item(body=new_user)
         msg = MIMEMultipart()
         msg["From"] = SMTP_USERNAME
         msg["To"] = data.email
@@ -65,7 +65,7 @@ async def welcome_application(data: EmailRequest):
 async def request_otp(data: EmailRequest):
     try:
         query = "SELECT * FROM users u WHERE u.email = @email" 
-        user_query = list(COSMOS_DB_TestContainer.query_items(
+        user_query = list(COSMOS_DB_users_Container.query_items(
             query=query,
             parameters=[{"name": "@email", "value": data.email}],
             enable_cross_partition_query=True
@@ -86,7 +86,7 @@ async def request_otp(data: EmailRequest):
         user["otp"] = encrypted_otp 
         user["otp_expiry"] = expiry_time.isoformat() 
 
-        COSMOS_DB_TestContainer.replace_item(item=user["id"], body=user) 
+        COSMOS_DB_users_Container.replace_item(item=user["id"], body=user) 
 
         await send_email(user["email"], otp) 
 
@@ -105,7 +105,7 @@ def verify_otp(data: OTPVerifyRequest):
         SELECT u.otp, u.otp_expiry, u.email, u.user_role, u.is_active
         FROM users u WHERE u.email = @email
         """
-        user_data = list(COSMOS_DB_TestContainer.query_items(
+        user_data = list(COSMOS_DB_users_Container.query_items(
             query=query,
             parameters=[{"name": "@email", "value": data.email}],
             enable_cross_partition_query=True
@@ -152,7 +152,7 @@ def verify_otp(data: OTPVerifyRequest):
 async def sso_login(data: EmailRequest):
     try:
         query = "SELECT * FROM users u WHERE u.email = @email"
-        existing_user = list(COSMOS_DB_TestContainer.query_items(
+        existing_user = list(COSMOS_DB_users_Container.query_items(
             query=query,
             parameters=[{"name": "@email", "value": data.email}],
             enable_cross_partition_query=True
@@ -167,7 +167,7 @@ async def sso_login(data: EmailRequest):
             "user_role": ["Creator","Reviewver"],
             "created_at": datetime.now(timezone.utc).isoformat(),
         }
-        COSMOS_DB_TestContainer.create_item(body=new_user)
+        COSMOS_DB_users_Container.create_item(body=new_user)
         expiry = timedelta(minutes=5)
 
         access_token = create_access_token(
