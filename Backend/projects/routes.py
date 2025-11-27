@@ -1,15 +1,26 @@
-
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException, Depends, Body
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
 from projects.models import Project
 from datetime import datetime
 import uuid, os
+from fastapi import Depends
+from api.auth.jwt_auth.utils import get_current_user
 from db.database import *
 from fastapi import APIRouter, HTTPException
-from db.database import COSMOS_DB_project_Container
+from db.database import COSMOS_DB_project_Container, COSMOS_DB_URI,COSMOS_DB_KEY,COSMOS_DB_DATABASE,COSMOS_DB_project_TRF_Container
 from projects.models import Project,ProjectCreate
 from azure.cosmos import exceptions
+from azure.storage.blob import BlobServiceClient
+from fastapi import APIRouter, UploadFile, File, HTTPException
+import json
+
 router = APIRouter()
+
+CONNECTION_STRING = os.getenv("AZURE_CONNECTION_STRING")
+CONTAINER_NAME = os.getenv("AZURE_CONTAINER_NAME")
+client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
+database = client.get_database_client(COSMOS_DB_DATABASE)
+container = database.get_container_client(COSMOS_DB_project_TRF_Container)
 
 
 def generate_project_id():
@@ -29,28 +40,44 @@ def standard_response(status: str, message: str, data: dict = None):
         response["data"] = data
     return response
 
+
 @router.post("/create")
 async def create_project(payload: ProjectCreate):
     try:
         new_project = Project(
             id=str(uuid.uuid4()),
             Project_Id=generate_project_id(),
-            Proj_Name="string",
             Standard=payload.Standard,
             Client_Name=payload.Client_Name,
             Product=payload.Product,
             Proj_Created_On=str(datetime.utcnow()),
-            Proj_Created_By="SYSTEM",
         )
+
         COSMOS_DB_project_Container.create_item(new_project.dict())
 
+        
+        blob_service = BlobServiceClient.from_connection_string(CONNECTION_STRING)
+        container_client = blob_service.get_container_client(CONTAINER_NAME)
+
+        def create_folder(folder_path: str):
+            if not folder_path.endswith("/"):
+                folder_path += "/"
+            blob_client = container_client.get_blob_client(folder_path)
+            blob_client.upload_blob(b"", overwrite=True)
+            return folder_path
+
+        base_path = f"Documents/{new_project.Project_Id}"
+
+        folders_to_create = [f"{base_path}/source_documents",f"{base_path}/TRF Templates",f"{base_path}/CDR Templates",f"{base_path}/Letters Templates",]
+        created_folders = [create_folder(folder) for folder in folders_to_create]
         return {
             "status": "success",
             "message": "Project created successfully",
+            "folders_created": created_folders,
             "data": {
                 "id": new_project.id,
-                "Project_Id": new_project.Project_Id
-            }
+                "Project_Id": new_project.Project_Id,
+            },
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -87,16 +114,15 @@ async def get_all_projects():
             c.Proj_Created_On,
             c.TRF_Generated,
             c.CDR_Generated,
-            c.Letter_Generated
+            c.Letter_Generated,
+            c.Proj_Created_By
         FROM c
         """
 
         items = list(
             COSMOS_DB_project_Container.query_items(
                 query=query,
-                enable_cross_partition_query=True
-            )
-        )
+                enable_cross_partition_query=True ))
 
         return {
             "status": "success",
@@ -126,8 +152,7 @@ async def update_project(project_id: str, update_data: dict):
         if not items:
             raise HTTPException(status_code=404, detail="Project not found")
         item = items[0]
-        print("Found item:", item)
-
+        
         for key, value in update_data.items():
             item[key] = value
         updated_item = COSMOS_DB_project_Container.replace_item(
@@ -166,3 +191,30 @@ async def delete_project(project_id: str):
         return {"status": "success", "message": "Project deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/Trf-reports")
+async def upload_json_file(file: UploadFile = File(...)):
+    if not file.filename.endswith(".json"):
+        raise HTTPException(status_code=400)
+    try:
+        contents = await file.read()
+        json_content = json.loads(contents)
+
+        cosmos_item = {
+            "id": str(uuid.uuid4()),
+            "filename": file.filename,
+            "data": json_content,
+            "uploaded_on": str(datetime.utcnow())
+        }
+        result = container.upsert_item(cosmos_item)
+
+        return {
+            "message": "JSON file uploaded successfully",
+            "stored_id": result["id"]
+        }
+
+    except json.JSONDecodeError:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid JSON file"
+        )
