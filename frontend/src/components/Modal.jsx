@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Modal, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { createProjectApi } from '../redux/api/createProjectApi';
@@ -20,10 +28,9 @@ export default function BasicModal({ open, handleClose }) {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    standard: '',
-    clientName: '',
-    product: '',
-    projectId: '',
+    Standard: '',
+    Client_Name: '',
+    Product: '',
   });
 
   const handleChange = (e) => {
@@ -33,7 +40,7 @@ export default function BasicModal({ open, handleClose }) {
   const closeOnSubmit = async () => {
     try {
       // Call API and wait for completion
-      //await createProjectApi(form);
+      await createProjectApi(form);
       handleClose();
       navigate('/create-project');
     } catch (err) {
@@ -52,28 +59,42 @@ export default function BasicModal({ open, handleClose }) {
 
           <TextField
             fullWidth
+            select
             label="Standard"
             margin="normal"
+            name="Standard"
             onChange={handleChange}
-          />
+            defaultValue=""
+          >
+            <MenuItem value="">
+              <em>Select Standard</em>
+            </MenuItem>
+
+            <MenuItem value="IEC_61010_1">IEC 61010-1</MenuItem>
+            <MenuItem value="IEC_61010_2">IEC 61010-2</MenuItem>
+            <MenuItem value="IEC_61010_3">IEC 61010-3</MenuItem>
+          </TextField>
+
           <TextField
             fullWidth
             label="Client Name"
             margin="normal"
+            name="Client_Name"
             onChange={handleChange}
           />
           <TextField
             fullWidth
             label="Product"
             margin="normal"
+            name="Product"
             onChange={handleChange}
           />
-          <TextField
+          {/* <TextField
             fullWidth
             label="Project ID"
             margin="normal"
             onChange={handleChange}
-          />
+          /> */}
 
           <Button
             onClick={closeOnSubmit}

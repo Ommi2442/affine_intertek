@@ -117,6 +117,7 @@ export default function LoginPage({ msalInstance }) {
         alignItems: 'center',
         justifyContent: 'center',
         padding: 4,
+        backgroundColor: '#f0f0f0',
       }}
     >
       {/* LEFT CARD */}
