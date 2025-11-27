@@ -1,112 +1,133 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Grid,
   Card,
   CardContent,
   Typography,
   Box,
-  TextField,
   Button,
-  Divider,
 } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import { trackPromise } from 'react-promise-tracker';
-import LoginService from './LoginService';
-import { useNavigate } from 'react-router-dom';
 
-export default function LoginPage({ msalInstance }) {
-  const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
-  const [loginFailed, setLoginFailed] = useState(false);
-  console.log('msaldataonlogin', msalInstance);
+import { useMsal, useIsAuthenticated } from "@azure/msal-react";
+import { useNavigate } from "react-router-dom";
+import LoginService from "./LoginService";
+
+export default function LoginPage() {
+  const { instance } = useMsal();
+  const isAuthenticated = useIsAuthenticated();
   const Navigate = useNavigate();
-  const submitHandler = async () => {
-    let userAccount;
-    console.log('msal', msalInstance);
-    Navigate('/dashboard');
+
+  // ------------------------------------------------------
+  // RUN AFTER MICROSOFT REDIRECT (FIRST TIME LOGIN)
+  // ------------------------------------------------------
+  useEffect(() => {
+    if (isAuthenticated) {
+      handleSSOAfterRedirect();
+    }
+  }, [isAuthenticated]);
+
+  const handleSSOAfterRedirect = async () => {
     try {
-      const accounts = msalInstance?.getAllAccounts();
-      console.log('acoounts', accounts);
-      if (accounts?.length > 0) {
+      const accounts = instance.getAllAccounts();
+      if (accounts.length === 0) return;
+
+      const userAccount = accounts[0];
+
+      const silentRequest = {
+        scopes: ["User.Read"],
+        account: userAccount,
+      };
+
+      const response = await instance.acquireTokenSilent(silentRequest);
+
+      // Store everything in localStorage
+      localStorage.setItem("msalResponse", JSON.stringify(response));
+      localStorage.setItem("accessToken", response.accessToken);
+      localStorage.setItem("email", response.account.username);
+      localStorage.setItem("name", response.account.name);
+      localStorage.setItem("logintype", "sso");
+
+      const userInfo = {
+        name: userAccount.name,
+        email: userAccount.username,
+        accessToken: response.accessToken,
+        expirationTime: response.expiresOn,
+        lastLoggedIn: new Date().toISOString(),
+      };
+
+      const backendResponse = await LoginService.ssouserdata(userInfo);
+
+      if (backendResponse?.data?.status === "success") {
+        localStorage.setItem("role", backendResponse.data.role);
+        Navigate("/dashboard");
+      }
+
+    } catch (error) {
+      console.error("Post-redirect SSO processing failed:", error);
+    }
+  };
+
+  // ------------------------------------------------------
+  // CLICKING LOGIN BUTTON (ALSO WORKS FOR 2nd LOGIN)
+  // ------------------------------------------------------
+  const submitHandler = async () => {
+    try {
+      const accounts = instance.getAllAccounts();
+
+      if (accounts.length > 0) {
         const userAccount = accounts[0];
 
         const silentRequest = {
-          scopes: [
-            // Scopes here
-          ],
+          scopes: ["User.Read"],
           account: userAccount,
         };
 
         try {
-          const response = await msalInstance.acquireTokenSilent(silentRequest);
-          // console.log(response)
-          localStorage.setItem('msalResponse', JSON.stringify(response));
-          localStorage.setItem('accessToken', response.accessToken);
-          localStorage.setItem('email', response.account.username);
-          localStorage.setItem('name', response.account.name);
-          localStorage.setItem('logintype', 'sso');
-          // console.log(response.account?.name)
-          // Extract user information
-          const userInformation = {
+          const response = await instance.acquireTokenSilent(silentRequest);
+
+          localStorage.setItem("msalResponse", JSON.stringify(response));
+          localStorage.setItem("accessToken", response.accessToken);
+          localStorage.setItem("email", response.account.username);
+          localStorage.setItem("name", response.account.name);
+          localStorage.setItem("logintype", "sso");
+
+          const userInfo = {
             name: userAccount.name,
-            email: userAccount.username, // Assuming the email is stored in the username field
+            email: userAccount.username,
             accessToken: response.accessToken,
             expirationTime: response.expiresOn,
-            lastLoggedIn: new Date().toISOString(), // You can replace this with the actual last login time
+            lastLoggedIn: new Date().toISOString(),
           };
 
-          // Call ssologinFunction with user information
-          ssologinFunction(userInformation);
-        } catch (silentError) {
-          console.error('Silent login failed:', silentError);
+          const backendResponse = await LoginService.ssouserdata(userInfo);
 
-          // Handle silent login failure, you can fall back to interactive login if needed
-          // ...
-        }
-      } else {
-        try {
-          await msalInstance.loginRedirect({
-            scopes: ['user.read'],
-          });
-        } catch (interactiveError) {
-          console.error('Interactive login failed:', interactiveError);
+          if (backendResponse?.data?.status === "success") {
+            localStorage.setItem("role", backendResponse.data.role);
+            Navigate("/dashboard");
+          }
+
+          return;
+
+        } catch (silentError) {
+          console.error("Silent login failed:", silentError);
+          // DO NOT redirect on failure
+          return;
         }
       }
+
+      // First-time login
+      await instance.loginRedirect({
+        scopes: ["User.Read"],
+      });
+
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
     }
   };
 
-  const ssologinFunction = (userInfo) => {
-    console.log('userinfo', userInfo);
-    Navigate('/dashboard');
-    // setLoading(true);
-    // trackPromise(
-    //   LoginService.ssouserdata(userInfo)
-    //     .then((response) => {
-    //       // Process the response if needed
-    //       const { role, balance } = response.data;
-    //       localStorage.setItem('role', role);
-    //       // localStorage.setItem("status",status)
-    //       if (response.data.status !== 1) {
-    //         setLoginFailed(true);
-    //         sessionStorage.clear();
-    //         localStorage.clear();
-    //       } else {
-    //         setLoginFailed(false);
-    //       }
-    //       setLoading(false);
-    //     })
-    //     .catch((err) => {
-    //       alert(err.response.data.error);
-    //       setLoading(false);
-    //       setLoginFailed(true);
-    //       sessionStorage.clear();
-    //       localStorage.clear();
-    //     })
-    // );
-  };
-
+  // ------------------------------------------------------
+  // UI (UNCHANGED)
+  // ------------------------------------------------------
   return (
     <Grid
       container
@@ -120,6 +141,7 @@ export default function LoginPage({ msalInstance }) {
         backgroundColor: '#f0f0f0',
       }}
     >
+
       {/* LEFT CARD */}
       <Grid
         item
@@ -145,7 +167,7 @@ export default function LoginPage({ msalInstance }) {
         >
           <Box
             component="img"
-            src="/images/intertek_login_image.png" // big image
+            src="/images/intertek_login_image.png"
             alt="Login Illustration"
             sx={{
               width: '100%',
@@ -154,14 +176,15 @@ export default function LoginPage({ msalInstance }) {
               borderRadius: 2,
             }}
           />
+
           <Box
             component="img"
-            src="/images/intertek_square_logo.png" // small image
+            src="/images/intertek_square_logo.png"
             alt="Overlay"
             sx={{
               position: 'absolute',
-              top: 0, // distance from bottom
-              left: 35, // distance from right
+              top: 0,
+              left: 35,
               width: '25%',
             }}
           />
@@ -179,9 +202,7 @@ export default function LoginPage({ msalInstance }) {
             paddingLeft: '2%',
           }}
         >
-          <CardContent
-            sx={{ width: '100%', height: '100%', paddingRight: '8%' }}
-          >
+          <CardContent sx={{ width: '100%', height: '100%', paddingRight: '8%' }}>
             <Grid sx={{ textAlign: 'left' }}>
               <Box
                 component="img"
@@ -234,13 +255,14 @@ export default function LoginPage({ msalInstance }) {
                     objectFit: 'cover',
                     borderRadius: '1%',
                   }}
-                />{' '}
+                />{" "}
                 Login with Microsoft SSO
               </Button>
             </Grid>
           </CardContent>
         </Card>
       </Grid>
+
     </Grid>
   );
 }
