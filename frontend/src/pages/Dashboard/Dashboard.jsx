@@ -21,13 +21,10 @@ import {
 } from '@mui/material';
 
 import SearchIcon from '@mui/icons-material/Search';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ArchiveIcon from '@mui/icons-material/Archive';
-
 import dashboardData from '../../utils/dashboard.json';
 import { fetchProjectsRequest } from '../../redux/features/dashboard/dashboardSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import AppBreadcrumbs from '../../components/AppBreadCrumbs';
 
 const renderYesNo = (value) => {
   const val = value === true || value === 'true';
@@ -81,7 +78,14 @@ const Dashboard = () => {
   );
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box
+      sx={{
+        p: 3,
+
+        backgroundColor: 'white',
+        borderRadius: '8px',
+      }}
+    >
       {/* HEADER */}
       <Box
         sx={{
@@ -101,7 +105,12 @@ const Dashboard = () => {
           size="small"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          sx={{ width: '260px' }}
+          sx={{
+            width: '30%',
+            '& .MuiOutlinedInput-root': {
+              borderRadius: '50px',
+            },
+          }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -184,13 +193,15 @@ const Dashboard = () => {
 
                   <TableCell align="center">
                     <IconButton>
-                      <EditIcon sx={{ color: 'black' }} />
+                      <img src="/images/edit.png" width={22} height={22} />
                     </IconButton>
+
                     <IconButton>
-                      <ArchiveIcon sx={{ color: 'black' }} />
+                      <img src="/images/add-file.png" width={22} height={22} />
                     </IconButton>
+
                     <IconButton>
-                      <DeleteIcon sx={{ color: 'black' }} />
+                      <img src="/images/delete.png" width={22} height={22} />
                     </IconButton>
                   </TableCell>
                 </TableRow>

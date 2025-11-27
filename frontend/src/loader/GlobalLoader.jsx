@@ -1,8 +1,8 @@
-import React from "react";
-import { useSnapshot } from "valtio";
-import { loaderStore } from "./loaderStore";
-import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
+import React from 'react';
+import { useSnapshot } from 'valtio';
+import { loaderStore } from './loaderStore';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 
 export default function GlobalLoader() {
   const snap = useSnapshot(loaderStore);
@@ -12,15 +12,15 @@ export default function GlobalLoader() {
   return (
     <Box
       sx={{
-        position: "fixed",
+        position: 'fixed',
         top: 0,
         left: 0,
-        width: "100vw",
-        height: "100vh",
-        backgroundColor: "rgba(255,255,255,0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(255,255,255,0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         zIndex: 9999,
       }}
     >

@@ -25,6 +25,7 @@ import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 
 import './DataTable.css';
 import jsonFromFile from '../utils/final_payload.json';
+import CommentDialog from './CommentDialog';
 
 const STORAGE_KEY = 'report_tables_saved_v3';
 
@@ -52,6 +53,7 @@ const DataTable = ({ jsonData = jsonFromFile, onBookmarkClick, onApprove }) => {
   const containerRef = useRef(null);
   const observerRef = useRef(null);
   const pageRefs = useRef({});
+  const existingCommentsArray = [];
 
   const saveToStorageDebounced = useRef(
     debounce((data) => {
@@ -285,6 +287,7 @@ const DataTable = ({ jsonData = jsonFromFile, onBookmarkClick, onApprove }) => {
                                       onMouseLeave={() =>
                                         setHovered({ table: null, row: null })
                                       }
+                                      style={{ position: 'relative' }} // ✅ Make container relative
                                     >
                                       <textarea
                                         className="dt-textarea"
@@ -297,11 +300,24 @@ const DataTable = ({ jsonData = jsonFromFile, onBookmarkClick, onApprove }) => {
                                           )
                                         }
                                         rows={1}
+                                        style={{
+                                          paddingRight: '70px', // ✅ Space for icons
+                                        }}
                                       />
 
                                       {hovered.table === realTableIndex &&
                                         hovered.row === realIndex && (
-                                          <div className="dt-hover-actions">
+                                          <div
+                                            className="dt-hover-actions"
+                                            style={{
+                                              position: 'absolute',
+                                              top: '50%', // vertically center
+                                              right: '5px',
+                                              transform: 'translateY(-50%)',
+                                              display: 'flex',
+                                              gap: '4px',
+                                            }}
+                                          >
                                             <IconButton
                                               size="small"
                                               onClick={() =>
@@ -388,27 +404,14 @@ const DataTable = ({ jsonData = jsonFromFile, onBookmarkClick, onApprove }) => {
         )}
       </div>
 
-      <Dialog
+      <CommentDialog
         open={isCommentOpen}
         onClose={() => setIsCommentOpen(false)}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>Add Comment</DialogTitle>
-        <DialogContent>
-          <textarea
-            className="dt-dialog-textarea"
-            value={currentCommentText}
-            onChange={(e) => setCurrentCommentText(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setIsCommentOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={saveComment}>
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+        comments={existingCommentsArray}
+        currentComment={currentCommentText}
+        setCurrentComment={setCurrentCommentText}
+        onSubmit={saveComment}
+      />
     </>
   );
 };

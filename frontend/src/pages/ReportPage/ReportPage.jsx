@@ -27,7 +27,14 @@ const ReportPage = () => {
     <Box className="report-container">
       {/* LEFT SIDE */}
       <Box className="left-panel">
-        <Card className="left-card">
+        <Card
+          className="left-card"
+          sx={{
+            borderRadius: '10px',
+            overflow: 'hidden',
+            backgroundColor: '#fff',
+          }}
+        >
           <CardContent className="left-content">
             <Box className="report-header">
               <img
@@ -36,19 +43,38 @@ const ReportPage = () => {
                 alt="header"
               />
 
-              <Typography className="header-text">
+              <Typography
+                className="header-text"
+                sx={{ marginRight: '10%', fontWeight: 600, fontSize: '15px' }}
+              >
                 Test Report issued under the responsibility of:
               </Typography>
             </Box>
 
             <Box className="report-title-container">
-              <Typography className="report-title">TEST REPORT</Typography>
-              <Typography className="report-title">IEC 61010-1</Typography>
-              <Typography className="report-title">
+              <Typography
+                className="report-title"
+                sx={{ fontWeight: 700, fontSize: '20px' }}
+              >
+                TEST REPORT
+              </Typography>
+              <Typography
+                className="report-title"
+                sx={{ fontWeight: 700, fontSize: '20px' }}
+              >
+                IEC 61010-1
+              </Typography>
+              <Typography
+                className="report-title"
+                sx={{ fontWeight: 700, fontSize: '20px' }}
+              >
                 Safety requirements for electrical equipment for measurement,
                 control, and laboratory use
               </Typography>
-              <Typography className="report-title">
+              <Typography
+                className="report-title"
+                sx={{ fontWeight: 700, fontSize: '20px' }}
+              >
                 Part 1: General requirements
               </Typography>
             </Box>
@@ -83,7 +109,7 @@ const ReportPage = () => {
       ) : (
         <Box className="right-panel">
           {/* ACTION CARD */}
-          <Card className="action-card">
+          <Card className="action-card" sx={{ borderRadius: '10px' }}>
             <CardContent>
               <Typography variant="h6" className="action-title">
                 Actions
@@ -156,7 +182,7 @@ const ReportPage = () => {
           </Card>
 
           {/* CONFIDENCE */}
-          <Card className="confidence-card">
+          <Card className="confidence-card" sx={{ borderRadius: '10px' }}>
             <CardContent>
               <Typography variant="h6" className="confidence-header">
                 Confidence Score
