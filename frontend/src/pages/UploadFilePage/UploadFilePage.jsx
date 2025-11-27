@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
-import { Box, Button, Typography, Stack, Paper, Card } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Button,
+  Typography,
+  Stack,
+  Paper,
+  Card,
+  IconButton,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import CloseIcon from '@mui/icons-material/Close';
 
 const UploadFilePage = () => {
   const [files, setFiles] = useState({
-    sourceFile: null,
+    sourceFiles: [], // multiple
     trfTemplate: null,
     cdrTemplate: null,
     letterTemplate: null,
@@ -13,11 +22,49 @@ const UploadFilePage = () => {
 
   const Navigate = useNavigate();
 
-  const handleFileChange = (e, key) => {
-    setFiles({
-      ...files,
-      [key]: e.target.files[0],
-    });
+  // Load default files from backend
+  useEffect(() => {
+    const fetchDefaultFiles = async () => {
+      const backendFiles = {
+        sourceFiles: [
+          { name: '9990_critical_components_list.pdf' },
+          { name: '22277_block_diagramRev3.docx' },
+          // { name: 'product_1_user_guide.xlsx' },
+        ],
+        trfTemplate: { name: 'CB scheme TRF Template iec6101_1.docx' },
+        cdrTemplate: { name: 'CDR Report Template.xlsx' },
+        letterTemplate: { name: 'intertek gft OP 10 letter report.docx' },
+        standardDocument: { name: 'IEC 61010-1-2010.pdf' },
+      };
+      setFiles((prev) => ({ ...prev, ...backendFiles }));
+    };
+
+    fetchDefaultFiles();
+  }, []);
+
+  const handleFileChange = (e, key, multiple = false) => {
+    const selectedFiles = multiple
+      ? Array.from(e.target.files)
+      : e.target.files[0];
+    if (multiple) {
+      setFiles((prev) => ({
+        ...prev,
+        [key]: [...prev[key], ...selectedFiles],
+      }));
+    } else {
+      setFiles((prev) => ({ ...prev, [key]: selectedFiles }));
+    }
+  };
+
+  const handleDeleteFile = (key, index = null) => {
+    if (key === 'sourceFiles' && index !== null) {
+      setFiles((prev) => ({
+        ...prev,
+        [key]: prev[key].filter((_, i) => i !== index),
+      }));
+    } else {
+      setFiles((prev) => ({ ...prev, [key]: null }));
+    }
   };
 
   const handleGenerate = () => {
@@ -25,129 +72,169 @@ const UploadFilePage = () => {
     console.log('Uploaded Files:', files);
   };
 
+  // Render multiple files in small boxes
+  const renderFileBoxes = (key, multiple = false) => {
+    const currentFiles = multiple ? files[key] : files[key] ? [files[key]] : [];
+
+    return (
+      <Stack direction="row" spacing={1} flexWrap="wrap" mb={1}>
+        {currentFiles.map((file, idx) => (
+          <Box
+            key={idx}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              bgcolor: '#f0f0f0',
+              px: 1,
+              py: 0.5,
+              borderRadius: 1,
+              gap: 0.5,
+            }}
+          >
+            <Typography variant="body2">{file.name}</Typography>
+            <IconButton
+              size="small"
+              onClick={() => handleDeleteFile(key, multiple ? idx : null)}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Box>
+        ))}
+      </Stack>
+    );
+  };
+
+  // Render single file input with delete logic
+  const renderFileInput = (label, key, description, multiple = false) => {
+    const hasFiles = multiple ? files[key].length > 0 : !!files[key];
+    return (
+      <Box
+        sx={{ display: 'flex', width: '100%', alignItems: 'center', gap: 1 }}
+      >
+        {/* Label */}
+        <Box sx={{ minWidth: '200px' }}>
+          <Typography sx={{ fontWeight: 600 }}>
+            {label}
+            {description && (
+              <Typography
+                component="div"
+                sx={{
+                  fontSize: '14px',
+                  color: 'gray',
+                  fontWeight: 400,
+                  ml: 0.5,
+                }}
+              >
+                {description}
+              </Typography>
+            )}
+          </Typography>
+        </Box>
+
+        {/* File boxes */}
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1,
+            flexWrap: 'wrap',
+            flex: 1,
+          }}
+        >
+          {multiple
+            ? files[key].map((file, idx) => (
+                <Box
+                  key={idx}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    bgcolor: '#f0f0f0',
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: 1,
+                    gap: 0.5,
+                  }}
+                >
+                  <Typography variant="body2">{file.name}</Typography>
+                  <IconButton
+                    size="small"
+                    onClick={() => handleDeleteFile(key, idx)}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              ))
+            : files[key] && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    bgcolor: '#f0f0f0',
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: 1,
+                    gap: 0.5,
+                  }}
+                >
+                  <Typography variant="body2">{files[key].name}</Typography>
+                  <IconButton
+                    size="small"
+                    onClick={() => handleDeleteFile(key)}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              )}
+
+          {/* Show Upload button only if no files */}
+          {!hasFiles && (
+            <Button variant="outlined" component="label">
+              Upload
+              <input
+                type="file"
+                hidden
+                multiple={multiple}
+                onChange={(e) => handleFileChange(e, key, multiple)}
+              />
+            </Button>
+          )}
+        </Box>
+      </Box>
+    );
+  };
+
   return (
     <div
       style={{
-        height: '100vh',
         width: '100%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f4f6f8',
       }}
     >
-      {/* Card stays perfectly centered */}
-      <Card
-        sx={{
-          width: '70%',
-          p: 3,
-          borderRadius: 2,
-          alignItems: 'center',
-        }}
-      >
-        {/* Header */}
+      <Card sx={{ width: '80%', p: 3, borderRadius: 2, alignItems: 'center' }}>
         <Typography variant="h5" fontWeight={600} mb={3}>
           Project Files
         </Typography>
 
-        {/* Main Layout */}
         <Box sx={{ display: 'flex', gap: 3 }}>
-          {/* Left Section */}
           <Box sx={{ width: '70%' }}>
-            <Typography variant="h6" mb={2} fontWeight={500}>
-              Upload Source Files
-            </Typography>
-
             <Stack spacing={2}>
-              {/* Source File */}
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography sx={{ width: '50%' }}>
-                  Source Documents:
-                  <div>(multiple Files)</div>
-                </Typography>
-                <Button variant="outlined" component="label" fullWidth>
-                  {files.sourceFile
-                    ? files.sourceFile.name
-                    : 'Upload Source File'}
-                  <input
-                    type="file"
-                    hidden
-                    onChange={(e) => handleFileChange(e, 'sourceFile')}
-                  />
-                </Button>
-              </Box>
+              {renderFileInput(
+                'Source Documents:',
+                'sourceFiles',
+                '(Multiple Files)',
+                true
+              )}
+              {renderFileInput('TRF Template:', 'trfTemplate', '(Word Input)')}
+              {renderFileInput('CDR Template:', 'cdrTemplate', '(Excel Input)')}
+              {renderFileInput(
+                'Letter Template:',
+                'letterTemplate',
+                '(Word Input)'
+              )}
+              {renderFileInput('Standard Document:', 'standardDocument')}
 
-              {/* TRF Template */}
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography sx={{ width: '50%' }}>
-                  TRF Template:
-                  <div>(word input)</div>
-                </Typography>
-                <Button variant="outlined" component="label" fullWidth>
-                  {files.trfTemplate
-                    ? files.trfTemplate.name
-                    : 'Upload TRF Template'}
-                  <input
-                    type="file"
-                    hidden
-                    onChange={(e) => handleFileChange(e, 'trfTemplate')}
-                  />
-                </Button>
-              </Box>
-
-              {/* CDR Template */}
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography sx={{ width: '50%' }}>
-                  CDR Template:<div>(Excel Input)</div>{' '}
-                </Typography>
-                <Button variant="outlined" component="label" fullWidth>
-                  {files.cdrTemplate
-                    ? files.cdrTemplate.name
-                    : 'Upload CDR Template'}
-                  <input
-                    type="file"
-                    hidden
-                    onChange={(e) => handleFileChange(e, 'cdrTemplate')}
-                  />
-                </Button>
-              </Box>
-
-              {/* Letter Template */}
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography sx={{ width: '50%' }}>
-                  Letter Template:<div>(Word Input)</div>
-                </Typography>
-                <Button variant="outlined" component="label" fullWidth>
-                  {files.letterTemplate
-                    ? files.letterTemplate.name
-                    : 'Upload Letter Template'}
-                  <input
-                    type="file"
-                    hidden
-                    onChange={(e) => handleFileChange(e, 'letterTemplate')}
-                  />
-                </Button>
-              </Box>
-
-              {/* Standard Template */}
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography sx={{ width: '50%' }}>
-                  Standard Document:
-                </Typography>
-                <Button variant="outlined" component="label" fullWidth>
-                  {files.standardDocument
-                    ? files.standardDocument.name
-                    : 'Upload Standard Doc'}
-                  <input
-                    type="file"
-                    hidden
-                    onChange={(e) => handleFileChange(e, 'standardDocument')}
-                  />
-                </Button>
-              </Box>
-
-              <div style={{ marginTop: '10%' }}></div>
-              {/* Generate Button */}
+              <div style={{ marginTop: '10%' }} />
               <Button
                 variant="contained"
                 onClick={handleGenerate}
@@ -157,20 +244,12 @@ const UploadFilePage = () => {
                   '&:hover': { backgroundColor: '#0b91f0ff' },
                 }}
               >
-                Generate
+                Generate TRF
               </Button>
             </Stack>
           </Box>
 
-          {/* Right Section — Recent Uploads */}
-          <Paper
-            elevation={1}
-            sx={{
-              width: '30%',
-              p: 2,
-              borderRadius: 2,
-            }}
-          >
+          <Paper elevation={1} sx={{ width: '30%', p: 2, borderRadius: 2 }}>
             <Typography variant="h6" fontWeight={500} mb={1}>
               Recent Uploads
             </Typography>

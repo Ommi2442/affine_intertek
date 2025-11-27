@@ -2,9 +2,10 @@
 .dt-container {
   height: 85vh;
   overflow-y: auto;
-  padding: 24px; /* MUI spacing 3 */
-  background: #ffffff;
   position: relative;
+  background: #ffffff;
+  padding-left: 24px;
+  padding-right: 24px;
 }
 
 /* Sticky header */
