@@ -2,7 +2,8 @@ import { all } from 'redux-saga/effects';
 import authSaga from '../redux/features/auth/authSaga';
 import dashboardSaga from './features/dashboard/dashboardSaga';
 import projectSaga from './features/createProject/createProjectSaga';
+import generateTrfSaga from './features/generateTrf/generateTrfSaga';
 
 export default function* rootSaga() {
-  yield all([authSaga(), dashboardSaga(), projectSaga()]);
+  yield all([authSaga(), dashboardSaga(), projectSaga(), generateTrfSaga()]);
 }
