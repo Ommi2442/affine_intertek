@@ -8,8 +8,10 @@ import {
   Divider,
 } from '@mui/material';
 import DataTable from '../../components/DataTable';
-import jsonData from '../../utils/final_payload.json';
+import jsonData from '../../utils/pta_final.json';
 import './ReportPage.css';
+import { useSelector } from 'react-redux';
+import DataTable1 from '../../components/DataTable1';
 
 const ReportPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,6 +24,13 @@ const ReportPage = () => {
     setBookmarkData(data);
     setBookmarkOpen(true);
   };
+
+  const { trfData, loading, error } = useSelector((state) => state.trf);
+
+  if (loading) return <p>Uploading JSON...</p>;
+  if (error) return <p>{error}</p>;
+
+  console.log('TRF JSON:', trfData);
 
   return (
     <Box className="report-container">
@@ -79,7 +88,13 @@ const ReportPage = () => {
               </Typography>
             </Box>
 
-            <DataTable
+            {/* <DataTable
+              ref={dataTableRef}
+              jsonData={trfData?.json}
+              onBookmarkClick={handleBookmarkFromChild}
+            /> */}
+
+            <DataTable1
               ref={dataTableRef}
               jsonData={jsonData}
               onBookmarkClick={handleBookmarkFromChild}

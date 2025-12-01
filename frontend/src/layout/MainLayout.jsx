@@ -21,7 +21,7 @@ const MainLayout = () => {
       <Navbar openProjectModal={handleOpenProjectModal} />
 
       <Box style={{ paddingTop: '80px' }}>
-        <Box sx={{ pt: 3, pl: '2%' }}>
+        <Box sx={{ pt: 1, pl: '2%' }}>
           <AppBreadcrumbs />
         </Box>
         <Box sx={{ pl: '2%', pr: '2%' }}>

@@ -26,7 +26,7 @@ export default function BasicModal({ open, handleClose }) {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    Standard: '',
+    Standard: 'IEC_61010_1',
     Client_Name: '',
     Product: '',
   });
@@ -83,6 +83,22 @@ export default function BasicModal({ open, handleClose }) {
           label="Standard"
           margin="normal"
           name="Standard"
+          value={form.Standard} // ✅ Default selected value
+          InputProps={{ readOnly: true }} // ✅ Prevent typing / editing
+          sx={{
+            backgroundColor: '#fff',
+            pointerEvents: 'none', // ✅ Stop opening dropdown
+          }}
+        >
+          <MenuItem value="IEC_61010_1">IEC 61010-1</MenuItem>
+        </TextField>
+
+        {/* <TextField
+          fullWidth
+          select
+          label="Standard"
+          margin="normal"
+          name="Standard"
           value={form.Standard}
           onChange={handleChange}
           error={!!errors.Standard}
@@ -94,7 +110,7 @@ export default function BasicModal({ open, handleClose }) {
           <MenuItem value="IEC_61010_1">IEC 61010-1</MenuItem>
           <MenuItem value="IEC_61010_2">IEC 61010-2</MenuItem>
           <MenuItem value="IEC_61010_3">IEC 61010-3</MenuItem>
-        </TextField>
+        </TextField> */}
 
         {/* CLIENT NAME */}
         <TextField

@@ -10,6 +10,10 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
+import { useDispatch, useSelector } from 'react-redux';
+import { generateTrfRequest } from '../../redux/features/generateTrf/generateTrfSlice';
+import JSONData from '../../utils/pta_final.json';
+import './UploadFilePage.css';
 
 const UploadFilePage = () => {
   const [files, setFiles] = useState({
@@ -20,17 +24,30 @@ const UploadFilePage = () => {
     standardDocument: null,
   });
 
-  const Navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { trfData, loading, error } = useSelector((state) => state.trf);
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (trfData) {
+      setIsSubmitting(false);
+      navigate('/report-page');
+    }
+  }, [trfData]);
+
+  useEffect(() => {
+    if (error) {
+      setIsSubmitting(false);
+    }
+  }, [error]);
 
   // Load default files from backend
   useEffect(() => {
     const fetchDefaultFiles = async () => {
       const backendFiles = {
-        sourceFiles: [
-          { name: '9990_critical_components_list.pdf' },
-          { name: '22277_block_diagramRev3.docx' },
-          // { name: 'product_1_user_guide.xlsx' },
-        ],
+        sourceFiles: [],
         trfTemplate: { name: 'CB scheme TRF Template iec6101_1.docx' },
         cdrTemplate: { name: 'CDR Report Template.xlsx' },
         letterTemplate: { name: 'intertek gft OP 10 letter report.docx' },
@@ -68,39 +85,19 @@ const UploadFilePage = () => {
   };
 
   const handleGenerate = () => {
-    Navigate('/report-page');
-    console.log('Uploaded Files:', files);
-  };
+    setIsSubmitting(true); // start loader
 
-  // Render multiple files in small boxes
-  const renderFileBoxes = (key, multiple = false) => {
-    const currentFiles = multiple ? files[key] : files[key] ? [files[key]] : [];
+    const file = new File(
+      [JSON.stringify(JSONData, null, 2)],
+      'pta_final.json',
+      { type: 'application/json' }
+    );
 
-    return (
-      <Stack direction="row" spacing={1} flexWrap="wrap" mb={1}>
-        {currentFiles.map((file, idx) => (
-          <Box
-            key={idx}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              bgcolor: '#f0f0f0',
-              px: 1,
-              py: 0.5,
-              borderRadius: 1,
-              gap: 0.5,
-            }}
-          >
-            <Typography variant="body2">{file.name}</Typography>
-            <IconButton
-              size="small"
-              onClick={() => handleDeleteFile(key, multiple ? idx : null)}
-            >
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          </Box>
-        ))}
-      </Stack>
+    dispatch(
+      generateTrfRequest({
+        project_id: 'PRJ_000001',
+        file,
+      })
     );
   };
 
@@ -187,7 +184,11 @@ const UploadFilePage = () => {
 
           {/* Show Upload button only if no files */}
           {!hasFiles && (
-            <Button variant="outlined" component="label">
+            <Button
+              variant="outlined"
+              component="label"
+              sx={{ fontSize: '13px' }}
+            >
               Upload
               <input
                 type="file"
@@ -211,13 +212,20 @@ const UploadFilePage = () => {
         alignItems: 'center',
       }}
     >
-      <Card sx={{ width: '80%', p: 3, borderRadius: 2, alignItems: 'center' }}>
+      <Card
+        sx={{
+          width: '80%',
+          p: 3,
+          borderRadius: 2,
+          alignItems: 'center',
+        }}
+      >
         <Typography variant="h5" fontWeight={600} mb={3}>
           Project Files
         </Typography>
 
         <Box sx={{ display: 'flex', gap: 3 }}>
-          <Box sx={{ width: '70%' }}>
+          <Box sx={{ width: '70%', boxShadow: 3, p: 2, borderRadius: '1%' }}>
             <Stack spacing={2}>
               {renderFileInput(
                 'Source Documents:',
@@ -238,18 +246,32 @@ const UploadFilePage = () => {
               <Button
                 variant="contained"
                 onClick={handleGenerate}
+                disabled={isSubmitting}
                 sx={{
                   backgroundColor: '#0d99ff',
                   color: 'white',
                   '&:hover': { backgroundColor: '#0b91f0ff' },
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
                 }}
               >
-                Generate TRF
+                {isSubmitting ? (
+                  <>
+                    Generating TRF
+                    <span className="loader" />
+                  </>
+                ) : (
+                  'Generate TRF'
+                )}
               </Button>
             </Stack>
           </Box>
 
-          <Paper elevation={1} sx={{ width: '30%', p: 2, borderRadius: 2 }}>
+          <Paper
+            elevation={1}
+            sx={{ width: '30%', p: 2, borderRadius: 2, boxShadow: 3 }}
+          >
             <Typography variant="h6" fontWeight={500} mb={1}>
               Recent Uploads
             </Typography>
