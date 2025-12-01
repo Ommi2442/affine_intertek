@@ -81,7 +81,6 @@ const Dashboard = () => {
     <Box
       sx={{
         p: 3,
-
         backgroundColor: 'white',
         borderRadius: '8px',
       }}

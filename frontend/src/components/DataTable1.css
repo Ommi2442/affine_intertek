@@ -1,0 +1,41 @@
+/* each row has 2 columns */
+.dt-cell {
+  display: grid;
+  grid-template-columns: 35% 65%;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+/* left column (question) */
+.dt-field {
+  font-weight: 600;
+  white-space: pre-wrap;
+}
+
+/* right column (answer) */
+.dt-answer {
+  display: flex;
+  flex-direction: column;
+}
+
+/* input box full width */
+.dt-input {
+  width: 100%;
+  min-height: 32px;
+  padding: 6px;
+  font-size: 13px;
+}
+
+/* display value layout */
+.dt-display {
+  padding: 4px 0;
+}
+
+/* action buttons inline */
+.dt-actions {
+  display: flex;
+  gap: 5px;
+  margin-top: 4px;
+  align-items: center;
+}

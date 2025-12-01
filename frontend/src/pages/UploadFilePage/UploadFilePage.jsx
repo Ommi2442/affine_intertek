@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Button,
@@ -10,6 +10,10 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
+import { useDispatch, useSelector } from 'react-redux';
+import { generateTrfRequest } from '../../redux/features/generateTrf/generateTrfSlice';
+import JSONData from '../../utils/pta_final.json';
+import './UploadFilePage.css';
 
 import uploadService from "./UploadService";
 
@@ -26,7 +30,24 @@ const UploadFilePage = () => {
     standardDocument: { name: 'IEC 61010-1-2010.pdf' }
   });
 
-  const Navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { trfData, loading, error } = useSelector((state) => state.trf);
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (trfData) {
+      setIsSubmitting(false);
+      navigate('/report-page');
+    }
+  }, [trfData]);
+
+  useEffect(() => {
+    if (error) {
+      setIsSubmitting(false);
+    }
+  }, [error]);
 
   const inputRefs = {
     sourceFiles: useRef(null),

@@ -214,24 +214,40 @@ async def delete_project(project_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/Trf-reports")
-async def upload_json_file(file: UploadFile = File(...)):
+async def upload_json_file(
+    file: UploadFile = File(...),
+    project_id: str = Form(...)
+):
     if not file.filename.endswith(".json"):
-        raise HTTPException(status_code=400)
+        raise HTTPException(status_code=400, detail="Only JSON files are allowed")
+
     try:
+        # Read JSON file
         contents = await file.read()
         json_content = json.loads(contents)
 
+        # Prepare Cosmos DB document
         cosmos_item = {
-            "id": str(uuid.uuid4()),
+            "id": str(uuid.uuid4()),           # Unique ID
+            "project_id": project_id,          # Project ID from frontend
             "filename": file.filename,
             "data": json_content,
-            "uploaded_on": str(datetime.utcnow())
+            "uploaded_on": datetime.utcnow().isoformat()
         }
-        result = container.upsert_item(cosmos_item)
 
+        # Save to Cosmos DB
+        container.upsert_item(cosmos_item)
+
+        # ✅ Fetch from Cosmos DB after insert
+        fetched_item = container.read_item(
+            item=cosmos_item["id"],
+            partition_key=cosmos_item["id"]   # Replace if partition key is different
+        )
+
+        # ✅ Return JSON + project ID to frontend
         return {
-            "message": "JSON file uploaded successfully",
-            "stored_id": result["id"]
+            "project_id": fetched_item["project_id"],
+            "json": fetched_item["data"]
         }
 
     except json.JSONDecodeError:
