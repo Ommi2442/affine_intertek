@@ -1,10 +1,9 @@
-import axios from 'axios';
-
-const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+import api from '../../services/api';
 
 export const createProjectApi = async (payload) => {
   const token = localStorage.getItem('token');
-  const response = await axios.post(`${BASE_URL}/projects/create`, payload, {
+
+  const response = await api.post('/projects/create', payload, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

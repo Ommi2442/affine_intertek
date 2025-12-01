@@ -51,7 +51,6 @@ export default function BasicModal({ open, handleClose }) {
     if (!form.Project_Name.trim()) newErrors.Project_Name = 'Project_Name is required';
     if (!form.Product.trim()) newErrors.Product = 'Product is required';
 
-
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0; // true if no errors
@@ -61,22 +60,29 @@ export default function BasicModal({ open, handleClose }) {
   const closeOnSubmit = async () => {
     if (!validate()) return; // Stop if validation fails
 
-  let res;   // <--- FIX: declare res
+    let res;
 
-  try {
-    res = await createProjectApi(form);
-    console.log("res", res);
+    try {
+      res = await createProjectApi(form);
+      console.log("res", res);
 
-    localStorage.setItem("projectId", res?.data?.Project_Id);
+      localStorage.setItem("projectId", res?.data?.Project_Id);
 
-    handleClose();
-    navigate("/create-project");
+      // Clear form after successful submit
+      setForm({
+        Standard: '',
+        Client_Name: '',
+        Project_Name: '',
+        Product: ''
+      });
 
-  } catch (err) {
-    console.error("Create Project Failed", err);
-    alert("Error creating project");
-  }
+      handleClose(); 
+      navigate("/create-project");
 
+    } catch (err) {
+      console.error("Create Project Failed", err);
+      alert("Error creating project");
+    }
   };
 
   return (

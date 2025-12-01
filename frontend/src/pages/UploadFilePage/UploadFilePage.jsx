@@ -14,8 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { generateTrfRequest } from '../../redux/features/generateTrf/generateTrfSlice';
 import JSONData from '../../utils/pta_final.json';
 import './UploadFilePage.css';
-
-import uploadService from "./UploadService";
+import { uploadFilesApi } from "../../redux/api/uploadApi";
 
 const UploadFilePage = () => {
 
@@ -31,6 +30,7 @@ const UploadFilePage = () => {
   });
 
   const dispatch = useDispatch();
+  
 
   const { trfData, loading, error } = useSelector((state) => state.trf);
   const navigate = useNavigate();
@@ -90,7 +90,7 @@ const UploadFilePage = () => {
     try {
       // 1) Upload MULTIPLE SOURCE FILES
       if (files.sourceFiles.length > 0) {
-        const res = await uploadService.uploadFiles(
+        const res = await uploadFilesApi(
           projectId,
           "source_documents",
           files.sourceFiles
@@ -121,7 +121,7 @@ const UploadFilePage = () => {
       }
 
       // Finally navigate after all uploads complete
-      Navigate("/report-page");
+      navigate("/report-page");
 
     } catch (err) {
       console.error("Upload failed:", err);
