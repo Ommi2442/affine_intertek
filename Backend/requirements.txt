@@ -1,4 +1,4 @@
-
+uvicorn
 dotenv==0.9.9
 pip==25.0
 python-dotenv==1.0.1
@@ -6,5 +6,9 @@ requests==2.32.3
 azure-core==1.32.0
 azure-cosmos==4.9.0
 fastapi==0.115.8
-pandas==2.2.3
-scikit_learn==1.6.1
+pandas
+scikit_learn
+azure-storage-blob
+python-multipart
+cryptography
+python-jose

@@ -28,7 +28,8 @@ export default function BasicModal({ open, handleClose }) {
   const [form, setForm] = useState({
     Standard: 'IEC_61010_1',
     Client_Name: '',
-    Product: '',
+    Project_Name: '',
+    Product: ''
   });
 
   const [errors, setErrors] = useState({});
@@ -46,9 +47,10 @@ export default function BasicModal({ open, handleClose }) {
     const newErrors = {};
 
     if (!form.Standard) newErrors.Standard = 'Standard is required';
-    if (!form.Client_Name.trim())
-      newErrors.Client_Name = 'Client Name is required';
+    if (!form.Client_Name.trim()) newErrors.Client_Name = 'Client Name is required';
+    if (!form.Project_Name.trim()) newErrors.Project_Name = 'Project_Name is required';
     if (!form.Product.trim()) newErrors.Product = 'Product is required';
+
 
     setErrors(newErrors);
 
@@ -59,14 +61,22 @@ export default function BasicModal({ open, handleClose }) {
   const closeOnSubmit = async () => {
     if (!validate()) return; // Stop if validation fails
 
-    try {
-      await createProjectApi(form);
-      handleClose();
-      navigate('/create-project');
-    } catch (err) {
-      console.error('Create Project Failed', err);
-      alert('Error creating project');
-    }
+  let res;   // <--- FIX: declare res
+
+  try {
+    res = await createProjectApi(form);
+    console.log("res", res);
+
+    localStorage.setItem("projectId", res?.data?.Project_Id);
+
+    handleClose();
+    navigate("/create-project");
+
+  } catch (err) {
+    console.error("Create Project Failed", err);
+    alert("Error creating project");
+  }
+
   };
 
   return (
@@ -111,6 +121,18 @@ export default function BasicModal({ open, handleClose }) {
           <MenuItem value="IEC_61010_2">IEC 61010-2</MenuItem>
           <MenuItem value="IEC_61010_3">IEC 61010-3</MenuItem>
         </TextField> */}
+
+        {/* PROJECT NAME */}
+        <TextField
+          fullWidth
+          label="Project Name"
+          margin="normal"
+          name="Project_Name"
+          value={form.Project_Name}
+          onChange={handleChange}
+          error={!!errors.Project_Name}
+          helperText={errors.Project_Name}
+        />
 
         {/* CLIENT NAME */}
         <TextField

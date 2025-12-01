@@ -17,6 +17,7 @@ class LetterItem(BaseModel):
 
 class ProjectCreate(BaseModel):
     Standard: str
+    Project_Name: str
     Client_Name: str
     Product: str
 
@@ -24,7 +25,7 @@ class ProjectCreate(BaseModel):
 class Project(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     Project_Id: str = ""
-    Proj_Name: Optional[str] = None
+    Project_Name: Optional[str] = None
     Standard: str
     Client_Name: str
     Product: str

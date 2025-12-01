@@ -1,4 +1,5 @@
-from fastapi import APIRouter,Form, HTTPException, Depends, Body
+from fastapi import APIRouter, HTTPException, Depends, Body, Form
+from typing import List
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
 from projects.models import Project
 from datetime import datetime
@@ -11,16 +12,36 @@ from db.database import COSMOS_DB_project_Container, COSMOS_DB_URI,COSMOS_DB_KEY
 from projects.models import Project,ProjectCreate
 from azure.cosmos import exceptions
 from azure.storage.blob import BlobServiceClient
+from azure.storage.queue import QueueClient
 from fastapi import APIRouter, UploadFile, File, HTTPException
 import json
 
 router = APIRouter()
 
-CONNECTION_STRING = os.getenv("AZURE_CONNECTION_STRING")
-CONTAINER_NAME = os.getenv("AZURE_CONTAINER_NAME")
+# CONNECTION_STRING = os.getenv("AZURE_CONNECTION_STRING")
+CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net"
+QUEUE_CONN_STR = "DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net"
+# CONTAINER_NAME = os.getenv("AZURE_CONTAINER_NAME")
+CONTAINER_NAME = "testing-blob"
 client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
 database = client.get_database_client(COSMOS_DB_DATABASE)
 container = database.get_container_client(COSMOS_DB_project_TRF_Container)
+# QUEUE_NAME = os.getenv("AZURE_QUEUE_NAME")
+QUEUE_NAME = "stintertekesusdev-queue"
+
+CONTAINER_NAME = "testing-blob"
+BLOB_PREFIX = "Documents"   # top-level folder in blob
+
+blob_service = BlobServiceClient.from_connection_string(QUEUE_CONN_STR)
+container_client = blob_service.get_container_client(CONTAINER_NAME)
+
+
+queue_client = QueueClient.from_connection_string(
+    conn_str=QUEUE_CONN_STR,
+    queue_name=QUEUE_NAME
+)
+
+
 
 
 def generate_project_id():
@@ -48,17 +69,15 @@ async def create_project(payload: ProjectCreate):
             id=str(uuid.uuid4()),
             Project_Id=generate_project_id(),
             Standard=payload.Standard,
-            Client_Name=payload.Client_Name,
+            Project_Name=payload.Project_Name,
             Product=payload.Product,
+            Client_Name=payload.Client_Name,
             Proj_Created_On=str(datetime.utcnow()),
         )
 
         COSMOS_DB_project_Container.create_item(new_project.dict())
 
         
-        blob_service = BlobServiceClient.from_connection_string(CONNECTION_STRING)
-        container_client = blob_service.get_container_client(CONTAINER_NAME)
-
         def create_folder(folder_path: str):
             if not folder_path.endswith("/"):
                 folder_path += "/"
@@ -68,7 +87,7 @@ async def create_project(payload: ProjectCreate):
 
         base_path = f"Documents/{new_project.Project_Id}"
 
-        folders_to_create = [f"{base_path}/source_documents",f"{base_path}/TRF Templates",f"{base_path}/CDR Templates",f"{base_path}/Letters Templates",]
+        folders_to_create = [f"{base_path}/source_documents",f"{base_path}/TRF Templates",f"{base_path}/CDR Templates",f"{base_path}/Letters Templates",f"{base_path}/Standard Document"]
         created_folders = [create_folder(folder) for folder in folders_to_create]
         return {
             "status": "success",
@@ -110,7 +129,9 @@ async def get_all_projects():
         SELECT 
             c.Project_Id,
             c.Standard,
+            c.Project_Name,
             c.Client_Name,
+            c.Product,
             c.Proj_Created_On,
             c.TRF_Generated,
             c.CDR_Generated,
@@ -230,7 +251,58 @@ async def upload_json_file(
         }
 
     except json.JSONDecodeError:
-        raise HTTPException(status_code=400, detail="Invalid JSON file")
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid JSON file"
+        )
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/upload")
+async def upload_files(
+    projectId: str = Form(...),
+    key: str = Form(...),
+    files: List[UploadFile] = File(...)
+):
+    """
+    Uploads multiple files to:
+    testing-blob/Documents/{projectId}/{key}/{original_filename}
+    and pushes queue messages for each file.
+    """
+
+    results = []
+
+    for file in files:
+        # ensure file.filename is safe — remove path segments if any
+        original_name = os.path.basename(file.filename)
+
+        # build blob path using original filename (overwrite=True)
+        blob_path = f"{BLOB_PREFIX}/{projectId}/{key}/{original_name}"
+
+        blob_client = container_client.get_blob_client(blob_path)
+
+        data = await file.read()
+        blob_client.upload_blob(data, overwrite=True)
+
+        blob_url = blob_client.url
+
+        # push message to queue for worker
+        queue_message = {
+            "projectId": projectId,
+            "key": key,
+            "filename": original_name,
+            "blob_path": blob_path,
+            "blob_url": blob_url,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+
+        queue_client.send_message(json.dumps(queue_message))
+
+        results.append({
+            "original_filename": original_name,
+            "blob_path": blob_path,
+            "blob_url": blob_url,
+            "queued": True
+        })
+
+    return {"status": "success", "uploaded": results}

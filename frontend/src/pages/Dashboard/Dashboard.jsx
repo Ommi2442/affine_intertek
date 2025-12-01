@@ -138,7 +138,13 @@ const Dashboard = () => {
                 <b>Standard</b>
               </TableCell>
               <TableCell align="center">
+                <b>Project Name</b>
+              </TableCell>
+              <TableCell align="center">
                 <b>Client Name</b>
+              </TableCell>
+              <TableCell align="center">
+                <b>Product</b>
               </TableCell>
               <TableCell align="center">
                 <b>Product ID</b>
@@ -172,7 +178,9 @@ const Dashboard = () => {
               paginated?.map((row, index) => (
                 <TableRow key={index}>
                   <TableCell align="center">{row?.Standard}</TableCell>
+                  <TableCell align="center">{row?.Project_Name}</TableCell>
                   <TableCell align="center">{row?.Client_Name}</TableCell>
+                  <TableCell align="center">{row?.Product}</TableCell>
                   <TableCell align="center">{row?.Project_Id}</TableCell>
                   <TableCell align="center">
                     {row?.Proj_Created_On
@@ -206,13 +214,13 @@ const Dashboard = () => {
                 </TableRow>
               ))}
 
-            {paginated?.length === 0 && (
+            {/* {paginated?.length === 0 && (
               <TableRow>
                 <TableCell colSpan={8} align="center">
                   No results found
                 </TableCell>
               </TableRow>
-            )}
+            )} */}
             {/* EMPTY */}
             {!loading && !error && paginated?.length === 0 && (
               <TableRow>

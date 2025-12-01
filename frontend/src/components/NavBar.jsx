@@ -13,10 +13,13 @@ import {
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useMsal } from "@azure/msal-react";
+
 
 const Navbar = ({ signOutClickHandler, openProjectModal }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { instance } = useMsal();
 
   // Detect active tab
   const currentTab = location.pathname.includes('dashboard')
@@ -29,12 +32,21 @@ const Navbar = ({ signOutClickHandler, openProjectModal }) => {
   const closeMenu = () => setAnchorEl(null);
 
   const handleLogout = () => {
+    // Clear local storage (your custom app tokens)
+    localStorage.clear();
+    sessionStorage.clear();
 
-      sessionStorage.clear();
-      localStorage.clear();
-      navigate('/');
+    // Force MSAL to clear account state
+    instance.logoutRedirect({
+      postLogoutRedirectUri: "http://localhost:5173/",
+      authority: `https://login.microsoftonline.com/common/oauth2/v2.0/logout`
+    });
+
+      // navigate('/');
     
   };
+
+  
 
   return (
     <AppBar
