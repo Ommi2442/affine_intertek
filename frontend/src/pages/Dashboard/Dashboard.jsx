@@ -25,18 +25,11 @@ import dashboardData from '../../utils/dashboard.json';
 import { fetchProjectsRequest } from '../../redux/features/dashboard/dashboardSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import AppBreadcrumbs from '../../components/AppBreadCrumbs';
-
-const renderYesNo = (value) => {
-  const val = value === true || value === 'true';
-  return (
-    <Box sx={{ color: val ? 'green' : 'red', textAlign: 'center' }}>
-      {val ? 'Yes' : 'No'}
-    </Box>
-  );
-};
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const dashboardState = useSelector((state) => state.dashboard || {});
   const { projects = [], loading = false, error = null } = dashboardState;
@@ -46,6 +39,22 @@ const Dashboard = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(7);
+
+  const renderYesNo = (value) => {
+    const val = value === true || value === 'true';
+    return (
+      <Box
+        onClick={() => navigate('/create-project')}
+        sx={{
+          color: val ? 'green' : 'red',
+          cursor: 'pointer',
+          textAlign: 'center',
+        }}
+      >
+        {val ? 'Yes' : 'No'}
+      </Box>
+    );
+  };
 
   useEffect(() => {
     //setData(dashboardData);
