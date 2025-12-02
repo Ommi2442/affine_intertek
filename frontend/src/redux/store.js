@@ -4,6 +4,7 @@ import authReducer from '../redux/features/auth/authSlice';
 import dashboardReducer from '../redux/features/dashboard/dashboardSlice';
 import createProjectReducer from '../redux/features/createProject/createProjectSlice';
 import generateTrfReducer from '../redux/features/generateTrf/generateTrfSlice';
+import finaliseReportReducer from '../redux/features/finaliseReport/finaliseReportSlice';
 import rootSaga from './rootSaga';
 
 const sagaMiddleware = createSagaMiddleware();
@@ -14,6 +15,7 @@ export const store = configureStore({
     dashboard: dashboardReducer,
     project: createProjectReducer,
     trf: generateTrfReducer,
+    finaliseReport: finaliseReportReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware),

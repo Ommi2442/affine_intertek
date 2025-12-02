@@ -8,15 +8,18 @@ import {
   Divider,
 } from '@mui/material';
 import DataTable from '../../components/DataTable';
-import jsonData from '../../utils/pta_final.json';
+import jsonData from '../../utils/pta_final_2.json';
 import './ReportPage.css';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import DataTable1 from '../../components/DataTable1';
+import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 
 const ReportPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [bookmarkOpen, setBookmarkOpen] = useState(false);
   const [bookmarkData, setBookmarkData] = useState(null);
+
+  const dispatch = useDispatch();
 
   const dataTableRef = useRef(null);
 
@@ -25,12 +28,23 @@ const ReportPage = () => {
     setBookmarkOpen(true);
   };
 
-  const { trfData, loading, error } = useSelector((state) => state.trf);
+  //const { trfData, loading, error } = useSelector((state) => state.trf);
 
-  if (loading) return <p>Uploading JSON...</p>;
-  if (error) return <p>{error}</p>;
+  // if (loading) return <p>Uploading JSON...</p>;
+  // if (error) return <p>{error}</p>;
 
-  console.log('TRF JSON:', trfData);
+  // console.log('TRF JSON:', trfData);
+
+  const handleFinalise = () => {
+    console.log('inside');
+    if (!dataTableRef.current) return;
+
+    const updatedPayload = dataTableRef.current.getUpdatedJson();
+
+    console.log('FINAL JSON PAYLOAD:', updatedPayload);
+
+    dispatch(finaliseReportRequest(updatedPayload));
+  };
 
   return (
     <Box className="report-container">
@@ -141,6 +155,7 @@ const ReportPage = () => {
                     text: 'Finalise',
                     icon: '/images/approve_icon.png',
                     bg: '#396872ff',
+                    action: handleFinalise,
                   },
                   {
                     text: 'Download',
@@ -163,6 +178,7 @@ const ReportPage = () => {
                     fullWidth
                     variant="contained"
                     className="action-button"
+                    onClick={btn.action}
                     style={{ background: btn.bg }}
                   >
                     <img
