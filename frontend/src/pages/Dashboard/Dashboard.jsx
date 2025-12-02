@@ -200,15 +200,15 @@ const Dashboard = () => {
 
                   <TableCell align="center">
                     <IconButton>
-                      <img src="/images/edit.png" width={22} height={22} />
+                      <img src="/images/edit.png" width={18} height={18} />
                     </IconButton>
 
                     <IconButton>
-                      <img src="/images/add-file.png" width={22} height={22} />
+                      <img src="/images/add-file.png" width={18} height={18} />
                     </IconButton>
 
                     <IconButton>
-                      <img src="/images/delete.png" width={22} height={22} />
+                      <img src="/images/delete.png" width={18} height={18} />
                     </IconButton>
                   </TableCell>
                 </TableRow>
