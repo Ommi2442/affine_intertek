@@ -103,6 +103,7 @@ export default function LoginPage() {
 
           if (backendResponse?.data?.status === "success") {
             localStorage.setItem("role", backendResponse.data.role);
+            localStorage.setItem("email", backendResponse.data.email);
             Navigate("/dashboard");
           }
 

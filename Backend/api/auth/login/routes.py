@@ -165,7 +165,7 @@ async def sso_login(data: EmailRequest):
                 "id": data.email,
                 "email": data.email,
                 "name": data.name,
-                "user_role": ["Creator", "Reviewer"],
+                "user_role": 2,
                 "accessToken": data.accessToken,
                 "created_at": datetime.now(timezone.utc).isoformat(),
             }
@@ -174,7 +174,7 @@ async def sso_login(data: EmailRequest):
 
         else:
             # If user exists, do NOT register again
-            user_role = existing_user[0].get("user_role", ["Reviewer"])
+            user_role = existing_user[0].get("user_role", 2)
 
         # ALWAYS CREATE ACCESS TOKEN FOR LOGIN
         expiry = timedelta(minutes=5)
@@ -191,7 +191,8 @@ async def sso_login(data: EmailRequest):
             "status": "success",
             "message": "Login successful",
             "access_token": access_token,
-            "role": user_role
+            "role": user_role,
+            "email": data.email
         }
 
     except Exception as e:

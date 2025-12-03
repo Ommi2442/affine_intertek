@@ -17,15 +17,15 @@ class LetterItem(BaseModel):
 
 class ProjectCreate(BaseModel):
     Standard: str
-    Project_Name: str
+    Project_Id: str
+    Proj_Created_By: str
     Client_Name: str
     Product: str
 
 
 class Project(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    Project_Id: str = ""
-    Project_Name: Optional[str] = None
+    Project_Id : str
     Standard: str
     Client_Name: str
     Product: str
@@ -69,3 +69,8 @@ class Project(BaseModel):
     Proj_Deleted_By: Optional[str] = None
     Proj_Archived_On: Optional[str] = None
     Proj_Archived_By: Optional[str] = None
+
+
+class ProjectFilter(BaseModel):
+    user_role: int
+    user_email: str | None = None

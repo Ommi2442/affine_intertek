@@ -9,7 +9,7 @@ from api.auth.jwt_auth.utils import get_current_user
 from db.database import *
 from fastapi import APIRouter, HTTPException
 from db.database import COSMOS_DB_project_Container, COSMOS_DB_URI,COSMOS_DB_KEY,COSMOS_DB_DATABASE,COSMOS_DB_project_TRF_Container
-from projects.models import Project,ProjectCreate
+from projects.models import Project,ProjectCreate,ProjectFilter
 from azure.cosmos import exceptions
 from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueClient
@@ -43,35 +43,16 @@ queue_client = QueueClient.from_connection_string(
 
 
 
-
-def generate_project_id():
-    try:
-        query = "SELECT c.Project_Id FROM c"
-        items = list(COSMOS_DB_project_Container.query_items(query=query, enable_cross_partition_query=True))
-        numbers = [int(''.join(filter(str.isdigit, item.get("Project_Id", "")))) for item in items if any(c.isdigit() for c in item.get("Project_Id", ""))]
-        next_num = max(numbers) + 1 if numbers else 1
-        return f"PRJ_{next_num:06d}"
-    except Exception:
-        return f"PRJ_000001"
-
-
-def standard_response(status: str, message: str, data: dict = None):
-    response = {"status": status, "message": message}
-    if data is not None:
-        response["data"] = data
-    return response
-
-
 @router.post("/create")
 async def create_project(payload: ProjectCreate):
     try:
         new_project = Project(
             id=str(uuid.uuid4()),
-            Project_Id=generate_project_id(),
             Standard=payload.Standard,
-            Project_Name=payload.Project_Name,
+            Project_Id=payload.Project_Id,
             Product=payload.Product,
             Client_Name=payload.Client_Name,
+            Proj_Created_By=payload.Proj_Created_By,
             Proj_Created_On=str(datetime.utcnow()),
         )
 
@@ -122,37 +103,70 @@ async def get_project(project_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/all")
-async def get_all_projects():
-    try:
-        query = """
-        SELECT 
-            c.Project_Id,
-            c.Standard,
-            c.Project_Name,
-            c.Client_Name,
-            c.Product,
-            c.Proj_Created_On,
-            c.TRF_Generated,
-            c.CDR_Generated,
-            c.Letter_Generated,
-            c.Proj_Created_By
-        FROM c
-        """
 
+@router.post("/all")
+async def get_all_projects(payload: ProjectFilter):
+    try:
+        user_role = payload.user_role
+        user_email = payload.user_email
+
+        # ----------------------------
+        # Build Query Based on Role
+        # ----------------------------
+        if user_role == 2:
+            if not user_email:
+                raise HTTPException(
+                    status_code=400, 
+                    detail="user_email is required for role 2"
+                )
+
+            query = f"""
+            SELECT 
+                c.Project_Id,
+                c.Standard,
+                c.Client_Name,
+                c.Product,
+                c.Proj_Created_On,
+                c.TRF_Generated,
+                c.CDR_Generated,
+                c.Letter_Generated,
+                c.Proj_Created_By
+            FROM c
+            WHERE c.Proj_Created_By = "{user_email}"
+            """
+        else:
+            query = """
+            SELECT 
+                c.Project_Id,
+                c.Standard,
+                c.Client_Name,
+                c.Product,
+                c.Proj_Created_On,
+                c.TRF_Generated,
+                c.CDR_Generated,
+                c.Letter_Generated,
+                c.Proj_Created_By
+            FROM c
+            """
+
+        # Execute query
         items = list(
             COSMOS_DB_project_Container.query_items(
                 query=query,
-                enable_cross_partition_query=True ))
+                enable_cross_partition_query=True
+            )
+        )
 
         return {
             "status": "success",
             "count": len(items),
+            "user_role": user_role,
             "data": items
         }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @router.put("/{project_id}")
@@ -264,45 +278,69 @@ async def upload_files(
     key: str = Form(...),
     files: List[UploadFile] = File(...)
 ):
-    """
-    Uploads multiple files to:
-    testing-blob/Documents/{projectId}/{key}/{original_filename}
-    and pushes queue messages for each file.
-    """
-
     results = []
+    uploaded_urls = []
 
+    # ---------- upload to blob ----------
     for file in files:
-        # ensure file.filename is safe — remove path segments if any
         original_name = os.path.basename(file.filename)
-
-        # build blob path using original filename (overwrite=True)
         blob_path = f"{BLOB_PREFIX}/{projectId}/{key}/{original_name}"
-
         blob_client = container_client.get_blob_client(blob_path)
 
         data = await file.read()
         blob_client.upload_blob(data, overwrite=True)
-
         blob_url = blob_client.url
 
-        # push message to queue for worker
-        queue_message = {
+        uploaded_urls.append({
+            "filename": original_name,
+            "blob_url": blob_url
+        })
+
+        queue_client.send_message(json.dumps({
             "projectId": projectId,
             "key": key,
             "filename": original_name,
             "blob_path": blob_path,
             "blob_url": blob_url,
             "timestamp": datetime.utcnow().isoformat()
-        }
-
-        queue_client.send_message(json.dumps(queue_message))
+        }))
 
         results.append({
-            "original_filename": original_name,
-            "blob_path": blob_path,
+            "filename": original_name,
             "blob_url": blob_url,
             "queued": True
         })
 
-    return {"status": "success", "uploaded": results}
+    # ---------- GET Project Doc from Cosmos ----------
+    query = f"SELECT * FROM c WHERE c.Project_Id = '{projectId}'"
+    docs = list(COSMOS_DB_project_Container.query_items(
+        query=query,
+        enable_cross_partition_query=True
+    ))
+
+    if not docs:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    project_doc = docs[0]   # <-- correct project record
+
+    # ---------- Update Source_Doc ----------
+    if "Source_Doc" not in project_doc or not isinstance(project_doc["Source_Doc"], list):
+        project_doc["Source_Doc"] = []
+
+    for item in uploaded_urls:
+        project_doc["Source_Doc"].append({
+            "filename": item["filename"],
+            "url": item["blob_url"],
+            "uploaded_at": datetime.utcnow().isoformat()
+        })
+
+    # ---------- Save updated doc ----------
+    COSMOS_DB_project_Container.upsert_item(project_doc)
+
+    return {
+        "status": "success",
+        "uploaded": results,
+        "cosmos_updated": True,
+        "source_docs_count": len(project_doc["Source_Doc"])
+    }
+

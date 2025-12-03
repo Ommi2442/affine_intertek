@@ -21,7 +21,6 @@ import {
 } from '@mui/material';
 
 import SearchIcon from '@mui/icons-material/Search';
-import dashboardData from '../../utils/dashboard.json';
 import { fetchProjectsRequest } from '../../redux/features/dashboard/dashboardSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import AppBreadcrumbs from '../../components/AppBreadCrumbs';
@@ -34,8 +33,10 @@ const Dashboard = () => {
   const dashboardState = useSelector((state) => state.dashboard || {});
   const { projects = [], loading = false, error = null } = dashboardState;
 
-  console.log('projects', projects);
-  const [data, setData] = useState([]);
+  // projects.data = array of projects
+  // projects.user_role = role coming from backend
+  const user_role = projects?.user_role || 2;
+
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(7);
@@ -57,15 +58,14 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    //setData(dashboardData);
     dispatch(fetchProjectsRequest());
   }, [dispatch]);
 
   const filtered =
     projects?.data?.filter(
       (item) =>
-        item.Client_Name.toLowerCase().includes(search.toLowerCase()) ||
-        item.Standard.toLowerCase().includes(search.toLowerCase()) ||
+        item.Client_Name?.toLowerCase().includes(search.toLowerCase()) ||
+        item.Standard?.toLowerCase().includes(search.toLowerCase()) ||
         item.Project_Id?.toLowerCase().includes(search.toLowerCase())
     ) || [];
 
@@ -78,7 +78,7 @@ const Dashboard = () => {
 
   const SkeletonRow = () => (
     <TableRow>
-      {Array.from({ length: 8 }).map((_, i) => (
+      {Array.from({ length: user_role === 1 ? 9 : 8 }).map((_, i) => (
         <TableCell key={i} align="center">
           <Skeleton variant="text" width="80%" height={22} />
         </TableCell>
@@ -94,7 +94,6 @@ const Dashboard = () => {
         borderRadius: '8px',
       }}
     >
-      {/* HEADER */}
       <Box
         sx={{
           display: 'flex',
@@ -129,10 +128,7 @@ const Dashboard = () => {
         />
       </Box>
 
-      {/* TABLE */}
-
       <TableContainer component={Paper}>
-        {/* ERROR MESSAGE */}
         {error && !loading && (
           <Box sx={{ p: 3 }}>
             <Alert severity="error">
@@ -140,62 +136,52 @@ const Dashboard = () => {
             </Alert>
           </Box>
         )}
+
         <Table>
           <TableHead sx={{ bgcolor: '#f5f5f5' }}>
             <TableRow>
-              <TableCell align="center">
-                <b>Standard</b>
-              </TableCell>
-              <TableCell align="center">
-                <b>Project Name</b>
-              </TableCell>
-              <TableCell align="center">
-                <b>Client Name</b>
-              </TableCell>
-              <TableCell align="center">
-                <b>Product</b>
-              </TableCell>
-              <TableCell align="center">
-                <b>Product ID</b>
-              </TableCell>
-              <TableCell align="center">
-                <b>Created On</b>
-              </TableCell>
-              <TableCell align="center">
-                <b>TRF Generated</b>
-              </TableCell>
-              <TableCell align="center">
-                <b>CDR Generated</b>
-              </TableCell>
-              <TableCell align="center">
-                <b>Letter Generated</b>
-              </TableCell>
-              <TableCell align="center">
-                <b>Actions</b>
-              </TableCell>
+              <TableCell align="center"><b>Standard</b></TableCell>
+              <TableCell align="center"><b>Project ID</b></TableCell>
+              <TableCell align="center"><b>Client</b></TableCell>
+              <TableCell align="center"><b>Product</b></TableCell>
+              <TableCell align="center"><b>Created On</b></TableCell>
+
+              {/* ✅ Show ONLY for Admin */}
+              {user_role === 1 && (
+                <TableCell align="center"><b>Created By</b></TableCell>
+              )}
+
+              <TableCell align="center"><b>TRF Generated</b></TableCell>
+              <TableCell align="center"><b>CDR Generated</b></TableCell>
+              <TableCell align="center"><b>Letter Generated</b></TableCell>
+              <TableCell align="center"><b>Actions</b></TableCell>
             </TableRow>
           </TableHead>
 
           <TableBody>
-            {/* SKELETON */}
             {loading &&
               Array.from({ length: rowsPerPage }).map((_, i) => (
                 <SkeletonRow key={i} />
               ))}
+
             {!loading &&
               !error &&
               paginated?.map((row, index) => (
                 <TableRow key={index}>
                   <TableCell align="center">{row?.Standard}</TableCell>
-                  <TableCell align="center">{row?.Project_Name}</TableCell>
+                  <TableCell align="center">{row?.Project_Id}</TableCell>
                   <TableCell align="center">{row?.Client_Name}</TableCell>
                   <TableCell align="center">{row?.Product}</TableCell>
-                  <TableCell align="center">{row?.Project_Id}</TableCell>
                   <TableCell align="center">
                     {row?.Proj_Created_On
                       ? new Date(row.Proj_Created_On).toLocaleDateString()
                       : '-'}
                   </TableCell>
+
+                  {/* ✅ Only Admin sees Creator */}
+                  {user_role === 1 && (
+                    <TableCell align="center">{row?.Proj_Created_By}</TableCell>
+                  )}
 
                   <TableCell align="center">
                     {renderYesNo(row?.TRF_Generated)}
@@ -223,17 +209,9 @@ const Dashboard = () => {
                 </TableRow>
               ))}
 
-            {/* {paginated?.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={8} align="center">
-                  No results found
-                </TableCell>
-              </TableRow>
-            )} */}
-            {/* EMPTY */}
             {!loading && !error && paginated?.length === 0 && (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={user_role === 1 ? 10 : 9} align="center">
                   No projects found
                 </TableCell>
               </TableRow>
@@ -242,7 +220,6 @@ const Dashboard = () => {
         </Table>
       </TableContainer>
 
-      {/* PAGINATION + ROWS PER PAGE */}
       <Box
         sx={{
           mt: 3,
@@ -251,7 +228,6 @@ const Dashboard = () => {
           alignItems: 'center',
         }}
       >
-        {/* LEFT SIDE: Rows per page */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Typography>Rows per page:</Typography>
 
@@ -270,7 +246,6 @@ const Dashboard = () => {
           </Select>
         </Box>
 
-        {/* RIGHT SIDE: Pagination */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
           <Button
             variant="contained"
