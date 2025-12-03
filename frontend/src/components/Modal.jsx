@@ -6,6 +6,9 @@ import {
   Modal,
   TextField,
   Typography,
+  FormControl,
+  InputLabel,
+  Select
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { createProjectApi } from '../redux/api/createProjectApi';
@@ -26,57 +29,57 @@ export default function BasicModal({ open, handleClose }) {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    Standard: '',
+    Standard: 'IEC_61010_1',  // Pre-selected default
     Client_Name: '',
-    Project_Name: '',
+    Project_Id: '',
     Product: ''
   });
 
   const [errors, setErrors] = useState({});
 
-  // Handle input change
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-
-    // Clear error while typing
     setErrors({ ...errors, [e.target.name]: '' });
   };
 
-  // Validate fields
   const validate = () => {
     const newErrors = {};
-
     if (!form.Standard) newErrors.Standard = 'Standard is required';
     if (!form.Client_Name.trim()) newErrors.Client_Name = 'Client Name is required';
-    if (!form.Project_Name.trim()) newErrors.Project_Name = 'Project_Name is required';
+    if (!form.Project_Id.trim()) newErrors.Project_Id = 'Project ID is required';
     if (!form.Product.trim()) newErrors.Product = 'Product is required';
 
     setErrors(newErrors);
-
-    return Object.keys(newErrors).length === 0; // true if no errors
+    return Object.keys(newErrors).length === 0;
   };
 
-  // Submit handler
   const closeOnSubmit = async () => {
-    if (!validate()) return; // Stop if validation fails
-
-    let res;
+    if (!validate()) return;
 
     try {
-      res = await createProjectApi(form);
+      // read email from localStorage (change key if you store it under another name)
+      const createdByEmail = localStorage.getItem('email');
+
+      // attach Proj_Created_By to payload
+      const payload = {
+        ...form,
+        Proj_Created_By: createdByEmail
+      };
+
+      const res = await createProjectApi(payload);
       console.log("res", res);
 
+      // save returned project id as before
       localStorage.setItem("projectId", res?.data?.Project_Id);
 
-      // Clear form after successful submit
       setForm({
-        Standard: '',
+        Standard: 'IEC_61010_1',
         Client_Name: '',
-        Project_Name: '',
+        Project_Id: '',
         Product: ''
       });
 
-      handleClose(); 
+      handleClose();
       navigate("/create-project");
 
     } catch (err) {
@@ -92,39 +95,34 @@ export default function BasicModal({ open, handleClose }) {
           Create Project
         </Typography>
 
-        {/* STANDARD */}
-        <TextField
-          fullWidth
-          select
-          label="Standard"
-          margin="normal"
-          name="Standard"
-          value={form.Standard}
-          onChange={handleChange}
-          error={!!errors.Standard}
-          helperText={errors.Standard}
-        >
-          <MenuItem value="">
-            <em>Select Standard</em>
-          </MenuItem>
-          <MenuItem value="IEC_61010_1">IEC 61010-1</MenuItem>
-          <MenuItem value="IEC_61010_2">IEC 61010-2</MenuItem>
-          <MenuItem value="IEC_61010_3">IEC 61010-3</MenuItem>
-        </TextField>
+        {/* STANDARD - Pre-selected & ReadOnly */}
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Standard</InputLabel>
+          <Select
+            label="Standard"
+            name="Standard"
+            value={form.Standard}
+            readOnly
+            open={false}                  // Prevent dropdown opening
+            sx={{ pointerEvents: "none" }} // Disable user interaction
+          >
+            <MenuItem value="IEC_61010_1">IEC 61010-1</MenuItem>
+          </Select>
+        </FormControl>
 
-        {/* PROJECT NAME */}
+        {/* PROJECT ID */}
         <TextField
           fullWidth
-          label="Project Name"
+          label="Project ID"
           margin="normal"
-          name="Project_Name"
-          value={form.Project_Name}
+          name="Project_Id"
+          value={form.Project_Id}
           onChange={handleChange}
-          error={!!errors.Project_Name}
-          helperText={errors.Project_Name}
+          error={!!errors.Project_Id}
+          helperText={errors.Project_Id}
         />
 
-        {/* CLIENT NAME */}
+        {/* CLIENT */}
         <TextField
           fullWidth
           label="Client Name"
@@ -148,7 +146,6 @@ export default function BasicModal({ open, handleClose }) {
           helperText={errors.Product}
         />
 
-        {/* SUBMIT */}
         <Button
           onClick={closeOnSubmit}
           variant="contained"

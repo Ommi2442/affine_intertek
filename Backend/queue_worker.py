@@ -5,6 +5,7 @@ import asyncio
 from fastapi import FastAPI
 from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueClient
+# from utility.embeddings import ingest_files_from_blob_urls_create_embeddings
 
 # --------------------------
 # Azure Config
@@ -51,6 +52,16 @@ async def process_message(msg):
 
     # ---- Your embedding logic goes here ----
     print("Embedding Logic Completed.")
+
+#     blob_urls = [
+#     "https://stintertekesusdev.blob.core.windows.net/testing-blob/22726_Block-Diagram_Rev3.pdf",
+#     "https://stintertekesusdev.blob.core.windows.net/testing-blob/999-051754_Critical_Components_List.xlsx",
+#     "https://stintertekesusdev.blob.core.windows.net/testing-blob/Product1_Product_Requirements_Document.docx",
+#     "https://stintertekesusdev.blob.core.windows.net/testing-blob/Product1_User_Guide_RevA.docx",
+#    "https://stintertekesusdev.blob.core.windows.net/testing-blob/marking_label.JPG"
+#     ]
+
+#     ingest_files_from_blob_urls_create_embeddings(blob_urls)
 
     return True
 
