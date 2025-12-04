@@ -25,7 +25,7 @@ QUEUE_CONN_STR = "DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;A
 CONTAINER_NAME = "testing-blob"
 client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
 database = client.get_database_client(COSMOS_DB_DATABASE)
-container = database.get_container_client(COSMOS_DB_project_TRF_Container)
+trf_container = database.get_container_client(COSMOS_DB_project_TRF_Container)
 # QUEUE_NAME = os.getenv("AZURE_QUEUE_NAME")
 QUEUE_NAME = "stintertekesusdev-queue"
 
@@ -227,48 +227,46 @@ async def delete_project(project_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/Trf-reports")
-async def upload_json_file(
-    file: UploadFile = File(...),
-    project_id: str = Form(...)
-):
-    if not file.filename.endswith(".json"):
-        raise HTTPException(status_code=400, detail="Only JSON files are allowed")
 
+@router.get("/fetch-trf-reports")
+async def fetch_trf_reports(project_id: str):
     try:
-        # Read JSON file
-        contents = await file.read()
-        json_content = json.loads(contents)
+        # 🔍 Query Cosmos DB for all documents with this project_id
+        query = "SELECT * FROM c WHERE c.project_id = @pid"
+        parameters = [{"name": "@pid", "value": project_id}]
 
-        # Prepare Cosmos DB document
-        cosmos_item = {
-            "id": str(uuid.uuid4()),           # Unique ID
-            "project_id": project_id,          # Project ID from frontend
-            "filename": file.filename,
-            "data": json_content,
-            "uploaded_on": datetime.utcnow().isoformat()
-        }
+        items = list(trf_container.query_items(
+            query=query,
+            parameters=parameters,
+            enable_cross_partition_query=True
+        ))
 
-        # Save to Cosmos DB
-        container.upsert_item(cosmos_item)
+        if not items:
+            raise HTTPException(
+                status_code=404,
+                detail="No TRF reports found for this project_id"
+            )
 
-        # ✅ Fetch from Cosmos DB after insert
-        fetched_item = container.read_item(
-            item=cosmos_item["id"],
-            partition_key=cosmos_item["id"]   # Replace if partition key is different
-        )
-
-        # ✅ Return JSON + project ID to frontend
+        # 🟢 Return only json + project_id
         return {
-            "project_id": fetched_item["project_id"],
-            "json": fetched_item["data"]
+            "project_id": project_id,
+            "reports": [
+                {
+                    "id": item["id"],
+                    "filename": item.get("filename"),
+                    "json": item.get("data"),
+                    "uploaded_on": item.get("uploaded_on")
+                }
+                for item in items
+            ]
         }
 
-    except json.JSONDecodeError:
+    except Exception as e:
         raise HTTPException(
-            status_code=400,
-            detail="Invalid JSON file"
+            status_code=500,
+            detail=f"Error fetching TRF reports: {str(e)}"
         )
+
 
 
 
@@ -342,5 +340,24 @@ async def upload_files(
         "queue_triggered_for_project": projectId,
         "source_docs_count": len(project_doc["Source_Doc"])
     }
+
+
+
+@router.get("/check/{project_id}")
+def check_project_id(project_id: str):
+    query = "SELECT VALUE COUNT(1) FROM c WHERE c.Project_Id = @pid"
+    params = [{"name": "@pid", "value": project_id}]
+
+    result = list(COSMOS_DB_project_Container.query_items(
+        query=query,
+        parameters=params,
+        enable_cross_partition_query=True
+    ))
+
+    exists = result[0] > 0
+    return {"exists": exists}
+
+
+
 
 

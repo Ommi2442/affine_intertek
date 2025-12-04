@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   Box,
   Card,
@@ -7,10 +7,9 @@ import {
   Button,
   Divider,
 } from '@mui/material';
-import DataTable from '../../components/DataTable';
-import jsonData from '../../utils/pta_final_2.json';
+import { generateTrfApi } from "../../redux/api/generateTrfApi";
 import './ReportPage.css';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import DataTable1 from '../../components/DataTable1';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 
@@ -18,9 +17,10 @@ const ReportPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [bookmarkOpen, setBookmarkOpen] = useState(false);
   const [bookmarkData, setBookmarkData] = useState(null);
+  const [trfJson, setTrfJson] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const dispatch = useDispatch();
-
   const dataTableRef = useRef(null);
 
   const handleBookmarkFromChild = (data) => {
@@ -28,26 +28,57 @@ const ReportPage = () => {
     setBookmarkOpen(true);
   };
 
-  //const { trfData, loading, error } = useSelector((state) => state.trf);
-
-  // if (loading) return <p>Uploading JSON...</p>;
-  // if (error) return <p>{error}</p>;
-
-  // console.log('TRF JSON:', trfData);
-
   const handleFinalise = () => {
-    console.log('inside');
     if (!dataTableRef.current) return;
-
     const updatedPayload = dataTableRef.current.getUpdatedJson();
-
     console.log('FINAL JSON PAYLOAD:', updatedPayload);
-
     dispatch(finaliseReportRequest(updatedPayload));
   };
 
+  // -------------------- LOAD JSON FROM API --------------------
+  useEffect(() => {
+    const project_id = "PRJ_000001"; // replace with actual selection
+
+    const load = async () => {
+      try {
+        const res = await generateTrfApi(project_id);
+        const report = res.reports?.[0];
+
+        if (report) {
+          setTrfJson(report.json);   
+        }
+      } catch (err) {
+        console.error("Error loading TRF:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+  }, []);
+
+  // -------------------- SHOW LOADING UNTIL JSON IS READY --------------------
+  if (loading || !trfJson) {
+    return (
+      <Box 
+        sx={{
+          height: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "20px",
+          fontWeight: 600
+        }}
+      >
+        Loading TRF Report...
+      </Box>
+    );
+  }
+
+  // -------------------- MAIN UI (RENDERED ONLY AFTER JSON IS READY) --------------------
   return (
     <Box className="report-container">
+      
       {/* LEFT SIDE */}
       <Box className="left-panel">
         <Card
@@ -75,42 +106,25 @@ const ReportPage = () => {
             </Box>
 
             <Box className="report-title-container">
-              <Typography
-                className="report-title"
-                sx={{ fontWeight: 700, fontSize: '20px' }}
-              >
+              <Typography sx={{ fontWeight: 700, fontSize: '20px' }}>
                 TEST REPORT
               </Typography>
-              <Typography
-                className="report-title"
-                sx={{ fontWeight: 700, fontSize: '20px' }}
-              >
+              <Typography sx={{ fontWeight: 700, fontSize: '20px' }}>
                 IEC 61010-1
               </Typography>
-              <Typography
-                className="report-title"
-                sx={{ fontWeight: 700, fontSize: '20px' }}
-              >
+              <Typography sx={{ fontWeight: 700, fontSize: '20px' }}>
                 Safety requirements for electrical equipment for measurement,
                 control, and laboratory use
               </Typography>
-              <Typography
-                className="report-title"
-                sx={{ fontWeight: 700, fontSize: '20px' }}
-              >
+              <Typography sx={{ fontWeight: 700, fontSize: '20px' }}>
                 Part 1: General requirements
               </Typography>
             </Box>
 
-            {/* <DataTable
-              ref={dataTableRef}
-              jsonData={trfData?.json}
-              onBookmarkClick={handleBookmarkFromChild}
-            /> */}
-
+            {/* TABLE */}
             <DataTable1
               ref={dataTableRef}
-              jsonData={jsonData}
+              jsonData={trfJson}
               onBookmarkClick={handleBookmarkFromChild}
             />
           </CardContent>
@@ -137,6 +151,7 @@ const ReportPage = () => {
         </Box>
       ) : (
         <Box className="right-panel">
+          
           {/* ACTION CARD */}
           <Card className="action-card" sx={{ borderRadius: '10px' }}>
             <CardContent>
@@ -146,32 +161,11 @@ const ReportPage = () => {
 
               <Box className="button-stack">
                 {[
-                  {
-                    text: 'Edit / Refine',
-                    icon: '/images/edit_icon.svg',
-                    bg: '#2C2C2C',
-                  },
-                  {
-                    text: 'Finalise',
-                    icon: '/images/approve_icon.png',
-                    bg: '#396872ff',
-                    action: handleFinalise,
-                  },
-                  {
-                    text: 'Download',
-                    icon: '/images/download_icon.png',
-                    bg: '#77D5EA',
-                  },
-                  {
-                    text: 'Missing Field Re..',
-                    icon: '/images/file_icon.png',
-                    bg: '#5191a0ff',
-                  },
-                  {
-                    text: 'Regenerate',
-                    icon: '/images/regenrate_icon.png',
-                    bg: '#417581',
-                  },
+                  { text: 'Edit / Refine', icon: '/images/edit_icon.svg', bg: '#2C2C2C' },
+                  { text: 'Finalise',      icon: '/images/approve_icon.png', bg: '#396872ff', action: handleFinalise },
+                  { text: 'Download',      icon: '/images/download_icon.png', bg: '#77D5EA' },
+                  { text: 'Missing Field Re..', icon: '/images/file_icon.png', bg: '#5191a0ff' },
+                  { text: 'Regenerate', icon: '/images/regenrate_icon.png', bg: '#417581' },
                 ].map((btn, i) => (
                   <Button
                     key={i}
@@ -181,11 +175,7 @@ const ReportPage = () => {
                     onClick={btn.action}
                     style={{ background: btn.bg }}
                   >
-                    <img
-                      src={btn.icon}
-                      alt=""
-                      className="icon-img icon-white"
-                    />
+                    <img src={btn.icon} alt="" className="icon-img icon-white" />
                     {btn.text}
                   </Button>
                 ))}
@@ -212,7 +202,7 @@ const ReportPage = () => {
             </CardContent>
           </Card>
 
-          {/* CONFIDENCE */}
+          {/* CONFIDENCE CARD */}
           <Card className="confidence-card" sx={{ borderRadius: '10px' }}>
             <CardContent>
               <Typography variant="h6" className="confidence-header">

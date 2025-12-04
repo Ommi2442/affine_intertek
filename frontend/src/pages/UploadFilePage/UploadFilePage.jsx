@@ -7,6 +7,7 @@ import {
   Paper,
   Card,
   IconButton,
+  LinearProgress
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
@@ -18,19 +19,27 @@ import { uploadFilesApi } from "../../redux/api/uploadApi";
 
 const UploadFilePage = () => {
 
-  // const [projectId] = useState("PRJ_000018");
+  // ------------------ PROGRESS BAR STATES ------------------
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [showProgress, setShowProgress] = useState(false);
 
+  const startProgressSimulation = () => {
+    setShowProgress(true);
+    setUploadProgress(0);
 
-  const [files, setFiles] = useState({
-    sourceFiles: [],           // multiple
-    trfTemplate: { name: 'CB scheme TRF Template iec6101_1.docx' },
-    cdrTemplate: { name: 'CDR Report Template.xlsx' },
-    letterTemplate: { name: 'intertek gft OP 10 letter report.docx' },
-    standardDocument: { name: 'IEC 61010-1-2010.pdf' }
-  });
+    const interval = setInterval(() => {
+      setUploadProgress(prev => {
+        // Stop auto-progress at 95% until final uploads finish
+        if (prev >= 95) {
+          clearInterval(interval);
+          return prev;
+        }
+        return prev + Math.random() * 10; // smooth incremental progress
+      });
+    }, 600);
+  };
 
   const dispatch = useDispatch();
-  
 
   const { trfData, loading, error } = useSelector((state) => state.trf);
   const navigate = useNavigate();
@@ -48,6 +57,14 @@ const UploadFilePage = () => {
       setIsSubmitting(false);
     }
   }, [error]);
+
+  const [files, setFiles] = useState({
+    sourceFiles: [],
+    trfTemplate: { name: 'CB scheme TRF Template iec6101_1.docx' },
+    cdrTemplate: { name: 'CDR Report Template.xlsx' },
+    letterTemplate: { name: 'intertek gft OP 10 letter report.docx' },
+    standardDocument: { name: 'IEC 61010-1-2010.pdf' }
+  });
 
   const inputRefs = {
     sourceFiles: useRef(null),
@@ -69,7 +86,7 @@ const UploadFilePage = () => {
     console.log(`Files selected for ${key}:`, chosenFiles.map(f => f.name));
   };
 
-  // ------------------- Handle Remove -------------------
+  // ------------------- Remove File -------------------
   const handleDeleteFile = (key, index = null) => {
     if (key === "sourceFiles" && index !== null) {
       setFiles(prev => ({
@@ -81,14 +98,16 @@ const UploadFilePage = () => {
     }
   };
 
-  // ------------------- Handle Upload -------------------
+  // ------------------- Upload Handler -------------------
   const handleGenerate = async () => {
     console.log("FINAL FILE LIST:", files);
     const projectId = localStorage.getItem("projectId");
 
+    // 🔵 Start UI progress bar
+    startProgressSimulation();
 
     try {
-      // 1) Upload MULTIPLE SOURCE FILES
+      // 1) Upload SOURCE FILES
       if (files.sourceFiles.length > 0) {
         const res = await uploadFilesApi(
           projectId,
@@ -98,7 +117,7 @@ const UploadFilePage = () => {
         console.log("Source docs uploaded:", res);
       }
 
-      // 2) Upload SINGLE FILE categories
+      // 2) Upload SINGLE FILES
       const singleFileMap = [
         { key: "trf_template", fileKey: "trfTemplate" },
         { key: "cdr_template", fileKey: "cdrTemplate" },
@@ -110,26 +129,35 @@ const UploadFilePage = () => {
         const fileObj = files[entry.fileKey];
 
         if (fileObj instanceof File) {
-          const res = await uploadService.uploadFiles(
+          const res = await uploadFilesApi(
             projectId,
             entry.key,
             [fileObj]
           );
-          
           console.log(`${entry.key} uploaded:`, res);
         }
       }
 
-      // Finally navigate after all uploads complete
+      // 🟢 Finish progress
+      setUploadProgress(100);
+
+      setTimeout(() => {
+        setShowProgress(false);
+        setUploadProgress(0);
+      }, 1200);
+
       navigate("/report-page");
 
     } catch (err) {
       console.error("Upload failed:", err);
       alert("Upload failed! Check console.");
+
+      setShowProgress(false);
+      setUploadProgress(0);
     }
   };
 
-  // ------------------- Render File Input Section -------------------
+  // ------------------- Render File Input UI -------------------
   const renderFileInput = (label, key, description, multiple = false) => {
     const currentFiles = multiple ? files[key] : files[key] ? [files[key]] : [];
     const showUploadButton = currentFiles.length === 0;
@@ -143,7 +171,7 @@ const UploadFilePage = () => {
         </Box>
 
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, flex: 1 }}>
-          
+
           {currentFiles.map((file, idx) => (
             <Box key={idx}
               sx={{
@@ -162,14 +190,12 @@ const UploadFilePage = () => {
             </Box>
           ))}
 
-          {/* Upload Button */}
           {showUploadButton && (
             <Button variant="outlined" onClick={() => inputRefs[key].current.click()}>
               Upload
             </Button>
           )}
 
-          {/* Hidden Input */}
           <input
             type="file"
             ref={inputRefs[key]}
@@ -185,15 +211,34 @@ const UploadFilePage = () => {
   return (
     <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
       <Card sx={{ width: '80%', p: 3 }}>
-        
+
         <Typography variant="h5" fontWeight={600} mb={3}>
           Project Files
         </Typography>
 
+        {/* ---------- PROGRESS BAR UI ---------- */}
+        {showProgress && (
+          <Box sx={{ width: "100%", mb: 3 }}>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              Uploading files... Please wait
+            </Typography>
+
+            <LinearProgress
+              variant="determinate"
+              value={uploadProgress}
+              sx={{ height: 12, borderRadius: 2 }}
+            />
+
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              {Math.round(uploadProgress)}%
+            </Typography>
+          </Box>
+        )}
+
+        {/* ---------- LEFT SIDE UPLOAD INPUTS ---------- */}
         <Box sx={{ display: 'flex', gap: 3 }}>
           <Box sx={{ width: '70%' }}>
             <Stack spacing={3}>
-
               {renderFileInput("Source Documents:", "sourceFiles", "(Multiple Files)", true)}
               {renderFileInput("TRF Template:", "trfTemplate", "(Word Input)")}
               {renderFileInput("CDR Template:", "cdrTemplate", "(Excel Input)")}
@@ -209,9 +254,12 @@ const UploadFilePage = () => {
             </Stack>
           </Box>
 
+          {/* ---------- RIGHT SIDE RECENT UPLOADS ---------- */}
           <Paper elevation={1} sx={{ width: '30%', p: 2 }}>
             <Typography variant="h6" fontWeight={500}>Recent Uploads</Typography>
-            <Typography variant="body2" sx={{ color: "gray" }}>(No recent uploads yet)</Typography>
+            <Typography variant="body2" sx={{ color: "gray" }}>
+              (No recent uploads yet)
+            </Typography>
           </Paper>
         </Box>
 
