@@ -23,7 +23,7 @@ from azure.cosmos import CosmosClient, PartitionKey, exceptions
 import json, os
 from azure.cosmos import CosmosClient, ConsistencyLevel
 from typing import List, Dict, Any, Tuple
-from docx import Document
+from docx import Document as DocxDocument     # rename docx Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
