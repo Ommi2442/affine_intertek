@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -8,19 +8,23 @@ import {
   Typography,
   FormControl,
   InputLabel,
-  Select
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { createProjectApi } from '../redux/api/createProjectApi';
+  Select,
+  CircularProgress,
+  IconButton,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { useNavigate } from "react-router-dom";
+import { createProjectApi } from "../redux/api/createProjectApi";
+import { checkProjectIdApi } from "../redux/api/checkProjectIdApi";
 
 const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   width: 400,
-  bgcolor: 'background.paper',
-  borderRadius: '10px',
+  bgcolor: "background.paper",
+  borderRadius: "10px",
   boxShadow: 24,
   p: 4,
 };
@@ -28,83 +32,129 @@ const style = {
 export default function BasicModal({ open, handleClose }) {
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    Standard: 'IEC_61010_1',  // Pre-selected default
-    Client_Name: '',
-    Project_Id: '',
-    Product: ''
-  });
+  const initialState = {
+    Standard: "IEC_61010_1",
+    Client_Name: "",
+    Project_Id: "",
+    Product: "",
+  };
 
+  const [form, setForm] = useState(initialState);
   const [errors, setErrors] = useState({});
+  const [checkingId, setCheckingId] = useState(false);
+  const [projectIdValid, setProjectIdValid] = useState(null);
+
+
+  useEffect(() => {
+    if (open) {
+      resetForm();
+    }
+  }, [open]);
+
+  // FUNCTION TO RESET ALL STATES
+  const resetForm = () => {
+    setForm(initialState);
+    setErrors({});
+    setCheckingId(false);
+    setProjectIdValid(null);
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: '' });
+    setErrors({ ...errors, [e.target.name]: "" });
+    if (e.target.name === "Project_Id") setProjectIdValid(null);
+  };
+
+  const handleProjectIdBlur = async () => {
+    if (!form.Project_Id.trim()) return;
+
+    try {
+      setCheckingId(true);
+      const res = await checkProjectIdApi(form.Project_Id);
+
+      if (res?.exists) {
+        setProjectIdValid(false);
+      } else {
+        setProjectIdValid(true);
+      }
+    } catch (error) {
+      console.error("Project ID check failed:", error);
+    } finally {
+      setCheckingId(false);
+    }
   };
 
   const validate = () => {
     const newErrors = {};
-    if (!form.Standard) newErrors.Standard = 'Standard is required';
-    if (!form.Client_Name.trim()) newErrors.Client_Name = 'Client Name is required';
-    if (!form.Project_Id.trim()) newErrors.Project_Id = 'Project ID is required';
-    if (!form.Product.trim()) newErrors.Product = 'Product is required';
+
+    if (!form.Client_Name.trim()) newErrors.Client_Name = "Required";
+    if (!form.Project_Id.trim()) newErrors.Project_Id = "Required";
+    if (!form.Product.trim()) newErrors.Product = "Required";
+
+    if (projectIdValid === false) {
+      newErrors.Project_Id = "Project ID already used";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  const isFormValid =
+    form.Client_Name.trim() &&
+    form.Project_Id.trim() &&
+    form.Product.trim() &&
+    projectIdValid !== false;
+
   const closeOnSubmit = async () => {
     if (!validate()) return;
 
     try {
-      // read email from localStorage (change key if you store it under another name)
-      const createdByEmail = localStorage.getItem('email');
+      const createdByEmail = localStorage.getItem("email");
 
-      // attach Proj_Created_By to payload
       const payload = {
         ...form,
-        Proj_Created_By: createdByEmail
+        Proj_Created_By: createdByEmail,
       };
 
       const res = await createProjectApi(payload);
-      console.log("res", res);
-
-      // save returned project id as before
       localStorage.setItem("projectId", res?.data?.Project_Id);
 
-      setForm({
-        Standard: 'IEC_61010_1',
-        Client_Name: '',
-        Project_Id: '',
-        Product: ''
-      });
-
+      resetForm(); 
       handleClose();
       navigate("/create-project");
-
-    } catch (err) {
-      console.error("Create Project Failed", err);
+    } catch (error) {
+      console.error("Create Project Failed:", error);
       alert("Error creating project");
     }
   };
 
+  const closeModal = () => {
+    resetForm(); 
+    handleClose();
+  };
+
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open} onClose={() => {}} disableEscapeKeyDown>
       <Box sx={style}>
+        {/* CLOSE BUTTON */}
+        <IconButton sx={{ position: "absolute", top: 10, right: 10 }} onClick={closeModal}>
+          <CloseIcon />
+        </IconButton>
+
         <Typography variant="h6" mb={2}>
           Create Project
         </Typography>
 
-        {/* STANDARD - Pre-selected & ReadOnly */}
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Standard</InputLabel>
+        {/* STANDARD */}
+        <FormControl fullWidth margin="normal" required>
+          <InputLabel classes={{ asterisk: "required-asterisk" }}>Standard</InputLabel>
           <Select
             label="Standard"
             name="Standard"
             value={form.Standard}
             readOnly
-            open={false}                  // Prevent dropdown opening
-            sx={{ pointerEvents: "none" }} // Disable user interaction
+            open={false}
+            sx={{ pointerEvents: "none" }}
           >
             <MenuItem value="IEC_61010_1">IEC 61010-1</MenuItem>
           </Select>
@@ -113,18 +163,31 @@ export default function BasicModal({ open, handleClose }) {
         {/* PROJECT ID */}
         <TextField
           fullWidth
+          required
           label="Project ID"
           margin="normal"
           name="Project_Id"
           value={form.Project_Id}
           onChange={handleChange}
-          error={!!errors.Project_Id}
-          helperText={errors.Project_Id}
+          onBlur={handleProjectIdBlur}
+          error={projectIdValid === false}
+          helperText={
+            projectIdValid === false
+              ? "Project ID already used"
+              : projectIdValid === true
+              ? <span style={{ color: "green" }}>Project ID available</span>
+              : errors.Project_Id
+          }
+          InputProps={{
+            endAdornment: checkingId ? <CircularProgress size={20} /> : null,
+          }}
+          InputLabelProps={{ classes: { asterisk: "required-asterisk" } }}
         />
 
-        {/* CLIENT */}
+        {/* CLIENT NAME */}
         <TextField
           fullWidth
+          required
           label="Client Name"
           margin="normal"
           name="Client_Name"
@@ -132,11 +195,13 @@ export default function BasicModal({ open, handleClose }) {
           onChange={handleChange}
           error={!!errors.Client_Name}
           helperText={errors.Client_Name}
+          InputLabelProps={{ classes: { asterisk: "required-asterisk" } }}
         />
 
         {/* PRODUCT */}
         <TextField
           fullWidth
+          required
           label="Product"
           margin="normal"
           name="Product"
@@ -144,16 +209,18 @@ export default function BasicModal({ open, handleClose }) {
           onChange={handleChange}
           error={!!errors.Product}
           helperText={errors.Product}
+          InputLabelProps={{ classes: { asterisk: "required-asterisk" } }}
         />
 
         <Button
           onClick={closeOnSubmit}
           variant="contained"
           fullWidth
+          disabled={!isFormValid}
           sx={{
             mt: 2,
-            backgroundColor: 'black',
-            '&:hover': { backgroundColor: '#333' },
+            backgroundColor: isFormValid ? "black" : "gray",
+            "&:hover": { backgroundColor: isFormValid ? "#333" : "gray" },
           }}
         >
           Submit
