@@ -281,7 +281,7 @@ async def upload_files(
     results = []
     uploaded_urls = []
 
-    # ---------- upload to blob ----------
+    # ---------- 1) Upload all files to Blob ----------
     for file in files:
         original_name = os.path.basename(file.filename)
         blob_path = f"{BLOB_PREFIX}/{projectId}/{key}/{original_name}"
@@ -296,22 +296,13 @@ async def upload_files(
             "blob_url": blob_url
         })
 
-        queue_client.send_message(json.dumps({
-            "projectId": projectId,
-            "key": key,
-            "filename": original_name,
-            "blob_path": blob_path,
-            "blob_url": blob_url,
-            "timestamp": datetime.utcnow().isoformat()
-        }))
-
         results.append({
             "filename": original_name,
             "blob_url": blob_url,
-            "queued": True
+            "queued": False   # Now queue is not file-level
         })
 
-    # ---------- GET Project Doc from Cosmos ----------
+    # ---------- 2) Fetch Project Doc from Cosmos ----------
     query = f"SELECT * FROM c WHERE c.Project_Id = '{projectId}'"
     docs = list(COSMOS_DB_project_Container.query_items(
         query=query,
@@ -321,10 +312,10 @@ async def upload_files(
     if not docs:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    project_doc = docs[0]   # <-- correct project record
+    project_doc = docs[0]
 
-    # ---------- Update Source_Doc ----------
-    if "Source_Doc" not in project_doc or not isinstance(project_doc["Source_Doc"], list):
+    # ---------- 3) Update Source_Doc ----------
+    if "Source_Doc" not in project_doc:
         project_doc["Source_Doc"] = []
 
     for item in uploaded_urls:
@@ -334,13 +325,22 @@ async def upload_files(
             "uploaded_at": datetime.utcnow().isoformat()
         })
 
-    # ---------- Save updated doc ----------
     COSMOS_DB_project_Container.upsert_item(project_doc)
+
+    # ---------- 4) Send ONLY 1 queue message ----------
+    queue_client.send_message(json.dumps({
+        "projectId": projectId,
+        "action": "embed_project_docs",
+        "timestamp": datetime.utcnow().isoformat()
+    }))
 
     return {
         "status": "success",
+        "message": "Files uploaded. Embedding triggered for project.",
         "uploaded": results,
         "cosmos_updated": True,
+        "queue_triggered_for_project": projectId,
         "source_docs_count": len(project_doc["Source_Doc"])
     }
+
 

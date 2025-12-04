@@ -1,13 +1,13 @@
-import time
+import asyncio
 import json
 import os
-import asyncio
-from fastapi import FastAPI
 from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueClient
-# from utility.embeddings import ingest_files_from_blob_urls_create_embeddings
+from azure.cosmos import CosmosClient
+from fastapi import FastAPI
+from utility.embeddings import ingest_files_from_blob_urls_create_embeddings
 
-# --------------------------
+
 # Azure Config
 # --------------------------
 # CONNECTION_STRING = os.getenv("AZURE_CONNECTION_STRING")
@@ -20,58 +20,59 @@ BLOB_CONTAINER = "testing-blob"
 # QUEUE_NAME = os.getenv("AZURE_QUEUE_NAME")
 QUEUE_NAME = "stintertekesusdev-queue"
 
+COSMOS_DB_URI="https://csdb-intertek-esus-dev.documents.azure.com:443/"
+COSMOS_DB_KEY="azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00MFDbK88ApotACDbODLFXA=="
+COSMOS_DB_DATABASE="intertek_poc_dev"
+COSMOS_PROJECT_CONTAINER="projects"
 
-blob_service = BlobServiceClient.from_connection_string(CONNECTION_STRING)
-queue_client = QueueClient.from_connection_string(QUEUE_CONN_STR, QUEUE_NAME)
+# ---- Azure Clients ----
+blob_service = BlobServiceClient.from_connection_string(QUEUE_CONN_STR)
+queue_client = QueueClient.from_connection_string(QUEUE_CONN_STR, "stintertekesusdev-queue")
 
+cosmos_client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
+db = cosmos_client.get_database_client(COSMOS_DB_DATABASE)
+projects_container = db.get_container_client(COSMOS_PROJECT_CONTAINER)
 
 app = FastAPI(title="Queue Worker Service")
 
-# --------------------------
-# PROCESS MESSAGE
-# --------------------------
-async def process_message(msg):
-    event = json.loads(msg.content)
 
-    print("\n====== QUEUE MESSAGE RECEIVED ======")
-    print("Key:", event["key"])
-    print("Filename:", event["filename"])
-    print("Blob Path:", event["blob_path"])
-    print("Blob URL:", event["blob_url"])
-    print("====================================\n")
+async def process_message(message):
+    event = json.loads(message.content)
+    project_id = event["projectId"]
 
-    # Download blob
-    blob_client = blob_service.get_blob_client(
-        container=BLOB_CONTAINER,
-        blob=event["blob_path"]  # instead of blob_name
-    )
+    print(f"\n🚀 Embedding Trigger Received for Project: {project_id}\n")
 
+    # ---- fetch project ----
+    query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
+    docs = list(projects_container.query_items(
+        query=query,
+        enable_cross_partition_query=True
+    ))
 
-    file_bytes = blob_client.download_blob().readall()
-    print(f"Downloaded Blob ({len(file_bytes)} bytes)")
+    if not docs:
+        print(f"❌ Project not found: {project_id}")
+        return False
 
-    # ---- Your embedding logic goes here ----
-    print("Embedding Logic Completed.")
+    project_doc = docs[0]
 
-#     blob_urls = [
-#     "https://stintertekesusdev.blob.core.windows.net/testing-blob/22726_Block-Diagram_Rev3.pdf",
-#     "https://stintertekesusdev.blob.core.windows.net/testing-blob/999-051754_Critical_Components_List.xlsx",
-#     "https://stintertekesusdev.blob.core.windows.net/testing-blob/Product1_Product_Requirements_Document.docx",
-#     "https://stintertekesusdev.blob.core.windows.net/testing-blob/Product1_User_Guide_RevA.docx",
-#    "https://stintertekesusdev.blob.core.windows.net/testing-blob/marking_label.JPG"
-#     ]
+    # ---- get all blob URLs ----
+    blob_urls = [x["url"] for x in project_doc.get("Source_Doc", [])]
 
-#     ingest_files_from_blob_urls_create_embeddings(blob_urls)
+    if not blob_urls:
+        print(f"⚠ No Source_Doc files found for project {project_id}")
+        return False
 
+    print("📄 Files to embed:", len(blob_urls))
+
+    # ---- embed only once ----
+    ingest_files_from_blob_urls_create_embeddings(project_id, blob_urls)
+
+    print(f"✔ Embedding completed for project {project_id}")
     return True
 
 
-# --------------------------
-# QUEUE LISTENER (runs forever)
-# --------------------------
 async def queue_listener():
-
-    print("Queue Worker Started... Listening for messages...\n")
+    print("Queue Worker Started - Listening...")
 
     while True:
         messages = queue_client.receive_messages(
@@ -79,33 +80,17 @@ async def queue_listener():
             visibility_timeout=30
         )
 
-        for msg in messages:
+        for message in messages:
             try:
-                ok = await process_message(msg)
+                ok = await process_message(message)
                 if ok:
-                    queue_client.delete_message(msg)
-                    print("✔ Message processed & deleted")
+                    queue_client.delete_message(message)
             except Exception as e:
-                print("❌ Error processing message:", e)
+                print("❌ Worker error:", e)
 
-        await asyncio.sleep(2)  # Non-blocking sleep
-
-
-# --------------------------
-# HEARTBEAT LOGGER (every 15 seconds)
-# --------------------------
-async def heartbeat_printer():
-    while True:
-        print("[Heartbeat] Queue Worker Listening...")
-        await asyncio.sleep(15)
+        await asyncio.sleep(2)
 
 
-# --------------------------
-# FASTAPI STARTUP EVENT
-# --------------------------
 @app.on_event("startup")
-async def start_background_worker():
-    asyncio.create_task(queue_listener())      # queue processor
-    asyncio.create_task(heartbeat_printer())   # heartbeat printer
-
-
+async def start_worker():
+    asyncio.create_task(queue_listener())
