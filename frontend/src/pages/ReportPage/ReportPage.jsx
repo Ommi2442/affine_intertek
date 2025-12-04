@@ -8,6 +8,7 @@ import {
   Divider,
 } from '@mui/material';
 import { generateTrfApi } from "../../redux/api/generateTrfApi";
+// import jsonData from '../../utils/pta_final_remaining_v2.json';
 import './ReportPage.css';
 import { useDispatch } from 'react-redux';
 import DataTable1 from '../../components/DataTable1';
