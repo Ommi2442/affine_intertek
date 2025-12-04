@@ -231,7 +231,7 @@ async def delete_project(project_id: str):
 @router.get("/fetch-trf-reports")
 async def fetch_trf_reports(project_id: str):
     try:
-        # 🔍 Query Cosmos DB for all documents with this project_id
+        #  Query Cosmos DB for all documents with this project_id
         query = "SELECT * FROM c WHERE c.project_id = @pid"
         parameters = [{"name": "@pid", "value": project_id}]
 
