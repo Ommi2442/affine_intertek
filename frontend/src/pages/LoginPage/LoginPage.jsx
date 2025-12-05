@@ -56,7 +56,7 @@ export default function LoginPage() {
       };
 
       const backendResponse = await ssouserdataApi(userInfo);
-
+      
 
       if (backendResponse?.data?.status === "success") {
         localStorage.setItem("role", backendResponse.data.role);
@@ -160,7 +160,7 @@ export default function LoginPage() {
           sx={{
             position: 'relative',
             width: '100%',
-            height: '106%',
+            height: '105%',
             overflow: 'hidden',
             borderRadius: 2,
           }}
@@ -202,7 +202,7 @@ export default function LoginPage() {
                   width: '30%',
                   height: '30%',
                   marginTop: '26px',
-                  marginLeft: '150px',
+                  marginLeft: '196px',
                   objectFit: 'cover',
                   borderRadius: '1%',
                 }}
