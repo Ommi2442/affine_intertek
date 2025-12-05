@@ -52,7 +52,7 @@ def ingest_files_from_blob_urls_create_embeddings(project_id: str, blob_urls: li
     ) = process_blob_urls_2(
         blob_urls,
         AZURE_CONN_STRING,
-        container="testing-blob",
+        container="stintertekesusdev-blob",
         download_dir=f"src_files/{project_id}",
         keep_files=True,
         verbose=True,
