@@ -16,7 +16,7 @@ print('CONNECTION_STRING', CONNECTION_STRING)
 # QUEUE_CONN_STR = os.getenv("AZURE_QUEUE_CONNECTION_STRING")
 QUEUE_CONN_STR = "DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net"
 # BLOB_CONTAINER = os.getenv("AZURE_CONTAINER_NAME")
-BLOB_CONTAINER = "testing-blob"
+BLOB_CONTAINER = "stintertekesusdev-blob"
 # QUEUE_NAME = os.getenv("AZURE_QUEUE_NAME")
 QUEUE_NAME = "stintertekesusdev-queue"
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Button,
@@ -7,64 +7,46 @@ import {
   Paper,
   Card,
   IconButton,
-  LinearProgress
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import CloseIcon from '@mui/icons-material/Close';
-import { useDispatch, useSelector } from 'react-redux';
-import { generateTrfRequest } from '../../redux/features/generateTrf/generateTrfSlice';
-import JSONData from '../../utils/pta_final.json';
-import './UploadFilePage.css';
+  Snackbar,
+  Alert,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import { uploadFilesApi } from "../../redux/api/uploadApi";
+import {
+  getProjectByIdApi,
+  deleteUploadedFileApi,
+} from "../../redux/api/projectApi";
 
 const UploadFilePage = () => {
-
-  // ------------------ PROGRESS BAR STATES ------------------
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [showProgress, setShowProgress] = useState(false);
-
-  const startProgressSimulation = () => {
-    setShowProgress(true);
-    setUploadProgress(0);
-
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        // Stop auto-progress at 95% until final uploads finish
-        if (prev >= 95) {
-          clearInterval(interval);
-          return prev;
-        }
-        return prev + Math.random() * 10; // smooth incremental progress
-      });
-    }, 600);
-  };
-
-  const dispatch = useDispatch();
-
-  const { trfData, loading, error } = useSelector((state) => state.trf);
-  const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (trfData) {
-      setIsSubmitting(false);
-      navigate('/report-page');
-    }
-  }, [trfData]);
-
-  useEffect(() => {
-    if (error) {
-      setIsSubmitting(false);
-    }
-  }, [error]);
-
   const [files, setFiles] = useState({
     sourceFiles: [],
-    trfTemplate: { name: 'CB scheme TRF Template iec6101_1.docx' },
-    cdrTemplate: { name: 'CDR Report Template.xlsx' },
-    letterTemplate: { name: 'intertek gft OP 10 letter report.docx' },
-    standardDocument: { name: 'IEC 61010-1-2010.pdf' }
+    trfTemplate: { name: "CB scheme TRF template_iec61010_1p.doc" },
+    cdrTemplate: { name: "CDR report.xlsx" },
+    letterTemplate: { name: "Intertek GFT-OP-10a Letter Report template.doc" },
+    standardDocument: { name: "IEC_61010-1-2010.pdf" },
   });
+
+  const [recentUploads, setRecentUploads] = useState([]);
+  const [deletingFile, setDeletingFile] = useState("");
+
+  const [deleteToast, setDeleteToast] = useState({
+    open: false,
+    message: "",
+  });
+
+  const allowedExtensions = [
+  "pdf", "docx", "msg", "xls", "xlsx",
+  "png", "jpg", "jpeg", "eml", "doc", "txt"
+  ];
+
+  const [errorToast, setErrorToast] = useState({
+  open: false,
+  message: ""
+  });
+
+
+
+  const projectId = localStorage.getItem("projectId");
 
   const inputRefs = {
     sourceFiles: useRef(null),
@@ -74,134 +56,155 @@ const UploadFilePage = () => {
     standardDocument: useRef(null),
   };
 
-  // ------------------- Handle File Selection -------------------
-  const handleFileChange = (e, key, multiple = false) => {
+  // ------------------------------------------------------
+  // Load Recent Uploaded Files
+  // ------------------------------------------------------
+  const loadRecentUploads = async () => {
+    const res = await getProjectByIdApi(projectId);
+    setRecentUploads(res.uploaded_files || []);
+  };
+
+  useEffect(() => {
+    loadRecentUploads();
+  }, []);
+
+  // ------------------------------------------------------
+  // Handle local file change
+  // ------------------------------------------------------
+  const handleFileChange = (e, key, multiple = false, disabled = false) => {
+    if (disabled) return;
+
     const chosenFiles = Array.from(e.target.files);
+    const validFiles = [];
+
+    for (const file of chosenFiles) {
+      const ext = file.name.split(".").pop().toLowerCase();
+
+      if (allowedExtensions.includes(ext)) {
+        validFiles.push(file);
+      } else {
+        setErrorToast({
+          open: true,
+          message: `File type not allowed: ${file.name}`
+        });
+      }
+    }
+
+    if (validFiles.length === 0) return;
 
     setFiles(prev => ({
       ...prev,
-      [key]: multiple ? [...prev[key], ...chosenFiles] : chosenFiles[0] || null
+      [key]: multiple ? [...prev[key], ...validFiles] : validFiles[0]
     }));
-
-    console.log(`Files selected for ${key}:`, chosenFiles.map(f => f.name));
   };
 
-  // ------------------- Remove File -------------------
-  const handleDeleteFile = (key, index = null) => {
-    if (key === "sourceFiles" && index !== null) {
-      setFiles(prev => ({
-        ...prev,
-        sourceFiles: prev.sourceFiles.filter((_, i) => i !== index),
-      }));
-    } else {
-      setFiles(prev => ({ ...prev, [key]: null }));
-    }
-  };
 
-  // ------------------- Upload Handler -------------------
-  const handleGenerate = async () => {
-    console.log("FINAL FILE LIST:", files);
-    const projectId = localStorage.getItem("projectId");
-
-    // 🔵 Start UI progress bar
-    startProgressSimulation();
-
+  // ------------------------------------------------------
+  // DELETE uploaded file with animation + toast
+  // ------------------------------------------------------
+  const handleDeleteRecentFile = async (fileName) => {
     try {
-      // 1) Upload SOURCE FILES
-      if (files.sourceFiles.length > 0) {
-        const res = await uploadFilesApi(
-          projectId,
-          "source_documents",
-          files.sourceFiles
-        );
-        console.log("Source docs uploaded:", res);
-      }
+      setDeletingFile(fileName); // trigger blur animation
 
-      // 2) Upload SINGLE FILES
-      const singleFileMap = [
-        { key: "trf_template", fileKey: "trfTemplate" },
-        { key: "cdr_template", fileKey: "cdrTemplate" },
-        { key: "letter_template", fileKey: "letterTemplate" },
-        { key: "standard_documents", fileKey: "standardDocument" }
-      ];
+      setTimeout(async () => {
+        const res = await deleteUploadedFileApi(projectId, fileName);
 
-      for (const entry of singleFileMap) {
-        const fileObj = files[entry.fileKey];
+        setRecentUploads(res.uploaded_files || []);
 
-        if (fileObj instanceof File) {
-          const res = await uploadFilesApi(
-            projectId,
-            entry.key,
-            [fileObj]
-          );
-          console.log(`${entry.key} uploaded:`, res);
-        }
-      }
+        setDeletingFile("");
 
-      // 🟢 Finish progress
-      setUploadProgress(100);
-
-      setTimeout(() => {
-        setShowProgress(false);
-        setUploadProgress(0);
-      }, 1200);
-
-      navigate("/report-page");
-
+        setDeleteToast({
+          open: true,
+          message: `"${fileName}" deleted`,
+        });
+      }, 300);
     } catch (err) {
-      console.error("Upload failed:", err);
-      alert("Upload failed! Check console.");
-
-      setShowProgress(false);
-      setUploadProgress(0);
+      console.error("Delete failed:", err);
     }
   };
 
-  // ------------------- Render File Input UI -------------------
-  const renderFileInput = (label, key, description, multiple = false) => {
+  // ------------------------------------------------------
+  // Upload left-side source files
+  // ------------------------------------------------------
+  const handleGenerate = async () => {
+    if (files.sourceFiles.length > 0) {
+      await uploadFilesApi(projectId, "source_documents", files.sourceFiles);
+      loadRecentUploads();
+    }
+  };
+
+  // ------------------------------------------------------
+  // Render file input row (left side unchanged)
+  // ------------------------------------------------------
+  const renderFileInput = (label, key, description, multiple = false, disabled = false) => {
     const currentFiles = multiple ? files[key] : files[key] ? [files[key]] : [];
-    const showUploadButton = currentFiles.length === 0;
+
+    const showUploadButton =
+      key === "sourceFiles" ? true : !disabled && currentFiles.length === 0;
 
     return (
-      <Box sx={{ display: 'flex', width: '100%', alignItems: 'center', gap: 1 }}>
-
-        <Box sx={{ minWidth: '220px' }}>
+      <Box sx={{ display: "flex", alignItems: "center", width: "100%", gap: 2 }}>
+        <Box sx={{ minWidth: "220px" }}>
           <Typography sx={{ fontWeight: 600 }}>{label}</Typography>
-          {description && <Typography sx={{ color: "gray", fontSize: "14px" }}>{description}</Typography>}
+          {description && (
+            <Typography sx={{ fontSize: "14px", color: "gray" }}>
+              {description}
+            </Typography>
+          )}
         </Box>
 
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, flex: 1 }}>
-
+        <Box sx={{ display: "flex", flexWrap: "wrap", flex: 1, gap: 1 }}>
+          {/* Already selected files */}
           {currentFiles.map((file, idx) => (
-            <Box key={idx}
+            <Box
+              key={idx}
               sx={{
-                display: 'flex',
-                alignItems: 'center',
-                bgcolor: '#f0f0f0',
+                bgcolor: "#f0f0f0",
                 px: 1,
                 py: 0.5,
                 borderRadius: 1,
-                gap: 0.5,
-              }}>
-              <Typography variant="body2">{file.name}</Typography>
-              <IconButton size="small" onClick={() => handleDeleteFile(key, idx)}>
-                <CloseIcon fontSize="small" />
-              </IconButton>
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
+              <Typography>{file.name}</Typography>
+
+              {key === "sourceFiles" && (
+                <IconButton
+                  size="small"
+                  onClick={() => {
+                    setFiles((prev) => ({
+                      ...prev,
+                      sourceFiles: prev.sourceFiles.filter((_, i) => i !== idx),
+                    }));
+                  }}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              )}
             </Box>
           ))}
 
+          {/* Upload Button */}
           {showUploadButton && (
-            <Button variant="outlined" onClick={() => inputRefs[key].current.click()}>
+            <Button
+              variant="outlined"
+              disabled={disabled}
+              onClick={() => inputRefs[key].current.click()}
+            >
               Upload
             </Button>
           )}
 
+          {/* Hidden Input */}
           <input
             type="file"
-            ref={inputRefs[key]}
             hidden
+            ref={inputRefs[key]}
             multiple={multiple}
-            onChange={(e) => handleFileChange(e, key, multiple)}
+            disabled={disabled}
+            onChange={(e) => handleFileChange(e, key, multiple, disabled)}
           />
         </Box>
       </Box>
@@ -209,62 +212,143 @@ const UploadFilePage = () => {
   };
 
   return (
-    <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-      <Card sx={{ width: '80%', p: 3 }}>
-
+    <Box display="flex" justifyContent="center" width="100%">
+      <Card sx={{ width: "90%", p: 3 }}>
         <Typography variant="h5" fontWeight={600} mb={3}>
           Project Files
         </Typography>
 
-        {/* ---------- PROGRESS BAR UI ---------- */}
-        {showProgress && (
-          <Box sx={{ width: "100%", mb: 3 }}>
-            <Typography variant="body2" sx={{ mb: 1 }}>
-              Uploading files... Please wait
-            </Typography>
-
-            <LinearProgress
-              variant="determinate"
-              value={uploadProgress}
-              sx={{ height: 12, borderRadius: 2 }}
-            />
-
-            <Typography variant="body2" sx={{ mt: 1 }}>
-              {Math.round(uploadProgress)}%
-            </Typography>
-          </Box>
-        )}
-
-        {/* ---------- LEFT SIDE UPLOAD INPUTS ---------- */}
-        <Box sx={{ display: 'flex', gap: 3 }}>
-          <Box sx={{ width: '70%' }}>
+        <Box display="flex" gap={3}>
+          {/* LEFT SIDE - UNCHANGED */}
+          <Box sx={{ width: "70%" }}>
             <Stack spacing={3}>
               {renderFileInput("Source Documents:", "sourceFiles", "(Multiple Files)", true)}
-              {renderFileInput("TRF Template:", "trfTemplate", "(Word Input)")}
-              {renderFileInput("CDR Template:", "cdrTemplate", "(Excel Input)")}
-              {renderFileInput("Letter Template:", "letterTemplate", "(Word Input)")}
-              {renderFileInput("Standard Document:", "standardDocument")}
 
+              {renderFileInput("TRF Template:", "trfTemplate", "(Word Input)", false, true)}
+              {renderFileInput("CDR Template:", "cdrTemplate", "(Excel Input)", false, true)}
+              {renderFileInput("Letter Template:", "letterTemplate", "(Word Input)", false, true)}
+              {renderFileInput("Standard Document:", "standardDocument", "", false, true)}
+
+              {/* GENERATE BUTTON AT BOTTOM */}
               <Button
                 variant="contained"
+                sx={{ mt: 3, backgroundColor: "#0d99ff" }}
                 onClick={handleGenerate}
-                sx={{ mt: 3, backgroundColor: '#0d99ff' }}>
-                Upload Files & Generate TRF
+              >
+                Upload Files & Generate
               </Button>
             </Stack>
           </Box>
 
-          {/* ---------- RIGHT SIDE RECENT UPLOADS ---------- */}
-          <Paper elevation={1} sx={{ width: '30%', p: 2 }}>
-            <Typography variant="h6" fontWeight={500}>Recent Uploads</Typography>
-            <Typography variant="body2" sx={{ color: "gray" }}>
-              (No recent uploads yet)
+          {/* RIGHT SIDE – RECENT UPLOADS */}
+          <Paper
+            elevation={2}
+            sx={{
+              width: "30%",
+              p: 2,
+              height: "420px",
+              display: "flex",
+              flexDirection: "column",
+              borderRadius: 2,
+              border: "1px solid #ddd",
+            }}
+          >
+            <Typography variant="h6" fontWeight={600}>
+              Recent Uploads
             </Typography>
+
+            <Box
+              sx={{
+                overflowY: "auto",
+                mt: 2,
+                pr: 1,
+                flex: 1,
+              }}
+            >
+              {recentUploads.map((file, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    bgcolor: "#f7f7f7",
+                    p: 1,
+                    borderRadius: 1,
+                    mb: 1,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    transition: "all 0.3s ease",
+                    filter: deletingFile === file.filename ? "blur(3px)" : "none",
+                    opacity: deletingFile === file.filename ? 0 : 1,
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      maxWidth: "200px",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                    title={file.filename}
+                  >
+                    {file.filename}
+                  </Typography>
+
+                  <IconButton size="small" onClick={() => handleDeleteRecentFile(file.filename)}>
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              ))}
+            </Box>
           </Paper>
         </Box>
 
+        {/* Toast Popup */}
+        <Snackbar
+          open={deleteToast.open}
+          autoHideDuration={1800}
+          onClose={() => setDeleteToast({ open: false, message: "" })}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        >
+          <Alert
+            severity="success"
+            sx={{
+              bgcolor: "#28c76f",
+              color: "#fff",
+              borderRadius: "10px",
+              px: 2,
+              py: 1,
+              boxShadow: "0px 3px 10px rgba(0,0,0,0.2)",
+            }}
+          >
+            {deleteToast.message}
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+          open={errorToast.open}
+          autoHideDuration={2500}
+          onClose={() => setErrorToast({ open: false, message: "" })}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        >
+          <Alert
+            severity="error"
+            variant="filled"
+            sx={{
+              bgcolor: "#ff4d4f",
+              color: "#fff",
+              borderRadius: "10px",
+              px: 2,
+              py: 1,
+              boxShadow: "0px 3px 10px rgba(0,0,0,0.25)",
+            }}
+          >
+            {errorToast.message}
+          </Alert>
+        </Snackbar>
+
+
       </Card>
-    </div>
+    </Box>
   );
 };
 

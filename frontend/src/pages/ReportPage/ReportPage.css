@@ -1,12 +1,13 @@
-/* MAIN LAYOUT */
+/* ============================================
+   MAIN LAYOUT
+=============================================== */
 .report-container {
   width: 100%;
-
   display: flex;
   overflow: hidden;
 }
 
-/* LEFT PANEL */
+/* LEFT PANEL (75% width) */
 .left-panel {
   flex: 0 0 75%;
   padding: 16px;
@@ -22,12 +23,13 @@
 .left-content {
   padding: 0 !important;
   margin-top: 0 !important;
-
   height: auto;
   overflow: visible;
 }
 
-/* HEADER BAR */
+/* ============================================
+   HEADER BAR
+=============================================== */
 .report-header {
   width: 100%;
   margin: 0 !important;
@@ -52,7 +54,9 @@
   text-align: right;
 }
 
-/* TITLE BLOCK */
+/* ============================================
+   TITLES
+=============================================== */
 .report-title-container {
   font-size: 14px;
   font-weight: 700;
@@ -65,7 +69,9 @@
   font-weight: 700;
 }
 
-/* RIGHT SIDE PANEL */
+/* ============================================
+   RIGHT PANEL (ALWAYS VISIBLE)
+=============================================== */
 .bookmark-panel {
   flex: 0 0 19%;
   height: 700px;
@@ -97,7 +103,7 @@
   white-space: pre-wrap;
 }
 
-/* ACTION PANEL */
+/* Right-side action cards */
 .right-panel {
   flex: 0 0 25%;
   height: 100%;
@@ -123,7 +129,6 @@
   gap: 16px;
 }
 
-/* COMMON BUTTON STYLE */
 .action-button {
   justify-content: flex-start !important;
   text-align: left;
@@ -154,7 +159,9 @@
   flex: 1;
 }
 
-/* CONFIDENCE PANEL */
+/* ============================================
+   CONFIDENCE PANEL
+=============================================== */
 .confidence-card {
   margin-bottom: 16px;
   margin-right: 12px;
@@ -215,4 +222,217 @@
 
 .grey {
   background: #9e9e9e;
+}
+
+/* ============================================================
+   NEW MODERN ENTERPRISE PROGRESS UI
+   Clean, minimal, premium — No overlap, perfect spacing
+=============================================================== */
+
+/* Wrapper fits left-panel exactly */
+.progress-advanced-wrapper {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+/* Modern clean card */
+.progress-advanced-card {
+  width: 100%;
+  padding: 40px 42px;
+  background: #ffffff;
+  border: 1px solid #e6e8eb;
+  border-radius: 8px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+  min-height: 650px;
+  animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Title */
+.progress-advanced-card .progress-advanced-title {
+  font-size: 22px !important;
+  font-weight: 800 !important;   /* slightly bolder */
+  margin-bottom: 40px !important; /* increased spacing */
+  color: #2d3e50 !important;
+  text-align: center !important;
+}
+
+
+
+/* ============================================================
+   STEP TRACKER — Modern timeline style
+=============================================================== */
+
+.steps-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 45px;
+  position: relative;
+  padding: 0 15px;
+}
+
+.step-item {
+  width: 25%;
+  text-align: center;
+  position: relative;
+}
+
+/* Step circle */
+.step-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 600;
+  border: 2px solid #c6ccd2;
+  background: #f8fafc;
+  color: #6c7a86;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  transition: 0.25s ease;
+}
+
+/* Active step */
+.step-circle.active {
+  background: #3f6c78;
+  border-color: #3f6c78;
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+/* Step labels */
+.step-label {
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4a5b67;
+}
+
+/* Line between steps */
+.step-line {
+  position: absolute;
+  width: 100%;
+  height: 3px;
+  background: #dde1e4;
+  top: 13px;
+  left: 50%;
+  z-index: -1;
+}
+
+.step-line.active {
+  background: #3f6c78;
+}
+
+/* ============================================================
+   PROGRESS BAR — slim, modern, fluid
+=============================================================== */
+
+/* ============================================
+   ANIMATED PROGRESS BAR FILL (Modern Shimmer)
+=============================================== */
+
+.progress-advanced-bar {
+  width: 100%;
+  height: 12px;
+  background: #edf1f3;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-advanced-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3f6c78, #25464e);
+  border-radius: inherit;
+  transition: width 0.6s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- LOADER SHIMMER ANIMATION --- */
+.progress-advanced-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -40%;
+  width: 40%;
+  height: 100%;
+
+  /* white glow layer */
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.45),
+    transparent
+  );
+
+  animation: shimmerMove 1.4s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes shimmerMove {
+  0% { left: -40%; }
+  100% { left: 100%; }
+}
+
+
+/* ============================================================
+   STATUS TEXT — professional typography
+=============================================================== */
+
+.progress-advanced-status {
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  color: #264653 !important;       /* elegant deep-slate tone */
+  text-align: center !important;
+  margin-top: 2px !important;
+  margin-bottom: 4px !important;
+  letter-spacing: 0.4px;            /* premium spacing */
+  line-height: 1.4;
+
+  /* clean fade animation */
+  animation: statusFade 0.35s ease-in-out;
+}
+
+@keyframes statusFade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ============================================================
+   REFRESH BUTTON — minimal button
+=============================================================== */
+
+.refresh-advanced-btn {
+  background: #3f6c78 !important;
+  padding: 10px 34px !important;
+  border-radius: 6px !important;
+  color: #ffffff !important;
+  margin: 0 auto !important;
+  display: block !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  transition: 0.25s ease;
+}
+
+.refresh-advanced-btn:hover {
+  background: #355961 !important;
+  transform: translateY(-2px);
 }

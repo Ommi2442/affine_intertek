@@ -22,14 +22,14 @@ router = APIRouter()
 CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net"
 QUEUE_CONN_STR = "DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net"
 # CONTAINER_NAME = os.getenv("AZURE_CONTAINER_NAME")
-CONTAINER_NAME = "testing-blob"
+CONTAINER_NAME = "stintertekesusdev-blob"
 client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
 database = client.get_database_client(COSMOS_DB_DATABASE)
 trf_container = database.get_container_client(COSMOS_DB_project_TRF_Container)
 # QUEUE_NAME = os.getenv("AZURE_QUEUE_NAME")
 QUEUE_NAME = "stintertekesusdev-queue"
 
-CONTAINER_NAME = "testing-blob"
+CONTAINER_NAME = "stintertekesusdev-blob"
 BLOB_PREFIX = "Documents"   # top-level folder in blob
 
 blob_service = BlobServiceClient.from_connection_string(QUEUE_CONN_STR)
@@ -358,6 +358,100 @@ def check_project_id(project_id: str):
     return {"exists": exists}
 
 
+
+@router.get("/filesuploaded/{project_id}")
+def get_project_details(project_id: str):
+    query = """
+        SELECT c.Project_Id, c.Source_Doc
+        FROM c
+        WHERE c.Project_Id = @pid
+    """
+    
+    params = [{ "name": "@pid", "value": project_id }]
+
+    result = list(COSMOS_DB_project_Container.query_items(
+        query=query,
+        parameters=params,
+        enable_cross_partition_query=True
+    ))
+
+    if not result:
+        return {
+            "projectId": project_id,
+            "uploaded_files": []
+        }
+
+    item = result[0]
+
+    print("result", result)
+
+    return {
+        "projectId": item.get("Project_Id"),
+        "uploaded_files": item.get("Source_Doc", [])
+    }
+
+
+
+@router.delete("/filesdelete/{project_id}/{file_name}")
+def delete_uploaded_file(project_id: str, file_name: str):
+
+    # 1) Fetch project record from Cosmos
+    query = """
+        SELECT *
+        FROM c
+        WHERE c.Project_Id = @pid
+    """
+    params = [{"name": "@pid", "value": project_id}]
+
+    items = list(COSMOS_DB_project_Container.query_items(
+        query=query,
+        parameters=params,
+        enable_cross_partition_query=True
+    ))
+
+    if not items:
+        raise HTTPException(404, detail="Project not found")
+
+    project_doc = items[0]
+
+    # ENSURE FIELD EXISTS
+    source_docs = project_doc.get("Source_Doc", [])
+
+    # 2) Remove file by filename (match Cosmos structure)
+    before = len(source_docs)
+    updated_docs = [
+        f for f in source_docs
+        if f.get("filename") != file_name  # << correct key
+    ]
+    after = len(updated_docs)
+
+    if before == after:
+        raise HTTPException(404, detail="File not found in Source_Doc")
+
+    project_doc["Source_Doc"] = updated_docs
+
+    # 3) Update the Cosmos document
+    COSMOS_DB_project_Container.upsert_item(project_doc)
+
+    # 4) OPTIONAL: Delete blob from Azure storage
+    try:
+        # Path example:
+        # Documents/{project_id}/source_documents/{file_name}
+        blob_path = f"Documents/{project_id}/source_documents/{file_name}"
+
+        blob_client = blob_service.get_blob_client(
+            container=container_name,
+            blob=blob_path
+        )
+        blob_client.delete_blob()
+    except Exception as e:
+        print("Blob delete warning:", e)
+
+    # 5) Send back updated file list
+    return {
+        "projectId": project_id,
+        "uploaded_files": updated_docs
+    }
 
 
 

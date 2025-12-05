@@ -10,7 +10,7 @@ import {
 
 import { useMsal, useIsAuthenticated } from "@azure/msal-react";
 import { useNavigate } from "react-router-dom";
-import LoginService from "./LoginService";
+import { ssouserdataApi } from "../../redux/api/loginApi";
 
 export default function LoginPage() {
   const { instance } = useMsal();
@@ -55,7 +55,8 @@ export default function LoginPage() {
         lastLoggedIn: new Date().toISOString(),
       };
 
-      const backendResponse = await LoginService.ssouserdata(userInfo);
+      const backendResponse = await ssouserdataApi(userInfo);
+
 
       if (backendResponse?.data?.status === "success") {
         localStorage.setItem("role", backendResponse.data.role);
@@ -99,7 +100,7 @@ export default function LoginPage() {
             lastLoggedIn: new Date().toISOString(),
           };
 
-          const backendResponse = await LoginService.ssouserdata(userInfo);
+          const backendResponse = await ssouserdataApi(userInfo);
 
           if (backendResponse?.data?.status === "success") {
             localStorage.setItem("role", backendResponse.data.role);
@@ -159,7 +160,7 @@ export default function LoginPage() {
           sx={{
             position: 'relative',
             width: '100%',
-            height: '100%',
+            height: '106%',
             overflow: 'hidden',
             borderRadius: 2,
           }}
@@ -176,17 +177,6 @@ export default function LoginPage() {
             }}
           />
 
-          <Box
-            component="img"
-            src="/images/intertek_square_logo.png"
-            alt="Overlay"
-            sx={{
-              position: 'absolute',
-              top: 0,
-              left: 35,
-              width: '25%',
-            }}
-          />
         </Box>
       </Grid>
 
@@ -196,6 +186,7 @@ export default function LoginPage() {
           sx={{
             width: '100%',
             height: '100%',
+            borderRadius: '10px',
             backgroundColor: '#FFFFFF',
             paddingRight: '10%',
             paddingLeft: '2%',
@@ -208,8 +199,10 @@ export default function LoginPage() {
                 src="/images/intertek_logo.svg"
                 alt="Login Illustration"
                 sx={{
-                  width: '25%',
-                  height: '25%',
+                  width: '30%',
+                  height: '30%',
+                  marginTop: '26px',
+                  marginLeft: '150px',
                   objectFit: 'cover',
                   borderRadius: '1%',
                 }}

@@ -12,3 +12,7 @@ export const createProjectApi = async (payload) => {
   return response.data;
 };
 
+export const deleteUploadedFileApi = async (projectId, fileName) => {
+  const response = await api.delete(`/projects/${projectId}/files/${fileName}`);
+  return response.data;
+};
