@@ -1,0 +1,82 @@
+trigger:
+  branches:
+    include:
+      - feature/devops
+
+variables:
+- group: intertek-frontend-dev
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+
+# --------------------------
+# FRONTEND BUILD STAGE
+# --------------------------
+- stage: BuildFrontend
+  displayName: "Build Frontend"
+  jobs:
+    - job: BuildFrontendJob
+      displayName: "Build Frontend App"
+      steps:
+        - checkout: self
+
+        # Install Node
+        - task: NodeTool@0
+          inputs:
+            versionSource: 'spec'
+            versionSpec: '22.x'
+            checkLatest: true
+          displayName: "Install Node.js"
+
+        # Install npm packages
+        - script: |
+            cd frontend
+            npm install
+          displayName: "Install NPM Dependencies"
+
+        # Build frontend
+        - script: |
+            cd frontend
+            npm run build
+          displayName: "Build Frontend App"
+
+        # Publish build output as artifact
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathtoPublish: 'frontend/dist'
+            ArtifactName: 'frontend_dist'
+            publishLocation: 'Container'
+          displayName: "Publish Frontend Build Artifact"
+
+# --------------------------
+# FRONTEND DEPLOY STAGE
+# --------------------------
+- stage: Deploy
+  displayName: "Deploy to Azure Static Web App"
+  dependsOn: BuildFrontend
+  jobs:
+    - job: DeployJob
+      displayName: "Deploy Static Web App"
+      steps:
+        - task: DownloadBuildArtifacts@0
+          inputs:
+            artifactName: 'frontend_dist'
+            downloadPath: '$(Pipeline.Workspace)/drop'
+
+        # Copy artifact to current working dir for Azure task
+        - script: |
+            mkdir -p $(Build.SourcesDirectory)/frontend_dist
+            cp -r $(Pipeline.Workspace)/drop/frontend_dist/* $(Build.SourcesDirectory)/frontend_dist/
+          displayName: "Copy artifact to working directory"
+
+        # Deploy
+        - task: AzureStaticWebApp@0
+          displayName: "Deploy to Azure Static Web App"
+          inputs:
+            azure_static_web_apps_api_token: $(SWA_DEPLOYMENT_TOKEN)
+            app_location: 'frontend_dist'  # relative to repo root
+            api_location: ''
+            output_location: '.'           # deploy as-is
+            skip_app_build: true

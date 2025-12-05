@@ -1,0 +1,77 @@
+trigger:
+  branches:
+    include:
+    - feature/devops
+
+variables:
+- group: intertek-backend-dev
+- name: IMAGE_TAG
+  value: v2
+stages:
+- stage: BuildAndPush
+  displayName: 'Build and Push Backend Docker Image'
+  jobs:
+  - job: Build
+    displayName: 'Build Backend Docker Image Locally'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
+      inputs:
+        repository: self
+    - task: AzureCLI@2
+      displayName: 'Login to ACR'
+      inputs:
+        azureSubscription: $(SERVICE_CONNECTION)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          echo "Logging into ACR..."
+          az acr login --name $(ACR_NAME)
+    - task: CmdLine@2
+      displayName: 'Build Docker Image'
+      inputs:
+        script: |
+          echo "Building Docker image..."
+          docker build -t $(IMAGE_NAME):$(IMAGE_TAG) -f Backend/Dockerfile Backend
+    - task: CmdLine@2
+      displayName: 'Tag Docker Image'
+      inputs:
+        script: |
+          echo "Tagging image for ACR..."
+          docker tag $(IMAGE_NAME):$(IMAGE_TAG) $(ACR_NAME).azurecr.io/$(IMAGE_NAME):$(IMAGE_TAG)
+    - task: CmdLine@2
+      displayName: 'Push Docker Image'
+      inputs:
+        script: |
+          echo "Pushing Docker image to ACR..."
+          docker push $(ACR_NAME).azurecr.io/$(IMAGE_NAME):$(IMAGE_TAG)
+- stage: Deploy
+  displayName: 'Deploy Backend to Container App'
+  dependsOn:
+  - BuildAndPush
+  jobs:
+  - job: Deploy
+    displayName: 'Deploy Backend Container App'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: AzureCLI@2
+      displayName: 'Deploy Backend Container App'
+      inputs:
+        azureSubscription: $(SERVICE_CONNECTION)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az containerapp list --resource-group $CONTAINER_APP_RESOURCE_GROUP -o table
+          echo "Deploying to Container App..."
+          az containerapp update \
+            --name $CONTAINER_APP_NAME \
+            --resource-group $CONTAINER_APP_RESOURCE_GROUP \
+            --image $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG \
+      env:
+        CONTAINER_APP_NAME: $(CONTAINER_APP_NAME)
+        CONTAINER_APP_RESOURCE_GROUP: $(RESOURCE_GROUP)
+        ACR_NAME: $(ACR_NAME)
+        IMAGE_NAME: $(IMAGE_NAME)
+        IMAGE_TAG: $(IMAGE_TAG)
