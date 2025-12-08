@@ -18,77 +18,95 @@ const ReportPage = () => {
   const [bookmarkData, setBookmarkData] = useState(null);
   const [trfJson, setTrfJson] = useState(null);
 
-  const debugShowLeftPanel = true;
-
   const dispatch = useDispatch();
   const dataTableRef = useRef(null);
 
-// ----------------------------------------------------------
-// PROGRESS STATE
-// ----------------------------------------------------------
-const [status, setStatus] = useState("Indexing in Progress"); // for testing
-const [progress, setProgress] = useState(0);
-const [refreshing, setRefreshing] = useState(false);
+  // ----------------------------------------------------------
+  // PROGRESS STATE
+  // ----------------------------------------------------------
+  const [status, setStatus] = useState("Completed"); // testing
+  const [progress, setProgress] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
 
-// Correct mapping (use ?? to avoid fallback bugs)
-const STAGE_PERCENT = {
-  "Pending": 0,
-  "Upload Complete": 25,
-  "Indexing in Progress": 50,
-  "Ready for Report Generation": 75,
-  "Generating Report": 90,
-  "Completed": 100,
-};
+  const STAGE_PERCENT = {
+    Pending: 0,
+    "Upload Complete": 25,
+    "Indexing in Progress": 50,
+    "Ready for Report Generation": 75,
+    "Generating Report": 90,
+    "Completed": 100,
+  };
 
-// Step definitions (no change)
-const STAGES = [
-  { label: "Upload", key: "Upload Complete" },
-  { label: "Indexing", key: "Indexing in Progress" },
-  { label: "TRF Report in Progress", key: "Ready for Report Generation" },
-  { label: "Report Generated", key: "Completed" },
-];
+  const STAGES = [
+    { label: "Upload", key: "Upload Complete" },
+    { label: "Indexing", key: "Indexing in Progress" },
+    { label: "TRF Report in Progress", key: "Ready for Report Generation" },
+    { label: "Report Generated", key: "Completed" },
+  ];
 
-// ----------------------------------------------------------
-// POLLING STATUS FUNCTION — fully fixed
-// ----------------------------------------------------------
-const checkStatus = async () => {
-  try {
-    setRefreshing(true);
+  // ----------------------------------------------------------
+  // POLLING STATUS FUNCTION
+  // ----------------------------------------------------------
+  const checkStatus = async () => {
+    try {
+      setRefreshing(true);
+      const res = await fetch("/api/project/status?id=PRJ_000001");
+      const data = await res.json();
 
-    const res = await fetch("/api/project/status?id=PRJ_000001");
-    const data = await res.json();
-
-    console.log("STATUS RECEIVED:", data?.status);
-
-    if (data?.status) {
-      setStatus(data.status);
-      setProgress(STAGE_PERCENT[data.status] ?? 0);
+      if (data?.status) {
+        console.log("STATUS:", data.status);
+        setStatus(data.status);
+        setProgress(STAGE_PERCENT[data.status] ?? 0);
+      }
+    } catch (err) {
+      console.error("STATUS CHECK FAILED:", err);
+    } finally {
+      setRefreshing(false);
     }
-  } catch (err) {
-    console.error("STATUS CHECK FAILED:", err);
-  } finally {
-    setRefreshing(false);
-  }
-};
+  };
 
-// ----------------------------------------------------------
-// INITIAL AUTO-RUN + 30s POLLING
-// ----------------------------------------------------------
-useEffect(() => {
-  checkStatus(); // first call immediately
+  // ----------------------------------------------------------
+  // INITIAL + POLLING (30s)
+  // ----------------------------------------------------------
+  useEffect(() => {
+    if (status === "Completed") return;
 
-  const poll = setInterval(checkStatus, 30000);
-  return () => clearInterval(poll);
-}, []);
+    checkStatus();
+    const poll = setInterval(checkStatus, 30000);
+    return () => clearInterval(poll);
+  }, [status]);
 
-// ----------------------------------------------------------
-// DEBUG: REMOVE WHEN CONNECTED TO LIVE BACKEND
-// PROGRESS UPDATES IN REAL TIME FOR TESTING
-// ----------------------------------------------------------
-useEffect(() => {
-  setProgress(STAGE_PERCENT[status] ?? 0);
-}, [status]);
+  // ----------------------------------------------------------
+  // KEEP PROGRESS IN SYNC (DEBUG SAFE)
+  // ----------------------------------------------------------
+  useEffect(() => {
+    setProgress(STAGE_PERCENT[status] ?? 0);
+  }, [status]);
 
+  // ----------------------------------------------------------
+  // ✅ LOAD TRF JSON WHEN STATUS IS COMPLETED (FIX)
+  // ----------------------------------------------------------
+  useEffect(() => {
+    if (status !== "Completed" || trfJson) return;
+
+    const loadTrf = async () => {
+      try {
+        const projectId = "PRJ_000001";
+        const res = await generateTrfApi(projectId);
+
+        console.log("TRF RESPONSE:", res);
+
+        const report = res?.reports?.[0];
+        if (report?.json) {
+          setTrfJson(report.json);
+        }
+      } catch (err) {
+        console.error("TRF LOAD FAILED:", err);
+      }
+    };
+
+    loadTrf();
+  }, [status, trfJson]);
 
   // ----------------------------------------------------------
   // BOOKMARK HANDLER
@@ -105,7 +123,7 @@ useEffect(() => {
   };
 
   // ----------------------------------------------------------
-  // RENDER LEFT PANEL (Progress or TRF)
+  // LEFT PANEL (PROGRESS OR TRF)
   // ----------------------------------------------------------
   const renderLeftPanel = () => {
     if (status !== "Completed" || !trfJson) {
@@ -115,7 +133,6 @@ useEffect(() => {
             Processing TRF Report
           </Typography>
 
-          {/* STEP INDICATORS */}
           <Box className="steps-container">
             {STAGES.map((stage, index) => {
               const reached = progress >= STAGE_PERCENT[stage.key];
@@ -134,14 +151,12 @@ useEffect(() => {
             })}
           </Box>
 
-          {/* PROGRESS BAR */}
           <Box className="progress-advanced-bar">
             <Box
               className="progress-advanced-fill"
               style={{ width: `${progress}%` }}
             />
           </Box>
-
 
           <Typography className="progress-advanced-status">
             {status}
@@ -158,7 +173,7 @@ useEffect(() => {
       );
     }
 
-    // --------------------- SHOW ORIGINAL LEFT PANEL ---------------------
+    // ---------------- ORIGINAL LEFT PANEL ----------------
     return (
       <Card className="left-card">
         <CardContent className="left-content">
@@ -168,24 +183,23 @@ useEffect(() => {
               className="header-image"
               alt="header"
             />
-
             <Typography className="header-text">
               Test Report issued under the responsibility of:
             </Typography>
           </Box>
 
           <Box className="report-title-container">
-            <Typography sx={{ fontWeight: 700, fontSize: "20px" }}>
+            <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
               TEST REPORT
             </Typography>
-            <Typography sx={{ fontWeight: 700, fontSize: "20px" }}>
+            <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
               IEC 61010-1
             </Typography>
-            <Typography sx={{ fontWeight: 700, fontSize: "20px" }}>
+            <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
               Safety requirements for electrical equipment for measurement,
               control, and laboratory use
             </Typography>
-            <Typography sx={{ fontWeight: 700, fontSize: "20px" }}>
+            <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
               Part 1: General requirements
             </Typography>
           </Box>
@@ -205,10 +219,8 @@ useEffect(() => {
   // ----------------------------------------------------------
   return (
     <Box className="report-container">
-      {/* LEFT SIDE — Shows progress OR final TRF */}
       <Box className="left-panel">{renderLeftPanel()}</Box>
 
-      {/* RIGHT SIDE — Always visible */}
       {bookmarkOpen ? (
         <Box className="bookmark-panel">
           <Box className="bookmark-header">
@@ -217,7 +229,6 @@ useEffect(() => {
               ✕
             </Button>
           </Box>
-
           <Typography className="bookmark-field">{bookmarkData?.field}</Typography>
           <Typography className="bookmark-value">{bookmarkData?.value}</Typography>
         </Box>
@@ -251,26 +262,6 @@ useEffect(() => {
                   </Button>
                 ))}
               </Box>
-
-              <Typography className="generate-title">Generate</Typography>
-
-              <Box className="generate-row">
-                {["CDR", "Letter"].map((label, i) => (
-                  <Button
-                    key={i}
-                    variant="contained"
-                    className="generate-btn"
-                    style={{ background: "#417581" }}
-                  >
-                    <img
-                      src="/images/approve_icon.png"
-                      className="icon-img icon-white"
-                      alt=""
-                    />
-                    {label}
-                  </Button>
-                ))}
-              </Box>
             </CardContent>
           </Card>
 
@@ -298,13 +289,12 @@ useEffect(() => {
               ].map((row, i) => (
                 <Box key={i} className="confidence-row">
                   <Box className="confidence-label">
-                    <Box style={{ display: "flex", gap: "5px" }}>
+                    <Box style={{ display: "flex", gap: 5 }}>
                       <span className={`dot ${row.color}`} />
                       <Typography>{row.label}</Typography>
                     </Box>
                     <Typography fontWeight="bold">{row.count}</Typography>
                   </Box>
-
                   {i < 3 && <Divider />}
                 </Box>
               ))}

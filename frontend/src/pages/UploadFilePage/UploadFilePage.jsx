@@ -16,6 +16,7 @@ import {
   getProjectByIdApi,
   deleteUploadedFileApi,
 } from "../../redux/api/projectApi";
+import { useNavigate } from 'react-router-dom';
 
 const UploadFilePage = () => {
   const [files, setFiles] = useState({
@@ -25,6 +26,7 @@ const UploadFilePage = () => {
     letterTemplate: { name: "Intertek GFT-OP-10a Letter Report template.doc" },
     standardDocument: { name: "IEC_61010-1-2010.pdf" },
   });
+  const navigate = useNavigate();
 
   const [recentUploads, setRecentUploads] = useState([]);
   const [deletingFile, setDeletingFile] = useState("");
@@ -129,6 +131,7 @@ const UploadFilePage = () => {
   const handleGenerate = async () => {
     if (files.sourceFiles.length > 0) {
       await uploadFilesApi(projectId, "source_documents", files.sourceFiles);
+      navigate('/report-page')
       loadRecentUploads();
     }
   };
