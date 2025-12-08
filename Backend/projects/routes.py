@@ -325,12 +325,6 @@ async def upload_files(
 
     COSMOS_DB_project_Container.upsert_item(project_doc)
 
-    # ---------- 4) Send ONLY 1 queue message ----------
-    queue_client.send_message(json.dumps({
-        "projectId": projectId,
-        "action": "embed_project_docs",
-        "timestamp": datetime.utcnow().isoformat()
-    }))
 
     return {
         "status": "success",
@@ -395,7 +389,7 @@ def get_project_details(project_id: str):
 @router.delete("/filesdelete/{project_id}/{file_name}")
 def delete_uploaded_file(project_id: str, file_name: str):
 
-    # 1) Fetch project record from Cosmos
+    # 1️⃣ Fetch project record from Cosmos DB
     query = """
         SELECT *
         FROM c
@@ -403,55 +397,94 @@ def delete_uploaded_file(project_id: str, file_name: str):
     """
     params = [{"name": "@pid", "value": project_id}]
 
-    items = list(COSMOS_DB_project_Container.query_items(
-        query=query,
-        parameters=params,
-        enable_cross_partition_query=True
-    ))
+    items = list(
+        COSMOS_DB_project_Container.query_items(
+            query=query,
+            parameters=params,
+            enable_cross_partition_query=True
+        )
+    )
 
     if not items:
-        raise HTTPException(404, detail="Project not found")
+        raise HTTPException(status_code=404, detail="Project not found")
 
     project_doc = items[0]
 
-    # ENSURE FIELD EXISTS
+    # 2️⃣ Ensure Source_Doc exists
     source_docs = project_doc.get("Source_Doc", [])
 
-    # 2) Remove file by filename (match Cosmos structure)
-    before = len(source_docs)
+    # 3️⃣ Remove file entry from Cosmos
     updated_docs = [
         f for f in source_docs
-        if f.get("filename") != file_name  # << correct key
+        if f.get("filename") != file_name
     ]
-    after = len(updated_docs)
 
-    if before == after:
-        raise HTTPException(404, detail="File not found in Source_Doc")
+    if len(updated_docs) == len(source_docs):
+        raise HTTPException(status_code=404, detail="File not found in Source_Doc")
 
     project_doc["Source_Doc"] = updated_docs
 
-    # 3) Update the Cosmos document
-    COSMOS_DB_project_Container.upsert_item(project_doc)
-
-    # 4) OPTIONAL: Delete blob from Azure storage
+    # 4️⃣ Update Cosmos DB
     try:
-        # Path example:
-        # Documents/{project_id}/source_documents/{file_name}
-        blob_path = f"Documents/{project_id}/source_documents/{file_name}"
+        COSMOS_DB_project_Container.upsert_item(project_doc)
+    except cosmos_exceptions.CosmosHttpResponseError as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Cosmos update failed: {str(e)}"
+        )
 
+    # 5️⃣ Delete file from Azure Blob Storage
+    blob_path = f"Documents/{project_id}/source_documents/{file_name}"
+
+    try:
         blob_client = blob_service.get_blob_client(
-            container=container_name,
+            container=CONTAINER_NAME,
             blob=blob_path
         )
-        blob_client.delete_blob()
-    except Exception as e:
-        print("Blob delete warning:", e)
 
-    # 5) Send back updated file list
+        if blob_client.exists():
+            blob_client.delete_blob()
+        else:
+            print("⚠️ Blob not found in storage:", blob_path)
+
+    except Exception as e:
+        # Do NOT fail API if blob deletion fails
+        print("⚠️ Blob delete warning:", str(e))
+
+    # 6️⃣ Success response
     return {
+        "message": "File deleted successfully",
         "projectId": project_id,
+        "deleted_file": file_name,
         "uploaded_files": updated_docs
     }
 
 
+
+
+@router.get("/report/status")
+def get_project_report_status(id: str):
+    query = f"SELECT * FROM c WHERE c.Project_Id = '{id}'"
+    docs = list(COSMOS_DB_project_Container.query_items(
+        query=query,
+        enable_cross_partition_query=True
+    ))
+
+    if not docs:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    progress = docs[0].get("Project_Progress")
+
+    if not progress:
+        return {
+            "status": "Pending",
+            "percentage": 0
+        }
+
+    return {
+        "status": progress.get("stage"),
+        "percentage": progress.get("percentage"),
+        "step": progress.get("step"),
+        "error": progress.get("error")
+    }
 

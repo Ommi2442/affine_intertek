@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+from datetime import datetime
 from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueClient
 from azure.cosmos import CosmosClient
@@ -27,7 +28,7 @@ COSMOS_PROJECT_CONTAINER="projects"
 
 # ---- Azure Clients ----
 blob_service = BlobServiceClient.from_connection_string(QUEUE_CONN_STR)
-queue_client = QueueClient.from_connection_string(QUEUE_CONN_STR, "stintertekesusdev-queue")
+queue_client = QueueClient.from_connection_string(QUEUE_CONN_STR, QUEUE_NAME)
 
 cosmos_client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
 db = cosmos_client.get_database_client(COSMOS_DB_DATABASE)
@@ -36,13 +37,37 @@ projects_container = db.get_container_client(COSMOS_PROJECT_CONTAINER)
 app = FastAPI(title="Queue Worker Service")
 
 
+# ----------------------------------------------------------
+#  Helper: update Project_Progress safely
+# ----------------------------------------------------------
+def update_project_progress(
+    project_doc,
+    stage: str,
+    percentage: int,
+    step: str | None = None,
+    error: str | None = None
+):
+    project_doc["Project_Progress"] = {
+        "stage": stage,
+        "percentage": percentage,
+        "step": step,
+        "last_updated": datetime.utcnow().isoformat(),
+        "error": error
+    }
+
+    projects_container.upsert_item(project_doc)
+
+
+# --------------------------------------------------
+#  PROCESS QUEUE MESSAGE (MINIMAL CHANGE)
+# --------------------------------------------------
 async def process_message(message):
     event = json.loads(message.content)
-    project_id = event["projectId"]
+    project_id = event.get("projectId")
 
-    print(f"\n🚀 Embedding Trigger Received for Project: {project_id}\n")
+    print(f"\n🚀 Queue Trigger Received → Project: {project_id}\n")
 
-    # ---- fetch project ----
+    # ---------- FETCH PROJECT ----------
     query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
     docs = list(projects_container.query_items(
         query=query,
@@ -55,22 +80,66 @@ async def process_message(message):
 
     project_doc = docs[0]
 
-    # ---- get all blob URLs ----
+    # ---------- COLLECT BLOB URLS ----------
     blob_urls = [x["url"] for x in project_doc.get("Source_Doc", [])]
 
     if not blob_urls:
-        print(f"⚠ No Source_Doc files found for project {project_id}")
+        print(f"⚠ No Source_Doc files for project {project_id}")
         return False
 
-    print("📄 Files to embed:", len(blob_urls))
+    print(f"📄 Files to embed: {len(blob_urls)}")
 
-    # ---- embed only once ----
-    ingest_files_from_blob_urls_create_embeddings(project_id, blob_urls)
+    try:
+        # --------------------------------------------------
+        #  STATUS → INDEXING (25%)
+        # --------------------------------------------------
+        update_project_progress(
+            project_doc,
+            stage="Indexing in Progress",
+            percentage=25,
+            step="Embedding source documents"
+        )
 
-    print(f"✔ Embedding completed for project {project_id}")
-    return True
+        # --------------------------------------------------
+        #  EXISTING EMBEDDING LOGIC (UNCHANGED)
+        # --------------------------------------------------
+        ingest_files_from_blob_urls_create_embeddings(
+            project_id,
+            blob_urls
+        )
+
+        # --------------------------------------------------
+        #  STATUS → READY FOR REPORT (50%)
+        # --------------------------------------------------
+        update_project_progress(
+            project_doc,
+            stage="Ready for Report Generation",
+            percentage=50,
+            step="Embedding completed"
+        )
+
+        print(f"✅ Embedding completed for project {project_id}")
+        return True
+
+    except Exception as e:
+        print(f"❌ Embedding failed for project {project_id}: {e}")
+
+        # --------------------------------------------------
+        #  STATUS → FAILED
+        # --------------------------------------------------
+        update_project_progress(
+            project_doc,
+            stage="Failed",
+            percentage=0,
+            step="Embedding failed",
+            error=str(e)
+        )
+        return False
 
 
+# --------------------------------------------------
+#  QUEUE LISTENER (UNCHANGED)
+# --------------------------------------------------
 async def queue_listener():
     print("Queue Worker Started - Listening...")
 
@@ -86,11 +155,14 @@ async def queue_listener():
                 if ok:
                     queue_client.delete_message(message)
             except Exception as e:
-                print("❌ Worker error:", e)
+                print("❌ Worker runtime error:", e)
 
         await asyncio.sleep(2)
 
 
+# --------------------------------------------------
+#  START WORKER
+# --------------------------------------------------
 @app.on_event("startup")
 async def start_worker():
     asyncio.create_task(queue_listener())

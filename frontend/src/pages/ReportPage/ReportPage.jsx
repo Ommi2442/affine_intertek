@@ -12,6 +12,8 @@ import "./ReportPage.css";
 import { useDispatch } from "react-redux";
 import DataTable1 from "../../components/DataTable1";
 import { finaliseReportRequest } from "../../redux/features/finaliseReport/finaliseReportSlice";
+import { getProjectReportStatusApi } from "../../redux/api/projectStatusApi";
+
 
 const ReportPage = () => {
   const [bookmarkOpen, setBookmarkOpen] = useState(false);
@@ -20,50 +22,50 @@ const ReportPage = () => {
 
   const dispatch = useDispatch();
   const dataTableRef = useRef(null);
-
+  const projectID = localStorage.getItem('projectId');
   // ----------------------------------------------------------
   // PROGRESS STATE
   // ----------------------------------------------------------
-  const [status, setStatus] = useState("Completed"); // testing
+  const [status, setStatus] = useState("Indexing in Progress"); // testing
   const [progress, setProgress] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
   const STAGE_PERCENT = {
-    Pending: 0,
-    "Upload Complete": 25,
-    "Indexing in Progress": 50,
-    "Ready for Report Generation": 75,
-    "Generating Report": 90,
+    "Pending": 0,
+    "Indexing in Progress": 25,
+    "Ready for Report Generation": 50,
+    "Generating Report": 75,
     "Completed": 100,
   };
 
   const STAGES = [
-    { label: "Upload", key: "Upload Complete" },
     { label: "Indexing", key: "Indexing in Progress" },
     { label: "TRF Report in Progress", key: "Ready for Report Generation" },
+    // { label: "Generating Report", key: "Report Generation Started" },
     { label: "Report Generated", key: "Completed" },
   ];
 
   // ----------------------------------------------------------
   // POLLING STATUS FUNCTION
   // ----------------------------------------------------------
-  const checkStatus = async () => {
-    try {
-      setRefreshing(true);
-      const res = await fetch("/api/project/status?id=PRJ_000001");
-      const data = await res.json();
+    const checkStatus = async () => {
+      try {
+        setRefreshing(true);
 
-      if (data?.status) {
-        console.log("STATUS:", data.status);
-        setStatus(data.status);
-        setProgress(STAGE_PERCENT[data.status] ?? 0);
+        const data = await getProjectReportStatusApi(projectID);
+
+        if (data?.status) {
+          console.log("STATUS:", data.status);
+          setStatus(data.status);
+          setProgress(STAGE_PERCENT[data.status] ?? 0);
+        }
+      } catch (err) {
+        console.error("STATUS CHECK FAILED:", err);
+      } finally {
+        setRefreshing(false);
       }
-    } catch (err) {
-      console.error("STATUS CHECK FAILED:", err);
-    } finally {
-      setRefreshing(false);
-    }
-  };
+    };
+
 
   // ----------------------------------------------------------
   // INITIAL + POLLING (30s)
