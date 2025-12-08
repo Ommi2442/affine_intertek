@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from 'react';
 import {
   Box,
   Card,
@@ -6,14 +6,14 @@ import {
   Typography,
   Button,
   Divider,
-} from "@mui/material";
-import { generateTrfApi } from "../../redux/api/generateTrfApi";
-import "./ReportPage.css";
-import { useDispatch } from "react-redux";
-import DataTable1 from "../../components/DataTable1";
-import { finaliseReportRequest } from "../../redux/features/finaliseReport/finaliseReportSlice";
-import { getProjectReportStatusApi } from "../../redux/api/projectStatusApi";
-
+} from '@mui/material';
+import { generateTrfApi } from '../../redux/api/generateTrfApi';
+import './ReportPage.css';
+import { useDispatch } from 'react-redux';
+import DataTable1 from '../../components/DataTable1';
+import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
+import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
+//import localJson from '../../utils/trf_61010-1.json';
 
 const ReportPage = () => {
   const [bookmarkOpen, setBookmarkOpen] = useState(false);
@@ -26,52 +26,51 @@ const ReportPage = () => {
   // ----------------------------------------------------------
   // PROGRESS STATE
   // ----------------------------------------------------------
-  const [status, setStatus] = useState("Indexing in Progress"); // testing
+  const [status, setStatus] = useState('Indexing in Progress'); // testing
   const [progress, setProgress] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
   const STAGE_PERCENT = {
-    "Pending": 0,
-    "Indexing in Progress": 25,
-    "Ready for Report Generation": 50,
-    "Generating Report": 75,
-    "Completed": 100,
+    Pending: 0,
+    'Indexing in Progress': 25,
+    'Ready for Report Generation': 50,
+    'Generating Report': 75,
+    Completed: 100,
   };
 
   const STAGES = [
-    { label: "Indexing", key: "Indexing in Progress" },
-    { label: "TRF Report in Progress", key: "Ready for Report Generation" },
+    { label: 'Indexing', key: 'Indexing in Progress' },
+    { label: 'TRF Report in Progress', key: 'Ready for Report Generation' },
     // { label: "Generating Report", key: "Report Generation Started" },
-    { label: "Report Generated", key: "Completed" },
+    { label: 'Report Generated', key: 'Completed' },
   ];
 
   // ----------------------------------------------------------
   // POLLING STATUS FUNCTION
   // ----------------------------------------------------------
-    const checkStatus = async () => {
-      try {
-        setRefreshing(true);
+  const checkStatus = async () => {
+    try {
+      setRefreshing(true);
 
-        const data = await getProjectReportStatusApi(projectID);
+      const data = await getProjectReportStatusApi(projectID);
 
-        if (data?.status) {
-          console.log("STATUS:", data.status);
-          setStatus(data.status);
-          setProgress(STAGE_PERCENT[data.status] ?? 0);
-        }
-      } catch (err) {
-        console.error("STATUS CHECK FAILED:", err);
-      } finally {
-        setRefreshing(false);
+      if (data?.status) {
+        console.log('STATUS:', data.status);
+        setStatus(data.status);
+        setProgress(STAGE_PERCENT[data.status] ?? 0);
       }
-    };
-
+    } catch (err) {
+      console.error('STATUS CHECK FAILED:', err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   // ----------------------------------------------------------
   // INITIAL + POLLING (30s)
   // ----------------------------------------------------------
   useEffect(() => {
-    if (status === "Completed") return;
+    if (status === 'Completed') return;
 
     checkStatus();
     const poll = setInterval(checkStatus, 30000);
@@ -89,21 +88,21 @@ const ReportPage = () => {
   // ✅ LOAD TRF JSON WHEN STATUS IS COMPLETED (FIX)
   // ----------------------------------------------------------
   useEffect(() => {
-    if (status !== "Completed" || trfJson) return;
+    if (status !== 'Completed' || trfJson) return;
 
     const loadTrf = async () => {
       try {
-        const projectId = "PRJ_000001";
+        const projectId = 'PRJ_000001';
         const res = await generateTrfApi(projectId);
 
-        console.log("TRF RESPONSE:", res);
+        console.log('TRF RESPONSE:', res);
 
         const report = res?.reports?.[0];
         if (report?.json) {
           setTrfJson(report.json);
         }
       } catch (err) {
-        console.error("TRF LOAD FAILED:", err);
+        console.error('TRF LOAD FAILED:', err);
       }
     };
 
@@ -128,7 +127,7 @@ const ReportPage = () => {
   // LEFT PANEL (PROGRESS OR TRF)
   // ----------------------------------------------------------
   const renderLeftPanel = () => {
-    if (status !== "Completed" || !trfJson) {
+    if (status !== 'Completed' || !trfJson) {
       return (
         <Card className="progress-advanced-card left-card">
           <Typography className="progress-advanced-title">
@@ -140,13 +139,13 @@ const ReportPage = () => {
               const reached = progress >= STAGE_PERCENT[stage.key];
               return (
                 <Box key={index} className="step-item">
-                  <Box className={`step-circle ${reached ? "active" : ""}`}>
-                    {reached ? "✔" : index + 1}
+                  <Box className={`step-circle ${reached ? 'active' : ''}`}>
+                    {reached ? '✔' : index + 1}
                   </Box>
                   <Typography className="step-label">{stage.label}</Typography>
 
                   {index !== STAGES.length - 1 && (
-                    <Box className={`step-line ${reached ? "active" : ""}`} />
+                    <Box className={`step-line ${reached ? 'active' : ''}`} />
                   )}
                 </Box>
               );
@@ -160,16 +159,14 @@ const ReportPage = () => {
             />
           </Box>
 
-          <Typography className="progress-advanced-status">
-            {status}
-          </Typography>
+          <Typography className="progress-advanced-status">{status}</Typography>
 
           <Button
             disabled={refreshing}
             className="refresh-advanced-btn"
             onClick={checkStatus}
           >
-            {refreshing ? "Refreshing..." : "Refresh Status"}
+            {refreshing ? 'Refreshing...' : 'Refresh Status'}
           </Button>
         </Card>
       );
@@ -231,8 +228,12 @@ const ReportPage = () => {
               ✕
             </Button>
           </Box>
-          <Typography className="bookmark-field">{bookmarkData?.field}</Typography>
-          <Typography className="bookmark-value">{bookmarkData?.value}</Typography>
+          <Typography className="bookmark-field">
+            {bookmarkData?.field}
+          </Typography>
+          <Typography className="bookmark-value">
+            {bookmarkData?.value}
+          </Typography>
         </Box>
       ) : (
         <Box className="right-panel">
@@ -245,11 +246,32 @@ const ReportPage = () => {
 
               <Box className="button-stack">
                 {[
-                  { text: "Edit / Refine", icon: "/images/edit_icon.svg", bg: "#2C2C2C" },
-                  { text: "Finalise", icon: "/images/approve_icon.png", bg: "#396872ff", action: handleFinalise },
-                  { text: "Download", icon: "/images/download_icon.png", bg: "#77D5EA" },
-                  { text: "Missing Field Re..", icon: "/images/file_icon.png", bg: "#5191a0ff" },
-                  { text: "Regenerate", icon: "/images/regenrate_icon.png", bg: "#417581" },
+                  {
+                    text: 'Edit / Refine',
+                    icon: '/images/edit_icon.svg',
+                    bg: '#2C2C2C',
+                  },
+                  {
+                    text: 'Finalise',
+                    icon: '/images/approve_icon.png',
+                    bg: '#396872ff',
+                    action: handleFinalise,
+                  },
+                  {
+                    text: 'Download',
+                    icon: '/images/download_icon.png',
+                    bg: '#77D5EA',
+                  },
+                  {
+                    text: 'Missing Field Re..',
+                    icon: '/images/file_icon.png',
+                    bg: '#5191a0ff',
+                  },
+                  {
+                    text: 'Regenerate',
+                    icon: '/images/regenrate_icon.png',
+                    bg: '#417581',
+                  },
                 ].map((btn, i) => (
                   <Button
                     key={i}
@@ -259,7 +281,11 @@ const ReportPage = () => {
                     onClick={btn.action}
                     style={{ background: btn.bg }}
                   >
-                    <img src={btn.icon} alt="" className="icon-img icon-white" />
+                    <img
+                      src={btn.icon}
+                      alt=""
+                      className="icon-img icon-white"
+                    />
                     {btn.text}
                   </Button>
                 ))}
@@ -280,18 +306,18 @@ const ReportPage = () => {
               </Box>
 
               <Box className="confidence-bar">
-                <Box className="confidence-fill" style={{ width: "67%" }} />
+                <Box className="confidence-fill" style={{ width: '67%' }} />
               </Box>
 
               {[
-                { label: "High", count: 4, color: "green" },
-                { label: "Medium", count: 1, color: "yellow" },
-                { label: "Low", count: 0, color: "red" },
-                { label: "User Edited", count: 12, color: "grey" },
+                { label: 'High', count: 4, color: 'green' },
+                { label: 'Medium', count: 1, color: 'yellow' },
+                { label: 'Low', count: 0, color: 'red' },
+                { label: 'User Edited', count: 12, color: 'grey' },
               ].map((row, i) => (
                 <Box key={i} className="confidence-row">
                   <Box className="confidence-label">
-                    <Box style={{ display: "flex", gap: 5 }}>
+                    <Box style={{ display: 'flex', gap: 5 }}>
                       <span className={`dot ${row.color}`} />
                       <Typography>{row.label}</Typography>
                     </Box>

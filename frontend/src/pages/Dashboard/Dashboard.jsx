@@ -140,21 +140,42 @@ const Dashboard = () => {
         <Table>
           <TableHead sx={{ bgcolor: '#f5f5f5' }}>
             <TableRow>
-              <TableCell align="center"><b>Standard</b></TableCell>
-              <TableCell align="center"><b>Project ID</b></TableCell>
-              <TableCell align="center"><b>Client</b></TableCell>
-              <TableCell align="center"><b>Product</b></TableCell>
-              <TableCell align="center"><b>Created On</b></TableCell>
+              <TableCell align="center">
+                <b>Standard</b>
+              </TableCell>
+              <TableCell align="center">
+                <b>Client Name</b>
+              </TableCell>
+              <TableCell align="center">
+                <b>Product</b>
+              </TableCell>
+              <TableCell align="center">
+                <b>Project ID</b>
+              </TableCell>
+
+              <TableCell align="center">
+                <b>Created On</b>
+              </TableCell>
 
               {/* ✅ Show ONLY for Admin */}
               {user_role === 1 && (
-                <TableCell align="center"><b>Created By</b></TableCell>
+                <TableCell align="center">
+                  <b>Created By</b>
+                </TableCell>
               )}
 
-              <TableCell align="center"><b>TRF Generated</b></TableCell>
-              <TableCell align="center"><b>CDR Generated</b></TableCell>
-              <TableCell align="center"><b>Letter Generated</b></TableCell>
-              <TableCell align="center"><b>Actions</b></TableCell>
+              <TableCell align="center">
+                <b>TRF Generated</b>
+              </TableCell>
+              <TableCell align="center">
+                <b>CDR Generated</b>
+              </TableCell>
+              <TableCell align="center">
+                <b>Letter Generated</b>
+              </TableCell>
+              <TableCell align="center">
+                <b>Actions</b>
+              </TableCell>
             </TableRow>
           </TableHead>
 
@@ -169,9 +190,9 @@ const Dashboard = () => {
               paginated?.map((row, index) => (
                 <TableRow key={index}>
                   <TableCell align="center">{row?.Standard}</TableCell>
-                  <TableCell align="center">{row?.Project_Id}</TableCell>
                   <TableCell align="center">{row?.Client_Name}</TableCell>
                   <TableCell align="center">{row?.Product}</TableCell>
+                  <TableCell align="center">{row?.Project_Id}</TableCell>
                   <TableCell align="center">
                     {row?.Proj_Created_On
                       ? new Date(row.Proj_Created_On).toLocaleDateString()

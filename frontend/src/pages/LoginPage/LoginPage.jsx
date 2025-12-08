@@ -8,18 +8,15 @@ import {
   Button,
 } from '@mui/material';
 
-import {
-  useMsal,
-  useIsAuthenticated,
-} from "@azure/msal-react";
+import { useMsal, useIsAuthenticated } from '@azure/msal-react';
 
 import {
   InteractionStatus,
   InteractionRequiredAuthError,
-} from "@azure/msal-browser";
+} from '@azure/msal-browser';
 
-import { useNavigate } from "react-router-dom";
-import { ssouserdataApi } from "../../redux/api/loginApi";
+import { useNavigate } from 'react-router-dom';
+import { ssouserdataApi } from '../../redux/api/loginApi';
 
 export default function LoginPage() {
   const { instance, inProgress } = useMsal();
@@ -30,10 +27,7 @@ export default function LoginPage() {
   // ✅ SAFE POST-REDIRECT PROCESSING
   // ------------------------------------------------------
   useEffect(() => {
-    if (
-      inProgress === InteractionStatus.None &&
-      isAuthenticated
-    ) {
+    if (inProgress === InteractionStatus.None && isAuthenticated) {
       handleSSOAfterRedirect();
     }
   }, [inProgress, isAuthenticated]);
@@ -47,15 +41,15 @@ export default function LoginPage() {
       instance.setActiveAccount(userAccount);
 
       const response = await instance.acquireTokenSilent({
-        scopes: ["User.Read"],
+        scopes: ['User.Read'],
         account: userAccount,
       });
 
       // ✅ Store values (kept as you requested)
-      localStorage.setItem("accessToken", response.accessToken);
-      localStorage.setItem("email", userAccount.username);
-      localStorage.setItem("name", userAccount.name);
-      localStorage.setItem("logintype", "sso");
+      localStorage.setItem('accessToken', response.accessToken);
+      localStorage.setItem('email', userAccount.username);
+      localStorage.setItem('name', userAccount.name);
+      localStorage.setItem('logintype', 'sso');
 
       const userInfo = {
         name: userAccount.name,
@@ -67,17 +61,16 @@ export default function LoginPage() {
 
       const backendResponse = await ssouserdataApi(userInfo);
 
-      if (backendResponse?.data?.status === "success") {
-        localStorage.setItem("role", backendResponse.data.role);
-        navigate("/dashboard");
+      if (backendResponse?.data?.status === 'success') {
+        localStorage.setItem('role', backendResponse.data.role);
+        navigate('/dashboard');
       }
-
     } catch (error) {
-      console.error("Post-redirect SSO processing failed:", error);
+      console.error('Post-redirect SSO processing failed:', error);
 
       // ✅ REQUIRED fallback
       if (error instanceof InteractionRequiredAuthError) {
-        instance.loginRedirect({ scopes: ["User.Read"] });
+        instance.loginRedirect({ scopes: ['User.Read'] });
       }
     }
   };
@@ -99,39 +92,37 @@ export default function LoginPage() {
   //   });
   // };
 
-  
   const submitHandler = async () => {
-  const accounts = instance.getAllAccounts();
+    const accounts = instance.getAllAccounts();
 
-  if (accounts.length > 0) {
-    const account = accounts[0];
-    instance.setActiveAccount(account);
+    if (accounts.length > 0) {
+      const account = accounts[0];
+      instance.setActiveAccount(account);
 
-    try {
-      const response = await instance.acquireTokenSilent({
-        scopes: ["User.Read"],
-        account,
-      });
+      try {
+        const response = await instance.acquireTokenSilent({
+          scopes: ['User.Read'],
+          account,
+        });
 
-      // Store values (same as post-redirect flow)
-      localStorage.setItem("accessToken", response.accessToken);
-      localStorage.setItem("email", account.username);
-      localStorage.setItem("name", account.name);
-      localStorage.setItem("logintype", "sso");
+        // Store values (same as post-redirect flow)
+        localStorage.setItem('accessToken', response.accessToken);
+        localStorage.setItem('email', account.username);
+        localStorage.setItem('name', account.name);
+        localStorage.setItem('logintype', 'sso');
 
-      navigate("/dashboard");
-      return;
-    } catch (error) {
-      if (error instanceof InteractionRequiredAuthError) {
-        return instance.loginRedirect({ scopes: ["User.Read"] });
+        navigate('/dashboard');
+        return;
+      } catch (error) {
+        if (error instanceof InteractionRequiredAuthError) {
+          return instance.loginRedirect({ scopes: ['User.Read'] });
+        }
+        console.error('Silent login failed:', error);
       }
-      console.error("Silent login failed:", error);
     }
-  }
 
-  instance.loginRedirect({ scopes: ["User.Read"] });
-};
-
+    instance.loginRedirect({ scopes: ['User.Read'] });
+  };
 
   return (
     <Grid
@@ -146,7 +137,6 @@ export default function LoginPage() {
         backgroundColor: '#f0f0f0',
       }}
     >
-
       {/* LEFT CARD */}
       <Grid
         item
@@ -196,8 +186,10 @@ export default function LoginPage() {
             paddingLeft: '2%',
           }}
         >
-          <CardContent sx={{ width: '100%', height: '100%', paddingRight: '8%' }}>
-            <Grid sx={{ textAlign: 'left' }}>
+          <CardContent
+            sx={{ width: '100%', height: '100%', paddingRight: '8%' }}
+          >
+            <Grid sx={{ textAlign: 'center' }}>
               <Box
                 component="img"
                 src="/images/intertek_logo.svg"
@@ -205,7 +197,6 @@ export default function LoginPage() {
                 sx={{
                   width: '30%',
                   marginTop: '26px',
-                  marginLeft: '196px',
                 }}
               />
             </Grid>
@@ -253,7 +244,6 @@ export default function LoginPage() {
           </CardContent>
         </Card>
       </Grid>
-
     </Grid>
   );
 }
