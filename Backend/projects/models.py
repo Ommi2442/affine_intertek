@@ -23,6 +23,15 @@ class ProjectCreate(BaseModel):
     Product: str
 
 
+
+class ProjectProgress(BaseModel):
+    stage: str
+    percentage: int
+    step: Optional[str] = None
+    last_updated: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+    error: Optional[str] = None
+    
+
 class Project(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     Project_Id : str
@@ -30,6 +39,7 @@ class Project(BaseModel):
     Client_Name: str
     Product: str
     Source_Doc: List[str] = Field(default_factory=list)
+    Project_Progress: Optional[ProjectProgress] = None
     TRF_Generated: bool = False
     TRF_Data: List[TRFItem] = Field(default_factory=list)
     TRF_Generated_On: Optional[str] = None
@@ -74,3 +84,5 @@ class Project(BaseModel):
 class ProjectFilter(BaseModel):
     user_role: int
     user_email: str | None = None
+
+
