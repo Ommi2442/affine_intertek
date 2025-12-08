@@ -15,17 +15,9 @@
   background: #ffffff;
   z-index: 10;
   border-bottom: 2px solid #e0e0e0;
-  padding-top: 8px; /* py:1 */
+  padding-top: 8px;
   padding-bottom: 8px;
-  margin-bottom: 16px; /* mb:2 */
-}
-
-.dt-header-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-left: 8px; /* px:1 */
-  padding-right: 8px;
+  margin-bottom: 16px;
 }
 
 .dt-header-title {
@@ -34,19 +26,19 @@
 
 /* Page wrapper / title */
 .dt-page {
-  margin-bottom: 24px; /* consistent with previous spacing */
+  margin-bottom: 24px;
 }
 
 .dt-page-title {
   font-weight: 700;
-  margin-bottom: 16px; /* mb:2 */
+  margin-bottom: 16px;
   border-bottom: 2px solid #f0f0f0;
   padding-bottom: 8px;
 }
 
 /* Table container */
 .dt-table-container {
-  margin-bottom: 24px; /* mb:3 */
+  margin-bottom: 24px;
 }
 
 /* Table */
@@ -81,7 +73,7 @@
 .dt-value-cell {
   width: 65%;
   position: relative;
-  padding: 0; /* original had p:0 */
+  padding: 0;
 }
 
 /* Value row that holds multiple value columns */
@@ -90,8 +82,7 @@
   flex-direction: row;
 }
 
-/* Value column (individual value cell within grouped field) */
-/* padding: p:1 -> 8px; position: relative */
+/* Value column */
 .dt-value-column {
   flex: 1;
   padding: 8px;
@@ -99,9 +90,14 @@
   box-sizing: border-box;
 }
 
-/* add border-left to all value columns except first */
+/* border for multi-column layouts */
 .dt-value-column + .dt-value-column {
   border-left: 1px solid #ddd;
+}
+
+/* Helper class to ensure proper positioning */
+.dt-relative {
+  position: relative;
 }
 
 /* Textarea inside value column */
@@ -110,7 +106,7 @@
   resize: vertical;
   min-height: 36px;
   max-height: 160px;
-  padding: 8px 48px 8px 12px; /* reserve space for hover icons on right */
+  padding: 8px 12px;
   border-radius: 4px;
   border: 1px solid rgba(0, 0, 0, 0.23);
   font-family: Roboto, Helvetica, Arial, sans-serif;
@@ -119,19 +115,26 @@
   box-sizing: border-box;
 }
 
-/* Hover actions (approve/comment/bookmark) */
+/* Textarea that needs space for hover actions */
+.dt-textarea-with-actions {
+  padding-right: 48px !important; /* reserve icon space */
+}
+
+/* Hover actions (approve/comment/bookmark INSIDE textbox) */
 .dt-hover-actions {
   position: absolute;
-  top: -28px; /* moved up so it doesn't overlap textarea */
   right: 6px;
+  top: 50%;
+  transform: translateY(-50%); /* center vertically inside the textarea */
   display: flex;
   gap: 4px;
   background: rgba(255, 255, 255, 0.95);
-  padding: 2px;
+  padding: 2px 3px;
   border-radius: 6px;
   align-items: center;
   z-index: 10;
-  /* subtle shadow similar to MUI boxShadow:1 */
+
+  /* soft shadow */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
@@ -155,10 +158,10 @@
 
 /* Divider spacing */
 .dt-divider {
-  margin-bottom: 24px; /* mb:3 */
+  margin-bottom: 24px;
 }
 
-/* Sentinel for intersection observer */
+/* Sentinel for infinite scroll */
 .dt-sentinel {
   height: 90px;
 }
@@ -170,7 +173,7 @@
   background: #ffffff;
   z-index: 12;
   border-top: 2px solid #e0e0e0;
-  padding-top: 16px; /* py:2 */
+  padding-top: 16px;
   padding-bottom: 16px;
   height: 50px;
   margin-top: 16px;
@@ -178,7 +181,7 @@
   justify-content: center;
 }
 
-/* Loading spinner box */
+/* Loading spinner area */
 .dt-loading {
   display: flex;
   justify-content: center;
