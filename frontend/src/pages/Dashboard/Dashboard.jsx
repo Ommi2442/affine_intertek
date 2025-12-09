@@ -78,7 +78,10 @@ const Dashboard = () => {
       (item) =>
         item.Client_Name?.toLowerCase().includes(search.toLowerCase()) ||
         item.Standard?.toLowerCase().includes(search.toLowerCase()) ||
-        item.Project_Id?.toLowerCase().includes(search.toLowerCase())
+        item.Project_Id?.toLowerCase().includes(search.toLowerCase()) ||
+        item.Product?.toLowerCase().includes(search.toLowerCase()) ||
+        item.Proj_Created_On?.toLowerCase().includes(search.toLowerCase()) ||
+        item.Proj_Created_By?.toLowerCase().includes(search.toLowerCase())
     ) || [];
 
   const totalPages = Math.ceil(filtered.length / rowsPerPage);
