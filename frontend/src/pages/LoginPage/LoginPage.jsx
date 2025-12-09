@@ -24,7 +24,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   // ------------------------------------------------------
-  // ✅ SAFE POST-REDIRECT PROCESSING
+  //  SAFE POST-REDIRECT PROCESSING
   // ------------------------------------------------------
   useEffect(() => {
     if (inProgress === InteractionStatus.None && isAuthenticated) {
@@ -45,7 +45,7 @@ export default function LoginPage() {
         account: userAccount,
       });
 
-      // ✅ Store values (kept as you requested)
+      //  Store values (kept as you requested)
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('email', userAccount.username);
       localStorage.setItem('name', userAccount.name);
@@ -68,7 +68,7 @@ export default function LoginPage() {
     } catch (error) {
       console.error('Post-redirect SSO processing failed:', error);
 
-      // ✅ REQUIRED fallback
+      //  REQUIRED fallback
       if (error instanceof InteractionRequiredAuthError) {
         instance.loginRedirect({ scopes: ['User.Read'] });
       }
@@ -76,7 +76,7 @@ export default function LoginPage() {
   };
 
   // ------------------------------------------------------
-  // ✅ LOGIN BUTTON HANDLER
+  //  LOGIN BUTTON HANDLER
   // ------------------------------------------------------
   // const submitHandler = () => {
   //   const accounts = instance.getAllAccounts();

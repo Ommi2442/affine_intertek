@@ -488,3 +488,22 @@ def get_project_report_status(id: str):
         "error": progress.get("error")
     }
 
+
+
+@router.post("/generate-trf")
+def generate_trf(projectId: str):
+    try:
+        queue_client.send_message(json.dumps({
+            "projectId": projectId,
+            "action": "embed_generatetrf",
+            "timestamp": datetime.utcnow().isoformat()
+        }))
+
+        return {
+            "status": "success",
+            "message": "TRF generation triggered",
+            "projectId": projectId
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

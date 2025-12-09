@@ -85,7 +85,7 @@ const ReportPage = () => {
   }, [status]);
 
   // ----------------------------------------------------------
-  // ✅ LOAD TRF JSON WHEN STATUS IS COMPLETED (FIX)
+  //  LOAD TRF JSON WHEN STATUS IS COMPLETED (FIX)
   // ----------------------------------------------------------
   useEffect(() => {
     if (status !== 'Completed' || trfJson) return;

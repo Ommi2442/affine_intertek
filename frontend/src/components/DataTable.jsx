@@ -287,7 +287,7 @@ const DataTable = ({ jsonData = jsonFromFile, onBookmarkClick, onApprove }) => {
                                       onMouseLeave={() =>
                                         setHovered({ table: null, row: null })
                                       }
-                                      style={{ position: 'relative' }} // ✅ Make container relative
+                                      style={{ position: 'relative' }} //  Make container relative
                                     >
                                       <textarea
                                         className="dt-textarea"
@@ -301,7 +301,7 @@ const DataTable = ({ jsonData = jsonFromFile, onBookmarkClick, onApprove }) => {
                                         }
                                         rows={1}
                                         style={{
-                                          paddingRight: '70px', // ✅ Space for icons
+                                          paddingRight: '70px', //  Space for icons
                                         }}
                                       />
 

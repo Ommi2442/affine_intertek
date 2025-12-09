@@ -12,3 +12,11 @@ export const generateTrfApi = async (project_id) => {
 
   return response.data;
 };
+
+export const triggerGenerateTrfApi = async (projectId) => {
+  const res = await api.post("/projects/generate-trf", null, {
+    params: { projectId }
+  });
+
+  return res.data;
+};

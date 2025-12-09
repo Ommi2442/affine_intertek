@@ -187,7 +187,7 @@ async def send_email(recipient: str, otp: str):
             server.starttls()
             server.login(SMTP_USERNAME, SMTP_PASSWORD)
             server.send_message(msg)
-        print(f"✅ OTP email sent to {recipient}")
+        print(f" OTP email sent to {recipient}")
     except Exception as e:
         print(f"❌ Failed to send email: {e}")
         raise
