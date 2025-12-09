@@ -23,9 +23,17 @@ const UploadFilePage = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  const { standard, projectId, clientName, product } = state || {};
+  // 🔹 Single source of truth for header info
+  const [projectMeta, setProjectMeta] = useState({
+    standard: state?.standard || "",
+    projectId: state?.projectId || localStorage.getItem("projectId") || "",
+    clientName: state?.clientName || "",
+    product: state?.product || "",
+  });
 
-  // ---------------- STATE ----------------
+  const { standard, projectId, clientName, product } = projectMeta;
+
+  /* ---------------- STATE ---------------- */
   const [files, setFiles] = useState({
     sourceFiles: [],
     trfTemplate: { name: "CB scheme TRF template_iec61010_1p.doc" },
@@ -38,60 +46,127 @@ const UploadFilePage = () => {
 
   const [recentUploads, setRecentUploads] = useState([]);
   const [deletingFile, setDeletingFile] = useState("");
-  const [successToast, setSuccessToast] = useState({ open: false, message: "" });
-  const [errorToast, setErrorToast] = useState({ open: false, message: "" });
+  const [successToast, setSuccessToast] = useState({
+    open: false,
+    message: "",
+  });
+  const [errorToast, setErrorToast] = useState({
+    open: false,
+    message: "",
+  });
 
   const inputRefs = { sourceFiles: useRef(null) };
 
   const allowedExtensions = [
-    "pdf", "docx", "msg", "xls", "xlsx",
-    "png", "jpg", "jpeg", "eml", "doc", "txt",
+    "pdf",
+    "docx",
+    "msg",
+    "xls",
+    "xlsx",
+    "png",
+    "jpg",
+    "jpeg",
+    "eml",
+    "doc",
+    "txt",
   ];
 
-  // ---------------- LOAD FILES ----------------
+  /* ---------------- LOAD FILES + FILL META IF NEEDED ---------------- */
   const loadRecentUploads = async () => {
+    if (!projectId) return; // no id, nothing to load
+
     const res = await getProjectByIdApi(projectId);
-    const files = res.uploaded_files || [];
+
+    const files = res?.uploaded_files || [];
     setRecentUploads([...files].reverse());
+
+    // If we came from refresh (no state), fill in missing header fields from API
+    setProjectMeta((prev) => ({
+      standard: prev.standard || res?.Standard || "",
+      projectId: prev.projectId || res?.Project_Id || "",
+      clientName: prev.clientName || res?.Client_Name || "",
+      product: prev.product || res?.Product || "",
+    }));
   };
 
   useEffect(() => {
     loadRecentUploads();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId]); // re-run if projectId source changes
 
-  // ---------------- UPLOAD ----------------
+  /* ---------------- UPLOAD ---------------- */
   const handleSourceFileChange = async (e) => {
     const selectedFiles = Array.from(e.target.files);
-    const existingNames = recentUploads.map(f => f.filename.toLowerCase());
+    const existingNames = recentUploads.map((f) => f.filename.toLowerCase());
 
     const validFiles = [];
-    let duplicateCount = 0;
+    const unsupportedFiles = [];
+    const duplicateFiles = []; // store names
 
     for (const file of selectedFiles) {
       const ext = file.name.split(".").pop().toLowerCase();
-      if (!allowedExtensions.includes(ext)) continue;
 
-      if (existingNames.includes(file.name.toLowerCase())) {
-        duplicateCount++;
+      if (!allowedExtensions.includes(ext)) {
+        unsupportedFiles.push(file.name);
         continue;
       }
+
+      if (existingNames.includes(file.name.toLowerCase())) {
+        duplicateFiles.push(file.name); // collect duplicates
+        continue;
+      }
+
       validFiles.push(file);
     }
 
+    // Unsupported files
+    if (unsupportedFiles.length > 0) {
+      setErrorToast({
+        open: true,
+        message: `Unsupported file(s): ${unsupportedFiles.join(", ")}`,
+      });
+    }
+
+    // Only duplicates selected
+    if (!validFiles.length && duplicateFiles.length > 0) {
+      setErrorToast({
+        open: true,
+        message:
+          duplicateFiles.length === 1
+            ? `Duplicate file already exists: ${duplicateFiles[0]}`
+            : `Duplicate files already exist: ${duplicateFiles.join(", ")}`,
+      });
+
+      if (inputRefs.sourceFiles.current) {
+        inputRefs.sourceFiles.current.value = "";
+      }
+      return;
+    }
+
+    // Nothing valid at all
     if (!validFiles.length) return;
 
+    // Upload valid files
     await uploadFilesApi(projectId, "source_documents", validFiles);
     await loadRecentUploads();
 
+    // Success message with skipped duplicates
     setSuccessToast({
       open: true,
-      message: `${validFiles.length} uploaded${duplicateCount ? ` • ${duplicateCount} skipped` : ""}`,
+      message:
+        duplicateFiles.length > 0
+          ? `${validFiles.length} uploaded • ${duplicateFiles.length} skipped (${duplicateFiles.join(
+              ", "
+            )})`
+          : `${validFiles.length} uploaded`,
     });
 
-    inputRefs.sourceFiles.current.value = "";
+    if (inputRefs.sourceFiles.current) {
+      inputRefs.sourceFiles.current.value = "";
+    }
   };
 
-  // ---------------- DELETE ----------------
+  /* ---------------- DELETE ---------------- */
   const handleDeleteRecentFile = async (fileName) => {
     setDeletingFile(fileName);
     setTimeout(async () => {
@@ -105,7 +180,7 @@ const UploadFilePage = () => {
     navigate("/report-page");
   };
 
-  // ---------------- RENDER ROW ----------------
+  /* ---------------- RENDER ROW ---------------- */
   const renderFileRow = (
     label,
     filesArray,
@@ -119,6 +194,7 @@ const UploadFilePage = () => {
       <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
         <Box sx={{ minWidth: 220 }}>
           <Typography fontWeight={600}>{label}</Typography>
+
           {showHelper && (
             <Typography
               variant="caption"
@@ -163,11 +239,10 @@ const UploadFilePage = () => {
     );
   };
 
-  // ---------------- UI ----------------
+  /* ---------------- UI ---------------- */
   return (
     <Box display="flex" justifyContent="center" width="100%">
       <Box width="90%" display="flex" gap={3} sx={{ height: "60vh" }}>
-
         {/* LEFT – PROJECT FILES */}
         <Card
           sx={{
@@ -178,9 +253,10 @@ const UploadFilePage = () => {
             flexDirection: "column",
           }}
         >
-          {/* CONTENT */}
           <Box>
-            <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1 }}>
+            <Box
+              sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1 }}
+            >
               <Typography variant="h5" fontWeight={600}>
                 Project Files
               </Typography>
@@ -190,10 +266,18 @@ const UploadFilePage = () => {
                 placement="bottom-start"
                 title={
                   <Box sx={{ fontSize: "12px", lineHeight: 1.6 }}>
-                    <div><b>Standard:</b> {standard}</div>
-                    <div><b>Project ID:</b> {projectId}</div>
-                    <div><b>Client Name:</b> {clientName}</div>
-                    <div><b>Product:</b> {product}</div>
+                    <div>
+                      <b>Standard:</b> {standard}
+                    </div>
+                    <div>
+                      <b>Project ID:</b> {projectId}
+                    </div>
+                    <div>
+                      <b>Client Name:</b> {clientName}
+                    </div>
+                    <div>
+                      <b>Product:</b> {product}
+                    </div>
                   </Box>
                 }
               >
@@ -213,16 +297,33 @@ const UploadFilePage = () => {
               {renderFileRow(
                 "Source Documents:",
                 files.sourceFiles,
-                () => inputRefs.sourceFiles.current.click()
+                () => inputRefs.sourceFiles.current.click(),
+                "Multiple Files"
               )}
-              {renderFileRow("TRF Template:", [files.trfTemplate], null, "Word Input")}
-              {renderFileRow("CDR Template:", [files.cdrTemplate], null, "Excel Input")}
-              {renderFileRow("Letter Template:", [files.letterTemplate], null, "Word Input")}
+
+              {renderFileRow(
+                "TRF Template:",
+                [files.trfTemplate],
+                null,
+                "Word Input"
+              )}
+              {renderFileRow(
+                "CDR Template:",
+                [files.cdrTemplate],
+                null,
+                "Excel Input"
+              )}
+              {renderFileRow(
+                "Letter Template:",
+                [files.letterTemplate],
+                null,
+                "Word Input"
+              )}
               {renderFileRow("Standard Document:", [files.standardDocument])}
             </Stack>
           </Box>
 
-          {/* ✅ EXTREME BOTTOM LEFT-ALIGNED */}
+          {/* EXTREME BOTTOM */}
           <Typography
             variant="caption"
             sx={{
@@ -234,8 +335,8 @@ const UploadFilePage = () => {
               textAlign: "left",
             }}
           >
-            (Supporting Document Format: (.pdf, .docx, .msg, .xls, .xlsx, .png,
-            .jpg, .jpeg, .eml, .doc, .txt))
+            Supported Document Format: (.pdf, .docx, .msg, .xls, .xlsx, .png,
+            .jpg, .jpeg, .eml, .doc, .txt)
           </Typography>
         </Card>
 
@@ -250,7 +351,6 @@ const UploadFilePage = () => {
             borderRadius: 2,
           }}
         >
-          {/* HEADER + COUNT */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography variant="h6" fontWeight={600}>
               Recent Uploads
@@ -272,7 +372,6 @@ const UploadFilePage = () => {
             </Box>
           </Box>
 
-          {/* LIST */}
           <Box sx={{ flex: 1, overflowY: "auto", mt: 2 }}>
             {recentUploads.map((file, idx) => (
               <Box
@@ -284,7 +383,8 @@ const UploadFilePage = () => {
                   borderRadius: 1,
                   display: "flex",
                   justifyContent: "space-between",
-                  filter: deletingFile === file.filename ? "blur(3px)" : "none",
+                  filter:
+                    deletingFile === file.filename ? "blur(3px)" : "none",
                   opacity: deletingFile === file.filename ? 0 : 1,
                 }}
               >
