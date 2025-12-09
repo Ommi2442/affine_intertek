@@ -33,7 +33,7 @@ export default function BasicModal({ open, handleClose }) {
   const navigate = useNavigate();
 
   const initialState = {
-    Standard: "IEC_61010_1",
+    Standard: "IEC_61010-1",
     Client_Name: "",
     Project_Id: "",
     Product: "",
@@ -44,14 +44,10 @@ export default function BasicModal({ open, handleClose }) {
   const [checkingId, setCheckingId] = useState(false);
   const [projectIdValid, setProjectIdValid] = useState(null);
 
-
   useEffect(() => {
-    if (open) {
-      resetForm();
-    }
+    if (open) resetForm();
   }, [open]);
 
-  // FUNCTION TO RESET ALL STATES
   const resetForm = () => {
     setForm(initialState);
     setErrors({});
@@ -71,12 +67,7 @@ export default function BasicModal({ open, handleClose }) {
     try {
       setCheckingId(true);
       const res = await checkProjectIdApi(form.Project_Id);
-
-      if (res?.exists) {
-        setProjectIdValid(false);
-      } else {
-        setProjectIdValid(true);
-      }
+      setProjectIdValid(!res?.exists);
     } catch (error) {
       console.error("Project ID check failed:", error);
     } finally {
@@ -105,6 +96,7 @@ export default function BasicModal({ open, handleClose }) {
     form.Product.trim() &&
     projectIdValid !== false;
 
+  /* ✅ FIXED SUBMIT */
   const closeOnSubmit = async () => {
     if (!validate()) return;
 
@@ -116,12 +108,20 @@ export default function BasicModal({ open, handleClose }) {
         Proj_Created_By: createdByEmail,
       };
 
-      const res = await createProjectApi(payload);
-      localStorage.setItem("projectId", res?.data?.Project_Id);
+      await createProjectApi(payload);
 
-      resetForm(); 
+      resetForm();
       handleClose();
-      navigate("/create-project");
+
+      /* ✅ PASS REQUIRED STATE */
+      navigate("/create-project", {
+        state: {
+          standard: form.Standard,
+          projectId: form.Project_Id,
+          clientName: form.Client_Name,
+          product: form.Product,
+        },
+      });
     } catch (error) {
       console.error("Create Project Failed:", error);
       alert("Error creating project");
@@ -129,7 +129,7 @@ export default function BasicModal({ open, handleClose }) {
   };
 
   const closeModal = () => {
-    resetForm(); 
+    resetForm();
     handleClose();
   };
 
@@ -137,7 +137,10 @@ export default function BasicModal({ open, handleClose }) {
     <Modal open={open} onClose={() => {}} disableEscapeKeyDown>
       <Box sx={style}>
         {/* CLOSE BUTTON */}
-        <IconButton sx={{ position: "absolute", top: 10, right: 10 }} onClick={closeModal}>
+        <IconButton
+          sx={{ position: "absolute", top: 10, right: 10 }}
+          onClick={closeModal}
+        >
           <CloseIcon />
         </IconButton>
 
@@ -147,7 +150,7 @@ export default function BasicModal({ open, handleClose }) {
 
         {/* STANDARD */}
         <FormControl fullWidth margin="normal" required>
-          <InputLabel classes={{ asterisk: "required-asterisk" }}>Standard</InputLabel>
+          <InputLabel>Standard</InputLabel>
           <Select
             label="Standard"
             name="Standard"
@@ -156,7 +159,7 @@ export default function BasicModal({ open, handleClose }) {
             open={false}
             sx={{ pointerEvents: "none" }}
           >
-            <MenuItem value="IEC_61010_1">IEC 61010-1</MenuItem>
+            <MenuItem value="IEC_61010-1">IEC 61010-1</MenuItem>
           </Select>
         </FormControl>
 
@@ -181,7 +184,6 @@ export default function BasicModal({ open, handleClose }) {
           InputProps={{
             endAdornment: checkingId ? <CircularProgress size={20} /> : null,
           }}
-          InputLabelProps={{ classes: { asterisk: "required-asterisk" } }}
         />
 
         {/* CLIENT NAME */}
@@ -195,7 +197,6 @@ export default function BasicModal({ open, handleClose }) {
           onChange={handleChange}
           error={!!errors.Client_Name}
           helperText={errors.Client_Name}
-          InputLabelProps={{ classes: { asterisk: "required-asterisk" } }}
         />
 
         {/* PRODUCT */}
@@ -209,7 +210,6 @@ export default function BasicModal({ open, handleClose }) {
           onChange={handleChange}
           error={!!errors.Product}
           helperText={errors.Product}
-          InputLabelProps={{ classes: { asterisk: "required-asterisk" } }}
         />
 
         <Button
