@@ -27,7 +27,7 @@ const Navbar = ({ signOutClickHandler, openProjectModal }) => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [userName, setUserName] = useState(null);
-  let user = userName.split(' ');
+  const user = userName ? userName.split(' ') : [''];
 
   const openMenu = (e) => setAnchorEl(e.currentTarget);
   const closeMenu = () => setAnchorEl(null);
@@ -47,7 +47,8 @@ const Navbar = ({ signOutClickHandler, openProjectModal }) => {
   };
 
   useEffect(() => {
-    setUserName(localStorage.getItem('name'));
+    const storedName = localStorage.getItem('name');
+    setUserName(storedName || '');
   }, []);
 
   return (
@@ -123,7 +124,7 @@ const Navbar = ({ signOutClickHandler, openProjectModal }) => {
           </IconButton>
           <Typography sx={{ color: 'black', fontWeight: 600 }}>
             {' '}
-            {user[0]}{' '}
+            {user[0] || ''}
           </Typography>
           {/* Profile Icon */}
           <IconButton onClick={openMenu}>
