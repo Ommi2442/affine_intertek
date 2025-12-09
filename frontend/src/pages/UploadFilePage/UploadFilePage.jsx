@@ -223,7 +223,7 @@ const UploadFilePage = () => {
           {browseHandler && (
             <>
               <Button variant="outlined" onClick={browseHandler}>
-                Browse
+                Upload
               </Button>
               <input
                 hidden
@@ -335,7 +335,7 @@ const UploadFilePage = () => {
               textAlign: "left",
             }}
           >
-            Supported Document Format: (.pdf, .docx, .msg, .xls, .xlsx, .png,
+            Supported Documents Format: (.pdf, .docx, .msg, .xls, .xlsx, .png,
             .jpg, .jpeg, .eml, .doc, .txt)
           </Typography>
         </Card>
@@ -414,21 +414,37 @@ const UploadFilePage = () => {
         open={successToast.open}
         autoHideDuration={3000}
         onClose={() => setSuccessToast({ open: false, message: "" })}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        sx={{ mt: 6 }}   // margin-top
       >
-        <Alert severity="success" variant="filled">
+        <Alert
+          severity="success"
+          variant="filled"
+          sx={{ fontSize: "12px" }}
+        >
           {successToast.message}
         </Alert>
       </Snackbar>
+
+
 
       <Snackbar
         open={errorToast.open}
         autoHideDuration={3000}
         onClose={() => setErrorToast({ open: false, message: "" })}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        sx={{ mt: 6 }}   // margin-top
       >
-        <Alert severity="error" variant="filled">
+        <Alert
+          severity="error"
+          variant="filled"
+          sx={{ fontSize: "12px" }}
+        >
           {errorToast.message}
         </Alert>
       </Snackbar>
+
+
     </Box>
   );
 };
