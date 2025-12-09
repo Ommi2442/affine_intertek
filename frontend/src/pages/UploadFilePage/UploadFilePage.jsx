@@ -242,7 +242,7 @@ const UploadFilePage = () => {
   /* ---------------- UI ---------------- */
   return (
     <Box display="flex" justifyContent="center" width="100%">
-      <Box width="90%" display="flex" gap={3} sx={{ height: "60vh" }}>
+      <Box width="90%" display="flex" gap={3} sx={{ height: "72vh" }}>
         {/* LEFT – PROJECT FILES */}
         <Card
           sx={{
