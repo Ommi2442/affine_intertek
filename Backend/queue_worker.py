@@ -118,7 +118,7 @@ async def process_message(message):
             step="Embedding completed"
         )
 
-        print(f"✅ Embedding completed for project {project_id}")
+        print(f" Embedding completed for project {project_id}")
         return True
 
     except Exception as e:

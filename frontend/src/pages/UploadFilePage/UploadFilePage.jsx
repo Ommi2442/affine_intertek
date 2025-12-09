@@ -9,7 +9,7 @@ import {
   IconButton,
   Snackbar,
   Alert,
-  Tooltip,        // ✅ ADD THIS
+  Tooltip,        // ADD THIS
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { uploadFilesApi } from "../../redux/api/uploadApi";
@@ -17,13 +17,22 @@ import {
   getProjectByIdApi,
   deleteUploadedFileApi,
 } from "../../redux/api/projectApi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const UploadFilePage = () => {
   const navigate = useNavigate();
-  const projectId = localStorage.getItem("projectId");
+  // const projectId = localStorage.getItem("projectId");
+  const { state } = useLocation();
 
-  // ✅ KEEP DEFAULT TEMPLATES
+   const {
+    standard,
+    projectId,
+    clientName,
+    product,
+    source,
+  } = state || {};
+
+  // KEEP DEFAULT TEMPLATES
   const [files, setFiles] = useState({
     sourceFiles: [],
     trfTemplate: { name: "CB scheme TRF template_iec61010_1p.doc" },
@@ -53,10 +62,28 @@ const UploadFilePage = () => {
     const loadRecentUploads = async () => {
       const res = await getProjectByIdApi(projectId);
 
-      // ✅ Show latest uploads first
+      // Show latest uploads first
       const files = res.uploaded_files || [];
       setRecentUploads([...files].reverse());
     };
+
+  const handleGenerateTrf = async () => {
+  try {
+    const projectId = localStorage.getItem("projectId");
+
+    await triggerGenerateTrfApi(projectId);
+
+    console.log(" TRF generation triggered");
+    navigate("/report-page");
+
+  } catch (error) {
+    console.error("❌ Failed to trigger TRF generation", error);
+    setErrorToast({
+      open: true,
+      message: "Failed to generate TRF",
+    });
+  }
+};
 
 
   useEffect(() => {
@@ -120,7 +147,7 @@ const UploadFilePage = () => {
 
       setSuccessToast({ open: true, message: msg });
 
-      // ✅ CLEAR FORM
+      // CLEAR FORM
       setFiles((prev) => ({
         ...prev,
         sourceFiles: [],
@@ -169,7 +196,7 @@ const renderFileRow = (label, filesArray, browseHandler = null) => {
       </Box>
 
       <Box sx={{ flex: 1, display: "flex", flexWrap: "wrap", gap: 1 }}>
-        {/* ✅ SHOW MAX 3 FILES */}
+        {/* SHOW MAX 3 FILES */}
         {visibleFiles.map((file, idx) => (
           <Box
             key={idx}
@@ -203,7 +230,7 @@ const renderFileRow = (label, filesArray, browseHandler = null) => {
           </Box>
         ))}
 
-        {/* ✅ "+N more" WITH HOVER */}
+        {/* "+N more" WITH HOVER */}
         {hiddenFiles.length > 0 && (
           <Tooltip
             arrow
@@ -238,7 +265,7 @@ const renderFileRow = (label, filesArray, browseHandler = null) => {
           </Tooltip>
         )}
 
-        {/* ✅ BROWSE BUTTON */}
+        {/* BROWSE BUTTON */}
         {browseHandler && (
           <>
             <Button variant="outlined" onClick={browseHandler}>
@@ -264,9 +291,42 @@ const renderFileRow = (label, filesArray, browseHandler = null) => {
       <Box width="90%" display="flex" gap={3} sx={{ height: "60vh" }}>
         {/* LEFT – PROJECT FILES */}
         <Card sx={{ width: "70%", p: 3, height: "97%", overflowY: "auto", borderRadius: 2 }}>
-          <Typography variant="h5" fontWeight={600} mb={3}>
-            Project Files
-          </Typography>
+        <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1 }}>
+            {/* Main Title */}
+            <Typography
+              variant="h5"
+              fontWeight={600}
+              sx={{ lineHeight: 1.2 }}
+            >
+              Project Files
+            </Typography>
+
+            {/* Details with hover */}
+            <Tooltip
+              arrow
+              placement="bottom-start"
+              title={
+                <Box sx={{ fontSize: "12px", lineHeight: 1.6 }}>
+                  <div><b>Standard:</b> {standard}</div>
+                  <div><b>Project ID:</b> {projectId}</div>
+                  <div><b>Client Name:</b> {clientName}</div>
+                  <div><b>Product:</b> {product}</div>
+                </Box>
+              }
+            >
+              <Typography
+                sx={{
+                  fontSize: "15px",
+                  color: "text.secondary",
+                  cursor: "help",
+                  whiteSpace: "nowrap",
+                  marginTop: "2px"
+                }}
+              >
+                ({standard} / {projectId} / {clientName} / {product})
+              </Typography>
+            </Tooltip>
+          </Box>
 
           <Stack spacing={3}>
             {renderFileRow(
@@ -294,9 +354,27 @@ const renderFileRow = (label, filesArray, browseHandler = null) => {
             borderRadius: 2,
           }}
         >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <Typography variant="h6" fontWeight={600}>
             Recent Uploads
           </Typography>
+
+          <Box
+            sx={{
+              px: 1.2,
+              py: 0.3,
+              fontSize: "12px",
+              fontWeight: 600,
+              bgcolor: "#eef4ff",
+              color: "#2f5bea",
+              borderRadius: "12px",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Uploaded Files: {recentUploads.length}
+          </Box>
+        </Box>
+
 
           <Box sx={{ flex: 1, overflowY: "auto", mt: 2 }}>
             {recentUploads.map((file, idx) => (
@@ -327,7 +405,7 @@ const renderFileRow = (label, filesArray, browseHandler = null) => {
           <Button
             variant="contained"
             sx={{ mt: 2, backgroundColor: "#0d99ff" }}
-            onClick={() => navigate("/report-page")}
+            onClick={handleGenerateTrf}
           >
             Generate TRF
           </Button>

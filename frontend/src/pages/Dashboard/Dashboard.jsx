@@ -15,7 +15,6 @@ import {
   IconButton,
   MenuItem,
   Select,
-  CircularProgress,
   Alert,
   Skeleton,
 } from '@mui/material';
@@ -23,7 +22,6 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import { fetchProjectsRequest } from '../../redux/features/dashboard/dashboardSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import AppBreadcrumbs from '../../components/AppBreadCrumbs';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
@@ -31,35 +29,49 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const dashboardState = useSelector((state) => state.dashboard || {});
-  const { projects = [], loading = false, error = null } = dashboardState;
+  const { projects = {}, loading = false, error = null } = dashboardState;
 
-  // projects.data = array of projects
-  // projects.user_role = role coming from backend
   const user_role = projects?.user_role || 2;
 
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(7);
 
-  const renderYesNo = (value) => {
+  useEffect(() => {
+    dispatch(fetchProjectsRequest());
+  }, [dispatch]);
+
+  /*  FIX: Pass row details to create-project */
+  const renderYesNo = (row, value, type) => {
     const val = value === true || value === 'true';
+
+    const handleClick = () => {
+      navigate('/create-project', {
+        state: {
+          standard: row?.Standard,
+          projectId: row?.Project_Id,
+          clientName: row?.Client_Name,
+          product: row?.Product,
+          source: type, // TRF | CDR | LETTER
+        },
+      });
+    };
+
     return (
       <Box
-        onClick={() => navigate('/create-project')}
+        onClick={handleClick}
         sx={{
           color: val ? 'green' : 'red',
           cursor: 'pointer',
           textAlign: 'center',
+          fontWeight: 600,
+          '&:hover': { textDecoration: 'underline' },
         }}
       >
         {val ? 'Yes' : 'No'}
       </Box>
     );
   };
-
-  useEffect(() => {
-    dispatch(fetchProjectsRequest());
-  }, [dispatch]);
 
   const filtered =
     projects?.data?.filter(
@@ -69,16 +81,16 @@ const Dashboard = () => {
         item.Project_Id?.toLowerCase().includes(search.toLowerCase())
     ) || [];
 
-  const totalPages = Math.ceil(filtered?.length / rowsPerPage);
+  const totalPages = Math.ceil(filtered.length / rowsPerPage);
 
-  const paginated = filtered?.slice(
+  const paginated = filtered.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage
   );
 
   const SkeletonRow = () => (
     <TableRow>
-      {Array.from({ length: user_role === 1 ? 9 : 8 }).map((_, i) => (
+      {Array.from({ length: user_role === 1 ? 10 : 9 }).map((_, i) => (
         <TableCell key={i} align="center">
           <Skeleton variant="text" width="80%" height={22} />
         </TableCell>
@@ -87,41 +99,22 @@ const Dashboard = () => {
   );
 
   return (
-    <Box
-      sx={{
-        p: 3,
-        backgroundColor: 'white',
-        borderRadius: '8px',
-      }}
-    >
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          mb: 3,
-          alignItems: 'center',
-        }}
-      >
-        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+    <Box sx={{ p: 3, backgroundColor: 'white', borderRadius: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+        <Typography variant="h5" fontWeight="bold">
           My Projects
         </Typography>
 
         <TextField
-          variant="outlined"
           placeholder="Search..."
           size="small"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          sx={{
-            width: '30%',
-            '& .MuiOutlinedInput-root': {
-              borderRadius: '50px',
-            },
-          }}
+          sx={{ width: '30%' }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <SearchIcon sx={{ color: '#555' }} />
+                <SearchIcon />
               </InputAdornment>
             ),
           }}
@@ -130,7 +123,7 @@ const Dashboard = () => {
 
       <TableContainer component={Paper}>
         {error && !loading && (
-          <Box sx={{ p: 3 }}>
+          <Box p={3}>
             <Alert severity="error">
               Failed to load projects. Please try again.
             </Alert>
@@ -140,42 +133,20 @@ const Dashboard = () => {
         <Table>
           <TableHead sx={{ bgcolor: '#f5f5f5' }}>
             <TableRow>
-              <TableCell align="center">
-                <b>Standard</b>
-              </TableCell>
-              <TableCell align="center">
-                <b>Client Name</b>
-              </TableCell>
-              <TableCell align="center">
-                <b>Product</b>
-              </TableCell>
-              <TableCell align="center">
-                <b>Project ID</b>
-              </TableCell>
+              <TableCell align="center"><b>Standard</b></TableCell>
+              <TableCell align="center"><b>Client Name</b></TableCell>
+              <TableCell align="center"><b>Product</b></TableCell>
+              <TableCell align="center"><b>Project ID</b></TableCell>
+              <TableCell align="center"><b>Created On</b></TableCell>
 
-              <TableCell align="center">
-                <b>Created On</b>
-              </TableCell>
-
-              {/* ✅ Show ONLY for Admin */}
               {user_role === 1 && (
-                <TableCell align="center">
-                  <b>Created By</b>
-                </TableCell>
+                <TableCell align="center"><b>Created By</b></TableCell>
               )}
 
-              <TableCell align="center">
-                <b>TRF Generated</b>
-              </TableCell>
-              <TableCell align="center">
-                <b>CDR Generated</b>
-              </TableCell>
-              <TableCell align="center">
-                <b>Letter Generated</b>
-              </TableCell>
-              <TableCell align="center">
-                <b>Actions</b>
-              </TableCell>
+              <TableCell align="center"><b>TRF Generated</b></TableCell>
+              <TableCell align="center"><b>CDR Generated</b></TableCell>
+              <TableCell align="center"><b>Letter Generated</b></TableCell>
+              <TableCell align="center"><b>Actions</b></TableCell>
             </TableRow>
           </TableHead>
 
@@ -187,42 +158,40 @@ const Dashboard = () => {
 
             {!loading &&
               !error &&
-              paginated?.map((row, index) => (
+              paginated.map((row, index) => (
                 <TableRow key={index}>
-                  <TableCell align="center">{row?.Standard}</TableCell>
-                  <TableCell align="center">{row?.Client_Name}</TableCell>
-                  <TableCell align="center">{row?.Product}</TableCell>
-                  <TableCell align="center">{row?.Project_Id}</TableCell>
+                  <TableCell align="center">{row.Standard}</TableCell>
+                  <TableCell align="center">{row.Client_Name}</TableCell>
+                  <TableCell align="center">{row.Product}</TableCell>
+                  <TableCell align="center">{row.Project_Id}</TableCell>
                   <TableCell align="center">
-                    {row?.Proj_Created_On
+                    {row.Proj_Created_On
                       ? new Date(row.Proj_Created_On).toLocaleDateString()
                       : '-'}
                   </TableCell>
 
-                  {/* ✅ Only Admin sees Creator */}
                   {user_role === 1 && (
-                    <TableCell align="center">{row?.Proj_Created_By}</TableCell>
+                    <TableCell align="center">{row.Proj_Created_By}</TableCell>
                   )}
 
+                  {/*  UPDATED CALLS */}
                   <TableCell align="center">
-                    {renderYesNo(row?.TRF_Generated)}
+                    {renderYesNo(row, row.TRF_Generated, 'TRF')}
                   </TableCell>
                   <TableCell align="center">
-                    {renderYesNo(row?.CDR_Generated)}
+                    {renderYesNo(row, row.CDR_Generated, 'CDR')}
                   </TableCell>
                   <TableCell align="center">
-                    {renderYesNo(row?.Letter_Generated)}
+                    {renderYesNo(row, row.Letter_Generated, 'LETTER')}
                   </TableCell>
 
                   <TableCell align="center">
                     <IconButton>
                       <img src="/images/edit.png" width={18} height={18} />
                     </IconButton>
-
                     <IconButton>
                       <img src="/images/add-file.png" width={18} height={18} />
                     </IconButton>
-
                     <IconButton>
                       <img src="/images/delete.png" width={18} height={18} />
                     </IconButton>
@@ -230,7 +199,7 @@ const Dashboard = () => {
                 </TableRow>
               ))}
 
-            {!loading && !error && paginated?.length === 0 && (
+            {!loading && paginated.length === 0 && (
               <TableRow>
                 <TableCell colSpan={user_role === 1 ? 10 : 9} align="center">
                   No projects found
@@ -241,20 +210,13 @@ const Dashboard = () => {
         </Table>
       </TableContainer>
 
-      <Box
-        sx={{
-          mt: 3,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
+      {/* Pagination */}
+      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Typography>Rows per page:</Typography>
-
           <Select
-            value={rowsPerPage}
             size="small"
+            value={rowsPerPage}
             onChange={(e) => {
               setRowsPerPage(e.target.value);
               setPage(1);
@@ -267,23 +229,23 @@ const Dashboard = () => {
           </Select>
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Button
-            variant="contained"
             disabled={page === 1 || loading}
             onClick={() => setPage(page - 1)}
+            variant="contained"
           >
             Previous
           </Button>
 
-          <Typography sx={{ fontWeight: 'bold' }}>
+          <Typography fontWeight="bold">
             Page {page} of {totalPages}
           </Typography>
 
           <Button
-            variant="contained"
             disabled={page === totalPages || loading}
             onClick={() => setPage(page + 1)}
+            variant="contained"
           >
             Next
           </Button>
