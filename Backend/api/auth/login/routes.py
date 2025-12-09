@@ -192,7 +192,8 @@ async def sso_login(data: EmailRequest):
             "message": "Login successful",
             "access_token": access_token,
             "role": user_role,
-            "email": data.email
+            "email": data.email,
+            "name": data.name
         }
 
     except Exception as e:
