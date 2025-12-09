@@ -96,7 +96,7 @@ export default function BasicModal({ open, handleClose }) {
     form.Product.trim() &&
     projectIdValid !== false;
 
-  /* ✅ FIXED SUBMIT */
+  /*  FIXED SUBMIT */
   const closeOnSubmit = async () => {
     if (!validate()) return;
 
@@ -113,7 +113,7 @@ export default function BasicModal({ open, handleClose }) {
       resetForm();
       handleClose();
 
-      /* ✅ PASS REQUIRED STATE */
+      /*  PASS REQUIRED STATE */
       navigate("/create-project", {
         state: {
           standard: form.Standard,
