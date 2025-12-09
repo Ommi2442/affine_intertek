@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -13,8 +13,7 @@ import {
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useMsal } from "@azure/msal-react";
-
+import { useMsal } from '@azure/msal-react';
 
 const Navbar = ({ signOutClickHandler, openProjectModal }) => {
   const navigate = useNavigate();
@@ -27,6 +26,8 @@ const Navbar = ({ signOutClickHandler, openProjectModal }) => {
     : 'create';
 
   const [anchorEl, setAnchorEl] = useState(null);
+  const [userName, setUserName] = useState(null);
+  let user = userName.split(' ');
 
   const openMenu = (e) => setAnchorEl(e.currentTarget);
   const closeMenu = () => setAnchorEl(null);
@@ -38,15 +39,16 @@ const Navbar = ({ signOutClickHandler, openProjectModal }) => {
 
     // Force MSAL to clear account state
     instance.logoutRedirect({
-      postLogoutRedirectUri: "http://localhost:5173/",
-      authority: `https://login.microsoftonline.com/common/oauth2/v2.0/logout`
+      postLogoutRedirectUri: 'http://localhost:5173/',
+      authority: `https://login.microsoftonline.com/common/oauth2/v2.0/logout`,
     });
 
-      // navigate('/');
-    
+    // navigate('/');
   };
 
-  
+  useEffect(() => {
+    setUserName(localStorage.getItem('name'));
+  }, []);
 
   return (
     <AppBar
@@ -119,7 +121,10 @@ const Navbar = ({ signOutClickHandler, openProjectModal }) => {
               <NotificationsIcon sx={{ color: 'black', fontSize: 26 }} />
             </Badge>
           </IconButton>
-
+          <Typography sx={{ color: 'black', fontWeight: 600 }}>
+            {' '}
+            {user[0]}{' '}
+          </Typography>
           {/* Profile Icon */}
           <IconButton onClick={openMenu}>
             <AccountCircleIcon sx={{ color: 'black', fontSize: 32 }} />
