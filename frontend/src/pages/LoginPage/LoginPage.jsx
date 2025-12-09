@@ -165,7 +165,7 @@ export default function LoginPage() {
             src="/images/intertek_login_image.png"
             alt="Login Illustration"
             sx={{
-              width: '100%',
+              width: '90%',
               height: '100%',
               objectFit: 'fill',
               borderRadius: 2,
