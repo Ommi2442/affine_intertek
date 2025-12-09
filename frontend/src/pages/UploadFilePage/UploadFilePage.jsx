@@ -265,7 +265,7 @@ const UploadFilePage = () => {
                 arrow
                 placement="bottom-start"
                 title={
-                  <Box sx={{ fontSize: "12px", lineHeight: 1.6 }}>
+                  <Box sx={{ fontSize: "13px !important", lineHeight: 1.6 }}>
                     <div>
                       <b>Standard:</b> {standard}
                     </div>

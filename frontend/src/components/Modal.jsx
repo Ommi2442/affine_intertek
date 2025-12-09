@@ -159,7 +159,7 @@ export default function BasicModal({ open, handleClose }) {
             open={false}
             sx={{ pointerEvents: "none" }}
           >
-            <MenuItem value="IEC_61010-1">IEC 61010-1</MenuItem>
+            <MenuItem value="IEC_61010-1">IEC_61010-1</MenuItem>
           </Select>
         </FormControl>
 
