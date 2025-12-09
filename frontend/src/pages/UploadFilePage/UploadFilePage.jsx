@@ -9,7 +9,7 @@ import {
   IconButton,
   Snackbar,
   Alert,
-  Tooltip,        // ADD THIS
+  Tooltip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { uploadFilesApi } from "../../redux/api/uploadApi";
@@ -21,325 +21,222 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const UploadFilePage = () => {
   const navigate = useNavigate();
-  // const projectId = localStorage.getItem("projectId");
   const { state } = useLocation();
 
-   const {
-    standard,
-    projectId,
-    clientName,
-    product,
-    source,
-  } = state || {};
+  const { standard, projectId, clientName, product } = state || {};
 
-  // KEEP DEFAULT TEMPLATES
+  // ---------------- STATE ----------------
   const [files, setFiles] = useState({
     sourceFiles: [],
     trfTemplate: { name: "CB scheme TRF template_iec61010_1p.doc" },
     cdrTemplate: { name: "CDR report.xlsx" },
-    letterTemplate: { name: "Intertek GFT-OP-10a Letter Report template.doc" },
+    letterTemplate: {
+      name: "Intertek GFT-OP-10a Letter Report template.doc",
+    },
     standardDocument: { name: "IEC_61010-1-2010.pdf" },
   });
 
   const [recentUploads, setRecentUploads] = useState([]);
   const [deletingFile, setDeletingFile] = useState("");
-
   const [successToast, setSuccessToast] = useState({ open: false, message: "" });
   const [errorToast, setErrorToast] = useState({ open: false, message: "" });
 
-  const inputRefs = {
-    sourceFiles: useRef(null),
-  };
+  const inputRefs = { sourceFiles: useRef(null) };
 
   const allowedExtensions = [
     "pdf", "docx", "msg", "xls", "xlsx",
     "png", "jpg", "jpeg", "eml", "doc", "txt",
   ];
 
-  // ------------------------------------------------------
-  // Load uploaded files (Cosmos DB)
-  // ------------------------------------------------------
-    const loadRecentUploads = async () => {
-      const res = await getProjectByIdApi(projectId);
-
-      // Show latest uploads first
-      const files = res.uploaded_files || [];
-      setRecentUploads([...files].reverse());
-    };
-
-  const handleGenerateTrf = async () => {
-  try {
-    const projectId = localStorage.getItem("projectId");
-
-    await triggerGenerateTrfApi(projectId);
-
-    console.log(" TRF generation triggered");
-    navigate("/report-page");
-
-  } catch (error) {
-    console.error("❌ Failed to trigger TRF generation", error);
-    setErrorToast({
-      open: true,
-      message: "Failed to generate TRF",
-    });
-  }
-};
-
+  // ---------------- LOAD FILES ----------------
+  const loadRecentUploads = async () => {
+    const res = await getProjectByIdApi(projectId);
+    const files = res.uploaded_files || [];
+    setRecentUploads([...files].reverse());
+  };
 
   useEffect(() => {
     loadRecentUploads();
   }, []);
 
-  const getExistingFileNames = () =>
-    recentUploads.map((f) => f.filename.toLowerCase());
+  // ---------------- UPLOAD ----------------
+  const handleSourceFileChange = async (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    const existingNames = recentUploads.map(f => f.filename.toLowerCase());
 
-  // ------------------------------------------------------
-  // AUTO UPLOAD SOURCE FILES (NO DUPLICATES)
-  // ------------------------------------------------------
-    const handleSourceFileChange = async (e) => {
-      const selectedFiles = Array.from(e.target.files);
-      const existingNames = getExistingFileNames();
+    const validFiles = [];
+    let duplicateCount = 0;
 
-      const validFiles = [];
-      let duplicateCount = 0;
+    for (const file of selectedFiles) {
+      const ext = file.name.split(".").pop().toLowerCase();
+      if (!allowedExtensions.includes(ext)) continue;
 
-      for (const file of selectedFiles) {
-        const ext = file.name.split(".").pop().toLowerCase();
-
-        if (!allowedExtensions.includes(ext)) {
-          setErrorToast({
-            open: true,
-            message: `File type not allowed: ${file.name}`,
-          });
-          continue;
-        }
-
-        if (existingNames.includes(file.name.toLowerCase())) {
-          duplicateCount++;
-          continue;
-        }
-
-        validFiles.push(file);
+      if (existingNames.includes(file.name.toLowerCase())) {
+        duplicateCount++;
+        continue;
       }
+      validFiles.push(file);
+    }
 
-      if (validFiles.length === 0) {
-        if (duplicateCount > 0) {
-          setErrorToast({
-            open: true,
-            message: "Duplicate file(s) already uploaded",
-          });
-        }
-        return;
-      }
+    if (!validFiles.length) return;
 
-      setFiles((prev) => ({
-        ...prev,
-        sourceFiles: [...prev.sourceFiles, ...validFiles],
-      }));
+    await uploadFilesApi(projectId, "source_documents", validFiles);
+    await loadRecentUploads();
 
-      await uploadFilesApi(projectId, "source_documents", validFiles);
-      await loadRecentUploads();
+    setSuccessToast({
+      open: true,
+      message: `${validFiles.length} uploaded${duplicateCount ? ` • ${duplicateCount} skipped` : ""}`,
+    });
 
-      let msg = `${validFiles.length} file${validFiles.length > 1 ? "s" : ""} uploaded successfully`;
-      if (duplicateCount > 0) {
-        msg += ` • ${duplicateCount} duplicate skipped`;
-      }
+    inputRefs.sourceFiles.current.value = "";
+  };
 
-      setSuccessToast({ open: true, message: msg });
-
-      // CLEAR FORM
-      setFiles((prev) => ({
-        ...prev,
-        sourceFiles: [],
-      }));
-
-      if (inputRefs.sourceFiles.current) {
-        inputRefs.sourceFiles.current.value = "";
-      }
-    };
-
-
-  // ------------------------------------------------------
-  // DELETE UPLOADED FILE
-  // ------------------------------------------------------
+  // ---------------- DELETE ----------------
   const handleDeleteRecentFile = async (fileName) => {
     setDeletingFile(fileName);
-
     setTimeout(async () => {
       await deleteUploadedFileApi(projectId, fileName);
-
-      // ALWAYS reload using same logic (reversed order)
       await loadRecentUploads();
-
       setDeletingFile("");
-
-      setSuccessToast({
-        open: true,
-        message: `"${fileName}" deleted`,
-      });
     }, 300);
   };
 
+  const handleGenerateTrf = () => {
+    navigate("/report-page");
+  };
 
-  // ------------------------------------------------------
-  // RENDER FILE INPUT ROW (REUSED)
-  // ------------------------------------------------------
-const renderFileRow = (label, filesArray, browseHandler = null) => {
-  const MAX_VISIBLE = 3;
-  const visibleFiles = filesArray.slice(0, MAX_VISIBLE);
-  const hiddenFiles = filesArray.slice(MAX_VISIBLE);
+  // ---------------- RENDER ROW ----------------
+  const renderFileRow = (
+    label,
+    filesArray,
+    browseHandler = null,
+    helperText = ""
+  ) => {
+    const showHelper =
+      typeof helperText === "string" && helperText.trim().length > 0;
 
-  return (
-    <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-      <Box sx={{ minWidth: 220 }}>
-        <Typography fontWeight={600}>{label}</Typography>
-      </Box>
+    return (
+      <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
+        <Box sx={{ minWidth: 220 }}>
+          <Typography fontWeight={600}>{label}</Typography>
+          {showHelper && (
+            <Typography
+              variant="caption"
+              sx={{ color: "text.secondary", lineHeight: 1.1 }}
+            >
+              ({helperText})
+            </Typography>
+          )}
+        </Box>
 
-      <Box sx={{ flex: 1, display: "flex", flexWrap: "wrap", gap: 1 }}>
-        {/* SHOW MAX 3 FILES */}
-        {visibleFiles.map((file, idx) => (
-          <Box
-            key={idx}
-            sx={{
-              bgcolor: "#f0f0f0",
-              px: 1,
-              py: 0.5,
-              borderRadius: 1,
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-            }}
-          >
-            <Typography>{file.name}</Typography>
-
-            {browseHandler && (
-              <IconButton
-                size="small"
-                onClick={() =>
-                  setFiles((prev) => ({
-                    ...prev,
-                    sourceFiles: prev.sourceFiles.filter(
-                      (_, i) => i !== idx
-                    ),
-                  }))
-                }
-              >
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            )}
-          </Box>
-        ))}
-
-        {/* "+N more" WITH HOVER */}
-        {hiddenFiles.length > 0 && (
-          <Tooltip
-            arrow
-            placement="top"
-            title={
-              <Box>
-                {hiddenFiles.map((file, i) => (
-                  <Typography
-                    key={i}
-                    variant="body2"
-                    sx={{ whiteSpace: "nowrap" }}
-                  >
-                    {file.name}
-                  </Typography>
-                ))}
-              </Box>
-            }
-          >
+        <Box sx={{ flex: 1, display: "flex", gap: 1, flexWrap: "wrap" }}>
+          {filesArray.map((file, idx) => (
             <Box
+              key={idx}
               sx={{
-                bgcolor: "#e0e0e0",
+                bgcolor: "#f0f0f0",
                 px: 1,
                 py: 0.5,
                 borderRadius: 1,
-                cursor: "pointer",
               }}
             >
-              <Typography fontWeight={600}>
-                +{hiddenFiles.length} more
-              </Typography>
+              <Typography>{file.name}</Typography>
             </Box>
-          </Tooltip>
-        )}
+          ))}
 
-        {/* BROWSE BUTTON */}
-        {browseHandler && (
-          <>
-            <Button variant="outlined" onClick={browseHandler}>
-              Browse
-            </Button>
-            <input
-              hidden
-              type="file"
-              multiple
-              ref={inputRefs.sourceFiles}
-              onChange={handleSourceFileChange}
-            />
-          </>
-        )}
+          {browseHandler && (
+            <>
+              <Button variant="outlined" onClick={browseHandler}>
+                Browse
+              </Button>
+              <input
+                hidden
+                type="file"
+                multiple
+                ref={inputRefs.sourceFiles}
+                onChange={handleSourceFileChange}
+              />
+            </>
+          )}
+        </Box>
       </Box>
-    </Box>
-  );
-};
+    );
+  };
 
-
+  // ---------------- UI ----------------
   return (
     <Box display="flex" justifyContent="center" width="100%">
       <Box width="90%" display="flex" gap={3} sx={{ height: "60vh" }}>
-        {/* LEFT – PROJECT FILES */}
-        <Card sx={{ width: "70%", p: 3, height: "97%", overflowY: "auto", borderRadius: 2 }}>
-        <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1 }}>
-            {/* Main Title */}
-            <Typography
-              variant="h5"
-              fontWeight={600}
-              sx={{ lineHeight: 1.2 }}
-            >
-              Project Files
-            </Typography>
 
-            {/* Details with hover */}
-            <Tooltip
-              arrow
-              placement="bottom-start"
-              title={
-                <Box sx={{ fontSize: "12px", lineHeight: 1.6 }}>
-                  <div><b>Standard:</b> {standard}</div>
-                  <div><b>Project ID:</b> {projectId}</div>
-                  <div><b>Client Name:</b> {clientName}</div>
-                  <div><b>Product:</b> {product}</div>
-                </Box>
-              }
-            >
-              <Typography
-                sx={{
-                  fontSize: "15px",
-                  color: "text.secondary",
-                  cursor: "help",
-                  whiteSpace: "nowrap",
-                  marginTop: "2px"
-                }}
-              >
-                ({standard} / {projectId} / {clientName} / {product})
+        {/* LEFT – PROJECT FILES */}
+        <Card
+          sx={{
+            width: "70%",
+            p: 3,
+            borderRadius: 2,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {/* CONTENT */}
+          <Box>
+            <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography variant="h5" fontWeight={600}>
+                Project Files
               </Typography>
-            </Tooltip>
+
+              <Tooltip
+                arrow
+                placement="bottom-start"
+                title={
+                  <Box sx={{ fontSize: "12px", lineHeight: 1.6 }}>
+                    <div><b>Standard:</b> {standard}</div>
+                    <div><b>Project ID:</b> {projectId}</div>
+                    <div><b>Client Name:</b> {clientName}</div>
+                    <div><b>Product:</b> {product}</div>
+                  </Box>
+                }
+              >
+                <Typography
+                  sx={{
+                    fontSize: "15px",
+                    color: "text.secondary",
+                    cursor: "help",
+                  }}
+                >
+                  ({standard} / {projectId} / {clientName} / {product})
+                </Typography>
+              </Tooltip>
+            </Box>
+
+            <Stack spacing={3}>
+              {renderFileRow(
+                "Source Documents:",
+                files.sourceFiles,
+                () => inputRefs.sourceFiles.current.click()
+              )}
+              {renderFileRow("TRF Template:", [files.trfTemplate], null, "Word Input")}
+              {renderFileRow("CDR Template:", [files.cdrTemplate], null, "Excel Input")}
+              {renderFileRow("Letter Template:", [files.letterTemplate], null, "Word Input")}
+              {renderFileRow("Standard Document:", [files.standardDocument])}
+            </Stack>
           </Box>
 
-          <Stack spacing={3}>
-            {renderFileRow(
-              "Source Documents:",
-              files.sourceFiles,
-              () => inputRefs.sourceFiles.current.click()
-            )}
-
-            {renderFileRow("TRF Template:", [files.trfTemplate], null, true)}
-            {renderFileRow("CDR Template:", [files.cdrTemplate], null, true)}
-            {renderFileRow("Letter Template:", [files.letterTemplate], null, true)}
-            {renderFileRow("Standard Document:", [files.standardDocument], null, true)}
-          </Stack>
+          {/* ✅ EXTREME BOTTOM LEFT-ALIGNED */}
+          <Typography
+            variant="caption"
+            sx={{
+              mt: "auto",
+              pt: 1,
+              fontSize: "11px",
+              color: "#d32f2f",
+              lineHeight: 1.4,
+              textAlign: "left",
+            }}
+          >
+            (Supporting Document Format: (.pdf, .docx, .msg, .xls, .xlsx, .png,
+            .jpg, .jpeg, .eml, .doc, .txt))
+          </Typography>
         </Card>
 
         {/* RIGHT – RECENT UPLOADS */}
@@ -347,35 +244,35 @@ const renderFileRow = (label, filesArray, browseHandler = null) => {
           sx={{
             width: "30%",
             p: 2,
-            height: "100%",
             display: "flex",
             flexDirection: "column",
             border: "1px solid #ddd",
             borderRadius: 2,
           }}
         >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Typography variant="h6" fontWeight={600}>
-            Recent Uploads
-          </Typography>
+          {/* HEADER + COUNT */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography variant="h6" fontWeight={600}>
+              Recent Uploads
+            </Typography>
 
-          <Box
-            sx={{
-              px: 1.2,
-              py: 0.3,
-              fontSize: "12px",
-              fontWeight: 600,
-              bgcolor: "#eef4ff",
-              color: "#2f5bea",
-              borderRadius: "12px",
-              whiteSpace: "nowrap",
-            }}
-          >
-            Uploaded Files: {recentUploads.length}
+            <Box
+              sx={{
+                px: 1.2,
+                py: 0.3,
+                fontSize: "12px",
+                fontWeight: 600,
+                bgcolor: "#eef4ff",
+                color: "#2f5bea",
+                borderRadius: "12px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Uploaded Files: {recentUploads.length}
+            </Box>
           </Box>
-        </Box>
 
-
+          {/* LIST */}
           <Box sx={{ flex: 1, overflowY: "auto", mt: 2 }}>
             {recentUploads.map((file, idx) => (
               <Box
@@ -412,24 +309,21 @@ const renderFileRow = (label, filesArray, browseHandler = null) => {
         </Paper>
       </Box>
 
-      {/* SUCCESS TOAST */}
+      {/* TOASTS */}
       <Snackbar
         open={successToast.open}
-        autoHideDuration={2200}
+        autoHideDuration={3000}
         onClose={() => setSuccessToast({ open: false, message: "" })}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
         <Alert severity="success" variant="filled">
           {successToast.message}
         </Alert>
       </Snackbar>
 
-      {/* ERROR TOAST */}
       <Snackbar
         open={errorToast.open}
-        autoHideDuration={2500}
+        autoHideDuration={3000}
         onClose={() => setErrorToast({ open: false, message: "" })}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
         <Alert severity="error" variant="filled">
           {errorToast.message}
