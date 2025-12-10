@@ -14,7 +14,8 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "page_no": 1
+          "page_no": 1,
+          "disable_text": true
         },
         {
           "question_row": 1,
@@ -627,7 +628,8 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 3,
-          "is_table": true
+          "is_table": true,
+          "rendering_row": 4
         },
         {
           "question_row": 1,
@@ -641,7 +643,8 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 3,
-          "is_table": true
+          "is_table": true,
+          "rendering_row": 4
         },
         {
           "question_row": 1,
@@ -655,7 +658,8 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 3,
-          "is_table": true
+          "is_table": true,
+          "rendering_row": 4
         }
       ]
     },
@@ -689,7 +693,8 @@
           "accuracy_level": false,
           "page_number": 3,
           "is_table": true,
-          "rendering_column": 1
+          "rendering_column": 1,
+          "rendering_row": 4
         },
         {
           "question_row": 1,
@@ -704,7 +709,8 @@
           "accuracy_level": false,
           "page_number": 3,
           "is_table": true,
-          "rendering_column": 2
+          "rendering_column": 2,
+          "rendering_row": 4
         },
         {
           "question_row": 1,
@@ -719,7 +725,8 @@
           "accuracy_level": false,
           "page_number": 3,
           "is_table": true,
-          "rendering_column": 3
+          "rendering_column": 3,
+          "rendering_row": 4
         }
       ]
     },
@@ -1382,7 +1389,8 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 9
+          "page_no": 9,
+          "disable_text": true
         },
         {
           "clause_row": 1,
@@ -1399,7 +1407,8 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 9
+          "page_no": 9,
+          "disable_text": true
         },
         {
           "clause_row": 1,
@@ -1416,7 +1425,8 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 9
+          "page_no": 9,
+          "disable_text": true
         },
         {
           "clause_row": 1,
@@ -1433,7 +1443,8 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 9
+          "page_no": 9,
+          "disable_text": true
         },
         {
           "clause_row": 3,

@@ -251,20 +251,24 @@
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Title */
 .progress-advanced-card .progress-advanced-title {
   font-size: 22px !important;
-  font-weight: 800 !important;   /* slightly bolder */
+  font-weight: 800 !important; /* slightly bolder */
   margin-bottom: 40px !important; /* increased spacing */
   color: #2d3e50 !important;
   text-align: center !important;
 }
-
-
 
 /* ============================================================
    STEP TRACKER — Modern timeline style
@@ -360,7 +364,7 @@
 
 /* --- LOADER SHIMMER ANIMATION --- */
 .progress-advanced-fill::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: -40%;
@@ -380,10 +384,13 @@
 }
 
 @keyframes shimmerMove {
-  0% { left: -40%; }
-  100% { left: 100%; }
+  0% {
+    left: -40%;
+  }
+  100% {
+    left: 100%;
+  }
 }
-
 
 /* ============================================================
    STATUS TEXT — professional typography
@@ -392,11 +399,11 @@
 .progress-advanced-status {
   font-size: 17px !important;
   font-weight: 700 !important;
-  color: #264653 !important;       /* elegant deep-slate tone */
+  color: #264653 !important; /* elegant deep-slate tone */
   text-align: center !important;
   margin-top: 2px !important;
   margin-bottom: 4px !important;
-  letter-spacing: 0.4px;            /* premium spacing */
+  letter-spacing: 0.4px; /* premium spacing */
   line-height: 1.4;
 
   /* clean fade animation */
@@ -413,7 +420,6 @@
     transform: translateY(0);
   }
 }
-
 
 /* ============================================================
    REFRESH BUTTON — minimal button

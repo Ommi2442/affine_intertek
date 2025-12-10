@@ -6,6 +6,7 @@ import {
   Typography,
   Button,
   Divider,
+  TextField,
 } from '@mui/material';
 import { generateTrfApi } from '../../redux/api/generateTrfApi';
 import './ReportPage.css';
@@ -20,6 +21,7 @@ const ReportPage = () => {
   const [bookmarkData, setBookmarkData] = useState(null);
   const [trfJson, setTrfJson] = useState(null);
 
+  const [issuedBy, setIssuedBy] = useState('');
   const dispatch = useDispatch();
   const dataTableRef = useRef(null);
   const projectID = localStorage.getItem('projectId');
@@ -44,6 +46,27 @@ const ReportPage = () => {
     // { label: "Generating Report", key: "Report Generation Started" },
     { label: 'Report Generated', key: 'Completed' },
   ];
+
+  useEffect(() => {
+    if (dataTableRef.current) {
+      const value = dataTableRef.current.getFieldValue(
+        'Test Report issued under the responsibility of:'
+      );
+      setIssuedBy(value);
+    }
+  }, [localJson]); // runs when JSON is loaded
+
+  const handleIssuedByChange = (e) => {
+    const newValue = e.target.value;
+    setIssuedBy(newValue);
+
+    if (dataTableRef.current) {
+      dataTableRef.current.setFieldValue(
+        'Test Report issued under the responsibility of:',
+        newValue
+      );
+    }
+  };
 
   // ----------------------------------------------------------
   // POLLING STATUS FUNCTION
@@ -182,9 +205,26 @@ const ReportPage = () => {
               className="header-image"
               alt="header"
             />
-            <Typography className="header-text">
-              Test Report issued under the responsibility of:
-            </Typography>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '16px',
+                marginRight: '5%',
+              }}
+            >
+              <Typography className="header-text">
+                Test Report issued under the responsibility of:
+              </Typography>
+
+              <TextField
+                variant="outlined"
+                size="small"
+                value={issuedBy}
+                onChange={handleIssuedByChange}
+                style={{ flex: 2 }} // makes textbox expand
+              />
+            </div>
           </Box>
 
           <Box className="report-title-container">
