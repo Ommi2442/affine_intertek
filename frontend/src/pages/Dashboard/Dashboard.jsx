@@ -46,6 +46,7 @@ const Dashboard = () => {
     const val = value === true || value === 'true';
 
     const handleClick = () => {
+      localStorage.setItem("projectId", row?.Project_Id);
       navigate('/create-project', {
         state: {
           standard: row?.Standard,

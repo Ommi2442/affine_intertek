@@ -2,7 +2,7 @@ import json
 import uuid
 from datetime import datetime
 from pathlib import Path
-
+from azure.storage.blob import BlobClient
 from azure.storage.blob import BlobServiceClient
 from azure.cosmos import CosmosClient
 import os
@@ -21,8 +21,8 @@ COSMOS_PROJECT_TRF_CONTAINER="Project_TRF"
 
 # Cosmos DB
 cosmos_client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
-database  = cosmos_client.get_databa4se_client(COSMOS_DB_DATABASE)
-container = database.get_container_client(COSMOS_PROJECT_TRF_CONTAINER)
+database  = cosmos_client.get_database_client(COSMOS_DB_DATABASE)
+trf_container = database.get_container_client(COSMOS_PROJECT_TRF_CONTAINER)
 
 
 
@@ -50,7 +50,7 @@ def save_local_json_to_blob_and_cosmos(
         json_data = json.load(f)
 
     # ---------- 2. Upload to Blob ----------
-    blob_path = f"{project_id}/{filename}"
+    blob_path = f"Documents/{project_id}/{filename}"
     blob_client = blob_service.get_blob_client(
         container=blob_container,
         blob=blob_path
@@ -74,9 +74,73 @@ def save_local_json_to_blob_and_cosmos(
         "uploaded_on": datetime.utcnow().isoformat() + "Z"
     }
 
-    container.create_item(cosmos_item)
+    trf_container.create_item(cosmos_item)
 
     return cosmos_item
+
+
+
+
+def fetch_json_from_blob(blob_url: str) -> dict:
+    """
+    Downloads a JSON file from Azure Blob Storage using its URL
+    and returns its content as a Python dictionary.
+    """
+
+    # Create a blob client directly from the URL
+    blob_client = BlobClient.from_blob_url(blob_url)
+
+    # Download the blob content
+    stream = blob_client.download_blob()
+    json_bytes = stream.readall()
+
+    # Convert bytes → JSON object
+    json_data = json.loads(json_bytes.decode("utf-8"))
+
+    return json_data
+
+
+
+def load_trf_json_from_blob(project_id):
+    
+    # Get the record from Cosmos DB
+    query = "SELECT * FROM c WHERE c.project_id = @pid"
+    params = [{"name": "@pid", "value": project_id}]
+
+    items = list(trf_container.query_items(
+        query=query,
+        parameters=params,
+        enable_cross_partition_query=True
+    ))
+
+    if not items:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    item = items[0]
+    blob_url = item.get("blob_url")
+
+    if not blob_url:
+        raise HTTPException(status_code=400, detail="Blob URL not found in record")
+
+    # Fetch JSON from Blob Storage
+    json_data = fetch_json_from_blob(blob_url)
+
+    print('json_data', json_data)
+
+    # Return to frontend
+    return {
+        "status": "success",
+        "project_id": project_id,
+        "filename": item["filename"],
+        "data": json_data
+    }
+
+
+
+
+
+
+
 
 
 
