@@ -17,6 +17,7 @@ import {
   getProjectByIdApi,
   deleteUploadedFileApi,
 } from "../../redux/api/projectApi";
+import { triggerGenerateTrfApi } from '../../redux/api/generateTrfApi';
 import { useNavigate, useLocation } from "react-router-dom";
 
 const UploadFilePage = () => {
@@ -176,9 +177,35 @@ const UploadFilePage = () => {
     }, 300);
   };
 
-  const handleGenerateTrf = () => {
-    navigate("/report-page");
-  };
+const handleGenerateTrf = async () => {
+  try {
+    if (!projectId) {
+      setErrorToast({
+        open: true,
+        message: "Project ID not found. Cannot generate TRF.",
+      });
+      return;
+    }
+
+
+    // 🔹 Navigate to report page
+    navigate("/report-page", {
+      state: {
+        projectId,
+        standard,
+        clientName,
+        product,
+      },
+    });
+  } catch (err) {
+    console.error("Generate TRF failed:", err);
+    setErrorToast({
+      open: true,
+      message: "Failed to trigger TRF generation",
+    });
+  }
+};
+
 
   /* ---------------- RENDER ROW ---------------- */
   const renderFileRow = (

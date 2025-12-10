@@ -15,6 +15,8 @@ from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueClient
 from fastapi import APIRouter, UploadFile, File, HTTPException
 import json
+import time
+from utility.json_to_blob import *
 
 router = APIRouter()
 
@@ -488,58 +490,66 @@ def get_project_report_status(id: str):
         "error": progress.get("error")
     }
 
+
+
 @router.post("/generate-trf")
 def generate_trf(projectId: str):
     try:
+        # --------------------------------------------------
+        # Trigger queue (UNCHANGED)
+        # --------------------------------------------------
         queue_client.send_message(json.dumps({
             "projectId": projectId,
             "action": "embed_generatetrf",
             "timestamp": datetime.utcnow().isoformat()
         }))
 
-        return {
-            "status": "success",
-            "message": "TRF generation triggered",
-            "projectId": projectId
-        }
+        # --------------------------------------------------
+        # Poll until worker reaches 100%
+        # --------------------------------------------------
+        MAX_WAIT_SECONDS = 180
+        POLL_INTERVAL = 2
+        elapsed = 0
+
+        while elapsed < MAX_WAIT_SECONDS:
+            # Fetch project progress from Cosmos (your worker updates it)
+            query = "SELECT * FROM c WHERE c.Project_Id = @pid"
+            params = [{"name": "@pid", "value": projectId}]
+
+            docs = list(projects_container.query_items(
+                query=query,
+                parameters=params,
+                enable_cross_partition_query=True,
+            ))
+
+            if docs:
+                progress = docs[0].get("Project_Progress") or {}
+                percentage = progress.get("percentage")
+
+                # Worker completed TRF
+                if percentage == 100:
+                    break
+
+            time.sleep(POLL_INTERVAL)
+            elapsed += POLL_INTERVAL
+
+        if elapsed >= MAX_WAIT_SECONDS:
+            raise HTTPException(status_code=408, detail="TRF generation timed out")
+
+        # --------------------------------------------------
+        # NOW load JSON from blob (your existing code)
+        # --------------------------------------------------
+        response = load_trf_json_from_blob(projectId)
+
+        # --------------------------------------------------
+        # Return JSON to frontend
+        # --------------------------------------------------
+        return response
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-@router.post("/Trf-reports-upload")
-async def upload_json_file(
-    project_id: str = Form(...),  
-    file: UploadFile = File(...)
-):
-    # Validate file type
-    if not file.filename.endswith(".json"):
-        raise HTTPException(
-            status_code=400,
-            detail="Only JSON files are allowed"
-        )
- 
-    try:
-        contents = await file.read()
-        json_content = json.loads(contents)
- 
-        cosmos_item = {
-            "id": str(uuid.uuid4()),
-            "project_id": project_id,          
-            "filename": file.filename,
-            "data": json_content,
-            "uploaded_on": datetime.utcnow().isoformat()
-        }
- 
-        result = COSMOS_DB_project_TRF_Container.upsert_item(cosmos_item)
- 
-        return {
-            "message": "JSON file uploaded successfully",
-            "stored_id": result["id"],
-            "project_id": project_id
-        }
- 
-    except json.JSONDecodeError:
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid JSON file"
-        )
- 
+
+
+    
+
+

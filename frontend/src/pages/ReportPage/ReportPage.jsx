@@ -8,23 +8,28 @@ import {
   Divider,
   TextField,
 } from '@mui/material';
-import { generateTrfApi } from '../../redux/api/generateTrfApi';
 import './ReportPage.css';
 import { useDispatch } from 'react-redux';
 import DataTable1 from '../../components/DataTable1';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
+
+import { triggerGenerateTrfApi } from '../../redux/api/generateTrfApi';
 import localJson from '../../utils/pta_final_5_UI_upd.json';
 
 const ReportPage = () => {
+  const dispatch = useDispatch();
+  const dataTableRef = useRef(null);
+
+  // ✅ original source of projectId (unchanged)
+  const projectID = localStorage.getItem('projectId');
+
+  /* ---------------- STATE ---------------- */
   const [bookmarkOpen, setBookmarkOpen] = useState(false);
   const [bookmarkData, setBookmarkData] = useState(null);
   const [trfJson, setTrfJson] = useState(null);
 
   const [issuedBy, setIssuedBy] = useState('');
-  const dispatch = useDispatch();
-  const dataTableRef = useRef(null);
-  const projectID = localStorage.getItem('projectId');
   // ----------------------------------------------------------
   // PROGRESS STATE
   // ----------------------------------------------------------
@@ -32,19 +37,11 @@ const ReportPage = () => {
   const [progress, setProgress] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
-  const STAGE_PERCENT = {
-    Pending: 0,
-    'Indexing in Progress': 25,
-    'Ready for Report Generation': 50,
-    'Generating Report': 75,
-    Completed: 100,
-  };
-
   const STAGES = [
-    { label: 'Indexing', key: 'Indexing in Progress' },
-    { label: 'TRF Report in Progress', key: 'Ready for Report Generation' },
-    // { label: "Generating Report", key: "Report Generation Started" },
-    { label: 'Report Generated', key: 'Completed' },
+    { label: 'Indexing', threshold: 25 },
+    { label: 'Embedding Completed', threshold: 50 },
+    { label: 'Generating TRF', threshold: 75 },
+    { label: 'TRF Generated', threshold: 100 },
   ];
 
   useEffect(() => {
@@ -68,20 +65,32 @@ const ReportPage = () => {
     }
   };
 
+  useEffect(() => {
+    const load = async () => {
+      const response = await triggerGenerateTrfApi(projectID);
+      setTrfJson(response.data); // TRF JSON loaded
+      console.log('trfJson', trfJson);
+    };
+
+    load();
+  }, [projectID]);
+
   // ----------------------------------------------------------
-  // POLLING STATUS FUNCTION
+  // 2️⃣ STATUS CHECK (✅ FIXED TO MATCH API RESPONSE)
   // ----------------------------------------------------------
   const checkStatus = async () => {
+    if (!projectID) {
+      console.warn('Missing projectID, skipping status check');
+      return;
+    }
+
     try {
       setRefreshing(true);
 
-      const data = await getProjectReportStatusApi(projectID);
+      const res = await getProjectReportStatusApi(projectID);
 
-      if (data?.status) {
-        console.log('STATUS:', data.status);
-        setStatus(data.status);
-        setProgress(STAGE_PERCENT[data.status] ?? 0);
-      }
+      setStatus(res?.status || 'Pending');
+      setProgress(typeof res?.percentage === 'number' ? res.percentage : 0);
     } catch (err) {
       console.error('STATUS CHECK FAILED:', err);
     } finally {
@@ -90,50 +99,38 @@ const ReportPage = () => {
   };
 
   // ----------------------------------------------------------
-  // INITIAL + POLLING (30s)
+  // ✅ FIXED POLLING (FIRST LOAD + EVERY 15s)
   // ----------------------------------------------------------
   useEffect(() => {
-    if (status === 'Completed') return;
+    if (!projectID) return;
 
-    checkStatus();
-    const poll = setInterval(checkStatus, 30000);
-    return () => clearInterval(poll);
-  }, [status]);
+    let intervalId = null;
 
-  // ----------------------------------------------------------
-  // KEEP PROGRESS IN SYNC (DEBUG SAFE)
-  // ----------------------------------------------------------
-  useEffect(() => {
-    setProgress(STAGE_PERCENT[status] ?? 0);
-  }, [status]);
+    const startPolling = async () => {
+      await checkStatus();
 
-  // ----------------------------------------------------------
-  //  LOAD TRF JSON WHEN STATUS IS COMPLETED (FIX)
-  // ----------------------------------------------------------
-  useEffect(() => {
-    if (status !== 'Completed' || trfJson) return;
-
-    const loadTrf = async () => {
-      try {
-        const projectId = 'PRJ_000001';
-        const res = await generateTrfApi(projectId);
-
-        console.log('TRF RESPONSE:', res);
-
-        const report = res?.reports?.[0];
-        if (report?.json) {
-          setTrfJson(report.json);
+      intervalId = setInterval(async () => {
+        if (progress === 100) {
+          clearInterval(intervalId);
+          intervalId = null;
+          return;
         }
-      } catch (err) {
-        console.error('TRF LOAD FAILED:', err);
-      }
+
+        await checkStatus();
+      }, 15000);
     };
 
-    loadTrf();
-  }, [status, trfJson]);
+    startPolling();
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [projectID, progress]);
 
   // ----------------------------------------------------------
-  // BOOKMARK HANDLER
+  // BOOKMARK HANDLING (UNCHANGED)
   // ----------------------------------------------------------
   const handleBookmarkFromChild = (data) => {
     setBookmarkData(data);
@@ -147,10 +144,12 @@ const ReportPage = () => {
   };
 
   // ----------------------------------------------------------
-  // LEFT PANEL (PROGRESS OR TRF)
+  // LEFT PANEL (PROGRESS OR REPORT)
   // ----------------------------------------------------------
   const renderLeftPanel = () => {
-    if (status !== 'Completed' || !trfJson) {
+    console.log(localJson);
+    console.log(trfJson);
+    if (progress < 100 || !trfJson) {
       return (
         <Card className="progress-advanced-card left-card">
           <Typography className="progress-advanced-title">
@@ -159,12 +158,13 @@ const ReportPage = () => {
 
           <Box className="steps-container">
             {STAGES.map((stage, index) => {
-              const reached = progress >= STAGE_PERCENT[stage.key];
+              const reached = progress >= stage.threshold;
               return (
                 <Box key={index} className="step-item">
                   <Box className={`step-circle ${reached ? 'active' : ''}`}>
                     {reached ? '✔' : index + 1}
                   </Box>
+
                   <Typography className="step-label">{stage.label}</Typography>
 
                   {index !== STAGES.length - 1 && (
@@ -245,8 +245,8 @@ const ReportPage = () => {
 
           <DataTable1
             ref={dataTableRef}
-            //jsonData={trfJson}
-            jsonData={localJson}
+            jsonData={trfJson}
+            // jsonData={localJson}
             onBookmarkClick={handleBookmarkFromChild}
           />
         </CardContent>
