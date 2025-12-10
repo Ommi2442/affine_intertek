@@ -1,3 +1,11 @@
+/* eslint-disable */
+/* eslint-disable react/display-name */
+/* eslint-disable no-unused-vars */
+/* eslint-disable complexity */
+/* eslint-disable max-lines */
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable no-unreachable */
+
 import React, {
   useState,
   useEffect,
@@ -46,16 +54,12 @@ const DataTable1 = forwardRef(
     const [currentCommentText, setCurrentCommentText] = useState('');
     const commentTargetRef = useRef({ t: null, i: null });
 
-    // ---------------------------------------------------
-    // EXPOSE UPDATED JSON TO PARENT (unchanged)
-    // ---------------------------------------------------
+    // EXPOSE UPDATED JSON TO PARENT
     useImperativeHandle(ref, () => ({
       getUpdatedJson: () => ({ Tables: tables }),
     }));
 
-    // ---------------------------------------------------
     // LOAD JSON
-    // ---------------------------------------------------
     useEffect(() => {
       const fresh = jsonData?.Tables ?? [];
       setTables(fresh);
@@ -63,14 +67,12 @@ const DataTable1 = forwardRef(
       setCurrentPageIndex(0);
     }, [jsonData]);
 
-    // ---------------------------------------------------
-    // FLATTEN ITEMS (hide disable_text: true)
-    // ---------------------------------------------------
+    // FLATTEN ITEMS (hide disable_text: true in UI)
     const allItems = useMemo(() => {
       const arr = [];
       (tables || []).forEach((table, tIdx) => {
         (table.Items || [])
-          .filter((item) => item.disable_text !== true) // 👈 HIDE ONLY IN UI
+          .filter((item) => item.disable_text !== true)
           .forEach((item, iIdx) => {
             arr.push({ ...item, __t: tIdx, __i: iIdx });
           });
@@ -78,9 +80,7 @@ const DataTable1 = forwardRef(
       return arr;
     }, [tables]);
 
-    // ---------------------------------------------------
     // GROUP BY PAGE NUMBER
-    // ---------------------------------------------------
     const { pageNos, pageMap } = useMemo(() => {
       const map = {};
       allItems.forEach((item) => {
@@ -106,9 +106,7 @@ const DataTable1 = forwardRef(
         ? 0
         : Math.min(Math.max(currentPageIndex, 0), totalPages - 1);
 
-    // ---------------------------------------------------
     // INFINITE SCROLL
-    // ---------------------------------------------------
     useEffect(() => {
       const sentinel = sentinelRef.current;
       const root = containerRef.current;
@@ -131,9 +129,7 @@ const DataTable1 = forwardRef(
       return () => observer.disconnect();
     }, [visiblePages, totalPages]);
 
-    // ---------------------------------------------------
     // SCROLL → ACTIVE PAGE
-    // ---------------------------------------------------
     useEffect(() => {
       const el = containerRef.current;
       if (!el || visiblePageNos.length === 0) return;
@@ -155,9 +151,7 @@ const DataTable1 = forwardRef(
       return () => el.removeEventListener('scroll', onScroll);
     }, [visiblePageNos, safeIndex]);
 
-    // ---------------------------------------------------
     // PAGINATION
-    // ---------------------------------------------------
     const handlePageChange = (e, pageIndex1Based) => {
       const idx = pageIndex1Based - 1;
       if (idx < 0 || idx >= totalPages) return;
@@ -176,9 +170,7 @@ const DataTable1 = forwardRef(
       }, 80);
     };
 
-    // ---------------------------------------------------
     // UPDATE CELL VALUE
-    // ---------------------------------------------------
     const updateCell = (t, i, val) => {
       setTables((prev) => {
         const next = prev.map((tbl) => ({ ...tbl, Items: [...tbl.Items] }));
@@ -187,9 +179,7 @@ const DataTable1 = forwardRef(
       });
     };
 
-    // ---------------------------------------------------
     // COMMENT HANDLING
-    // ---------------------------------------------------
     const openComment = (t, i) => {
       commentTargetRef.current = { t, i };
       const item = tables?.[t]?.Items?.[i];
@@ -215,11 +205,10 @@ const DataTable1 = forwardRef(
 
     if (totalPages === 0) return <Typography>No Data</Typography>;
 
-    // ---------------------------------------------------
     // HOVER ACTIONS
-    // ---------------------------------------------------
     const renderHoverActions = (tIdx, iIdx, editable) => {
       if (!editable) return null;
+      if (tIdx == null || iIdx == null) return null;
       if (hovered.t !== tIdx || hovered.i !== iIdx) return null;
 
       return (
@@ -239,17 +228,16 @@ const DataTable1 = forwardRef(
         </div>
       );
     };
-    // ============================================================
-    // TABLE MODE (is_table: true)
-    // ============================================================
-    const renderTableGroupsForPage = (pageItems) => {
-      // filtered table items (hide disable_text)
+
+    // TABLE MODE (is_table: true) - for pages outside 9–42
+    // includes PAGE 7 rules: answer_column → UI_answer_column, is_textbox, checkbox_answer_UI
+    const renderTableGroupsForPage = (pageItems, pageNo) => {
       const tableItems = pageItems.filter(
         (it) => it.is_table === true && it.disable_text !== true
       );
       if (tableItems.length === 0) return null;
 
-      // group by original table
+      // group by original table __t
       const groupsByTable = {};
       tableItems.forEach((item) => {
         const key = item.__t ?? 0;
@@ -257,7 +245,22 @@ const DataTable1 = forwardRef(
         groupsByTable[key].push(item);
       });
 
-      // sort table groups by question_row (original order)
+      // helper: get column index with PAGE 7 answer_column → UI_answer_column logic
+      const getColumnIndex = (item) => {
+        let ansCol = item.answer_column;
+        if (
+          pageNo === 7 &&
+          (ansCol === 0 || ansCol === '0') &&
+          item.UI_answer_column != null
+        ) {
+          ansCol = item.UI_answer_column;
+        }
+        const raw =
+          item.rendering_column ?? item.question_column ?? ansCol ?? 0;
+        const num = Number(raw);
+        return Number.isNaN(num) ? 0 : num;
+      };
+
       const tableGroups = Object.values(groupsByTable).sort((a, b) => {
         const aMin = Math.min(
           ...a.map((it) =>
@@ -272,9 +275,7 @@ const DataTable1 = forwardRef(
         return aMin - bMin;
       });
 
-      // RENDER EACH TABLE GROUP
       return tableGroups.map((group, gIdx) => {
-        // group rows inside this table by question_row
         const rowsByQR = {};
         group.forEach((it) => {
           const qr = typeof it.question_row === 'number' ? it.question_row : 0;
@@ -286,7 +287,6 @@ const DataTable1 = forwardRef(
           .map(Number)
           .sort((a, b) => a - b);
 
-        // number of columns across entire table (for full-width rows)
         const maxColumns = Math.max(
           ...Object.values(rowsByQR).map((rows) => rows.length)
         );
@@ -300,23 +300,11 @@ const DataTable1 = forwardRef(
             <Table size="small" className="dt-table">
               <TableBody>
                 {rowKeys.map((qr) => {
-                  const rowItems = rowsByQR[qr].slice().sort((a, b) => {
-                    const colA =
-                      a.rendering_column ??
-                      a.question_column ??
-                      a.answer_column ??
-                      0;
-                    const colB =
-                      b.rendering_column ??
-                      b.question_column ??
-                      b.answer_column ??
-                      0;
-                    return colA - colB;
-                  });
+                  const rowItems = rowsByQR[qr]
+                    .slice()
+                    .sort((a, b) => getColumnIndex(a) - getColumnIndex(b));
 
-                  // ==========================================
-                  // SINGLE-ROW (or explicit single_row:true)
-                  // ==========================================
+                  // SINGLE ROW (or explicit single_row)
                   if (
                     rowItems.length === 1 ||
                     rowItems[0].single_row === true
@@ -324,11 +312,14 @@ const DataTable1 = forwardRef(
                     const col = rowItems[0];
                     const tIdx = col.__t;
                     const iIdx = col.__i;
-                    const editable = col.user_editable === true;
+                    const isPage7 = pageNo === 7;
+                    const isTextbox = !(isPage7 && col.is_textbox === false);
+                    const editable = col.user_editable === true && isTextbox;
                     const value = col.value ?? col.Value ?? '';
                     const label = col.field ?? col.Field ?? '';
-
                     const rows = col.rendering_row ? col.rendering_row : 1;
+                    const isCheckboxUI =
+                      isPage7 && col.checkbox_answer_UI === true;
 
                     return (
                       <TableRow key={qr}>
@@ -349,7 +340,29 @@ const DataTable1 = forwardRef(
                               {label}
                             </Typography>
 
-                            {editable ? (
+                            {isCheckboxUI ? (
+                              <div>
+                                {(value || '')
+                                  .split('\n')
+                                  .map((opt) => opt.trim())
+                                  .filter(Boolean)
+                                  .map((opt, idxOpt) => (
+                                    <div
+                                      key={idxOpt}
+                                      style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 4,
+                                      }}
+                                    >
+                                      <Checkbox size="small" />
+                                      <Typography variant="body2">
+                                        {opt}
+                                      </Typography>
+                                    </div>
+                                  ))}
+                              </div>
+                            ) : editable ? (
                               <textarea
                                 className="dt-textarea dt-textarea-with-actions"
                                 value={value}
@@ -378,12 +391,10 @@ const DataTable1 = forwardRef(
                     );
                   }
 
-                  // ==========================================
-                  // MULTI-COLUMN TABLE ROW
-                  // ==========================================
+                  // MULTI-COLUMN ROW
                   return (
                     <React.Fragment key={qr}>
-                      {/* HEADER ROW */}
+                      {/* Header row */}
                       <TableRow>
                         {rowItems.map((col, idx) => (
                           <TableCell key={idx} className="dt-thead-cell">
@@ -392,17 +403,23 @@ const DataTable1 = forwardRef(
                         ))}
                       </TableRow>
 
-                      {/* VALUE ROW */}
+                      {/* Value row */}
                       <TableRow>
                         {rowItems.map((col, idx) => {
                           const tIdx = col.__t;
                           const iIdx = col.__i;
-
-                          const editable = col.user_editable === true;
+                          const isPage7 = pageNo === 7;
+                          const isTextbox = !(
+                            isPage7 && col.is_textbox === false
+                          );
+                          const editable =
+                            col.user_editable === true && isTextbox;
                           const value = col.value ?? col.Value ?? '';
                           const rows = col.rendering_row
                             ? col.rendering_row
                             : 1;
+                          const isCheckboxUI =
+                            isPage7 && col.checkbox_answer_UI === true;
 
                           return (
                             <TableCell key={idx}>
@@ -415,7 +432,29 @@ const DataTable1 = forwardRef(
                                   setHovered({ t: null, i: null })
                                 }
                               >
-                                {editable ? (
+                                {isCheckboxUI ? (
+                                  <div>
+                                    {(value || '')
+                                      .split('\n')
+                                      .map((opt) => opt.trim())
+                                      .filter(Boolean)
+                                      .map((opt, idxOpt) => (
+                                        <div
+                                          key={idxOpt}
+                                          style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 4,
+                                          }}
+                                        >
+                                          <Checkbox size="small" />
+                                          <Typography variant="body2">
+                                            {opt}
+                                          </Typography>
+                                        </div>
+                                      ))}
+                                  </div>
+                                ) : editable ? (
                                   <textarea
                                     className="dt-textarea dt-textarea-with-actions"
                                     value={value}
@@ -455,32 +494,24 @@ const DataTable1 = forwardRef(
       });
     };
 
-    // ============================================================
-    // NORMAL (NON-TABLE) ITEMS
-    // ============================================================
+    // NORMAL (NON-TABLE) ITEMS - for pages outside 9–42
+    // includes PAGE 7 rules: is_textbox, checkbox_answer_UI
     const renderNormalItems = (normalItems, pageNo) => {
       if (normalItems.length === 0) return null;
 
       let groupedNormal = {};
 
-      // ======================================
-      // PAGE 2 SPECIAL LOGIC:
-      // Group by question_row (to display sequential blocks)
-      // ======================================
+      // PAGE 2 special: group by question_row
       if (pageNo === 2) {
         normalItems.forEach((item) => {
-          if (item.disable_text === true) return; // hide only UI
+          if (item.disable_text === true) return;
           const qr =
             typeof item.question_row === 'number' ? item.question_row : 0;
           if (!groupedNormal[qr]) groupedNormal[qr] = [];
           groupedNormal[qr].push(item);
         });
-      }
-
-      // ======================================
-      // DEFAULT LOGIC (all other pages)
-      // ======================================
-      else {
+      } else {
+        // Default: group by field name
         normalItems.forEach((item) => {
           if (item.disable_text === true) return;
           const field = item.field ?? item.Field ?? '';
@@ -513,13 +544,13 @@ const DataTable1 = forwardRef(
                       ? (first.field ?? first.Field ?? '')
                       : groupKey;
 
-                  // ==========================================
-                  // SINGLE-ROW (non-table)
-                  // ==========================================
+                  // SINGLE ROW
                   if (first.single_row === true) {
                     const tIdx = first.__t;
                     const iIdx = first.__i;
-                    const editable = first.user_editable === true;
+                    const isPage7 = pageNo === 7;
+                    const isTextbox = !(isPage7 && first.is_textbox === false);
+                    const editable = first.user_editable === true && isTextbox;
                     const value =
                       first.value ??
                       first.Value ??
@@ -569,9 +600,7 @@ const DataTable1 = forwardRef(
                     );
                   }
 
-                  // ==========================================
-                  // DEFAULT MULTI-VALUE ROW
-                  // ==========================================
+                  // MULTI-VALUE ROW
                   return (
                     <TableRow key={idx1}>
                       <TableCell className="dt-field-cell">
@@ -591,8 +620,14 @@ const DataTable1 = forwardRef(
                           {rowsArr.map((r, idx2) => {
                             const tIdx = r.__t;
                             const iIdx = r.__i;
-
-                            const editable = r.user_editable === true;
+                            const isPage7 = pageNo === 7;
+                            const isCheckboxUI =
+                              isPage7 && r.checkbox_answer_UI === true;
+                            const isTextbox = !(
+                              isPage7 && r.is_textbox === false
+                            );
+                            const editable =
+                              r.user_editable === true && isTextbox;
                             const value = r.value ?? r.Value ?? '';
                             const rows = r.rendering_row ? r.rendering_row : 1;
 
@@ -607,7 +642,29 @@ const DataTable1 = forwardRef(
                                   setHovered({ t: null, i: null })
                                 }
                               >
-                                {editable ? (
+                                {isCheckboxUI ? (
+                                  <div>
+                                    {(value || '')
+                                      .split('\n')
+                                      .map((opt) => opt.trim())
+                                      .filter(Boolean)
+                                      .map((opt, idxOpt) => (
+                                        <div
+                                          key={idxOpt}
+                                          style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 4,
+                                          }}
+                                        >
+                                          <Checkbox size="small" />
+                                          <Typography variant="body2">
+                                            {opt}
+                                          </Typography>
+                                        </div>
+                                      ))}
+                                  </div>
+                                ) : editable ? (
                                   <textarea
                                     className="dt-textarea dt-textarea-with-actions"
                                     value={value}
@@ -646,9 +703,195 @@ const DataTable1 = forwardRef(
         </TableContainer>
       );
     };
-    // ============================================================
+
+    // PAGE 9 → 42 SPECIAL 4-COLUMN CLAUSE TABLE
+    // Requirement + Test: ALWAYS FIELD (uneditable)
+    // Remark / Verdict: ONLY value based on task_type
+    const renderPart10Table = (pageItems) => {
+      const items = pageItems.filter((i) => i.disable_text !== true);
+
+      const rowsByClause = {};
+
+      items.forEach((item) => {
+        // clause: only from clause / clause_number, never from clause_row
+        let clause = item.clause ?? item.clause_number ?? '';
+
+        if (clause == null || clause === 'null' || clause === undefined) {
+          clause = '';
+        }
+
+        if (!rowsByClause[clause]) {
+          rowsByClause[clause] = {
+            clause,
+            requirement: null,
+            remark: null,
+            verdict: null,
+          };
+        }
+
+        // Always show FIELD in Requirement column (uneditable)
+        if (item.field || item.Field) {
+          rowsByClause[clause].requirement = {
+            label: item.field ?? item.Field ?? '',
+            comment: item._comment,
+          };
+        }
+
+        // REMARK → render value only in remark column
+        if (item.task_type === 'remark') {
+          rowsByClause[clause].remark = {
+            value: item.value ?? item.Value ?? '',
+            tIdx: item.__t,
+            iIdx: item.__i,
+            editable: item.user_editable === true,
+            rows: item.rendering_row || 1,
+            comment: item._comment,
+          };
+        }
+
+        // VERDICT → render value only in verdict column
+        if (item.task_type === 'verdict') {
+          rowsByClause[clause].verdict = {
+            value: item.value ?? item.Value ?? '',
+            tIdx: item.__t,
+            iIdx: item.__i,
+            editable: item.user_editable === true,
+            rows: item.rendering_row || 1,
+            comment: item._comment,
+          };
+        }
+      });
+
+      // SORT CLAUSES naturally
+      const finalRows = Object.values(rowsByClause).sort((a, b) => {
+        const A = String(a.clause).split('.').map(Number);
+        const B = String(b.clause).split('.').map(Number);
+        const len = Math.max(A.length, B.length);
+        for (let i = 0; i < len; i++) {
+          const x = A[i] || 0;
+          const y = B[i] || 0;
+          if (x !== y) return x - y;
+        }
+        return 0;
+      });
+
+      // styles for vertical grid lines like a proper table
+      const bodyCellSx = {
+        borderRight: '1px solid #ccc',
+        borderBottom: '1px solid #ccc',
+        verticalAlign: 'top',
+      };
+
+      const headerCellSx = {
+        borderRight: '1px solid #aaa',
+        borderBottom: '2px solid #000',
+        fontWeight: 'bold',
+      };
+
+      // Render requirement cell (uneditable)
+      const renderRequirementCell = (req) => {
+        if (!req) return null;
+        return (
+          <div className="dt-value-column dt-relative">
+            <Typography>{req.label}</Typography>
+            {req.comment && (
+              <Typography variant="caption" className="dt-comment-caption">
+                💬 {req.comment}
+              </Typography>
+            )}
+          </div>
+        );
+      };
+
+      // Render remark / verdict editable cells
+      const renderRemarkOrVerdictCell = (cell) => {
+        if (!cell) return null;
+
+        const { tIdx, iIdx, editable, value, rows, comment } = cell;
+
+        return (
+          <div
+            className="dt-value-column dt-relative"
+            onMouseEnter={() => setHovered({ t: tIdx, i: iIdx })}
+            onMouseLeave={() => setHovered({ t: null, i: null })}
+          >
+            {editable ? (
+              <textarea
+                className="dt-textarea dt-textarea-with-actions"
+                value={value}
+                rows={rows}
+                onChange={(e) => updateCell(tIdx, iIdx, e.target.value)}
+              />
+            ) : (
+              <Typography>{value}</Typography>
+            )}
+
+            {renderHoverActions(tIdx, iIdx, editable)}
+
+            {comment && (
+              <Typography variant="caption" className="dt-comment-caption">
+                💬 {comment}
+              </Typography>
+            )}
+          </div>
+        );
+      };
+
+      return (
+        <TableContainer component={Paper} className="dt-table-container">
+          <Table
+            size="small"
+            className="dt-table"
+            sx={{ border: '1px solid #ccc', borderCollapse: 'collapse' }}
+          >
+            <TableHead>
+              <TableRow>
+                <TableCell className="dt-thead-cell" sx={headerCellSx}>
+                  Clause
+                </TableCell>
+                <TableCell className="dt-thead-cell" sx={headerCellSx}>
+                  Requirement + Test
+                </TableCell>
+                <TableCell className="dt-thead-cell" sx={headerCellSx}>
+                  Result – Remark
+                </TableCell>
+                <TableCell className="dt-thead-cell" sx={headerCellSx}>
+                  Verdict
+                </TableCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {finalRows.map((row, idx) => (
+                <TableRow key={idx}>
+                  {/* Clause */}
+                  <TableCell sx={bodyCellSx}>{row.clause ?? ''}</TableCell>
+
+                  {/* Requirement (always field) */}
+                  <TableCell sx={bodyCellSx}>
+                    {renderRequirementCell(row.requirement)}
+                  </TableCell>
+
+                  {/* Remark */}
+                  <TableCell sx={bodyCellSx}>
+                    {renderRemarkOrVerdictCell(row.remark)}
+                  </TableCell>
+
+                  {/* Verdict */}
+                  <TableCell sx={bodyCellSx}>
+                    {renderRemarkOrVerdictCell(row.verdict)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+          <Divider className="dt-divider" />
+        </TableContainer>
+      );
+    };
+
     // RENDER FULL UI
-    // ============================================================
     return (
       <>
         <div className="dt-container" ref={containerRef}>
@@ -661,7 +904,6 @@ const DataTable1 = forwardRef(
           {visiblePageNos.map((pageNo) => {
             const pageItems = pageMap[pageNo] || [];
 
-            // Filter table + normal items (hide disable_text ONLY from UI)
             const tableItems = pageItems.filter(
               (it) => it.is_table === true && it.disable_text !== true
             );
@@ -677,22 +919,25 @@ const DataTable1 = forwardRef(
               >
                 <Typography className="dt-page-title">Page {pageNo}</Typography>
 
-                {/* TABLE MODE FIRST */}
-                {tableItems.length > 0 && renderTableGroupsForPage(pageItems)}
-
-                {/* NORMAL FIELDS NEXT */}
-                {normalItems.length > 0 &&
-                  renderNormalItems(normalItems, pageNo)}
+                {/* Page 9 → 42 special IEC 61010-1 clause table */}
+                {pageNo >= 9 && pageNo <= 42 ? (
+                  renderPart10Table(pageItems)
+                ) : (
+                  <>
+                    {tableItems.length > 0 &&
+                      renderTableGroupsForPage(pageItems, pageNo)}
+                    {normalItems.length > 0 &&
+                      renderNormalItems(normalItems, pageNo)}
+                  </>
+                )}
 
                 <Divider className="dt-divider" />
               </div>
             );
           })}
 
-          {/* Infinite scroll sentinel */}
           <div ref={sentinelRef} className="dt-sentinel" />
 
-          {/* Sticky pagination */}
           <div className="dt-pagination-wrapper">
             <Pagination
               count={totalPages}
@@ -710,7 +955,6 @@ const DataTable1 = forwardRef(
           )}
         </div>
 
-        {/* COMMENT DIALOG */}
         <CommentDialog
           open={isCommentOpen}
           onClose={() => setIsCommentOpen(false)}

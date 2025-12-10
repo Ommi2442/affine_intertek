@@ -488,8 +488,6 @@ def get_project_report_status(id: str):
         "error": progress.get("error")
     }
 
-
-
 @router.post("/generate-trf")
 def generate_trf(projectId: str):
     try:
@@ -507,3 +505,41 @@ def generate_trf(projectId: str):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+@router.post("/Trf-reports-upload")
+async def upload_json_file(
+    project_id: str = Form(...),  
+    file: UploadFile = File(...)
+):
+    # Validate file type
+    if not file.filename.endswith(".json"):
+        raise HTTPException(
+            status_code=400,
+            detail="Only JSON files are allowed"
+        )
+ 
+    try:
+        contents = await file.read()
+        json_content = json.loads(contents)
+ 
+        cosmos_item = {
+            "id": str(uuid.uuid4()),
+            "project_id": project_id,          
+            "filename": file.filename,
+            "data": json_content,
+            "uploaded_on": datetime.utcnow().isoformat()
+        }
+ 
+        result = COSMOS_DB_project_TRF_Container.upsert_item(cosmos_item)
+ 
+        return {
+            "message": "JSON file uploaded successfully",
+            "stored_id": result["id"],
+            "project_id": project_id
+        }
+ 
+    except json.JSONDecodeError:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid JSON file"
+        )
+ 
