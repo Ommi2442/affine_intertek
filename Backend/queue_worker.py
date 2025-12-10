@@ -7,7 +7,7 @@ from azure.storage.queue import QueueClient
 from azure.cosmos import CosmosClient
 from fastapi import FastAPI
 from utility.embeddings import ingest_files_from_blob_urls_create_embeddings
-
+from utility.json_to_blob import *
 
 # Azure Config
 # --------------------------
@@ -26,6 +26,9 @@ COSMOS_DB_KEY="azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00
 COSMOS_DB_DATABASE="intertek_poc_dev"
 COSMOS_PROJECT_CONTAINER="projects"
 
+BASE_DIR = Path(__file__).resolve().parent
+TRF_JSON_OUTPUT_PATH = BASE_DIR / "data" / "pta_final_5_UI_upd.json" 
+
 # ---- Azure Clients ----
 blob_service = BlobServiceClient.from_connection_string(QUEUE_CONN_STR)
 queue_client = QueueClient.from_connection_string(QUEUE_CONN_STR, QUEUE_NAME)
@@ -37,132 +40,208 @@ projects_container = db.get_container_client(COSMOS_PROJECT_CONTAINER)
 app = FastAPI(title="Queue Worker Service")
 
 
-# ----------------------------------------------------------
-#  Helper: update Project_Progress safely
-# ----------------------------------------------------------
+# ==========================================================
+# HELPER: UPDATE PROJECT PROGRESS
+# ==========================================================
 def update_project_progress(
-    project_doc,
+    project_doc: dict,
     stage: str,
     percentage: int,
     step: str | None = None,
-    error: str | None = None
+    error: str | None = None,
 ):
     project_doc["Project_Progress"] = {
         "stage": stage,
         "percentage": percentage,
         "step": step,
         "last_updated": datetime.utcnow().isoformat(),
-        "error": error
+        "error": error,
     }
 
     projects_container.upsert_item(project_doc)
+    print(f"✅ Progress updated → {percentage}% | {stage}")
 
 
-# --------------------------------------------------
-#  PROCESS QUEUE MESSAGE (MINIMAL CHANGE)
-# --------------------------------------------------
-async def process_message(message):
-    event = json.loads(message.content)
+# ==========================================================
+# PROCESS QUEUE MESSAGE (SAFE + IDEMPOTENT)
+# ==========================================================
+async def process_message(message) -> bool:
+    print("\n🚀 Queue message received")
+
+    # ------------------------------------------------------
+    # SAFE MESSAGE PARSE
+    # ------------------------------------------------------
+    try:
+        if not message.content:
+            print("❌ Empty queue message")
+            return True
+
+        event = json.loads(message.content)
+        if not isinstance(event, dict):
+            print("❌ Queue message is not a JSON object")
+            return True
+
+    except Exception as e:
+        print(f"❌ Invalid queue message format: {e}")
+        return True
+
     project_id = event.get("projectId")
+    if not project_id:
+        print("❌ Missing projectId in queue message")
+        return True
 
-    print(f"\n🚀 Queue Trigger Received → Project: {project_id}\n")
+    print(f"📦 Processing project: {project_id}")
 
-    # ---------- FETCH PROJECT ----------
+    # ------------------------------------------------------
+    # FETCH PROJECT
+    # ------------------------------------------------------
     query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
-    docs = list(projects_container.query_items(
-        query=query,
-        enable_cross_partition_query=True
-    ))
+    docs = list(
+        projects_container.query_items(
+            query=query,
+            enable_cross_partition_query=True,
+        )
+    )
 
     if not docs:
         print(f"❌ Project not found: {project_id}")
-        return False
+        return True
 
     project_doc = docs[0]
 
-    # ---------- COLLECT BLOB URLS ----------
-    blob_urls = [x["url"] for x in project_doc.get("Source_Doc", [])]
+    # ------------------------------------------------------
+    # IDEMPOTENCY GUARD
+    # ------------------------------------------------------
+    # progress = project_doc.get("Project_Progress") or {}
+    # if progress.get("percentage") == 100:
+    #     print(f"✅ Project already completed: {project_id}")
+    #     return True
+
+    # ------------------------------------------------------
+    # EXTRACT SOURCE DOCUMENT URLs (SAFE)
+    # ------------------------------------------------------
+    source_docs = project_doc.get("Source_Doc") or []
+
+    blob_urls: list[str] = []
+    for doc in source_docs:
+        if isinstance(doc, dict) and "url" in doc:
+            blob_urls.append(doc["url"])
+        else:
+            print(f"⚠️ Skipping invalid Source_Doc entry: {doc}")
 
     if not blob_urls:
-        print(f"⚠ No Source_Doc files for project {project_id}")
-        return False
+        print(f"⚠️ No valid source documents for project {project_id}")
+        return True
 
     print(f"📄 Files to embed: {len(blob_urls)}")
 
     try:
         # --------------------------------------------------
-        #  STATUS → INDEXING (25%)
+        # 25% — EMBEDDING START
         # --------------------------------------------------
         update_project_progress(
             project_doc,
             stage="Indexing in Progress",
             percentage=25,
-            step="Embedding source documents"
+            step="Creating embeddings",
         )
 
-        # --------------------------------------------------
-        #  EXISTING EMBEDDING LOGIC (UNCHANGED)
-        # --------------------------------------------------
         ingest_files_from_blob_urls_create_embeddings(
             project_id,
-            blob_urls
+            blob_urls,
         )
 
         # --------------------------------------------------
-        #  STATUS → READY FOR REPORT (50%)
+        # 50% — EMBEDDING COMPLETE
         # --------------------------------------------------
         update_project_progress(
             project_doc,
-            stage="Ready for Report Generation",
+            stage="Embedding Completed",
             percentage=50,
-            step="Embedding completed"
+            step="Embeddings ready",
         )
 
-        print(f" Embedding completed for project {project_id}")
+        # --------------------------------------------------
+        # 75% — TRF GENERATION
+        # --------------------------------------------------
+        update_project_progress(
+            project_doc,
+            stage="Generating TRF",
+            percentage=75,
+            step="Generating TRF JSON",
+        )
+
+        # --------------------------------------------------
+        # SAVE TRF JSON → BLOB + COSMOS
+        # --------------------------------------------------
+        save_local_json_to_blob_and_cosmos(
+            file_path=str(TRF_JSON_OUTPUT_PATH),
+            project_id=project_id,
+        )
+
+        # --------------------------------------------------
+        # 100% — COMPLETED
+        # --------------------------------------------------
+        update_project_progress(
+            project_doc,
+            stage="Completed",
+            percentage=100,
+            step="TRF generated and stored",
+        )
+
+        print(f"🎉 TRF generation completed for project {project_id}")
         return True
 
     except Exception as e:
-        print(f"❌ Embedding failed for project {project_id}: {e}")
+        print(f"❌ Worker failed for project {project_id}: {e}")
 
-        # --------------------------------------------------
-        #  STATUS → FAILED
-        # --------------------------------------------------
         update_project_progress(
             project_doc,
             stage="Failed",
             percentage=0,
-            step="Embedding failed",
-            error=str(e)
+            step="Processing failed",
+            error=str(e),
         )
-        return False
+
+        return False  # ❌ retry allowed
 
 
-# --------------------------------------------------
-#  QUEUE LISTENER (UNCHANGED)
-# --------------------------------------------------
+# ==========================================================
+# QUEUE LISTENER (CORRECT DELETE LOGIC)
+# ==========================================================
 async def queue_listener():
-    print("Queue Worker Started - Listening...")
+    print("\n📡 Worker started — listening to Azure Queue...\n")
 
     while True:
-        messages = queue_client.receive_messages(
-            messages_per_page=1,
-            visibility_timeout=30
-        )
+        try:
+            messages = queue_client.receive_messages(
+                messages_per_page=1,
+                visibility_timeout=300,  # must exceed processing time
+            )
 
-        for message in messages:
-            try:
-                ok = await process_message(message)
-                if ok:
-                    queue_client.delete_message(message)
-            except Exception as e:
-                print("❌ Worker runtime error:", e)
+            for message in messages:
+                try:
+                    ok = await process_message(message)
+
+                    if ok:
+                        queue_client.delete_message(
+                            message.id,
+                            message.pop_receipt
+                        )
+                        print(f"✅ Queue message deleted: {message.id}")
+
+                except Exception as e:
+                    print("❌ Error during message handling:", e)
+
+        except Exception as e:
+            print("❌ Queue listener failure:", e)
 
         await asyncio.sleep(2)
 
 
-# --------------------------------------------------
-#  START WORKER
-# --------------------------------------------------
+# ==========================================================
+# START WORKER ON APPLICATION STARTUP
+# ==========================================================
 @app.on_event("startup")
 async def start_worker():
     asyncio.create_task(queue_listener())
