@@ -13,7 +13,7 @@ import { useDispatch } from 'react-redux';
 import DataTable1 from '../../components/DataTable1';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
-//import localJson from '../../utils/trf_61010-1.json';
+import localJson from '../../utils/pta_final_5_UI_upd.json';
 
 const ReportPage = () => {
   const [bookmarkOpen, setBookmarkOpen] = useState(false);
@@ -26,7 +26,7 @@ const ReportPage = () => {
   // ----------------------------------------------------------
   // PROGRESS STATE
   // ----------------------------------------------------------
-  const [status, setStatus] = useState('Indexing in Progress'); // testing
+  const [status, setStatus] = useState('Completed'); // testing
   const [progress, setProgress] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -205,7 +205,8 @@ const ReportPage = () => {
 
           <DataTable1
             ref={dataTableRef}
-            jsonData={trfJson}
+            //jsonData={trfJson}
+            jsonData={localJson}
             onBookmarkClick={handleBookmarkFromChild}
           />
         </CardContent>

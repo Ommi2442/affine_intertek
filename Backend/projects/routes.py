@@ -489,8 +489,6 @@ def get_project_report_status(id: str):
         "error": progress.get("error")
     }
 
-
-
 @router.post("/generate-trf")
 def generate_trf(projectId: str):
     try:
