@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from 'react';
 import {
   Box,
   Card,
@@ -6,84 +6,97 @@ import {
   Typography,
   Button,
   Divider,
-} from "@mui/material";
-import "./ReportPage.css";
+  TextField,
+} from '@mui/material';
+import './ReportPage.css';
+import { useDispatch } from 'react-redux';
+import DataTable1 from '../../components/DataTable1';
+import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
+import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
 
-import { useDispatch } from "react-redux";
-import DataTable1 from "../../components/DataTable1";
-
-import { generateTrfApi, triggerGenerateTrfApi } from "../../redux/api/generateTrfApi";
-import { getProjectReportStatusApi } from "../../redux/api/projectStatusApi";
-import { finaliseReportRequest } from "../../redux/features/finaliseReport/finaliseReportSlice";
+import { triggerGenerateTrfApi } from '../../redux/api/generateTrfApi';
 import localJson from '../../utils/pta_final_5_UI_upd.json';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
   const dataTableRef = useRef(null);
 
-
-
   // ✅ original source of projectId (unchanged)
-  const projectID = localStorage.getItem("projectId");
+  const projectID = localStorage.getItem('projectId');
 
   /* ---------------- STATE ---------------- */
   const [bookmarkOpen, setBookmarkOpen] = useState(false);
   const [bookmarkData, setBookmarkData] = useState(null);
   const [trfJson, setTrfJson] = useState(null);
 
-  // ---------------- PROGRESS ----------------
-  const [status, setStatus] = useState("Pending");
+  const [issuedBy, setIssuedBy] = useState('');
+  // ----------------------------------------------------------
+  // PROGRESS STATE
+  // ----------------------------------------------------------
+  const [status, setStatus] = useState('Completed'); // testing
   const [progress, setProgress] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
-  const [triggered, setTriggered] = useState(false);
 
   const STAGES = [
-    { label: "Indexing", threshold: 25 },
-    { label: "Embedding Completed", threshold: 50 },
-    { label: "Generating TRF", threshold: 75 },
-    { label: "TRF Generated", threshold: 100 },
+    { label: 'Indexing', threshold: 25 },
+    { label: 'Embedding Completed', threshold: 50 },
+    { label: 'Generating TRF', threshold: 75 },
+    { label: 'TRF Generated', threshold: 100 },
   ];
 
-
   useEffect(() => {
-  
-  const load = async () => {
-    const response = await triggerGenerateTrfApi(projectID);
-    setTrfJson(response.data); // TRF JSON loaded
-    console.log('trfJson', trfJson)
+    if (dataTableRef.current) {
+      const value = dataTableRef.current.getFieldValue(
+        'Test Report issued under the responsibility of:'
+      );
+      setIssuedBy(value);
+    }
+  }, [localJson]); // runs when JSON is loaded
+
+  const handleIssuedByChange = (e) => {
+    const newValue = e.target.value;
+    setIssuedBy(newValue);
+
+    if (dataTableRef.current) {
+      dataTableRef.current.setFieldValue(
+        'Test Report issued under the responsibility of:',
+        newValue
+      );
+    }
   };
 
-  load();
-}, [projectID]);
+  useEffect(() => {
+    const load = async () => {
+      const response = await triggerGenerateTrfApi(projectID);
+      setTrfJson(response.data); // TRF JSON loaded
+      console.log('trfJson', trfJson);
+    };
 
-
+    load();
+  }, [projectID]);
 
   // ----------------------------------------------------------
   // 2️⃣ STATUS CHECK (✅ FIXED TO MATCH API RESPONSE)
   // ----------------------------------------------------------
-    const checkStatus = async () => {
-      if (!projectID) {
-        console.warn("Missing projectID, skipping status check");
-        return;
-      }
+  const checkStatus = async () => {
+    if (!projectID) {
+      console.warn('Missing projectID, skipping status check');
+      return;
+    }
 
-      try {
-        setRefreshing(true);
+    try {
+      setRefreshing(true);
 
-        const res = await getProjectReportStatusApi(projectID);
+      const res = await getProjectReportStatusApi(projectID);
 
-        setStatus(res?.status || "Pending");
-        setProgress(
-          typeof res?.percentage === "number" ? res.percentage : 0
-        );
-
-      } catch (err) {
-        console.error("STATUS CHECK FAILED:", err);
-      } finally {
-        setRefreshing(false);
-      }
-    };
-
+      setStatus(res?.status || 'Pending');
+      setProgress(typeof res?.percentage === 'number' ? res.percentage : 0);
+    } catch (err) {
+      console.error('STATUS CHECK FAILED:', err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   // ----------------------------------------------------------
   // ✅ FIXED POLLING (FIRST LOAD + EVERY 15s)
@@ -116,9 +129,6 @@ const ReportPage = () => {
     };
   }, [projectID, progress]);
 
-
-
-
   // ----------------------------------------------------------
   // BOOKMARK HANDLING (UNCHANGED)
   // ----------------------------------------------------------
@@ -137,8 +147,8 @@ const ReportPage = () => {
   // LEFT PANEL (PROGRESS OR REPORT)
   // ----------------------------------------------------------
   const renderLeftPanel = () => {
-    console.log(localJson)
-    console.log(trfJson)
+    console.log(localJson);
+    console.log(trfJson);
     if (progress < 100 || !trfJson) {
       return (
         <Card className="progress-advanced-card left-card">
@@ -151,16 +161,14 @@ const ReportPage = () => {
               const reached = progress >= stage.threshold;
               return (
                 <Box key={index} className="step-item">
-                  <Box className={`step-circle ${reached ? "active" : ""}`}>
-                    {reached ? "✔" : index + 1}
+                  <Box className={`step-circle ${reached ? 'active' : ''}`}>
+                    {reached ? '✔' : index + 1}
                   </Box>
 
-                  <Typography className="step-label">
-                    {stage.label}
-                  </Typography>
+                  <Typography className="step-label">{stage.label}</Typography>
 
                   {index !== STAGES.length - 1 && (
-                    <Box className={`step-line ${reached ? "active" : ""}`} />
+                    <Box className={`step-line ${reached ? 'active' : ''}`} />
                   )}
                 </Box>
               );
@@ -174,16 +182,14 @@ const ReportPage = () => {
             />
           </Box>
 
-          <Typography className="progress-advanced-status">
-            {status}
-          </Typography>
+          <Typography className="progress-advanced-status">{status}</Typography>
 
           <Button
             disabled={refreshing}
             className="refresh-advanced-btn"
             onClick={checkStatus}
           >
-            {refreshing ? "Refreshing..." : "Refresh Status"}
+            {refreshing ? 'Refreshing...' : 'Refresh Status'}
           </Button>
         </Card>
       );
@@ -199,9 +205,26 @@ const ReportPage = () => {
               className="header-image"
               alt="header"
             />
-            <Typography className="header-text">
-              Test Report issued under the responsibility of:
-            </Typography>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '16px',
+                marginRight: '5%',
+              }}
+            >
+              <Typography className="header-text">
+                Test Report issued under the responsibility of:
+              </Typography>
+
+              <TextField
+                variant="outlined"
+                size="small"
+                value={issuedBy}
+                onChange={handleIssuedByChange}
+                style={{ flex: 2 }} // makes textbox expand
+              />
+            </div>
           </Box>
 
           <Box className="report-title-container">

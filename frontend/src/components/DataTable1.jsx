@@ -1,11 +1,4 @@
 /* eslint-disable */
-/* eslint-disable react/display-name */
-/* eslint-disable no-unused-vars */
-/* eslint-disable complexity */
-/* eslint-disable max-lines */
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable no-unreachable */
-
 import React, {
   useState,
   useEffect,
@@ -57,6 +50,30 @@ const DataTable1 = forwardRef(
     // EXPOSE UPDATED JSON TO PARENT
     useImperativeHandle(ref, () => ({
       getUpdatedJson: () => ({ Tables: tables }),
+      // NEW: Get value of a field by field name
+      getFieldValue: (fieldName) => {
+        for (const table of tables) {
+          for (const item of table.Items) {
+            if (item.field === fieldName) {
+              return item.value ?? '';
+            }
+          }
+        }
+        return '';
+      },
+
+      // NEW: Update value of a field by field name
+      setFieldValue: (fieldName, newValue) => {
+        setTables((prev) => {
+          const next = prev.map((tbl) => ({
+            ...tbl,
+            Items: tbl.Items.map((item) =>
+              item.field === fieldName ? { ...item, value: newValue } : item
+            ),
+          }));
+          return next;
+        });
+      },
     }));
 
     // LOAD JSON
@@ -707,75 +724,65 @@ const DataTable1 = forwardRef(
     // PAGE 9 → 42 SPECIAL 4-COLUMN CLAUSE TABLE
     // Requirement + Test: ALWAYS FIELD (uneditable)
     // Remark / Verdict: ONLY value based on task_type
+    // table_head: true => show field as centered header above the table
+    // PAGE 9 → 42: render EVERY item exactly as-is (NO grouping)
+    // PAGE 9 → 42 SPECIAL 4-COLUMN CLAUSE TABLE
+    // Requirement + Test: FIELD (uneditable)
+    // Remark / Verdict: value based on task_type
+    // table_head: true => show field as centered header above the table
     const renderPart10Table = (pageItems) => {
       const items = pageItems.filter((i) => i.disable_text !== true);
 
-      const rowsByClause = {};
+      // Header row (table_head: true)
+      const headerItem = items.find((i) => i.table_head === true);
 
-      items.forEach((item) => {
-        // clause: only from clause / clause_number, never from clause_row
-        let clause = item.clause ?? item.clause_number ?? '';
+      // Data items (everything except header)
+      const dataItems = items.filter((i) => i.table_head !== true);
 
-        if (clause == null || clause === 'null' || clause === undefined) {
-          clause = '';
-        }
+      // Group by (clause_row, question_row, field)
+      // so that remark & verdict for the same row merge,
+      // but different question_row (like Motors children) stay separate.
+      const groupsByRow = {};
 
-        if (!rowsByClause[clause]) {
-          rowsByClause[clause] = {
-            clause,
-            requirement: null,
-            remark: null,
-            verdict: null,
+      dataItems.forEach((item) => {
+        const fieldLabel = item.field ?? item.Field ?? '';
+
+        const key = [
+          item.clause_row ?? '',
+          item.question_row ?? '',
+          fieldLabel,
+        ].join('|');
+
+        if (!groupsByRow[key]) {
+          groupsByRow[key] = {
+            clause: item.clause ?? item.clause_number ?? '',
+            field: fieldLabel,
+            question_row:
+              typeof item.question_row === 'number' ? item.question_row : 0,
+            // we will attach the full items so hover / comments / editing still work
+            remarkItem: null,
+            verdictItem: null,
+            // requirement comment – take first non-null
+            requirementComment: item._comment ?? null,
           };
+        } else if (!groupsByRow[key].requirementComment && item._comment) {
+          groupsByRow[key].requirementComment = item._comment;
         }
 
-        // Always show FIELD in Requirement column (uneditable)
-        if (item.field || item.Field) {
-          rowsByClause[clause].requirement = {
-            label: item.field ?? item.Field ?? '',
-            comment: item._comment,
-          };
-        }
-
-        // REMARK → render value only in remark column
         if (item.task_type === 'remark') {
-          rowsByClause[clause].remark = {
-            value: item.value ?? item.Value ?? '',
-            tIdx: item.__t,
-            iIdx: item.__i,
-            editable: item.user_editable === true,
-            rows: item.rendering_row || 1,
-            comment: item._comment,
-          };
+          groupsByRow[key].remarkItem = item;
+        } else if (item.task_type === 'verdict') {
+          groupsByRow[key].verdictItem = item;
         }
-
-        // VERDICT → render value only in verdict column
-        if (item.task_type === 'verdict') {
-          rowsByClause[clause].verdict = {
-            value: item.value ?? item.Value ?? '',
-            tIdx: item.__t,
-            iIdx: item.__i,
-            editable: item.user_editable === true,
-            rows: item.rendering_row || 1,
-            comment: item._comment,
-          };
-        }
+        // task_type null just contributes field/requirement/comment
       });
 
-      // SORT CLAUSES naturally
-      const finalRows = Object.values(rowsByClause).sort((a, b) => {
-        const A = String(a.clause).split('.').map(Number);
-        const B = String(b.clause).split('.').map(Number);
-        const len = Math.max(A.length, B.length);
-        for (let i = 0; i < len; i++) {
-          const x = A[i] || 0;
-          const y = B[i] || 0;
-          if (x !== y) return x - y;
-        }
-        return 0;
-      });
+      // Convert to array and sort by question_row to preserve vertical order
+      const finalRows = Object.values(groupsByRow).sort(
+        (a, b) => a.question_row - b.question_row
+      );
 
-      // styles for vertical grid lines like a proper table
+      // styles
       const bodyCellSx = {
         borderRight: '1px solid #ccc',
         borderBottom: '1px solid #ccc',
@@ -788,26 +795,31 @@ const DataTable1 = forwardRef(
         fontWeight: 'bold',
       };
 
-      // Render requirement cell (uneditable)
-      const renderRequirementCell = (req) => {
-        if (!req) return null;
+      // Requirement cell (uneditable)
+      const renderRequirementCell = (fieldLabel, comment) => {
+        if (!fieldLabel && !comment) return null;
         return (
           <div className="dt-value-column dt-relative">
-            <Typography>{req.label}</Typography>
-            {req.comment && (
+            <Typography>{fieldLabel}</Typography>
+            {comment && (
               <Typography variant="caption" className="dt-comment-caption">
-                💬 {req.comment}
+                💬 {comment}
               </Typography>
             )}
           </div>
         );
       };
 
-      // Render remark / verdict editable cells
-      const renderRemarkOrVerdictCell = (cell) => {
-        if (!cell) return null;
+      // Remark / Verdict editable cells
+      const renderRemarkOrVerdictCell = (item) => {
+        if (!item) return null;
 
-        const { tIdx, iIdx, editable, value, rows, comment } = cell;
+        const tIdx = item.__t;
+        const iIdx = item.__i;
+        const editable = item.user_editable === true;
+        const value = item.value ?? item.Value ?? '';
+        const rows = item.rendering_row || 1;
+        const comment = item._comment;
 
         return (
           <div
@@ -839,6 +851,21 @@ const DataTable1 = forwardRef(
 
       return (
         <TableContainer component={Paper} className="dt-table-container">
+          {/* Top centered header from table_head: true */}
+          {headerItem && (
+            <div
+              style={{
+                textAlign: 'center',
+                fontWeight: 'bold',
+                padding: '8px 0',
+                borderBottom: '2px solid #000',
+                fontSize: '16px',
+              }}
+            >
+              {headerItem.field ?? headerItem.Field ?? ''}
+            </div>
+          )}
+
           <Table
             size="small"
             className="dt-table"
@@ -864,22 +891,22 @@ const DataTable1 = forwardRef(
             <TableBody>
               {finalRows.map((row, idx) => (
                 <TableRow key={idx}>
-                  {/* Clause */}
+                  {/* Clause (empty string if original clause null) */}
                   <TableCell sx={bodyCellSx}>{row.clause ?? ''}</TableCell>
 
                   {/* Requirement (always field) */}
                   <TableCell sx={bodyCellSx}>
-                    {renderRequirementCell(row.requirement)}
+                    {renderRequirementCell(row.field, row.requirementComment)}
                   </TableCell>
 
                   {/* Remark */}
                   <TableCell sx={bodyCellSx}>
-                    {renderRemarkOrVerdictCell(row.remark)}
+                    {renderRemarkOrVerdictCell(row.remarkItem)}
                   </TableCell>
 
                   {/* Verdict */}
                   <TableCell sx={bodyCellSx}>
-                    {renderRemarkOrVerdictCell(row.verdict)}
+                    {renderRemarkOrVerdictCell(row.verdictItem)}
                   </TableCell>
                 </TableRow>
               ))}
