@@ -18,6 +18,10 @@ import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
 
 import { triggerGenerateTrfApi } from '../../redux/api/generateTrfApi';
 import localJson from '../../utils/pta_final_5_UI_upd.json';
+import localJsonRemaining from '../../utils/43_84_page_trf.json';
+import RemainingPagesData from '../../components/RemainingPagesData';
+import NewJson from '../../utils/newJsonFrom42.json';
+import HtmlPageRenderer from '../../components/HtmlPageRenderer';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -38,6 +42,9 @@ const ReportPage = () => {
   const [status, setStatus] = useState('Completed'); // testing
   const [progress, setProgress] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [isFinalise, setIsFinalise] = useState(false);
+
   const myData = useSelector((state) => state?.trf);
   console.log('myData', myData);
 
@@ -149,6 +156,7 @@ const ReportPage = () => {
     if (!dataTableRef.current) return;
     const updatedPayload = dataTableRef.current.getUpdatedJson();
     dispatch(finaliseReportRequest(updatedPayload));
+    setIsFinalise(true);
   };
 
   // ----------------------------------------------------------
@@ -157,7 +165,7 @@ const ReportPage = () => {
   const renderLeftPanel = () => {
     console.log(localJson);
     console.log(trfJson);
-    if (progress < 100 || !trfJson) {
+    if (false) {
       return (
         <Card className="progress-advanced-card left-card">
           <Typography className="progress-advanced-title">
@@ -253,10 +261,28 @@ const ReportPage = () => {
 
           <DataTable1
             ref={dataTableRef}
-            jsonData={trfJson}
-            // jsonData={localJson}
+            //jsonData={trfJson}
+            jsonData={localJson}
+            editMode={editMode}
             onBookmarkClick={handleBookmarkFromChild}
           />
+
+          {/* Render Pages 43 to 84 */}
+          {/* {Array.isArray(localJsonRemaining) &&
+            localJsonRemaining
+              .filter((p) => Number(p.page_no) >= 43)
+              .map((p, index) => (
+                <HtmlPageRenderer
+                  key={index}
+                  html={p.code_Data}
+                  pageNo={p.page_no}
+                />
+              ))} */}
+
+          {/* <RemainingPagesData
+            ref={dataTableRef}
+            jsonData={localJsonRemaining}
+          /> */}
         </CardContent>
       </Card>
     );
@@ -299,6 +325,7 @@ const ReportPage = () => {
                     text: 'Edit / Refine',
                     icon: '/images/edit_icon.svg',
                     bg: '#2C2C2C',
+                    action: () => setEditMode(true),
                   },
                   {
                     text: 'Finalise',
@@ -333,11 +360,53 @@ const ReportPage = () => {
                     <img
                       src={btn.icon}
                       alt=""
-                      className="icon-img icon-white"
+                      className={`icon-img ${
+                        btn.text === 'Finalise'
+                          ? isFinalise
+                            ? 'icon-green' // ✔ Finalise overrides everything
+                            : editMode
+                              ? 'icon-red' // ✔ editMode=true → RED
+                              : 'icon-green' // ✔ normal → GREEN
+                          : 'icon-white' // ✔ all others → WHITE
+                      }`}
                     />
+
                     {btn.text}
                   </Button>
                 ))}
+              </Box>
+              <Typography className="generate-title">Generate</Typography>
+
+              <Box className="generate-row">
+                {['CDR', 'Letter'].map((label, i) => {
+                  const isDisabledStyle = !isFinalise;
+
+                  return (
+                    <Button
+                      key={i}
+                      variant="contained"
+                      className="generate-btn"
+                      style={{
+                        background: isDisabledStyle ? '#A9A9A9' : '#417581', // grey out
+                        cursor: isDisabledStyle ? 'not-allowed' : 'pointer',
+                        opacity: isDisabledStyle ? 0.7 : 1,
+                      }}
+                      onClick={() => {
+                        if (!isFinalise) return; // still prevent action
+                        console.log(label, 'clicked');
+                      }}
+                    >
+                      <img
+                        src="/images/approve_icon.png"
+                        className="icon-img icon-white"
+                        style={{
+                          opacity: isDisabledStyle ? 0.6 : 1,
+                        }}
+                      />
+                      {label}
+                    </Button>
+                  );
+                })}
               </Box>
             </CardContent>
           </Card>

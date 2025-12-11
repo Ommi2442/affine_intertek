@@ -9,10 +9,10 @@ import {
 // selector to get auth token
 const getToken = (state) => state.auth.token;
 
-function* handleFinaliseProjects() {
+function* handleFinaliseProjects(action) {
   try {
     const token = yield select(getToken);
-    const response = yield call(finaliseReportApi, token);
+    const response = yield call(finaliseReportApi, action.payload, token);
     yield put(finaliseReportSuccess(response));
   } catch (err) {
     yield put(finaliseReportFailed(err.message));
