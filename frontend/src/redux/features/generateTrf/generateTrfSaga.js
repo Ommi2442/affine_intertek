@@ -4,11 +4,11 @@ import {
   generateTrfSuccess,
   generateTrfFailed,
 } from './generateTrfSlice';
-import { generateTrfApi } from '../../api/generateTrfApi';
+import { triggerGenerateTrfApi } from '../../api/generateTrfApi';
 
 function* handleGenerateTrf(action) {
   try {
-    const response = yield call(generateTrfApi, action.payload);
+    const response = yield call(triggerGenerateTrfApi, action.payload);
     yield put(generateTrfSuccess(response));
   } catch (err) {
     yield put(

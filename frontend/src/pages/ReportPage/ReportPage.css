@@ -107,7 +107,7 @@
 .right-panel {
   flex: 0 0 25%;
   height: 100%;
-  padding-right: 16px;
+  padding-right: 2%;
   padding-top: 16px;
   box-sizing: border-box;
   overflow-y: auto;
@@ -357,14 +357,23 @@
   left: -40%;
   width: 40%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.45),
+    transparent
+  );
   animation: shimmerMove 1.4s infinite ease-in-out;
   pointer-events: none;
 }
 
 @keyframes shimmerMove {
-  0% { left: -40%; }
-  100% { left: 100%; }
+  0% {
+    left: -40%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 /* ============================================================
@@ -383,8 +392,14 @@
 }
 
 @keyframes statusFade {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ============================================================
@@ -413,7 +428,8 @@
    ===== FIX FOR FLICKERING HORIZONTAL SCROLLBAR =====
 =============================================================== */
 
-html, body {
+html,
+body {
   overflow-x: hidden !important;
 }
 
@@ -422,7 +438,7 @@ html, body {
 .right-panel,
 .bookmark-panel {
   max-width: 100% !important;
-  min-width: 0 !important;         /* prevents flex overflow */
+  min-width: 0 !important; /* prevents flex overflow */
   overflow-x: hidden !important;
 }
 
