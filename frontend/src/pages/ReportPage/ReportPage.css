@@ -145,6 +145,25 @@
   filter: brightness(0) invert(1);
 }
 
+.icon-green {
+  transform: scale(1.2); /* make icon thicker */
+  filter: brightness(0) saturate(100%) invert(63%) sepia(98%) saturate(2000%)
+    hue-rotate(70deg) brightness(200%) contrast(200%);
+
+  /* glowing outline stroke */
+  -webkit-filter: drop-shadow(1px 1px 1px #00ff57)
+    drop-shadow(-1px -1px 1px #00ff57) drop-shadow(1px -1px 1px #00ff57)
+    drop-shadow(-1px 1px 1px #00ff57);
+}
+
+.icon-red {
+  transform: scale(1.2);
+  filter: brightness(0) saturate(100%) invert(9%) sepia(99%) saturate(12000%)
+    hue-rotate(-5deg) brightness(220%) contrast(220%);
+  -webkit-filter: drop-shadow(1px 1px 1px red) drop-shadow(-1px -1px 1px red)
+    drop-shadow(1px -1px 1px red) drop-shadow(-1px 1px 1px red);
+}
+
 .generate-title {
   font-weight: 600;
   padding: 8px 0;

@@ -10,7 +10,7 @@ const finaliseReportSlice = createSlice({
   name: 'finaliseReport',
   initialState,
   reducers: {
-    finaliseReportRequest: (state) => {
+    finaliseReportRequest: (state, action) => {
       state.loading = true;
       state.error = null;
     },
