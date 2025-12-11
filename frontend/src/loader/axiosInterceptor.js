@@ -1,24 +1,33 @@
-import api from "../services/api";   // your axios instance
+import api from "../services/api";
 import { loaderStore } from "./loaderStore";
 
-let requestCount = 0;
+let activeRequests = 0;
 
+// Show Loader
 const showLoader = () => {
-  requestCount++;
+  activeRequests++;
   loaderStore.setLoading(true);
 };
 
+// Hide Loader
 const hideLoader = () => {
-  requestCount--;
-  if (requestCount <= 0) {
+  activeRequests--;
+  if (activeRequests <= 0) {
     loaderStore.setLoading(false);
   }
 };
 
-// Request Interceptor
+// REQUEST INTERCEPTOR
 api.interceptors.request.use(
   (config) => {
-    showLoader();
+    // DEFAULT = true
+    const shouldShow = config.showLoader !== false;
+
+    if (shouldShow) {
+      config.__loaderActive = true;   // mark loader was used
+      showLoader();
+    }
+
     return config;
   },
   (error) => {
@@ -27,14 +36,18 @@ api.interceptors.request.use(
   }
 );
 
-// Response Interceptor
+// RESPONSE INTERCEPTOR
 api.interceptors.response.use(
   (response) => {
-    hideLoader();
+    if (response.config.__loaderActive) {
+      hideLoader();
+    }
     return response;
   },
   (error) => {
-    hideLoader();
+    if (error.config?.__loaderActive) {
+      hideLoader();
+    }
     return Promise.reject(error);
   }
 );

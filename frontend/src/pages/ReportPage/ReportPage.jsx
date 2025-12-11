@@ -33,9 +33,10 @@ const ReportPage = () => {
   // ----------------------------------------------------------
   // PROGRESS STATE
   // ----------------------------------------------------------
-  const [status, setStatus] = useState('Completed'); // testing
+  const [status, setStatus] = useState("Pending");
   const [progress, setProgress] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+
 
   const STAGES = [
     { label: 'Indexing', threshold: 25 },
@@ -75,8 +76,9 @@ const ReportPage = () => {
     load();
   }, [projectID]);
 
+
   // ----------------------------------------------------------
-  // 2️⃣ STATUS CHECK (✅ FIXED TO MATCH API RESPONSE)
+  //  STATUS CHECK (✅ FIXED TO MATCH API RESPONSE)
   // ----------------------------------------------------------
   const checkStatus = async () => {
     if (!projectID) {
@@ -99,7 +101,7 @@ const ReportPage = () => {
   };
 
   // ----------------------------------------------------------
-  // ✅ FIXED POLLING (FIRST LOAD + EVERY 15s)
+  // FIXED POLLING (FIRST LOAD + EVERY 15s)
   // ----------------------------------------------------------
   useEffect(() => {
     if (!projectID) return;
