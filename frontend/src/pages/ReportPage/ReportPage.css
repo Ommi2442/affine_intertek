@@ -226,7 +226,6 @@
 
 /* ============================================================
    NEW MODERN ENTERPRISE PROGRESS UI
-   Clean, minimal, premium — No overlap, perfect spacing
 =============================================================== */
 
 /* Wrapper fits left-panel exactly */
@@ -264,14 +263,14 @@
 /* Title */
 .progress-advanced-card .progress-advanced-title {
   font-size: 22px !important;
-  font-weight: 800 !important; /* slightly bolder */
-  margin-bottom: 40px !important; /* increased spacing */
+  font-weight: 800 !important;
+  margin-bottom: 40px !important;
   color: #2d3e50 !important;
   text-align: center !important;
 }
 
 /* ============================================================
-   STEP TRACKER — Modern timeline style
+   STEP TRACKER
 =============================================================== */
 
 .steps-container {
@@ -288,7 +287,6 @@
   position: relative;
 }
 
-/* Step circle */
 .step-circle {
   width: 28px;
   height: 28px;
@@ -305,7 +303,6 @@
   transition: 0.25s ease;
 }
 
-/* Active step */
 .step-circle.active {
   background: #3f6c78;
   border-color: #3f6c78;
@@ -313,7 +310,6 @@
   transform: scale(1.05);
 }
 
-/* Step labels */
 .step-label {
   margin-top: 10px;
   font-size: 13px;
@@ -321,7 +317,6 @@
   color: #4a5b67;
 }
 
-/* Line between steps */
 .step-line {
   position: absolute;
   width: 100%;
@@ -337,7 +332,7 @@
 }
 
 /* ============================================================
-   PROGRESS BAR — slim, modern, fluid
+   PROGRESS BAR
 =============================================================== */
 
 .progress-advanced-bar {
@@ -355,7 +350,6 @@
   transition: width 0.6s ease;
 }
 
-/* --- LOADER SHIMMER ANIMATION --- */
 .progress-advanced-fill::after {
   content: '';
   position: absolute;
@@ -363,59 +357,38 @@
   left: -40%;
   width: 40%;
   height: 100%;
-
-  /* white glow layer */
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.45),
-    transparent
-  );
-
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
   animation: shimmerMove 1.4s infinite ease-in-out;
   pointer-events: none;
 }
 
 @keyframes shimmerMove {
-  0% {
-    left: -40%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -40%; }
+  100% { left: 100%; }
 }
 
 /* ============================================================
-   STATUS TEXT — professional typography
+   STATUS TEXT
 =============================================================== */
 
 .progress-advanced-status {
   font-size: 17px !important;
   font-weight: 700 !important;
-  color: #264653 !important; /* elegant deep-slate tone */
+  color: #264653 !important;
   text-align: center !important;
-  margin-top: px !important;
   margin-bottom: 4px !important;
-  letter-spacing: 0.4px; /* premium spacing */
+  letter-spacing: 0.4px;
   line-height: 1.4;
-
-  /* clean fade animation */
   animation: statusFade 0.35s ease-in-out;
 }
 
 @keyframes statusFade {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ============================================================
-   REFRESH BUTTON — minimal button
+   REFRESH BUTTON
 =============================================================== */
 
 .refresh-advanced-btn {
@@ -434,4 +407,44 @@
 .refresh-advanced-btn:hover {
   background: #355961 !important;
   transform: translateY(-2px);
+}
+
+/* ============================================================
+   ===== FIX FOR FLICKERING HORIZONTAL SCROLLBAR =====
+=============================================================== */
+
+html, body {
+  overflow-x: hidden !important;
+}
+
+.report-container,
+.left-panel,
+.right-panel,
+.bookmark-panel {
+  max-width: 100% !important;
+  min-width: 0 !important;         /* prevents flex overflow */
+  overflow-x: hidden !important;
+}
+
+/* Allow long titles to wrap instead of pushing layout */
+.report-title-container {
+  white-space: normal !important;
+}
+
+/* Prevent cumulative margin overflow on right side */
+.action-card,
+.confidence-card {
+  margin-right: 0 !important;
+}
+
+/* Ensure images never cause width growth */
+.header-image {
+  max-width: 100% !important;
+  display: block;
+}
+
+/* Table overflow protection */
+table {
+  width: 100% !important;
+  table-layout: fixed !important;
 }
