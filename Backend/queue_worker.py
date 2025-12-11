@@ -27,7 +27,7 @@ COSMOS_DB_DATABASE="intertek_poc_dev"
 COSMOS_PROJECT_CONTAINER="projects"
 
 BASE_DIR = Path(__file__).resolve().parent
-TRF_JSON_OUTPUT_PATH = BASE_DIR / "data" / "pta_final_5_UI_upd.json" 
+TRF_JSON_OUTPUT_PATH = BASE_DIR / "data" / "iec_61010_1614_1012_output_v1.json" 
 
 # ---- Azure Clients ----
 blob_service = BlobServiceClient.from_connection_string(QUEUE_CONN_STR)

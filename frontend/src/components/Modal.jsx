@@ -113,6 +113,8 @@ export default function BasicModal({ open, handleClose }) {
       resetForm();
       handleClose();
 
+      localStorage.setItem('projectId', form.Project_Id);
+
       /*  PASS REQUIRED STATE */
       navigate("/create-project", {
         state: {
