@@ -1,3 +1,5 @@
+/* eslint quotes: "off" */
+/* eslint-disable */
 import React, { useRef, useState, useEffect } from 'react';
 import {
   Box,
@@ -9,7 +11,7 @@ import {
   TextField,
 } from '@mui/material';
 import './ReportPage.css';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import DataTable1 from '../../components/DataTable1';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
@@ -33,10 +35,15 @@ const ReportPage = () => {
   // ----------------------------------------------------------
   // PROGRESS STATE
   // ----------------------------------------------------------
-  const [status, setStatus] = useState("Pending");
+  const [status, setStatus] = useState('Completed'); // testing
   const [progress, setProgress] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+  const myData = useSelector((state) => state?.trf);
+  console.log('myData', myData);
 
+  useEffect(() => {
+    setTrfJson(myData?.trfData?.data);
+  }, [myData]);
 
   const STAGES = [
     { label: 'Indexing', threshold: 25 },
@@ -66,19 +73,18 @@ const ReportPage = () => {
     }
   };
 
-  useEffect(() => {
-    const load = async () => {
-      const response = await triggerGenerateTrfApi(projectID);
-      setTrfJson(response.data); // TRF JSON loaded
-      console.log('trfJson', trfJson);
-    };
+  // useEffect(() => {
+  //   const load = async () => {
+  //     const response = await triggerGenerateTrfApi(projectID);
+  //     setTrfJson(response.data); // TRF JSON loaded
+  //     console.log('trfJson', trfJson);
+  //   };
 
-    load();
-  }, [projectID]);
-
+  //   load();
+  // }, [projectID]);
 
   // ----------------------------------------------------------
-  //  STATUS CHECK (✅ FIXED TO MATCH API RESPONSE)
+  // 2️⃣ STATUS CHECK (✅ FIXED TO MATCH API RESPONSE)
   // ----------------------------------------------------------
   const checkStatus = async () => {
     if (!projectID) {
@@ -101,7 +107,7 @@ const ReportPage = () => {
   };
 
   // ----------------------------------------------------------
-  // FIXED POLLING (FIRST LOAD + EVERY 15s)
+  // ✅ FIXED POLLING (FIRST LOAD + EVERY 15s)
   // ----------------------------------------------------------
   useEffect(() => {
     if (!projectID) return;
