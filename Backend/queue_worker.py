@@ -4,10 +4,13 @@ import os
 from datetime import datetime
 from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueClient
-from azure.cosmos import CosmosClient
+from azure.cosmos import CosmosClient, ConsistencyLevel
 from fastapi import FastAPI
 from utility.embeddings import ingest_files_from_blob_urls_create_embeddings
 from utility.json_to_blob import *
+from utility.trf_report.trf_generation import run_trf_generation
+from utility.trf_utils import build_vectorstore, build_embeddings
+
 
 # Azure Config
 # --------------------------
@@ -26,8 +29,6 @@ COSMOS_DB_KEY="azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00
 COSMOS_DB_DATABASE="intertek_poc_dev"
 COSMOS_PROJECT_CONTAINER="projects"
 
-BASE_DIR = Path(__file__).resolve().parent
-TRF_JSON_OUTPUT_PATH = BASE_DIR / "data" / "iec_61010_1614_1012_output_v1.json" 
 
 # ---- Azure Clients ----
 blob_service = BlobServiceClient.from_connection_string(QUEUE_CONN_STR)
@@ -36,6 +37,38 @@ queue_client = QueueClient.from_connection_string(QUEUE_CONN_STR, QUEUE_NAME)
 cosmos_client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
 db = cosmos_client.get_database_client(COSMOS_DB_DATABASE)
 projects_container = db.get_container_client(COSMOS_PROJECT_CONTAINER)
+
+
+############################ TRF OPENAI CREDENTIALS ###################################
+
+
+# Load environment variables
+AOAI_ENDPOINT      = os.getenv("AOAI_ENDPOINT")
+AOAI_KEY           = os.getenv("AOAI_KEY")
+API_VERSION        = os.getenv("API_VERSION")
+EMBED_DEPLOY       = os.getenv("EMBED_DEPLOY")
+RAG_DB_NAME        = os.getenv("DB_NAME")
+RAG_CONT_NAME      = os.getenv("CONT_NAME")
+RAG_AZURE_CONN_STRING  = os.getenv("AZURE_CONN_STRING")
+RAG_COSMOS_URL         = os.getenv("COSMOS_URL")
+RAG_COSMOS_KEY         = os.getenv("COSMOS_KEY")
+
+
+
+BASE_DIR = Path(__file__).resolve().parent
+TRF_JSON_OUTPUT_PATH = BASE_DIR / "data" / "iec_61010_1614_1012_output_v1.json"
+
+INPUT_JSON_PATH = BASE_DIR / "data" / "pta_final_5.json"
+INPUT_DOCX_PATH = BASE_DIR / "data" / "input.docx"
+
+OUTPUT_JSON = BASE_DIR / "data" / "iec_output.json"
+OUTPUT_DOCX = BASE_DIR / "data" / "iec_output.docx"
+OUTPUT_EXCEL = BASE_DIR / "data" / "iec_output.xlsx"
+
+IMAGE_URLS_PATH = BASE_DIR / "data" / "image_urls.json"  # adjust if needed
+
+
+
 
 app = FastAPI(title="Queue Worker Service")
 
@@ -149,14 +182,58 @@ async def process_message(message) -> bool:
         )
 
         ingest_files_from_blob_urls_create_embeddings(
-            project_id,
             blob_urls,
+            project_id
         )
 
+        print(f"🎉 Embeddings completed for project {project_id}")
 
         # --------------------------------------------------
         # 75% — TRF GENERATION
         # --------------------------------------------------
+
+        try:
+            with open(IMAGE_URLS_PATH, "r") as f:
+                image_urls = json.load(f)
+            print(f"✔ Loaded {len(image_urls)} image URLs from ingestion.")
+        except FileNotFoundError:
+            print("❌ ERROR: image_urls.json not found. Run ingestion_pipeline.py first.")
+            exit(1)
+
+
+        print("🔧 Initializing Cosmos + Vectorstore...")
+
+        trf_cosmos_client = CosmosClient(RAG_COSMOS_URL, credential=RAG_COSMOS_KEY,
+                            consistency_level=ConsistencyLevel.Eventual)
+
+        embeddings = build_embeddings(AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY)
+
+        vs = build_vectorstore(
+            embeddings=embeddings,
+            client=trf_cosmos_client,
+            DB_NAME=RAG_DB_NAME,
+            CONT_NAME=RAG_CONT_NAME
+        )
+
+        print("✔ Vectorstore loaded from Cosmos DB.")
+
+
+        result = run_trf_generation(
+        vs=vs,
+        image_urls=image_urls,
+        input_json_path=INPUT_JSON_PATH,
+        docx_input_path=INPUT_DOCX_PATH,
+        output_json_path=OUTPUT_JSON,
+        output_docx_path=OUTPUT_DOCX,
+        output_excel_path=OUTPUT_EXCEL,
+        batch_size=150,
+        cooldown_sec=15,
+        max_workers=10,
+        use_llm_inGrey=False,
+        stats=True
+        )
+
+
         update_project_progress(
             project_doc,
             trf_stage="Generating TRF",
@@ -164,6 +241,8 @@ async def process_message(message) -> bool:
             trf_step="Generating TRF JSON",
             trf_completed= "No"
         )
+
+        print(f"🎉 TRF generation completed for project {project_id}")
 
         # --------------------------------------------------
         # SAVE TRF JSON → BLOB + COSMOS
@@ -184,7 +263,7 @@ async def process_message(message) -> bool:
             trf_completed= "Yes"
         )
 
-        print(f"🎉 TRF generation completed for project {project_id}")
+        print(f"🎉 Saving TRF Report to the Blob")
         return True
 
     except Exception as e:
@@ -205,16 +284,21 @@ async def process_message(message) -> bool:
 # QUEUE LISTENER (CORRECT DELETE LOGIC)
 # ==========================================================
 async def queue_listener():
-    print("\n📡 Worker started — listening to Azure Queue...\n")
+    print("\n📡 Worker started — actively listening to Azure Queue...\n")
 
     while True:
         try:
+            # Pull exactly 1 message for strict sequential processing
             messages = queue_client.receive_messages(
                 messages_per_page=1,
-                visibility_timeout=300,  # must exceed processing time
+                visibility_timeout=300,  # keep long since TRF pipeline is heavy
             )
 
+            message_found = False
+
             for message in messages:
+                message_found = True
+
                 try:
                     ok = await process_message(message)
 
@@ -226,12 +310,23 @@ async def queue_listener():
                         print(f"✅ Queue message deleted: {message.id}")
 
                 except Exception as e:
-                    print("❌ Error during message handling:", e)
+                    print(f"❌ Error during message handling: {e}")
+
+            # -----------------------------------------------------
+            # ACTIVE LISTENING LOGIC
+            # -----------------------------------------------------
+            if not message_found:
+                # No message → short backoff sleep to avoid CPU burn
+                await asyncio.sleep(1)
+            else:
+                # Messages present → check again immediately
+                await asyncio.sleep(0.1)
 
         except Exception as e:
-            print("❌ Queue listener failure:", e)
+            print(f"❌ Queue listener failure: {e}")
+            # Do not kill worker; recover after short backoff
+            await asyncio.sleep(2)
 
-        await asyncio.sleep(2)
 
 
 # ==========================================================

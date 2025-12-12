@@ -30,21 +30,21 @@ class ProjectProgress(BaseModel):
     trf_step: Optional[str] = None
     trf_last_updated: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
     trf_error: Optional[str] = None
-    trf_completed: Optional[str] = None
+    trf_completed: Optional[str] = 'No'
 
     # CDR
     cdr_percentage: Optional[int] = 33
     cdr_step: Optional[str] = None
     cdr_last_updated: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
     cdr_error: Optional[str] = None
-    cdr_completed: Optional[str] = None
+    cdr_completed: Optional[str] = 'No'
 
     # LETTER
     letter_percentage: Optional[int] = 33
     letter_step: Optional[str] = None
     letter_last_updated: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
     letter_error: Optional[str] = None
-    letter_completed: Optional[str] = None
+    letter_completed: Optional[str] = 'No'
 
     
 

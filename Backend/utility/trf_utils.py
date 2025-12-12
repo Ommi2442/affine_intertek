@@ -1,4 +1,5 @@
 import re
+import docx2pdf
 import tempfile
 import shutil
 import requests
@@ -23,7 +24,7 @@ from azure.cosmos import CosmosClient, PartitionKey, exceptions
 import json, os
 from azure.cosmos import CosmosClient, ConsistencyLevel
 from typing import List, Dict, Any, Tuple
-from docx import Document as DocxDocument     # rename docx Document
+from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
@@ -46,6 +47,10 @@ from types import SimpleNamespace
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from azure.core.exceptions import HttpResponseError
 import time
+import os
+import subprocess
+import shutil
+import platform
 
 
 
@@ -99,6 +104,7 @@ def _extract_from_msg(path):
     except Exception as e:
         # fallback to empty string on failure
         return ""
+    
 
 
 ### If chunks ingested don't run
@@ -192,6 +198,123 @@ def _extract_from_txt(path):
         except Exception:
             return ""
 
+def convert_doc_to_pdf(input_path, output_path=None):
+    """
+    Universal DOC/DOCX to PDF converter.
+    Supports both styles of call:
+        pdf_convert("file.docx")
+        pdf_convert("file.docx", "file.pdf")
+    - Windows: tries Microsoft Word automation first
+    - Fallback: LibreOffice
+    - Linux/Mac: LibreOffice only
+    Returns: output PDF path
+    """
+
+    import os, platform, shutil, subprocess
+
+    if not os.path.exists(input_path):
+        raise FileNotFoundError(f"File not found: {input_path}")
+
+    # Determine output path
+    if output_path is None:
+        output_path = os.path.splitext(input_path)[0] + ".pdf"
+
+    system = platform.system().lower()
+
+    # Try MS Word automation on Windows
+    if system == "windows":
+        try:
+            import comtypes.client
+            word = comtypes.client.CreateObject("Word.Application")
+            word.Visible = False
+
+            doc = word.Documents.Open(input_path)
+            doc.SaveAs(output_path, FileFormat=17)  # 17 = PDF
+            doc.Close()
+            word.Quit()
+            return output_path
+
+        except Exception as e:
+            print(f"[WARN] MS Word conversion failed, switching to LibreOffice → {e}")
+
+    # Otherwise fallback to LibreOffice
+    soffice = None
+
+    if system == "windows":
+        possible_paths = [
+            r"C:\Program Files\LibreOffice\program\soffice.exe",
+            r"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
+        ]
+        soffice = next((p for p in possible_paths if os.path.exists(p)), None) or shutil.which("soffice")
+    else:
+        soffice = shutil.which("libreoffice") or shutil.which("soffice")
+
+    if not soffice:
+        raise RuntimeError("No conversion method found (Word or LibreOffice required).")
+
+    # Run conversion via LibreOffice
+    subprocess.run(
+        [soffice, "--headless", "--convert-to", "pdf", "--outdir", os.path.dirname(output_path), input_path],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True
+    )
+
+    return output_path
+
+
+
+# def convert_doc_to_pdf(input_path, output_path=None):
+#     """
+#     Convert .doc or .docx to PDF using LibreOffice.
+#     Works on Windows + Linux.
+#     """
+
+#     if not os.path.isfile(input_path):
+#         raise FileNotFoundError(f"Input file not found: {input_path}")
+
+#     # Determine output path
+#     if output_path is None:
+#         base, _ = os.path.splitext(input_path)
+#         output_path = base + ".pdf"
+
+#     out_dir = os.path.dirname(os.path.abspath(output_path))
+
+#     # Detect libreoffice binary
+#     system = platform.system().lower()
+
+#     if system == "windows":
+#         # Try typical install locations
+#         possible_paths = [
+#             r"C:\Program Files\LibreOffice\program\soffice.exe",
+#             r"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
+#         ]
+#         soffice = next((p for p in possible_paths if os.path.isfile(p)), None)
+
+#         if soffice is None:
+#             soffice = shutil.which("soffice")  # last fallback
+
+#         if soffice is None:
+#             raise RuntimeError("LibreOffice not found. Install from https://www.libreoffice.org/")
+#     else:
+#         # Linux/macOS
+#         soffice = shutil.which("libreoffice") or shutil.which("soffice")
+
+#         if soffice is None:
+#             raise RuntimeError("LibreOffice not installed. Install using your package manager.")
+
+#     cmd = [
+#         soffice,
+#         "--headless",
+#         "--convert-to", "pdf",
+#         "--outdir", out_dir,
+#         input_path
+#     ]
+
+#     try:
+#         subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+#     except subprocess.CalledProcessError as e:
+#         raise RuntimeError(f"PDF conversion failed: {e.stderr.decode()}")
+
+#     return output_path
 
 def pdf_convert(file1,file2):
     """file1 is docx and file2 is pdf""" 
@@ -296,21 +419,22 @@ def create_db_and_container(client,DB_NAME,VECTOR_PATH,EMBED_DIM,CONT_NAME):
         print("Message:", getattr(e, "message", str(e)))
         raise
 
-def build_vectorstore(embeddings):
+def build_vectorstore(embeddings,client,DB_NAME,CONT_NAME):
     # COSMOS_URL    = "https://rag-intertek.documents.azure.com:443/"
     # COSMOS_KEY    = "AbhkomWJLtf8TR7odpABPqx1OrjlmCcpTXlKr9Vvp3RulZmFGollxQflIp3LLUAFt4XcMh70RbRxACDbuxyZLg=="
-    # # DB_NAME     = "ragdatabase_new"
+    # DB_NAME     = "ragdatabase_new"
     # CONT_NAME   = "vectorstorecontainer_new"
-    DB_NAME     = "ragdatabase_new"
-    CONT_NAME   = "vectorstorecontainer_new"
+    # DB_NAME     = "ragdatabase_new2"
+    # CONT_NAME   = "vectorstorecontainer_new2"
     
-    COSMOS_URL    = "https://csdb-intertek-esus-dev.documents.azure.com:443/"
-    COSMOS_KEY    = "azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00MFDbK88ApotACDbODLFXA=="
-    cosmos_client = CosmosClient(
-        url=COSMOS_URL,
-        credential=COSMOS_KEY,
-        consistency_level=ConsistencyLevel.Eventual
-    )
+    # COSMOS_URL    = "https://csdb-intertek-esus-dev.documents.azure.com:443/"
+    # COSMOS_KEY    = "azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00MFDbK88ApotACDbODLFXA=="
+    # cosmos_client = CosmosClient(
+    #     url=COSMOS_URL,
+    #     credential=COSMOS_KEY,
+    #     consistency_level=ConsistencyLevel.Eventual
+    # )
+    cosmos_client=client
 
     # keep your existing policy helpers if your constructor requires them
     return AzureCosmosDBNoSqlVectorSearch(
@@ -347,82 +471,8 @@ def build_embeddings(AOAI_ENDPOINT,AOAI_KEY,API_VERSION,EMBED_DEPLOY):
 
 ### If chunks ingested don't run
 
-def load_and_split_pdfs_text(pdf_paths,CHUNK_SIZE,CHUNK_OVERLAP, extracted_texts=None):
-    """
-    pdf_paths: iterable of file paths (existing behavior — only PDFs processed)
-    extracted_texts: optional list of dicts. Supported shapes:
-        - { "filename.ext": "text..." }
-        - { "filename": "...", "text": "..." }
-        - mixed list containing either form
-    Returns: list of chunks (output of splitter.split_documents)
-    """
-    docs = []
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=CHUNK_SIZE,
-        chunk_overlap=CHUNK_OVERLAP,
-        separators=["\n\n", "\n", ". ", " "],
-        keep_separator=False,
-    )
 
-    # --- existing PDF flow (unchanged) ---
-    for path in pdf_paths:
-        if not str(path).lower().endswith(".pdf"):
-            continue
-        loader = PyPDFLoader(str(path))
-        raw_docs = loader.load()
-        base = os.path.basename(str(path))
-        for d in raw_docs:
-            page = int(d.metadata.get("page", 1))
-            d.metadata["source_file"] = base
-            d.metadata["page"] = page
-            d.metadata["citation"] = f"{base}#page={page}"
-        docs.extend(raw_docs)
 
-    # --- new: accept extracted_texts in multiple sensible shapes ---
-    if extracted_texts:
-        for item in extracted_texts:
-            if not isinstance(item, dict):
-                continue
-
-            # Case A: explicit keys 'filename' and 'text'
-            if "filename" in item and "text" in item:
-                filename = item["filename"]
-                text = item["text"]
-            # Case B: single-key mapping { "actual_filename": "text..." }
-            elif len(item) == 1:
-                filename, text = next(iter(item.items()))
-            # Case C: has 'text' but no filename key
-            elif "text" in item:
-                filename = item.get("filename") or item.get("name") or "unknown"
-                text = item["text"]
-            else:
-                # Fallback: pick first string value
-                filename = None
-                text = None
-                for k, v in item.items():
-                    if isinstance(v, str) and v.strip():
-                        filename = k
-                        text = v
-                        break
-                if text is None:
-                    filename = item.get("filename") or "unknown"
-                    text = " ".join(str(v) for v in item.values())
-
-            base = os.path.basename(str(filename))
-            metadata = {
-                "source_file": base,
-                "page": 1,
-                "citation": f"{base}"
-            }
-
-            # Create a simple Document-like object expected by splitter
-            # splitter expects attributes like .page_content and .metadata
-            doc = SimpleNamespace(page_content=text or "", metadata=metadata)
-
-            docs.append(doc)
-
-    # finally split all collected documents (pdf chunks + plain-text docs)
-    return splitter.split_documents(docs)
 
 def add_ids_to_chunks(chunks):
     docs = []
@@ -508,7 +558,7 @@ def process_blob_urls_2(blob_urls, conn_str, container,
 
                 ext = (ext or "").lower()
 
-                # DOCX -> convert to pdf then record pdf path (do NOT extract text)
+                #DOCX -> convert to pdf then record pdf path (do NOT extract text)
                 if ext == "docx":
                     pdf_path = os.path.splitext(local_path)[0] + ".pdf"
                     try:
@@ -522,6 +572,31 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                             print(f"[WARN] docx->pdf conversion failed for {base_name}: {e}")
                     # do NOT extract text for docx as per request
                     continue
+
+                # 🆕 DOC → convert to pdf (using your working helper)
+                if ext == "doc":
+                    try:
+                        pdf_path = convert_doc_to_pdf(local_path)  # your working function
+                        converted_pdf_paths.append(pdf_path)
+                        if verbose:
+                            print(f"[INFO] Converted DOC to PDF: {local_path} -> {pdf_path}")
+                    except Exception as e:
+                        if verbose:
+                            print(f"[WARN] .doc conversion failed for {base_name}: {e}")
+                    continue
+
+                # if ext in ("doc", "docx"):
+                #     try:
+                #         pdf_path = pdf_convert(local_path,pdf_path)  # now works with 1 arg
+                #         converted_pdf_paths.append(pdf_path)
+                #         if verbose:
+                #             print(f"[INFO] Converted {ext.upper()} → PDF: {local_path} -> {pdf_path}")
+                #     except Exception as e:
+                #         print(f"[WARN] File conversion failed for {base_name}: {e}")
+                #     continue
+
+
+
 
                 # PDF -> record downloaded path (do NOT extract text)
                 if ext == "pdf":
