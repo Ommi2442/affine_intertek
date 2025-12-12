@@ -16,12 +16,14 @@ import DataTable1 from '../../components/DataTable1';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
 
-import { triggerGenerateTrfApi } from '../../redux/api/generateTrfApi';
+//import { triggerGenerateTrfApi } from '../../redux/api/generateTrfApi';
 import localJson from '../../utils/pta_final_5_UI_upd.json';
-import localJsonRemaining from '../../utils/43_84_page_trf.json';
-import RemainingPagesData from '../../components/RemainingPagesData';
-import NewJson from '../../utils/newJsonFrom42.json';
-import HtmlPageRenderer from '../../components/HtmlPageRenderer';
+//import localJsonRemaining from '../../utils/43_84_page_trf.json';
+//import RemainingPagesData from '../../components/RemainingPagesData';
+//import NewJson from '../../utils/newJsonFrom42.json';
+//import HtmlPageRenderer from '../../components/HtmlPageRenderer';
+//import localCdrJson from '../../utils/cdr_payload_2.json';
+//import CdrReport from '../../components/CdrReport';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -266,6 +268,14 @@ const ReportPage = () => {
             editMode={editMode}
             onBookmarkClick={handleBookmarkFromChild}
           />
+
+          {/* <CdrReport
+            ref={dataTableRef}
+            //jsonData={trfJson || localJson} // use real API trfJson when available
+            jsonData={localCdrJson}
+            editMode={editMode}
+            projectId={localStorage.getItem('projectId')}
+          /> */}
 
           {/* Render Pages 43 to 84 */}
           {/* {Array.isArray(localJsonRemaining) &&
