@@ -22,10 +22,10 @@ import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
 //import RemainingPagesData from '../../components/RemainingPagesData';
 //import NewJson from '../../utils/newJsonFrom42.json';
 //import HtmlPageRenderer from '../../components/HtmlPageRenderer';
-//import localCdrJson from '../../utils/cdr_payload_2.json';
-//import CdrReport from '../../components/CdrReport';
+import localCdrJson from '../../utils/cdr_payload_2.json';
+import CdrReport from '../../components/CdrReport';
 import localJson from '../../utils/iec_61010_1614_1012_output_v1.json';
-import PdfViewer from "../../components/PdfViewer";
+import PdfViewer from '../../components/PdfViewer';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -48,9 +48,10 @@ const ReportPage = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [isFinalise, setIsFinalise] = useState(false);
+  const [reportClick, setReportClick] = useState('trf');
 
   const myData = useSelector((state) => state?.trf);
-  
+
   const STAGES = [
     { label: 'Indexing', threshold: 33 },
     { label: 'Generating TRF', threshold: 75 },
@@ -62,7 +63,7 @@ const ReportPage = () => {
   }, [myData]);
 
   useEffect(() => {
-    if (dataTableRef.current) {
+    if (dataTableRef.current && reportClick == 'trf') {
       const value = dataTableRef.current.getFieldValue(
         'Test Report issued under the responsibility of:'
       );
@@ -82,8 +83,22 @@ const ReportPage = () => {
     }
   };
 
+  const handleGenerateCDR = () => {
+    setReportClick('cdr');
+  };
 
-    // ----------------------------------------------------------
+  const handleGenerateLetter = () => {
+    setReportClick('letter');
+  };
+
+  // useEffect(() => {
+  //   const load = async () => {
+  //     const response = await triggerGenerateTrfApi(projectID);
+  //     setTrfJson(response.data); // TRF JSON loaded
+  //     console.log('trfJson', trfJson);
+  //   };
+
+  // ----------------------------------------------------------
   //  STATUS CHECK (FIXED TO MATCH API RESPONSE)
   // ----------------------------------------------------------
   const checkStatus = async () => {
@@ -98,7 +113,9 @@ const ReportPage = () => {
       const res = await getProjectReportStatusApi(projectID);
 
       setStatus(res?.trf_status || 'Pending');
-      setProgress(typeof res?.trf_percentage === 'number' ? res.trf_percentage : 0);
+      setProgress(
+        typeof res?.trf_percentage === 'number' ? res.trf_percentage : 0
+      );
     } catch (err) {
       console.error('STATUS CHECK FAILED:', err);
     } finally {
@@ -109,34 +126,33 @@ const ReportPage = () => {
   // ----------------------------------------------------------
   //  FIXED POLLING (FIRST LOAD + EVERY 15s)
   // ----------------------------------------------------------
-    // useEffect(() => {
-    //   if (!projectID) return;
+  // useEffect(() => {
+  //   if (!projectID) return;
 
-    //   let intervalId = null;
+  //   let intervalId = null;
 
-    //   const startPolling = async () => {
-    //     await checkStatus();
+  //   const startPolling = async () => {
+  //     await checkStatus();
 
-    //     intervalId = setInterval(async () => {
-    //       if (progress === 100) {
-    //         clearInterval(intervalId);
-    //         intervalId = null;
-    //         return;
-    //       }
+  //     intervalId = setInterval(async () => {
+  //       if (progress === 100) {
+  //         clearInterval(intervalId);
+  //         intervalId = null;
+  //         return;
+  //       }
 
-    //       await checkStatus();
-    //     }, 15000);
-    //   };
+  //       await checkStatus();
+  //     }, 15000);
+  //   };
 
-    //   startPolling();
+  //   startPolling();
 
-    //   return () => {
-    //     if (intervalId) {
-    //       clearInterval(intervalId);
-    //     }
-    //   };
-    // }, [projectID, progress]);
-
+  //   return () => {
+  //     if (intervalId) {
+  //       clearInterval(intervalId);
+  //     }
+  //   };
+  // }, [projectID, progress]);
 
   // ---------------- BOOKMARK HANDLING ----------------
   const handleBookmarkFromChild = (data) => {
@@ -155,25 +171,24 @@ const ReportPage = () => {
   };
 
   // ---------------- CITATION → PDF MODAL ----------------
-    const handleCitationLinkClick = (filename, page, text) => {
-      setPdfViewerOpen(true);
+  const handleCitationLinkClick = (filename, page, text) => {
+    setPdfViewerOpen(true);
 
-      const url = "/" + filename;
+    const url = '/' + filename;
 
-      // Wait for modal to render
+    // Wait for modal to render
+    setTimeout(() => {
+      if (!pdfViewerRef.current) return;
+
+      pdfViewerRef.current.loadPdf(url);
+
+      // Allow PDF pages + textLayer to render
       setTimeout(() => {
         if (!pdfViewerRef.current) return;
-
-        pdfViewerRef.current.loadPdf(url);
-
-        // Allow PDF pages + textLayer to render
-        setTimeout(() => {
-          if (!pdfViewerRef.current) return;
-          pdfViewerRef.current.goToCitation(page, text);
-        }, 1200);
-      }, 200);
-    };
-
+        pdfViewerRef.current.goToCitation(page, text);
+      }, 1200);
+    }, 200);
+  };
 
   const handleFinalise = () => {
     if (!dataTableRef.current) return;
@@ -181,10 +196,6 @@ const ReportPage = () => {
     dispatch(finaliseReportRequest(updatedPayload));
     setIsFinalise(true);
   };
-
-
-
-
 
   // ---------------- LEFT PANEL ----------------
   const renderLeftPanel = () => {
@@ -242,59 +253,75 @@ const ReportPage = () => {
               className="header-image"
               alt="header"
             />
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '16px',
-                marginRight: '5%',
-              }}
-            >
-              <Typography className="header-text">
-                Test Report issued under the responsibility of:
+            {reportClick == 'trf' && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '16px',
+                  marginRight: '5%',
+                }}
+              >
+                <Typography className="header-text">
+                  Test Report issued under the responsibility of:
+                </Typography>
+
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  value={issuedBy}
+                  onChange={handleIssuedByChange}
+                  style={{ flex: 2 }} // makes textbox expand
+                />
+              </div>
+            )}
+          </Box>
+
+          {reportClick == 'trf' && (
+            <Box className="report-title-container">
+              <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+                TEST REPORT
               </Typography>
+              <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+                IEC 61010-1
+              </Typography>
+              <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+                Safety requirements for electrical equipment for measurement,
+                control, and laboratory use
+              </Typography>
+              <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+                Part 1: General requirements
+              </Typography>
+            </Box>
+          )}
 
-              <TextField
-                variant="outlined"
-                size="small"
-                value={issuedBy}
-                onChange={handleIssuedByChange}
-                style={{ flex: 2 }}
-              />
-            </div>
-          </Box>
+          {reportClick == 'cdr' && (
+            <Box className="report-title-container">
+              <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+                CDR REPORT
+              </Typography>
+            </Box>
+          )}
 
-          <Box className="report-title-container">
-            <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
-              TEST REPORT
-            </Typography>
-            <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
-              IEC 61010-1
-            </Typography>
-            <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
-              Safety requirements for electrical equipment for measurement,
-              control, and laboratory use
-            </Typography>
-            <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
-              Part 1: General requirements
-            </Typography>
-          </Box>
+          {reportClick == 'trf' && (
+            <DataTable1
+              ref={dataTableRef}
+              //jsonData={trfJson}
+              jsonData={localJson}
+              editMode={editMode}
+              onBookmarkClick={handleBookmarkFromChild}
+            />
+          )}
 
-          <DataTable1
-            ref={dataTableRef}
-            //jsonData={trfJson}
-            jsonData={localJson}
-            editMode={editMode}
-            onBookmarkClick={handleBookmarkFromChild}
-          />
-
-          {/* <CdrReport
-            ref={dataTableRef}
-            //jsonData={trfJson || localJson} // use real API trfJson when available
-            jsonData={localCdrJson}
-            editMode={editMode}
-            projectId={localStorage.getItem('projectId')}
-          /> */}
+          {reportClick == 'cdr' && (
+            <CdrReport
+              ref={dataTableRef}
+              //jsonData={trfJson || localJson} // use real API trfJson when available
+              jsonData={localCdrJson}
+              editMode={editMode}
+              projectId={localStorage.getItem('projectId')}
+            />
+          )}
 
           {/* Render Pages 43 to 84 */}
           {/* {Array.isArray(localJsonRemaining) &&
@@ -326,60 +353,60 @@ const ReportPage = () => {
       {pdfViewerOpen && (
         <Box
           sx={{
-            position: "fixed",
+            position: 'fixed',
             top: 0,
             left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(0,0,0,0.65)",
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0,0,0,0.65)',
             zIndex: 2000,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            backdropFilter: "blur(3px)"
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backdropFilter: 'blur(3px)',
           }}
         >
-        <Box
-          sx={{
-            width: "90%",
-            height: "90%",
-            background: "#fff",
-            borderRadius: "8px",
-            overflow: "hidden",
-            position: "relative",   // REQUIRED
-            boxShadow: "0px 5px 20px rgba(0,0,0,0.3)"
-          }}
-        >
-          <Button
-            onClick={() => setPdfViewerOpen(false)}
+          <Box
             sx={{
-              position: "absolute",
-              top: 10,
-              right: 10,
-              zIndex: 2100,
-              background: "rgba(0,0,0,0.6)",
-              color: "#fff",
-              "&:hover": { background: "rgba(0,0,0,0.8)" }
+              width: '90%',
+              height: '90%',
+              background: '#fff',
+              borderRadius: '8px',
+              overflow: 'hidden',
+              position: 'relative', // REQUIRED
+              boxShadow: '0px 5px 20px rgba(0,0,0,0.3)',
             }}
           >
-            Close
-          </Button>
+            <Button
+              onClick={() => setPdfViewerOpen(false)}
+              sx={{
+                position: 'absolute',
+                top: 10,
+                right: 10,
+                zIndex: 2100,
+                background: 'rgba(0,0,0,0.6)',
+                color: '#fff',
+                '&:hover': { background: 'rgba(0,0,0,0.8)' },
+              }}
+            >
+              Close
+            </Button>
 
-          {/* PDF VIEWER MUST BE INSIDE THIS RELATIVE BOX */}
-          <PdfViewer ref={pdfViewerRef} />
-        </Box>
-
+            {/* PDF VIEWER MUST BE INSIDE THIS RELATIVE BOX */}
+            <PdfViewer ref={pdfViewerRef} />
+          </Box>
         </Box>
       )}
 
       {/* BOOKMARK / CITATION PANEL */}
       {bookmarkOpen ? (
         <Box className="bookmark-panel">
-
           {/* Header */}
           <Box className="bookmark-header">
             <Typography className="bookmark-title">Citation</Typography>
-            <Button size="small" onClick={() => setBookmarkOpen(false)}>✕</Button>
+            <Button size="small" onClick={() => setBookmarkOpen(false)}>
+              ✕
+            </Button>
           </Box>
 
           {/* Field Name */}
@@ -395,12 +422,16 @@ const ReportPage = () => {
           {/* SUPPORTING TEXT + HYPERLINKS (Text-level placement) */}
           {bookmarkData?.textSupportRaw?.length > 0 && (
             <Box mt={2}>
-              <Typography sx={{ fontWeight: 600, mb: 1 }}>Supporting Text</Typography>
+              <Typography sx={{ fontWeight: 600, mb: 1 }}>
+                Supporting Text
+              </Typography>
 
               {bookmarkData.textSupportRaw.map((item, idx) => (
                 <Box key={idx} sx={{ mb: 3 }}>
                   {/* Supporting Text */}
-                  <Typography sx={{ whiteSpace: "pre-wrap", fontSize: 14, mb: 1 }}>
+                  <Typography
+                    sx={{ whiteSpace: 'pre-wrap', fontSize: 14, mb: 1 }}
+                  >
                     {item.text}
                   </Typography>
 
@@ -408,22 +439,25 @@ const ReportPage = () => {
                   <Typography
                     sx={{
                       fontSize: 14,
-                      textDecoration: "underline",
-                      cursor: "pointer",
-                      color: "#0077cc",
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                      color: '#0077cc',
                       mt: 0.5,
                     }}
                     onClick={() =>
-                      handleCitationLinkClick(item.filename, item.page+1, item.text)
+                      handleCitationLinkClick(
+                        item.filename,
+                        item.page + 1,
+                        item.text
+                      )
                     }
                   >
-                    {item.filename} (Page {item.page+1})
+                    {item.filename} (Page {item.page + 1})
                   </Typography>
                 </Box>
               ))}
             </Box>
           )}
-
         </Box>
       ) : (
         <Box className="right-panel">
@@ -508,6 +542,11 @@ const ReportPage = () => {
                       }}
                       onClick={() => {
                         if (!isFinalise) return; // still prevent action
+                        if (label === 'CDR') {
+                          handleGenerateCDR(); // <-- your function
+                        } else if (label === 'Letter') {
+                          handleGenerateLetter(); // <-- your second function
+                        }
                         console.log(label, 'clicked');
                       }}
                     >
@@ -563,7 +602,6 @@ const ReportPage = () => {
           </Card>
         </Box>
       )}
-
     </Box>
   );
 };
