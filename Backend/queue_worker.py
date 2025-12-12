@@ -45,21 +45,22 @@ app = FastAPI(title="Queue Worker Service")
 # ==========================================================
 def update_project_progress(
     project_doc: dict,
-    stage: str,
-    percentage: int,
-    step: str | None = None,
+    trf_stage: str,
+    trf_percentage: int = 33,
+    trf_step: str | None = None,
     error: str | None = None,
+    trf_completed= "No"
 ):
     project_doc["Project_Progress"] = {
-        "stage": stage,
-        "percentage": percentage,
-        "step": step,
+        "trf_stage": trf_stage,
+        "trf_percentage": trf_percentage,
+        "trf_step": trf_step,
         "last_updated": datetime.utcnow().isoformat(),
         "error": error,
     }
 
     projects_container.upsert_item(project_doc)
-    print(f"✅ Progress updated → {percentage}% | {stage}")
+    print(f"✅ Progress updated → {trf_percentage}% | {trf_stage}")
 
 
 # ==========================================================
@@ -113,7 +114,7 @@ async def process_message(message) -> bool:
     # IDEMPOTENCY GUARD
     # ------------------------------------------------------
     # progress = project_doc.get("Project_Progress") or {}
-    # if progress.get("percentage") == 100:
+    # if progress.get("trf_percentage") == 100:
     #     print(f"✅ Project already completed: {project_id}")
     #     return True
 
@@ -137,13 +138,14 @@ async def process_message(message) -> bool:
 
     try:
         # --------------------------------------------------
-        # 25% — EMBEDDING START
+        # 33% — EMBEDDING START
         # --------------------------------------------------
         update_project_progress(
             project_doc,
-            stage="Indexing in Progress",
-            percentage=25,
-            step="Creating embeddings",
+            trf_stage="Indexing in Progress",
+            trf_percentage=33,
+            trf_step="Creating embeddings",
+            trf_completed= "No"
         )
 
         ingest_files_from_blob_urls_create_embeddings(
@@ -151,24 +153,16 @@ async def process_message(message) -> bool:
             blob_urls,
         )
 
-        # --------------------------------------------------
-        # 50% — EMBEDDING COMPLETE
-        # --------------------------------------------------
-        update_project_progress(
-            project_doc,
-            stage="Embedding Completed",
-            percentage=50,
-            step="Embeddings ready",
-        )
 
         # --------------------------------------------------
         # 75% — TRF GENERATION
         # --------------------------------------------------
         update_project_progress(
             project_doc,
-            stage="Generating TRF",
-            percentage=75,
-            step="Generating TRF JSON",
+            trf_stage="Generating TRF",
+            trf_percentage=75,
+            trf_step="Generating TRF JSON",
+            trf_completed= "No"
         )
 
         # --------------------------------------------------
@@ -184,9 +178,10 @@ async def process_message(message) -> bool:
         # --------------------------------------------------
         update_project_progress(
             project_doc,
-            stage="Completed",
-            percentage=100,
-            step="TRF generated and stored",
+            trf_stage="Completed",
+            trf_percentage=100,
+            trf_step="TRF generated and stored",
+            trf_completed= "Yes"
         )
 
         print(f"🎉 TRF generation completed for project {project_id}")
@@ -197,9 +192,9 @@ async def process_message(message) -> bool:
 
         update_project_progress(
             project_doc,
-            stage="Failed",
-            percentage=0,
-            step="Processing failed",
+            trf_stage="Failed",
+            trf_percentage=0,
+            trf_step="Processing failed",
             error=str(e),
         )
 
