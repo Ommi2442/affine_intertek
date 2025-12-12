@@ -29,6 +29,7 @@ import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutline
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 
 import './DataTable.css';
+import { idb_set, idb_get } from '../utils/idb';
 import CommentDialog from './CommentDialog';
 
 const DataTable1 = forwardRef(
@@ -46,6 +47,9 @@ const DataTable1 = forwardRef(
     const [isCommentOpen, setIsCommentOpen] = useState(false);
     const [currentCommentText, setCurrentCommentText] = useState('');
     const commentTargetRef = useRef({ t: null, i: null });
+
+    // Track whether this page load is a browser refresh
+    const isRefreshRef = useRef(false);
 
     // --------------------
     // helper: checks
@@ -91,21 +95,60 @@ const DataTable1 = forwardRef(
 
     // LOAD JSON
     useEffect(() => {
-      const fresh = jsonData?.Tables ?? [];
-      setTables(fresh);
-      setVisiblePages(1);
-      setCurrentPageIndex(0);
+      // When API gives new data (Generate TRF clicked)
+      if (isRefreshRef.current) return; // on refresh we keep localStorage data
+      if (jsonData?.Tables) {
+        setTables(jsonData.Tables);
+        setVisiblePages(1);
+        setCurrentPageIndex(0);
+      }
     }, [jsonData]);
+
+    // Load from IndexedDB ONLY on hard refresh (mount)
+    useEffect(() => {
+      const navEntry =
+        performance.getEntriesByType &&
+        performance.getEntriesByType('navigation') &&
+        performance.getEntriesByType('navigation')[0];
+
+      const isRefresh =
+        (performance.navigation && performance.navigation.type === 1) ||
+        navEntry?.type === 'reload' ||
+        false;
+
+      isRefreshRef.current = !!isRefresh;
+
+      if (isRefreshRef.current) {
+        idb_get('tables').then((saved) => {
+          if (saved) {
+            setTables(saved);
+            setVisiblePages(1);
+            setCurrentPageIndex(0);
+          }
+        });
+      }
+    }, []);
+
+    // Save to IndexedDB whenever tables change
+    useEffect(() => {
+      if (tables && tables.length > 0) {
+        idb_set('tables', tables);
+      }
+    }, [tables]);
 
     // FLATTEN ITEMS (hide disable_text: true in UI)
     const allItems = useMemo(() => {
       const arr = [];
       (tables || []).forEach((table, tIdx) => {
-        (table.Items || [])
-          .filter((item) => item.disable_text !== true)
-          .forEach((item, iIdx) => {
-            arr.push({ ...item, __t: tIdx, __i: iIdx });
+        (table.Items || []).forEach((item, realIndex) => {
+          if (item.disable_text === true) return;
+
+          arr.push({
+            ...item,
+            __t: tIdx,
+            __i: realIndex, // ← REAL INDEX FIXES THE PROBLEM
           });
+        });
       });
       return arr;
     }, [tables]);
