@@ -479,15 +479,16 @@ def get_project_report_status(id: str):
 
     if not progress:
         return {
-            "status": "Pending",
-            "percentage": 0
+            "trf_status": "Pending",
+            "trf_percentage": 33
         }
 
     return {
-        "status": progress.get("stage"),
-        "percentage": progress.get("percentage"),
-        "step": progress.get("step"),
-        "error": progress.get("error")
+        "trf_status": progress.get("trf_stage"),
+        "trf_percentage": progress.get("trf_percentage"),
+        "trf_step": progress.get("trf_step"),
+        "trf_error": progress.get("trf_error"),
+        "trf_completed": progress.get("trf_completed")
     }
 
 

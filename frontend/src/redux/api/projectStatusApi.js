@@ -4,7 +4,9 @@ import api from "../../services/api";
 export const getProjectReportStatusApi = async (projectId) => {
   const response = await api.get(
     `/projects/report/status`,
-    { params: { id: projectId } }
+    { params: { id: projectId },
+      showLoader: false,    // <- HIDE LOADER
+  }
   );
 
   return response.data;
