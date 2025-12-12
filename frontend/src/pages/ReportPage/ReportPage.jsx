@@ -43,7 +43,7 @@ const ReportPage = () => {
 
   const [issuedBy, setIssuedBy] = useState('');
 
-  const [status, setStatus] = useState('Completed'); // "Pending" for the trf api json 
+  const [status, setStatus] = useState('Pending'); // "Pending" for the trf api json , "Completed" for the local json"
   const [progress, setProgress] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -124,42 +124,37 @@ const ReportPage = () => {
   };
 
   // ----------------------------------------------------------
-  //  FIXED POLLING (FIRST LOAD + EVERY 15s)
+  //  FIXED POLLING (FIRST LOAD + EVERY 15s) 'comment below useEffect for the local json testing'
   // ----------------------------------------------------------
-  //   useEffect(() => {
-  //     if (!projectID) return;
+    useEffect(() => {
+      if (!projectID) return;
 
-  //     let intervalId = null;
+      let intervalId = null;
 
-  //     const startPolling = async () => {
-  //       await checkStatus();
+      const startPolling = async () => {
+        await checkStatus();
 
-  //       intervalId = setInterval(async () => {
-  //         if (progress === 100) {
-  //           clearInterval(intervalId);
-  //           intervalId = null;
-  //           return;
-  //         }
+        intervalId = setInterval(async () => {
+          if (progress === 100) {
+            clearInterval(intervalId);
+            intervalId = null;
+            return;
+          }
 
-  //         await checkStatus();
-  //       }, 15000);
-  //     };
+          await checkStatus();
+        }, 15000);
+      };
 
-  //     startPolling();
+      startPolling();
 
-  //     return () => {
-  //       if (intervalId) {
-  //         clearInterval(intervalId);
-  //       }
-  //     };
-  //   }, [projectID, progress]);
+      return () => {
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
+      };
+    }, [projectID, progress]);
 
-  //   return () => {
-  //     if (intervalId) {
-  //       clearInterval(intervalId);
-  //     }
-  //   };
-  // }, [projectID, progress]);
+
 
   // ---------------- BOOKMARK HANDLING ----------------
   const handleBookmarkFromChild = (data) => {
@@ -205,9 +200,10 @@ const ReportPage = () => {
   };
 
   // ---------------- LEFT PANEL ----------------
-  // progress < 100 || !trfJson --  for to load the trf report from api 
+  // progress < 100 || !trfJson ---  for to load the trf report from api 
+  // ! true ---- for to load local json
   const renderLeftPanel = () => {
-    if (!true) {
+    if (progress < 100 || !trfJson) {
       return (
         <Card className="progress-advanced-card left-card">
           <Typography className="progress-advanced-title">
@@ -314,8 +310,8 @@ const ReportPage = () => {
           {reportClick == 'trf' && (
             <DataTable1
               ref={dataTableRef}
-              //jsonData={trfJson}
-              jsonData={localJson}
+              jsonData={trfJson}           // api json load
+              // jsonData={localJson}     //localJson load
               editMode={editMode}
               onBookmarkClick={handleBookmarkFromChild}
             />
