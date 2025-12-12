@@ -43,7 +43,7 @@ const ReportPage = () => {
 
   const [issuedBy, setIssuedBy] = useState('');
 
-  const [status, setStatus] = useState('Completed');
+  const [status, setStatus] = useState('Completed'); // "Pending" for the trf api json 
   const [progress, setProgress] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -205,6 +205,7 @@ const ReportPage = () => {
   };
 
   // ---------------- LEFT PANEL ----------------
+  // progress < 100 || !trfJson --  for to load the trf report from api 
   const renderLeftPanel = () => {
     if (!true) {
       return (
