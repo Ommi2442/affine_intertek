@@ -508,7 +508,7 @@ def generate_trf(projectId: str):
         # --------------------------------------------------
         # Poll until worker reaches 100%
         # --------------------------------------------------
-        MAX_WAIT_SECONDS = 180
+        MAX_WAIT_SECONDS = 6000
         POLL_INTERVAL = 2
         elapsed = 0
 

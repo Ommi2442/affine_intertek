@@ -109,33 +109,33 @@ const ReportPage = () => {
   // ----------------------------------------------------------
   //  FIXED POLLING (FIRST LOAD + EVERY 15s)
   // ----------------------------------------------------------
-    // useEffect(() => {
-    //   if (!projectID) return;
+  //   useEffect(() => {
+  //     if (!projectID) return;
 
-    //   let intervalId = null;
+  //     let intervalId = null;
 
-    //   const startPolling = async () => {
-    //     await checkStatus();
+  //     const startPolling = async () => {
+  //       await checkStatus();
 
-    //     intervalId = setInterval(async () => {
-    //       if (progress === 100) {
-    //         clearInterval(intervalId);
-    //         intervalId = null;
-    //         return;
-    //       }
+  //       intervalId = setInterval(async () => {
+  //         if (progress === 100) {
+  //           clearInterval(intervalId);
+  //           intervalId = null;
+  //           return;
+  //         }
 
-    //       await checkStatus();
-    //     }, 15000);
-    //   };
+  //         await checkStatus();
+  //       }, 15000);
+  //     };
 
-    //   startPolling();
+  //     startPolling();
 
-    //   return () => {
-    //     if (intervalId) {
-    //       clearInterval(intervalId);
-    //     }
-    //   };
-    // }, [projectID, progress]);
+  //     return () => {
+  //       if (intervalId) {
+  //         clearInterval(intervalId);
+  //       }
+  //     };
+  //   }, [projectID, progress]);
 
 
   // ---------------- BOOKMARK HANDLING ----------------
