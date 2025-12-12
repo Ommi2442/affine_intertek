@@ -16,41 +16,40 @@ import DataTable1 from '../../components/DataTable1';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
 
-import { triggerGenerateTrfApi } from '../../redux/api/generateTrfApi';
-import localJson from '../../utils/pta_final_5_UI_upd.json';
+import localJson from '../../utils/iec_61010_1614_1012_output_v1.json';
+import PdfViewer from "../../components/PdfViewer";
 
 const ReportPage = () => {
   const dispatch = useDispatch();
   const dataTableRef = useRef(null);
 
-  // ✅ original source of projectId (unchanged)
+  const pdfViewerRef = useRef(null);
+
   const projectID = localStorage.getItem('projectId');
 
-  /* ---------------- STATE ---------------- */
   const [bookmarkOpen, setBookmarkOpen] = useState(false);
   const [bookmarkData, setBookmarkData] = useState(null);
   const [trfJson, setTrfJson] = useState(null);
 
+  const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
+
   const [issuedBy, setIssuedBy] = useState('');
-  // ----------------------------------------------------------
-  // PROGRESS STATE
-  // ----------------------------------------------------------
-  const [status, setStatus] = useState('Completed'); // testing
+
+  const [status, setStatus] = useState('Completed');
   const [progress, setProgress] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+
   const myData = useSelector((state) => state?.trf);
-  console.log('myData', myData);
+  
+  const STAGES = [
+    { label: 'Indexing', threshold: 33 },
+    { label: 'Generating TRF', threshold: 75 },
+    { label: 'TRF Generated', threshold: 100 },
+  ];
 
   useEffect(() => {
     setTrfJson(myData?.trfData?.data);
   }, [myData]);
-
-  const STAGES = [
-    { label: 'Indexing', threshold: 25 },
-    { label: 'Embedding Completed', threshold: 50 },
-    { label: 'Generating TRF', threshold: 75 },
-    { label: 'TRF Generated', threshold: 100 },
-  ];
 
   useEffect(() => {
     if (dataTableRef.current) {
@@ -59,7 +58,7 @@ const ReportPage = () => {
       );
       setIssuedBy(value);
     }
-  }, [localJson]); // runs when JSON is loaded
+  }, [localJson]);
 
   const handleIssuedByChange = (e) => {
     const newValue = e.target.value;
@@ -73,18 +72,9 @@ const ReportPage = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const load = async () => {
-  //     const response = await triggerGenerateTrfApi(projectID);
-  //     setTrfJson(response.data); // TRF JSON loaded
-  //     console.log('trfJson', trfJson);
-  //   };
 
-  //   load();
-  // }, [projectID]);
-
-  // ----------------------------------------------------------
-  // 2️⃣ STATUS CHECK (✅ FIXED TO MATCH API RESPONSE)
+    // ----------------------------------------------------------
+  //  STATUS CHECK (FIXED TO MATCH API RESPONSE)
   // ----------------------------------------------------------
   const checkStatus = async () => {
     if (!projectID) {
@@ -97,8 +87,8 @@ const ReportPage = () => {
 
       const res = await getProjectReportStatusApi(projectID);
 
-      setStatus(res?.status || 'Pending');
-      setProgress(typeof res?.percentage === 'number' ? res.percentage : 0);
+      setStatus(res?.trf_status || 'Pending');
+      setProgress(typeof res?.trf_percentage === 'number' ? res.trf_percentage : 0);
     } catch (err) {
       console.error('STATUS CHECK FAILED:', err);
     } finally {
@@ -107,43 +97,73 @@ const ReportPage = () => {
   };
 
   // ----------------------------------------------------------
-  // ✅ FIXED POLLING (FIRST LOAD + EVERY 15s)
+  //  FIXED POLLING (FIRST LOAD + EVERY 15s)
   // ----------------------------------------------------------
-  useEffect(() => {
-    if (!projectID) return;
+    // useEffect(() => {
+    //   if (!projectID) return;
 
-    let intervalId = null;
+    //   let intervalId = null;
 
-    const startPolling = async () => {
-      await checkStatus();
+    //   const startPolling = async () => {
+    //     await checkStatus();
 
-      intervalId = setInterval(async () => {
-        if (progress === 100) {
-          clearInterval(intervalId);
-          intervalId = null;
-          return;
-        }
+    //     intervalId = setInterval(async () => {
+    //       if (progress === 100) {
+    //         clearInterval(intervalId);
+    //         intervalId = null;
+    //         return;
+    //       }
 
-        await checkStatus();
-      }, 15000);
-    };
+    //       await checkStatus();
+    //     }, 15000);
+    //   };
 
-    startPolling();
+    //   startPolling();
 
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [projectID, progress]);
+    //   return () => {
+    //     if (intervalId) {
+    //       clearInterval(intervalId);
+    //     }
+    //   };
+    // }, [projectID, progress]);
 
-  // ----------------------------------------------------------
-  // BOOKMARK HANDLING (UNCHANGED)
-  // ----------------------------------------------------------
+
+  // ---------------- BOOKMARK HANDLING ----------------
   const handleBookmarkFromChild = (data) => {
-    setBookmarkData(data);
+    const textSupportTexts =
+      data?.ai_fillable === true && Array.isArray(data?.text_support)
+        ? data.text_support.map((item) => item.text)
+        : [];
+
+    setBookmarkData({
+      ...data,
+      textSupportTexts,
+      textSupportRaw: data?.text_support || [],
+    });
+
     setBookmarkOpen(true);
   };
+
+  // ---------------- CITATION → PDF MODAL ----------------
+    const handleCitationLinkClick = (filename, page, text) => {
+      setPdfViewerOpen(true);
+
+      const url = "/" + filename;
+
+      // Wait for modal to render
+      setTimeout(() => {
+        if (!pdfViewerRef.current) return;
+
+        pdfViewerRef.current.loadPdf(url);
+
+        // Allow PDF pages + textLayer to render
+        setTimeout(() => {
+          if (!pdfViewerRef.current) return;
+          pdfViewerRef.current.goToCitation(page, text);
+        }, 1200);
+      }, 200);
+    };
+
 
   const handleFinalise = () => {
     if (!dataTableRef.current) return;
@@ -151,13 +171,13 @@ const ReportPage = () => {
     dispatch(finaliseReportRequest(updatedPayload));
   };
 
-  // ----------------------------------------------------------
-  // LEFT PANEL (PROGRESS OR REPORT)
-  // ----------------------------------------------------------
+
+
+
+
+  // ---------------- LEFT PANEL ----------------
   const renderLeftPanel = () => {
-    console.log(localJson);
-    console.log(trfJson);
-    if (progress < 100 || !trfJson) {
+    if (!true) {
       return (
         <Card className="progress-advanced-card left-card">
           <Typography className="progress-advanced-title">
@@ -202,8 +222,6 @@ const ReportPage = () => {
         </Card>
       );
     }
-
-    // ---------------- ORIGINAL LEFT PANEL ----------------
     return (
       <Card className="left-card">
         <CardContent className="left-content">
@@ -230,7 +248,7 @@ const ReportPage = () => {
                 size="small"
                 value={issuedBy}
                 onChange={handleIssuedByChange}
-                style={{ flex: 2 }} // makes textbox expand
+                style={{ flex: 2 }}
               />
             </div>
           </Box>
@@ -253,8 +271,8 @@ const ReportPage = () => {
 
           <DataTable1
             ref={dataTableRef}
-            jsonData={trfJson}
-            // jsonData={localJson}
+            jsonData={localJson}
+            // jsonData={trfJson}
             onBookmarkClick={handleBookmarkFromChild}
           />
         </CardContent>
@@ -262,27 +280,113 @@ const ReportPage = () => {
     );
   };
 
-  // ----------------------------------------------------------
-  // FINAL PAGE LAYOUT
-  // ----------------------------------------------------------
+  // ---------------- FINAL PAGE LAYOUT ----------------
   return (
     <Box className="report-container">
       <Box className="left-panel">{renderLeftPanel()}</Box>
 
+      {/* PDF VIEWER POPUP MODAL */}
+      {pdfViewerOpen && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.65)",
+            zIndex: 2000,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            backdropFilter: "blur(3px)"
+          }}
+        >
+        <Box
+          sx={{
+            width: "90%",
+            height: "90%",
+            background: "#fff",
+            borderRadius: "8px",
+            overflow: "hidden",
+            position: "relative",   // REQUIRED
+            boxShadow: "0px 5px 20px rgba(0,0,0,0.3)"
+          }}
+        >
+          <Button
+            onClick={() => setPdfViewerOpen(false)}
+            sx={{
+              position: "absolute",
+              top: 10,
+              right: 10,
+              zIndex: 2100,
+              background: "rgba(0,0,0,0.6)",
+              color: "#fff",
+              "&:hover": { background: "rgba(0,0,0,0.8)" }
+            }}
+          >
+            Close
+          </Button>
+
+          {/* PDF VIEWER MUST BE INSIDE THIS RELATIVE BOX */}
+          <PdfViewer ref={pdfViewerRef} />
+        </Box>
+
+        </Box>
+      )}
+
+      {/* BOOKMARK / CITATION PANEL */}
       {bookmarkOpen ? (
         <Box className="bookmark-panel">
+
+          {/* Header */}
           <Box className="bookmark-header">
             <Typography className="bookmark-title">Citation</Typography>
-            <Button size="small" onClick={() => setBookmarkOpen(false)}>
-              ✕
-            </Button>
+            <Button size="small" onClick={() => setBookmarkOpen(false)}>✕</Button>
           </Box>
-          <Typography className="bookmark-field">
+
+          {/* Field Name */}
+          {/* <Typography className="bookmark-field">
             {bookmarkData?.field}
-          </Typography>
-          <Typography className="bookmark-value">
+          </Typography> */}
+
+          {/* Field Value */}
+          {/* <Typography className="bookmark-value">
             {bookmarkData?.value}
-          </Typography>
+          </Typography> */}
+
+          {/* SUPPORTING TEXT + HYPERLINKS (Text-level placement) */}
+          {bookmarkData?.textSupportRaw?.length > 0 && (
+            <Box mt={2}>
+              <Typography sx={{ fontWeight: 600, mb: 1 }}>Supporting Text</Typography>
+
+              {bookmarkData.textSupportRaw.map((item, idx) => (
+                <Box key={idx} sx={{ mb: 3 }}>
+                  {/* Supporting Text */}
+                  <Typography sx={{ whiteSpace: "pre-wrap", fontSize: 14, mb: 1 }}>
+                    {item.text}
+                  </Typography>
+
+                  {/* Corresponding hyperlink */}
+                  <Typography
+                    sx={{
+                      fontSize: 14,
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                      color: "#0077cc",
+                      mt: 0.5,
+                    }}
+                    onClick={() =>
+                      handleCitationLinkClick(item.filename, item.page+1, item.text)
+                    }
+                  >
+                    {item.filename} (Page {item.page+1})
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          )}
+
         </Box>
       ) : (
         <Box className="right-panel">
@@ -379,6 +483,7 @@ const ReportPage = () => {
           </Card>
         </Box>
       )}
+
     </Box>
   );
 };

@@ -233,18 +233,33 @@ const DataTable1 = forwardRef(
           <IconButton size="small" onClick={() => onApprove?.(tIdx, iIdx)}>
             <CheckCircleIcon className="dt-icon-approve" />
           </IconButton>
+
           <IconButton size="small" onClick={() => openComment(tIdx, iIdx)}>
             <ChatBubbleOutlineOutlinedIcon className="dt-icon-comment" />
           </IconButton>
+
+          {/* Bookmark: send the full row object (safe lookup) */}
           <IconButton
             size="small"
-            onClick={() => onBookmarkClick?.(tIdx, iIdx)}
+            onClick={() => {
+              const row =
+                // safe access to the row object from tables state
+                (Array.isArray(tables) &&
+                  tables[tIdx] &&
+                  Array.isArray(tables[tIdx].Items) &&
+                  tables[tIdx].Items[iIdx]) ??
+                null;
+
+              // call parent with object; fallback to {__t,__i} if not found
+              onBookmarkClick?.(row ?? { __t: tIdx, __i: iIdx });
+            }}
           >
             <MenuBookOutlinedIcon className="dt-icon-bookmark" />
           </IconButton>
         </div>
       );
     };
+
 
     // TABLE MODE (is_table: true) - for pages outside 9–42
     // includes PAGE 7 rules: answer_column → UI_answer_column, is_textbox, checkbox_answer_UI
