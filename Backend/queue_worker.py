@@ -56,7 +56,6 @@ RAG_COSMOS_KEY         = os.getenv("COSMOS_KEY")
 
 
 BASE_DIR = Path(__file__).resolve().parent
-TRF_JSON_OUTPUT_PATH = BASE_DIR / "data" / "iec_61010_1614_1012_output_v1.json"
 
 INPUT_JSON_PATH = BASE_DIR / "data" / "pta_final_5.json"
 INPUT_DOCX_PATH = BASE_DIR / "data" / "input.docx"
@@ -79,17 +78,19 @@ app = FastAPI(title="Queue Worker Service")
 def update_project_progress(
     project_doc: dict,
     trf_stage: str,
-    trf_percentage: int = 33,
+    trf_percentage: int = 0,
     trf_step: str | None = None,
     error: str | None = None,
-    trf_completed= "No"
+    last_updated: datetime | None = None,
+    trf_completed: bool = False
 ):
     project_doc["Project_Progress"] = {
         "trf_stage": trf_stage,
         "trf_percentage": trf_percentage,
         "trf_step": trf_step,
-        "last_updated": datetime.utcnow().isoformat(),
+        "last_updated": (last_updated or datetime.utcnow()).isoformat(),
         "error": error,
+        "trf_completed": trf_completed
     }
 
     projects_container.upsert_item(project_doc)
@@ -102,9 +103,6 @@ def update_project_progress(
 async def process_message(message) -> bool:
     print("\n🚀 Queue message received")
 
-    # ------------------------------------------------------
-    # SAFE MESSAGE PARSE
-    # ------------------------------------------------------
     try:
         if not message.content:
             print("❌ Empty queue message")
@@ -126,9 +124,6 @@ async def process_message(message) -> bool:
 
     print(f"📦 Processing project: {project_id}")
 
-    # ------------------------------------------------------
-    # FETCH PROJECT
-    # ------------------------------------------------------
     query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
     docs = list(
         projects_container.query_items(
@@ -143,17 +138,6 @@ async def process_message(message) -> bool:
 
     project_doc = docs[0]
 
-    # ------------------------------------------------------
-    # IDEMPOTENCY GUARD
-    # ------------------------------------------------------
-    # progress = project_doc.get("Project_Progress") or {}
-    # if progress.get("trf_percentage") == 100:
-    #     print(f"✅ Project already completed: {project_id}")
-    #     return True
-
-    # ------------------------------------------------------
-    # EXTRACT SOURCE DOCUMENT URLs (SAFE)
-    # ------------------------------------------------------
     source_docs = project_doc.get("Source_Doc") or []
 
     blob_urls: list[str] = []
@@ -170,41 +154,39 @@ async def process_message(message) -> bool:
     print(f"📄 Files to embed: {len(blob_urls)}")
 
     try:
-        # --------------------------------------------------
-        # 33% — EMBEDDING START
-        # --------------------------------------------------
+        # Start at 0%
         update_project_progress(
             project_doc,
             trf_stage="Indexing in Progress",
-            trf_percentage=33,
-            trf_step="Creating embeddings",
-            trf_completed= "No"
+            trf_percentage=0,
+            trf_step="Starting embedding",
+            trf_completed=False
         )
 
-        ingest_files_from_blob_urls_create_embeddings(
-            blob_urls,
-            project_id
-        )
+        ingest_files_from_blob_urls_create_embeddings(blob_urls, project_id)
 
         print(f"🎉 Embeddings completed for project {project_id}")
 
-        # --------------------------------------------------
-        # 75% — TRF GENERATION
-        # --------------------------------------------------
+        # Embedding Complete → 20%
+        update_project_progress(
+            project_doc,
+            trf_stage="Embedding Completed",
+            trf_percentage=20,
+            trf_step="Embeddings completed",
+            trf_completed=False
+        )
 
-        try:
-            with open(IMAGE_URLS_PATH, "r") as f:
-                image_urls = json.load(f)
-            print(f"✔ Loaded {len(image_urls)} image URLs from ingestion.")
-        except FileNotFoundError:
-            print("❌ ERROR: image_urls.json not found. Run ingestion_pipeline.py first.")
-            exit(1)
-
+        with open(IMAGE_URLS_PATH, "r") as f:
+            image_urls = json.load(f)
+        print(f"✔ Loaded {len(image_urls)} image URLs from ingestion.")
 
         print("🔧 Initializing Cosmos + Vectorstore...")
 
-        trf_cosmos_client = CosmosClient(RAG_COSMOS_URL, credential=RAG_COSMOS_KEY,
-                            consistency_level=ConsistencyLevel.Eventual)
+        trf_cosmos_client = CosmosClient(
+            RAG_COSMOS_URL,
+            credential=RAG_COSMOS_KEY,
+            consistency_level=ConsistencyLevel.Eventual
+        )
 
         embeddings = build_embeddings(AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY)
 
@@ -217,50 +199,60 @@ async def process_message(message) -> bool:
 
         print("✔ Vectorstore loaded from Cosmos DB.")
 
+        # --- TRF PROGRESS CALLBACK (20% → 95%) ---
+        def trf_progress_callback(processed, total):
+            raw_percent = (processed / total) * 100
+            ui_percent = int(20 + (raw_percent * 0.75))  # 0–100 → 20–95
+            if ui_percent > 95:
+                ui_percent = 95
+
+            update_project_progress(
+                project_doc,
+                trf_stage="Generating TRF",
+                trf_percentage=ui_percent,
+                trf_step=f"Processed {processed}/{total}",
+                trf_completed=False
+            )
 
         result = run_trf_generation(
-        vs=vs,
-        image_urls=image_urls,
-        input_json_path=INPUT_JSON_PATH,
-        docx_input_path=INPUT_DOCX_PATH,
-        output_json_path=OUTPUT_JSON,
-        output_docx_path=OUTPUT_DOCX,
-        output_excel_path=OUTPUT_EXCEL,
-        batch_size=150,
-        cooldown_sec=15,
-        max_workers=10,
-        use_llm_inGrey=False,
-        stats=True
-        )
-
-
-        update_project_progress(
-            project_doc,
-            trf_stage="Generating TRF",
-            trf_percentage=75,
-            trf_step="Generating TRF JSON",
-            trf_completed= "No"
+            vs=vs,
+            image_urls=image_urls,
+            input_json_path=INPUT_JSON_PATH,
+            docx_input_path=INPUT_DOCX_PATH,
+            output_json_path=OUTPUT_JSON,
+            output_docx_path=OUTPUT_DOCX,
+            output_excel_path=OUTPUT_EXCEL,
+            batch_size=150,
+            cooldown_sec=15,
+            max_workers=10,
+            use_llm_inGrey=False,
+            stats=True,
+            progress_callback=trf_progress_callback
         )
 
         print(f"🎉 TRF generation completed for project {project_id}")
 
-        # --------------------------------------------------
-        # SAVE TRF JSON → BLOB + COSMOS
-        # --------------------------------------------------
+        # 95% before saving
+        update_project_progress(
+            project_doc,
+            trf_stage="Saving TRF Report",
+            trf_percentage=95,
+            trf_step="Saving TRF output files",
+            trf_completed=False
+        )
+
         save_local_json_to_blob_and_cosmos(
-            file_path=str(TRF_JSON_OUTPUT_PATH),
+            file_path=str(OUTPUT_JSON),
             project_id=project_id,
         )
 
-        # --------------------------------------------------
-        # 100% — COMPLETED
-        # --------------------------------------------------
+        # 100% completed
         update_project_progress(
             project_doc,
             trf_stage="Completed",
             trf_percentage=100,
             trf_step="TRF generated and stored",
-            trf_completed= "Yes"
+            trf_completed=True
         )
 
         print(f"🎉 Saving TRF Report to the Blob")
@@ -275,9 +267,12 @@ async def process_message(message) -> bool:
             trf_percentage=0,
             trf_step="Processing failed",
             error=str(e),
+            trf_completed=False
         )
 
-        return False  # ❌ retry allowed
+        return False
+
+
 
 
 # ==========================================================

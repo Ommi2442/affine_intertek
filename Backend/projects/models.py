@@ -26,25 +26,25 @@ class ProjectCreate(BaseModel):
 
 class ProjectProgress(BaseModel):
     # TRF
-    trf_percentage: Optional[int] = 33
+    trf_percentage: Optional[int] = 10
     trf_step: Optional[str] = None
     trf_last_updated: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
     trf_error: Optional[str] = None
-    trf_completed: Optional[str] = 'No'
+    trf_completed: bool = False
 
     # CDR
-    cdr_percentage: Optional[int] = 33
+    cdr_percentage: Optional[int] = 10
     cdr_step: Optional[str] = None
     cdr_last_updated: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
     cdr_error: Optional[str] = None
-    cdr_completed: Optional[str] = 'No'
+    cdr_completed: bool = False
 
     # LETTER
-    letter_percentage: Optional[int] = 33
+    letter_percentage: Optional[int] = 10
     letter_step: Optional[str] = None
     letter_last_updated: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
     letter_error: Optional[str] = None
-    letter_completed: Optional[str] = 'No'
+    letter_completed: bool = False
 
     
 
@@ -56,39 +56,6 @@ class Project(BaseModel):
     Product: str
     Source_Doc: List[str] = Field(default_factory=list)
     Project_Progress: Optional[ProjectProgress] = None
-    TRF_Generated: bool = False
-    TRF_Data: List[TRFItem] = Field(default_factory=list)
-    TRF_Generated_On: Optional[str] = None
-    TRF_Generated_By: Optional[str] = None
-    TRF_Reviewed_On: Optional[str] = None
-    TRF_Reviewed_By: Optional[str] = None
-    TRF_Approved_On: Optional[str] = None
-    TRF_Approved_By: Optional[str] = None
-    TRF_Status: Optional[str] = None
-    TRF_Regenerated_On: Optional[str] = None
-    TRF_Regenerated_By: Optional[str] = None
-    CDR_Generated: bool = False
-    CDR_Data: List[CDRItem] = Field(default_factory=list)
-    CDR_Generated_On: Optional[str] = None
-    CDR_Generated_By: Optional[str] = None
-    CDR_Reviewed_On: Optional[str] = None
-    CDR_Reviewed_By: Optional[str] = None
-    CDR_Approved_On: Optional[str] = None
-    CDR_Approved_By: Optional[str] = None
-    CDR_Status: Optional[str] = None
-    CDR_Regenerated_On: Optional[str] = None
-    CDR_Regenerated_By: Optional[str] = None
-    Letter_Generated: bool = False
-    Letter_Data: List[LetterItem] = Field(default_factory=list)
-    Letter_Generated_On: Optional[str] = None
-    Letter_Generated_By: Optional[str] = None
-    Letter_Reviewed_On: Optional[str] = None
-    Letter_Reviewed_By: Optional[str] = None
-    Letter_Approved_On: Optional[str] = None
-    Letter_Approved_By: Optional[str] = None
-    Letter_Status: Optional[str] = None
-    Letter_Regenerated_On: Optional[str] = None
-    Letter_Regenerated_By: Optional[str] = None
     Proj_Created_On: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
     Proj_Created_By: Optional[str] = "system"
     Proj_Deleted_On: Optional[str] = None

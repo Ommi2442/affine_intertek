@@ -10,7 +10,7 @@ import os
 
 
 # Blob Storage
-AZURE_STORAGE_CONNECTION_STRING = 'BlobEndpoint=https://stintertekesusdev.blob.core.windows.net/;QueueEndpoint=https://stintertekesusdev.queue.core.windows.net/;FileEndpoint=https://stintertekesusdev.file.core.windows.net/;TableEndpoint=https://stintertekesusdev.table.core.windows.net/;SharedAccessSignature=sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-12-11T18:54:56Z&st=2025-12-01T10:39:56Z&spr=https&sig=D4MdeDfdffB3VflWgmJLIHhXlk5pwf4Rn3SRxypt%2B2U%3D'
+AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net'
 blob_service = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
 blob_container = 'stintertekesusdev-blob'
 
@@ -50,7 +50,7 @@ def save_local_json_to_blob_and_cosmos(
         json_data = json.load(f)
 
     # ---------- 2. Upload to Blob ----------
-    blob_path = f"Documents/{project_id}/{filename}"
+    blob_path = f"Documents/{project_id}/Generated_trf_Report/{filename}"
     blob_client = blob_service.get_blob_client(
         container=blob_container,
         blob=blob_path
@@ -77,7 +77,6 @@ def save_local_json_to_blob_and_cosmos(
     trf_container.create_item(cosmos_item)
 
     return cosmos_item
-
 
 
 
