@@ -1,1 +1,50 @@
-[]
+[
+  "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G105000001/source_documents/marking_label.JPG",
+  "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G105000001/source_documents/IMG_4663.jpg",
+  "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G105000001/source_documents/IMG_4665.jpg",
+  "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G105000001/source_documents/IMG_4666.jpg",
+  "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G105000001/source_documents/IMG_4667.jpg",
+  "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G105000001/source_documents/IMG_4668.jpg",
+  "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G105000001/source_documents/IMG_4700.jpg",
+  "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G105000001/source_documents/IMG_4701.jpg",
+  "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G105000001/source_documents/IMG_4702.jpg",
+  "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G105000001/source_documents/IMG_4703.jpg",
+  "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G105000001/source_documents/IMG_4704.jpg",
+  "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G105000001/source_documents/IMG_5457.JPG",
+  {
+    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Product1_Product_Requirements_Document.pdf/page_2.png",
+    "image_file": "Product1_Product_Requirements_Document.pdf_page_2.png",
+    "pdf_file": "Product1_Product_Requirements_Document.pdf",
+    "page": 2
+  },
+  {
+    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Product1_Product_Requirements_Document.pdf/page_5.png",
+    "image_file": "Product1_Product_Requirements_Document.pdf_page_5.png",
+    "pdf_file": "Product1_Product_Requirements_Document.pdf",
+    "page": 5
+  },
+  {
+    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Product1_Product_Requirements_Document.pdf/page_6.png",
+    "image_file": "Product1_Product_Requirements_Document.pdf_page_6.png",
+    "pdf_file": "Product1_Product_Requirements_Document.pdf",
+    "page": 6
+  },
+  {
+    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Product1_Product_Requirements_Document.pdf/page_7.png",
+    "image_file": "Product1_Product_Requirements_Document.pdf_page_7.png",
+    "pdf_file": "Product1_Product_Requirements_Document.pdf",
+    "page": 7
+  },
+  {
+    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Product1_Product_Requirements_Document.pdf/page_8.png",
+    "image_file": "Product1_Product_Requirements_Document.pdf_page_8.png",
+    "pdf_file": "Product1_Product_Requirements_Document.pdf",
+    "page": 8
+  },
+  {
+    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Product1_Product_Requirements_Document.pdf/page_9.png",
+    "image_file": "Product1_Product_Requirements_Document.pdf_page_9.png",
+    "pdf_file": "Product1_Product_Requirements_Document.pdf",
+    "page": 9
+  }
+]

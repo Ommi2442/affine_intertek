@@ -23,6 +23,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import { fetchProjectsRequest } from '../../redux/features/dashboard/dashboardSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
+
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -180,13 +182,13 @@ const Dashboard = () => {
 
                   {/*  UPDATED CALLS */}
                   <TableCell align="center">
-                    {renderYesNo(row, row.TRF_Generated, 'TRF')}
+                    {renderYesNo(row, row.trf_completed, 'TRF')}
                   </TableCell>
                   <TableCell align="center">
-                    {renderYesNo(row, row.CDR_Generated, 'CDR')}
+                    {renderYesNo(row, row.cdr_completed, 'CDR')}
                   </TableCell>
                   <TableCell align="center">
-                    {renderYesNo(row, row.Letter_Generated, 'LETTER')}
+                    {renderYesNo(row, row.letter_completed, 'LETTER')}
                   </TableCell>
 
                   <TableCell align="center">

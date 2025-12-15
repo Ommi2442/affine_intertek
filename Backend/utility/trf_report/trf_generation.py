@@ -298,6 +298,7 @@ def update_json_item_grey(item, result):
 # process_tasks_with_batches_parallel_grey
 # -----------------------
 
+
 def process_tasks_with_batches_parallel_grey(
         tasks,
         item_refs,
@@ -307,7 +308,8 @@ def process_tasks_with_batches_parallel_grey(
         cooldown_sec=15,
         max_workers=6,
         use_llm_inGrey=False,
-        stats=False
+        stats=False,
+        progress_callback=None
     ):
 
     total = len(tasks)
@@ -378,6 +380,8 @@ def process_tasks_with_batches_parallel_grey(
                 if handled:
                     processed += 1
                     print(f"Processed {processed}/{total} (vector-only grey mode)")
+                    if progress_callback:
+                        progress_callback(processed, total)
                     continue
 
                 result = future.result()
@@ -397,6 +401,8 @@ def process_tasks_with_batches_parallel_grey(
                 all_results.append(result)
                 processed += 1
                 print(f"Processed {processed}/{total}")
+                if progress_callback:
+                    progress_callback(processed, total)
 
         if end < total:
             print(f"⏳ Cooling down for {cooldown_sec} seconds...")
@@ -512,20 +518,13 @@ def run_trf_generation(
         cooldown_sec: int = 15,
         max_workers: int = 10,
         use_llm_inGrey: bool = False,
-        stats: bool = False
+        stats: bool = False,
+        progress_callback=None
     ):
-    """
-    Main function that runs the TRF generation pipeline using an existing vectorstore `vs`
-    and the list `image_urls` produced by ingestion.
 
-    Returns the results dict (and writes JSON / Excel / DOCX to disk).
-    """
-
-    # 1) Load JSON
     with open(input_json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    # 2) Build LLMs
     llm = AzureChatOpenAI(
         azure_endpoint=AOAI_ENDPOINT,
         api_key=AOAI_KEY,
@@ -542,7 +541,6 @@ def run_trf_generation(
         temperature=0.1,
     ).with_config({"response_format": "verbose"})
 
-    # 3) Retriever and RAG pipeline
     retriever = vs.as_retriever(search_kwargs={"k": 5})
 
     rag_image = build_rag_image_pipeline_grey(
@@ -554,10 +552,8 @@ def run_trf_generation(
         vs
     )
 
-    # 4) Build tasks
     tasks, item_refs = build_tasks_with_custom_prompt_grey(data, image_urls)
 
-    # 5) Execute tasks
     results = process_tasks_with_batches_parallel_grey(
         tasks,
         item_refs,
@@ -567,10 +563,10 @@ def run_trf_generation(
         cooldown_sec=cooldown_sec,
         max_workers=max_workers,
         use_llm_inGrey=use_llm_inGrey,
-        stats=stats
+        stats=stats,
+        progress_callback=progress_callback
     )
 
-    # 6) Save outputs
     if isinstance(results, dict) and "results" in results:
         res_list = results["results"]
     else:
@@ -580,25 +576,21 @@ def run_trf_generation(
 
     try:
         df.to_excel(output_excel_path, index=False)
-        print(f"Excel written: {output_excel_path}")
-    except Exception as e:
-        print(f"[WARN] Could not write Excel: {e}")
+    except Exception:
+        pass
 
-    # Update verdict dependencies then write JSON
     update_verdict_dependencies(data)
 
     try:
         with open(output_json_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
-        print(f"JSON written: {output_json_path}")
-    except Exception as e:
-        print(f"[WARN] Could not write output JSON: {e}")
+    except Exception:
+        pass
 
-    # Update docx (Arial 10)
     try:
         update_docx_tables_from_json_arial(docx_input_path, output_json_path, output_docx_path)
-    except Exception as e:
-        print(f"[WARN] DOCX update failed: {e}")
+    except Exception:
+        pass
 
     return {
         "results": res_list,
@@ -607,6 +599,7 @@ def run_trf_generation(
         "output_docx": output_docx_path,
         "output_excel": output_excel_path
     }
+
 
 
 # if __name__ == "__main__":

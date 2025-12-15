@@ -16,7 +16,7 @@ export const generateTrfApi = async (project_id) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      showLoader: false,    // <- HIDE LOADER
+      showLoader: true,    // <- HIDE LOADER
     }
   );
 

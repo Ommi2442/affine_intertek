@@ -16,7 +16,7 @@ import DataTable1 from '../../components/DataTable1';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
 
-//import { triggerGenerateTrfApi } from '../../redux/api/generateTrfApi';
+import { generateTrfApi } from '../../redux/api/generateTrfApi';
 // import localJson from '../../utils/pta_final_5_UI_upd.json';
 //import localJsonRemaining from '../../utils/43_84_page_trf.json';
 //import RemainingPagesData from '../../components/RemainingPagesData';
@@ -58,8 +58,23 @@ const ReportPage = () => {
     { label: 'TRF Generated', threshold: 100 },
   ];
 
+  // Get TRF report JSON
+  const fetchTrfJson = async () => {
+    try {
+      const res = await generateTrfApi(projectID); // your API call
+      if (res?.reports?.length > 0) {
+        const jsonData = res.reports[0].json; 
+        setTrfJson(jsonData);
+      }
+    } catch (err) {
+      console.error("Error fetching TRF JSON:", err);
+    }
+  };
+
+
   useEffect(() => {
     setTrfJson(myData?.trfData?.data);
+    console.log('trfData', myData?.trfData?.data)
   }, [myData]);
 
   useEffect(() => {
@@ -126,33 +141,40 @@ const ReportPage = () => {
   // ----------------------------------------------------------
   //  FIXED POLLING (FIRST LOAD + EVERY 15s) 'comment below useEffect for the local json testing'
   // ----------------------------------------------------------
-    useEffect(() => {
-      if (!projectID) return;
+  useEffect(() => {
+    if (!projectID) return;
 
-      let intervalId = null;
+    let intervalId = null;
 
-      const startPolling = async () => {
+    const startPolling = async () => {
+      await checkStatus();
+
+      // FIRST CHECK — IF ALREADY COMPLETE → FETCH JSON
+      if (status === "Completed") {
+        await fetchTrfJson();
+        return;
+      }
+
+      intervalId = setInterval(async () => {
         await checkStatus();
 
-        intervalId = setInterval(async () => {
-          if (progress === 100) {
-            clearInterval(intervalId);
-            intervalId = null;
-            return;
-          }
-
-          await checkStatus();
-        }, 15000);
-      };
-
-      startPolling();
-
-      return () => {
-        if (intervalId) {
+        if (status === "Completed" || progress === 100) {
           clearInterval(intervalId);
+          intervalId = null;
+          await fetchTrfJson();   // << fetch JSON immediately
+          return;
         }
-      };
-    }, [projectID, progress]);
+      }, 15000);
+    };
+
+    startPolling();
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [projectID, progress, status]);
+
+    
 
 
 
@@ -205,47 +227,60 @@ const ReportPage = () => {
   const renderLeftPanel = () => {
     if (progress < 100 || !trfJson) {
       return (
-        <Card className="progress-advanced-card left-card">
-          <Typography className="progress-advanced-title">
-            Processing TRF Report
-          </Typography>
+   <Card className="progress-advanced-card left-card">
+    <Typography className="progress-advanced-title">
+      Processing TRF Report
+    </Typography>
 
-          <Box className="steps-container">
-            {STAGES.map((stage, index) => {
-              const reached = progress >= stage.threshold;
-              return (
-                <Box key={index} className="step-item">
-                  <Box className={`step-circle ${reached ? 'active' : ''}`}>
-                    {reached ? '✔' : index + 1}
-                  </Box>
+    {/* STAGE STEPS */}
+    <Box className="steps-container">
+      {STAGES.map((stage, index) => {
+        const reached = progress >= stage.threshold;
+        return (
+          <Box key={index} className="step-item">
+            <Box className={`step-circle ${reached ? "active" : ""}`}>
+              {reached ? "✔" : index + 1}
+            </Box>
 
-                  <Typography className="step-label">{stage.label}</Typography>
+            <Typography className="step-label">{stage.label}</Typography>
 
-                  {index !== STAGES.length - 1 && (
-                    <Box className={`step-line ${reached ? 'active' : ''}`} />
-                  )}
-                </Box>
-              );
-            })}
+            {index !== STAGES.length - 1 && (
+              <Box className={`step-line ${reached ? "active" : ""}`} />
+            )}
           </Box>
+        );
+      })}
+    </Box>
 
-          <Box className="progress-advanced-bar">
-            <Box
-              className="progress-advanced-fill"
-              style={{ width: `${progress}%` }}
-            />
-          </Box>
+    {/* ANIMATED PROGRESS BAR */}
+    <Box className="animated-progress-wrapper">
+      <Box
+        className="animated-progress-fill"
+        style={{
+          width: `${progress}%`,
+          background: progress === 100
+            ? "linear-gradient(90deg, #4caf50, #81c784)"
+            : "linear-gradient(90deg, #2196f3, #64b5f6)"
+        }}
+      >
+        <Typography className="animated-progress-text">
+          {progress}%
+        </Typography>
+      </Box>
+    </Box>
 
-          <Typography className="progress-advanced-status">{status}</Typography>
+    <Typography className="progress-advanced-status">
+      {status}
+    </Typography>
 
-          <Button
-            disabled={refreshing}
-            className="refresh-advanced-btn"
-            onClick={checkStatus}
-          >
-            {refreshing ? 'Refreshing...' : 'Refresh Status'}
-          </Button>
-        </Card>
+    <Button
+      disabled={refreshing}
+      className="refresh-advanced-btn"
+      onClick={checkStatus}
+    >
+      {refreshing ? "Refreshing..." : "Refresh Status"}
+    </Button>
+  </Card>
       );
     }
     return (

@@ -43,6 +43,9 @@ queue_client = QueueClient.from_connection_string(
     queue_name=QUEUE_NAME
 )
 
+BASE_DIR = Path(__file__).resolve().parent
+
+LOCAL_TRF_FOLDER = BASE_DIR / "data"
 
 
 @router.post("/create")
@@ -70,7 +73,7 @@ async def create_project(payload: ProjectCreate):
 
         base_path = f"Documents/{new_project.Project_Id}"
 
-        folders_to_create = [f"{base_path}/source_documents",f"{base_path}/TRF Templates",f"{base_path}/CDR Templates",f"{base_path}/Letters Templates",f"{base_path}/Standard Document"]
+        folders_to_create = [f"{base_path}/source_documents",f"{base_path}/TRF Templates",f"{base_path}/CDR Templates",f"{base_path}/Letters Templates",f"{base_path}/Standard Document",f"{base_path}/Generated_trf_Report",f"{base_path}/Generated_cdr_Report"]
         created_folders = [create_folder(folder) for folder in folders_to_create]
         return {
             "status": "success",
@@ -112,46 +115,44 @@ async def get_all_projects(payload: ProjectFilter):
         user_role = payload.user_role
         user_email = payload.user_email
 
-        # ----------------------------
-        # Build Query Based on Role
-        # ----------------------------
+        # ---------------------------------------
+        # ROLE-BASED QUERY
+        # ---------------------------------------
         if user_role == 2:
             if not user_email:
                 raise HTTPException(
-                    status_code=400, 
+                    status_code=400,
                     detail="user_email is required for role 2"
                 )
 
             query = f"""
-            SELECT 
-                c.Project_Id,
-                c.Standard,
-                c.Client_Name,
-                c.Product,
-                c.Proj_Created_On,
-                c.TRF_Generated,
-                c.CDR_Generated,
-                c.Letter_Generated,
-                c.Proj_Created_By
-            FROM c
-            WHERE c.Proj_Created_By = "{user_email}"
+                SELECT 
+                    c.Project_Id,
+                    c.Standard,
+                    c.Client_Name,
+                    c.Product,
+                    c.Proj_Created_On,
+                    c.Proj_Created_By,
+                    c.Project_Progress
+                FROM c
+                WHERE c.Proj_Created_By = "{user_email}"
             """
         else:
             query = """
-            SELECT 
-                c.Project_Id,
-                c.Standard,
-                c.Client_Name,
-                c.Product,
-                c.Proj_Created_On,
-                c.TRF_Generated,
-                c.CDR_Generated,
-                c.Letter_Generated,
-                c.Proj_Created_By
-            FROM c
+                SELECT 
+                    c.Project_Id,
+                    c.Standard,
+                    c.Client_Name,
+                    c.Product,
+                    c.Proj_Created_On,
+                    c.Proj_Created_By,
+                    c.Project_Progress
+                FROM c
             """
 
-        # Execute query
+        # ---------------------------------------
+        # EXECUTE QUERY
+        # ---------------------------------------
         items = list(
             COSMOS_DB_project_Container.query_items(
                 query=query,
@@ -159,11 +160,58 @@ async def get_all_projects(payload: ProjectFilter):
             )
         )
 
+        # ---------------------------------------
+        # FORMAT RESPONSE: MERGE PROJECT + PROGRESS
+        # ---------------------------------------
+        projects = []
+
+        for p in items:
+            progress = p.get("Project_Progress", {}) or {}
+
+            projects.append({
+                "Project_Id": p.get("Project_Id"),
+                "Standard": p.get("Standard"),
+                "Client_Name": p.get("Client_Name"),
+                "Product": p.get("Product"),
+                "Proj_Created_On": p.get("Proj_Created_On"),
+                "Proj_Created_By": p.get("Proj_Created_By"),
+
+                # -----------------------------------
+                # TRF PROGRESS
+                # -----------------------------------
+                "trf_percentage": progress.get("trf_percentage", 10),
+                "trf_step": progress.get("trf_step"),
+                "trf_last_updated": progress.get("trf_last_updated"),
+                "trf_error": progress.get("trf_error"),
+                "trf_completed": progress.get("trf_completed", "No"),
+
+                # -----------------------------------
+                # CDR PROGRESS
+                # -----------------------------------
+                "cdr_percentage": progress.get("cdr_percentage", 10),
+                "cdr_step": progress.get("cdr_step"),
+                "cdr_last_updated": progress.get("cdr_last_updated"),
+                "cdr_error": progress.get("cdr_error"),
+                "cdr_completed": progress.get("cdr_completed", "No"),
+
+                # -----------------------------------
+                # LETTER PROGRESS
+                # -----------------------------------
+                "letter_percentage": progress.get("letter_percentage", 10),
+                "letter_step": progress.get("letter_step"),
+                "letter_last_updated": progress.get("letter_last_updated"),
+                "letter_error": progress.get("letter_error"),
+                "letter_completed": progress.get("letter_completed", "No")
+            })
+
+        # ---------------------------------------
+        # RETURN RESPONSE
+        # ---------------------------------------
         return {
             "status": "success",
-            "count": len(items),
+            "count": len(projects),
             "user_role": user_role,
-            "data": items
+            "data": projects
         }
 
     except Exception as e:
@@ -230,10 +278,10 @@ async def delete_project(project_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
 @router.get("/fetch-trf-reports")
 async def fetch_trf_reports(project_id: str):
     try:
-        #  Query Cosmos DB for all documents with this project_id
         query = "SELECT * FROM c WHERE c.project_id = @pid"
         parameters = [{"name": "@pid", "value": project_id}]
 
@@ -249,18 +297,43 @@ async def fetch_trf_reports(project_id: str):
                 detail="No TRF reports found for this project_id"
             )
 
-        # 🟢 Return only json + project_id
+        reports_output = []
+
+        for item in items:
+            filename = item.get("filename")  # ex: iec_output.json
+            blob_url = item.get("blob_url")
+
+            local_path = LOCAL_TRF_FOLDER / filename
+            json_data = None
+
+            # ------------------------------
+            # 1) Try reading from local file
+            # ------------------------------
+            if os.path.exists(local_path):
+                with open(local_path, "r", encoding="utf-8") as f:
+                    json_data = json.load(f)
+            else:
+                # ------------------------------
+                # 2) Fallback → load from BLOB
+                # ------------------------------
+                if blob_url:
+                    blob_client = BlobClient.from_blob_url(blob_url)
+                    downloaded_bytes = blob_client.download_blob().readall()
+                    json_data = json.loads(downloaded_bytes.decode("utf-8"))
+                else:
+                    json_data = None
+
+            reports_output.append({
+                "id": item["id"],
+                "filename": filename,
+                "uploaded_on": item.get("uploaded_on"),
+                "json": json_data,
+                "blob_url": blob_url
+            })
+
         return {
             "project_id": project_id,
-            "reports": [
-                {
-                    "id": item["id"],
-                    "filename": item.get("filename"),
-                    "json": item.get("data"),
-                    "uploaded_on": item.get("uploaded_on")
-                }
-                for item in items
-            ]
+            "reports": reports_output
         }
 
     except Exception as e:
@@ -480,7 +553,8 @@ def get_project_report_status(id: str):
     if not progress:
         return {
             "trf_status": "Pending",
-            "trf_percentage": 33
+            "trf_percentage": 33,
+            "trf_completed": 'No'
         }
 
     return {
@@ -496,24 +570,17 @@ def get_project_report_status(id: str):
 @router.post("/generate-trf")
 def generate_trf(projectId: str):
     try:
-        # --------------------------------------------------
-        # Trigger queue (UNCHANGED)
-        # --------------------------------------------------
         queue_client.send_message(json.dumps({
             "projectId": projectId,
             "action": "embed_generatetrf",
             "timestamp": datetime.utcnow().isoformat()
         }))
 
-        # --------------------------------------------------
-        # Poll until worker reaches 100%
-        # --------------------------------------------------
         MAX_WAIT_SECONDS = 6000
         POLL_INTERVAL = 2
         elapsed = 0
 
         while elapsed < MAX_WAIT_SECONDS:
-            # Fetch project progress from Cosmos (your worker updates it)
             query = "SELECT * FROM c WHERE c.Project_Id = @pid"
             params = [{"name": "@pid", "value": projectId}]
 
@@ -525,9 +592,8 @@ def generate_trf(projectId: str):
 
             if docs:
                 progress = docs[0].get("Project_Progress") or {}
-                percentage = progress.get("percentage")
+                percentage = progress.get("trf_percentage")   # FIXED
 
-                # Worker completed TRF
                 if percentage == 100:
                     break
 
@@ -537,18 +603,12 @@ def generate_trf(projectId: str):
         if elapsed >= MAX_WAIT_SECONDS:
             raise HTTPException(status_code=408, detail="TRF generation timed out")
 
-        # --------------------------------------------------
-        # NOW load JSON from blob (your existing code)
-        # --------------------------------------------------
         response = load_trf_json_from_blob(projectId)
-
-        # --------------------------------------------------
-        # Return JSON to frontend
-        # --------------------------------------------------
         return response
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
     
