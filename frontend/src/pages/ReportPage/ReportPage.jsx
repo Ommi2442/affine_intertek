@@ -53,7 +53,7 @@ const ReportPage = () => {
   const myData = useSelector((state) => state?.trf);
 
   const STAGES = [
-    { label: 'Indexing', threshold: 33 },
+    { label: 'Indexing', threshold: 10 },
     { label: 'Generating TRF', threshold: 75 },
     { label: 'TRF Generated', threshold: 100 },
   ];
