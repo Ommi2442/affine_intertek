@@ -48,7 +48,10 @@ const Dashboard = () => {
     const val = value === true || value === 'true';
 
     const handleClick = () => {
+ 
       localStorage.setItem("projectId", row?.Project_Id);
+
+      if(val == false) {
       navigate('/create-project', {
         state: {
           standard: row?.Standard,
@@ -58,6 +61,18 @@ const Dashboard = () => {
           source: type, // TRF | CDR | LETTER
         },
       });
+    }
+      else {
+        navigate('/report-page', {
+        state: {
+          standard: row?.Standard,
+          projectId: row?.Project_Id,
+          clientName: row?.Client_Name,
+          product: row?.Product,
+          source: type, // TRF | CDR | LETTER
+        },
+      });
+      }
     };
 
     return (
