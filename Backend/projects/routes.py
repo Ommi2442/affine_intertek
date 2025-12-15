@@ -553,7 +553,7 @@ def get_project_report_status(id: str):
     if not progress:
         return {
             "trf_status": "Pending",
-            "trf_percentage": 10,
+            "trf_percentage": 33,
             "trf_completed": 'No'
         }
 
