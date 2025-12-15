@@ -78,7 +78,7 @@ app = FastAPI(title="Queue Worker Service")
 def update_project_progress(
     project_doc: dict,
     trf_stage: str,
-    trf_percentage: int = 0,
+    trf_percentage: int = 10,
     trf_step: str | None = None,
     error: str | None = None,
     last_updated: datetime | None = None,
@@ -276,23 +276,25 @@ async def process_message(message) -> bool:
 
 
 # ==========================================================
-# QUEUE LISTENER (CORRECT DELETE LOGIC)
+# QUEUE LISTENER (15-SECOND POLLING, SAFE & STABLE)
 # ==========================================================
 async def queue_listener():
-    print("\n Worker started — actively listening to Azure Queue...\n")
+    print("\n Worker started — polling Azure Queue every 15 seconds...\n")
+
+    POLL_INTERVAL_SEC = 15
 
     while True:
         try:
-            # Pull exactly 1 message for strict sequential processing
             messages = queue_client.receive_messages(
                 messages_per_page=1,
-                visibility_timeout=300,  # keep long since TRF pipeline is heavy
+                visibility_timeout=600,  # must be > max TRF processing time
             )
 
             message_found = False
 
             for message in messages:
                 message_found = True
+                print(f" Queue message fetched: {message.id}")
 
                 try:
                     ok = await process_message(message)
@@ -305,22 +307,19 @@ async def queue_listener():
                         print(f" Queue message deleted: {message.id}")
 
                 except Exception as e:
-                    print(f" Error during message handling: {e}")
+                    print(f" Error while processing message {message.id}: {e}")
 
-            # -----------------------------------------------------
-            # ACTIVE LISTENING LOGIC
-            # -----------------------------------------------------
             if not message_found:
-                # No message → short backoff sleep to avoid CPU burn
-                await asyncio.sleep(1)
-            else:
-                # Messages present → check again immediately
-                await asyncio.sleep(0.1)
+                print(" No queue messages found")
+
+            # ✅ ALWAYS wait 15 seconds before next poll
+            await asyncio.sleep(POLL_INTERVAL_SEC)
 
         except Exception as e:
             print(f" Queue listener failure: {e}")
-            # Do not kill worker; recover after short backoff
-            await asyncio.sleep(2)
+            # short recovery backoff
+            await asyncio.sleep(5)
+
 
 
 

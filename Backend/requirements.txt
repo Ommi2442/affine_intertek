@@ -1,4 +1,5 @@
 uvicorn
+fastapi
 dotenv==0.9.9
 pip==25.0
 python-dotenv==1.0.1
