@@ -29,7 +29,7 @@ client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
 database = client.get_database_client(COSMOS_DB_DATABASE)
 trf_container = database.get_container_client(COSMOS_DB_project_TRF_Container)
 # QUEUE_NAME = os.getenv("AZURE_QUEUE_NAME")
-QUEUE_NAME = "stintertekesusdev-queue"
+QUEUE_NAME = "stintertekesus-dev-queue"
 
 CONTAINER_NAME = "stintertekesusdev-blob"
 BLOB_PREFIX = "Documents"   # top-level folder in blob

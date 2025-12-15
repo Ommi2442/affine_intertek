@@ -22,7 +22,7 @@ QUEUE_CONN_STR = "DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;A
 # BLOB_CONTAINER = os.getenv("AZURE_CONTAINER_NAME")
 BLOB_CONTAINER = "stintertekesusdev-blob"
 # QUEUE_NAME = os.getenv("AZURE_QUEUE_NAME")
-QUEUE_NAME = "stintertekesusdev-queue"
+QUEUE_NAME = "stintertekesus-dev-queue"
 
 COSMOS_DB_URI="https://csdb-intertek-esus-dev.documents.azure.com:443/"
 COSMOS_DB_KEY="azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00MFDbK88ApotACDbODLFXA=="
