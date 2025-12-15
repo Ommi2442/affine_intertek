@@ -571,7 +571,7 @@ def process_tasks_with_batches_parallel(
             print(f"⏳ Cooling down for {cooldown_sec} seconds...")
             time.sleep(cooldown_sec)
 
-    print("\n✅ ALL TASKS COMPLETED.")
+    print("\n ALL TASKS COMPLETED.")
     return all_results
 
 def process_tasks_with_batches_parallel_grey(
@@ -708,7 +708,7 @@ def process_tasks_with_batches_parallel_grey(
             print(f"⏳ Cooling down for {cooldown_sec} seconds...")
             time.sleep(cooldown_sec)
 
-    print("\n✅ ALL TASKS COMPLETED.")
+    print("\n ALL TASKS COMPLETED.")
     return all_results
 
 
@@ -789,7 +789,7 @@ def process_tasks_with_batches_parallel_stats(
             print(f"⏳ Cooling down for {cooldown_sec} seconds...")
             time.sleep(cooldown_sec)
 
-    print("\n✅ ALL TASKS COMPLETED.")
+    print("\n ALL TASKS COMPLETED.")
     print("\n📊 TOKEN & CALL STATS ---------------------------------------")
     print(f"LLM calls       : {stats['llm_calls']}")
     print(f"Embedding calls : {stats['embedding_calls']}")
@@ -902,7 +902,7 @@ def update_verdict_dependencies(data):
             # Print only if updated or changed
             print(f"Updated: {item['field']} → {final_val} (was: {old_val})")
 
-    print("\n✅ Verdict dependency update complete.\n")
+    print("\n Verdict dependency update complete.\n")
 
 
 def update_docx_tables_from_json(docx_path, json_path, output_path):
@@ -958,6 +958,6 @@ def update_docx_tables_from_json(docx_path, json_path, output_path):
                 print(f"⚠️ Error updating table {table_index} cell ({row},{col}): {e}")
 
     doc.save(output_path)
-    print(f"✅ DOCX successfully updated → {output_path}")
+    print(f" DOCX successfully updated → {output_path}")
 
 

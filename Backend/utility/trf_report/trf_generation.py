@@ -408,7 +408,7 @@ def process_tasks_with_batches_parallel_grey(
             print(f"⏳ Cooling down for {cooldown_sec} seconds...")
             time.sleep(cooldown_sec)
 
-    print("✅ ALL TASKS COMPLETED.")
+    print(" ALL TASKS COMPLETED.")
 
     if stats:
         return {
@@ -499,7 +499,7 @@ def update_docx_tables_from_json_arial(docx_path, json_path, output_path):
                 print(f"⚠️ Error updating table {table_index} cell ({row},{col}): {e}")
 
     doc.save(output_path)
-    print(f"✅ DOCX successfully updated → {output_path}")
+    print(f" DOCX successfully updated → {output_path}")
 
 
 # -----------------------
