@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Body, Form
+from azure.storage.blob import ContainerClient
 from typing import List
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
 from projects.models import Project
@@ -57,8 +58,10 @@ async def create_project(payload: ProjectCreate):
             Project_Id=payload.Project_Id,
             Product=payload.Product,
             Client_Name=payload.Client_Name,
+            Proj_Archived=False,
             Proj_Created_By=payload.Proj_Created_By,
             Proj_Created_On=str(datetime.utcnow()),
+            
         )
 
         COSMOS_DB_project_Container.create_item(new_project.dict())
@@ -225,31 +228,107 @@ async def update_project(project_id: str, update_data: dict):
         props = COSMOS_DB_project_Container.read()
         pk_path = props["partitionKey"]["paths"][0]
         pk_name = pk_path.lstrip("/")
-        
+
         query = "SELECT * FROM c WHERE c.Project_Id = @pid"
         params = [{"name": "@pid", "value": project_id}]
-        items = list(COSMOS_DB_project_Container.query_items(
-            query=query,
-            parameters=params,
-            enable_cross_partition_query=True
-        ))
+
+        items = list(
+            COSMOS_DB_project_Container.query_items(
+                query=query,
+                parameters=params,
+                enable_cross_partition_query=True
+            )
+        )
 
         if not items:
             raise HTTPException(status_code=404, detail="Project not found")
+
         item = items[0]
-        
+
+        # protect system fields
+        protected_fields = {"id", pk_name}
         for key, value in update_data.items():
-            item[key] = value
+            if key not in protected_fields:
+                item[key] = value
+
         updated_item = COSMOS_DB_project_Container.replace_item(
-            item["id"], item, item["id"])
+            item["id"],
+            item,
+            item[pk_name]
+        )
+
         return {
             "status": "success",
             "message": "Project updated successfully",
             "data": updated_item
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/{project_id}")
+async def update_project(project_id: str, update_data: dict):
+    try:
+        # Fetch container properties
+        props = COSMOS_DB_project_Container.read()
+        pk_path = props["partitionKey"]["paths"][0]
+        pk_name = pk_path.lstrip("/")
+
+        # Query project
+        query = "SELECT * FROM c WHERE c.Project_Id = @pid"
+        params = [{"name": "@pid", "value": project_id}]
+
+        items = list(
+            COSMOS_DB_project_Container.query_items(
+                query=query,
+                parameters=params,
+                enable_cross_partition_query=True
+            )
+        )
+
+        if not items:
+            raise HTTPException(status_code=404, detail="Project not found")
+
+        item = items[0]
+
+        # Prevent updating protected fields
+        protected_fields = {"id", pk_name}
+        for key, value in update_data.items():
+            if key not in protected_fields:
+                item[key] = value
+
+        # Replace item with correct partition key
+        updated_item = COSMOS_DB_project_Container.replace_item(
+            item=item["id"],
+            body=item,
+            partition_key=item[pk_name]
+        )
+
+        return {
+            "status": "success",
+            "message": "Project updated successfully",
+            "data": updated_item
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
+
+
+
+def delete_folder(folder_path: str):
+    if not folder_path.endswith("/"):
+        folder_path += "/"
+    blobs = container_client.list_blobs(name_starts_with=folder_path)
+    deleted = False
+    for blob in blobs:
+        container_client.delete_blob(blob.name)
+        deleted = True
+    return deleted
 
 
 @router.delete("/{project_id}")
@@ -257,23 +336,32 @@ async def delete_project(project_id: str):
     try:
         props = COSMOS_DB_project_Container.read()
         pk_path = props["partitionKey"]["paths"][0]
-        pk_name = pk_path.lstrip("/")             
-        print("Partition key-name ->", pk_name)
+        pk_name = pk_path.lstrip("/")
+
         query = "SELECT * FROM c WHERE c.Project_Id = @pid"
         params = [{"name": "@pid", "value": project_id}]
+
         items = list(COSMOS_DB_project_Container.query_items(
             query=query,
             parameters=params,
-            enable_cross_partition_query=True
-        ))
+            enable_cross_partition_query=True ))
+
         if not items:
             raise HTTPException(status_code=404, detail="Project not found")
+
         item = items[0]
         COSMOS_DB_project_Container.delete_item(
             item=item["id"],
-            partition_key=item[pk_name]
-        )
-        return {"status": "success", "message": "Project deleted successfully"}
+            partition_key=item[pk_name])
+
+        base_path = f"Documents/{project_id}"
+        delete_folder(base_path)
+
+        return {
+            "status": "success",
+            "message": "Project and related documents deleted successfully"
+        }
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
