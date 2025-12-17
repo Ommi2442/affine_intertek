@@ -114,7 +114,7 @@ async def get_all_projects(payload: ProjectFilter):
         user_email = payload.user_email
 
         # ---------------------------------------
-        # ROLE-BASED QUERY (COSMOS FILTER ONLY)
+        # ROLE-BASED QUERY
         # ---------------------------------------
         if user_role == 2:
             if not user_email:
@@ -162,7 +162,7 @@ async def get_all_projects(payload: ProjectFilter):
         )
 
         # ---------------------------------------
-        # FORMAT RESPONSE (NO FIXING)
+        # FORMAT RESPONSE
         # ---------------------------------------
         projects = []
         for p in items:
