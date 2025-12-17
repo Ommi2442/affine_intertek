@@ -17,6 +17,7 @@ import {
   Select,
   Alert,
   Skeleton,
+  Tooltip,
 } from '@mui/material';
 
 import SearchIcon from '@mui/icons-material/Search';
@@ -98,7 +99,9 @@ const Dashboard = () => {
 
   /* ---------------- NEW: DELETE ---------------- */
   const handleDelete = async (row) => {
-    const ok = window.confirm('Are you sure you want to delete this project?');
+    const ok = window.confirm(
+      `Are you sure you want to delete this project? once its deleted, it can't be undo.`
+    );
     if (!ok) return;
 
     dispatch(deleteProjectsRequest(row.Project_Id));
@@ -229,18 +232,76 @@ const Dashboard = () => {
               !error &&
               paginated.map((row, index) => (
                 <TableRow key={index}>
-                  <TableCell align="center">{row.Standard}</TableCell>
-                  <TableCell align="center">{row.Client_Name}</TableCell>
-                  <TableCell align="center">{row.Product}</TableCell>
-                  <TableCell align="center">{row.Project_Id}</TableCell>
-                  <TableCell align="center">
+                  <TableCell
+                    align="center"
+                    sx={{
+                      maxWidth: 160, // adjust as needed
+                      whiteSpace: 'normal',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                    }}
+                  >
+                    {row.Standard}
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    sx={{
+                      maxWidth: 160, // adjust as needed
+                      whiteSpace: 'normal',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                    }}
+                  >
+                    {row.Client_Name}
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    sx={{
+                      maxWidth: 160, // adjust as needed
+                      whiteSpace: 'normal',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                    }}
+                  >
+                    {row.Product}
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    sx={{
+                      maxWidth: 160, // adjust as needed
+                      whiteSpace: 'normal',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                    }}
+                  >
+                    {row.Project_Id}
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    sx={{
+                      maxWidth: 160, // adjust as needed
+                      whiteSpace: 'normal',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                    }}
+                  >
                     {row.Proj_Created_On
                       ? new Date(row.Proj_Created_On).toLocaleDateString()
                       : '-'}
                   </TableCell>
 
                   {user_role === 1 && (
-                    <TableCell align="center">{row.Proj_Created_By}</TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{
+                        maxWidth: 160, // adjust as needed
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word',
+                        overflowWrap: 'anywhere',
+                      }}
+                    >
+                      {row.Proj_Created_By}
+                    </TableCell>
                   )}
 
                   {/*  UPDATED CALLS */}
@@ -259,13 +320,21 @@ const Dashboard = () => {
                       <img src="/images/edit.png" width={18} height={18} />
                     </IconButton>
 
-                    <IconButton onClick={() => handleArchive(row)}>
-                      <img src="/images/add-file.png" width={18} height={18} />
-                    </IconButton>
+                    <Tooltip title="Archive Project" arrow>
+                      <IconButton onClick={() => handleArchive(row)}>
+                        <img
+                          src="/images/add-file.png"
+                          width={18}
+                          height={18}
+                        />
+                      </IconButton>
+                    </Tooltip>
 
-                    <IconButton onClick={() => handleDelete(row)}>
-                      <img src="/images/delete.png" width={18} height={18} />
-                    </IconButton>
+                    <Tooltip title="Delete Project" arrow>
+                      <IconButton onClick={() => handleDelete(row)}>
+                        <img src="/images/delete.png" width={18} height={18} />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}

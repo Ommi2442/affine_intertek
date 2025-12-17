@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import './ReportPage.css';
 import { useDispatch, useSelector } from 'react-redux';
-import DataTable1 from '../../components/DataTable1';
+import DataTable from '../../components/DataTable';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
 
@@ -27,6 +27,7 @@ import CdrReport from '../../components/CdrReport';
 import localJson from '../../utils/iec_61010_1614_1012_output_v1.json';
 import PdfViewer from '../../components/PdfViewer';
 //import localJson from '../../utils/pta_final_6.json';
+import ConfidenceScore from './ConfidenceScore';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -313,9 +314,9 @@ const ReportPage = () => {
 
           {reportClick == 'trf' && (
             <Box className="report-title-container">
-              <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+              {/* <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
                 TEST REPORT
-              </Typography>
+              </Typography> */}
               <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
                 IEC 61010-1
               </Typography>
@@ -338,7 +339,7 @@ const ReportPage = () => {
           )}
 
           {reportClick == 'trf' && (
-            <DataTable1
+            <DataTable
               ref={dataTableRef}
               jsonData={trfJson} // api json load
               //jsonData={localJson} //localJson load
@@ -583,43 +584,8 @@ const ReportPage = () => {
           </Card>
 
           {/* CONFIDENCE CARD */}
-          <Card className="confidence-card">
-            <CardContent>
-              <Typography variant="h6" className="confidence-header">
-                Confidence Score
-              </Typography>
-
-              <Box className="confidence-summary">
-                <Typography>4/6 fields</Typography>
-                <Typography fontWeight="bold">67%</Typography>
-              </Box>
-
-              <Box className="confidence-bar">
-                <Box className="confidence-fill" style={{ width: '67%' }} />
-              </Box>
-
-              {[
-                { label: 'High', count: 4, color: 'green' },
-                { label: 'Medium', count: 1, color: 'yellow' },
-                { label: 'Low', count: 0, color: 'red' },
-                { label: 'User Edited', count: 12, color: 'grey' },
-              ].map((row, i) => (
-                <Box key={i} className="confidence-row">
-                  <Box className="confidence-label">
-                    <Box style={{ display: 'flex', gap: 5 }}>
-                      <span
-                        style={{ marginTop: '8%' }}
-                        className={`dot ${row.color}`}
-                      />
-                      <Typography>{row.label}</Typography>
-                    </Box>
-                    <Typography fontWeight="bold">{row.count}</Typography>
-                  </Box>
-                  {i < 3 && <Divider />}
-                </Box>
-              ))}
-            </CardContent>
-          </Card>
+          {/* <ConfidenceScore data={trfJson} /> */}
+          <ConfidenceScore data={localJson} />
         </Box>
       )}
     </Box>
