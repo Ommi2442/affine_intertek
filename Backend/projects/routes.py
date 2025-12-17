@@ -65,7 +65,6 @@ async def create_project(payload: ProjectCreate):
         )
 
         COSMOS_DB_project_Container.create_item(new_project.dict())
-
         
         def create_folder(folder_path: str):
             if not folder_path.endswith("/"):
@@ -75,7 +74,6 @@ async def create_project(payload: ProjectCreate):
             return folder_path
 
         base_path = f"Documents/{new_project.Project_Id}"
-
         folders_to_create = [f"{base_path}/source_documents",f"{base_path}/TRF Templates",f"{base_path}/CDR Templates",f"{base_path}/Letters Templates",f"{base_path}/Standard Document",f"{base_path}/Generated_trf_Report",f"{base_path}/Generated_cdr_Report"]
         created_folders = [create_folder(folder) for folder in folders_to_create]
         return {
@@ -103,14 +101,11 @@ async def get_project(project_id: str):
                 enable_cross_partition_query=True
             )
         )
-
         if not items:
             raise HTTPException(status_code=404, detail="Project not found")
         return {"status": "success", "data": items[0]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
 
 @router.post("/all")
 async def get_all_projects(payload: ProjectFilter):
@@ -119,7 +114,7 @@ async def get_all_projects(payload: ProjectFilter):
         user_email = payload.user_email
 
         # ---------------------------------------
-        # ROLE-BASED QUERY
+        # ROLE-BASED QUERY (COSMOS FILTER ONLY)
         # ---------------------------------------
         if user_role == 2:
             if not user_email:
@@ -136,9 +131,11 @@ async def get_all_projects(payload: ProjectFilter):
                     c.Product,
                     c.Proj_Created_On,
                     c.Proj_Created_By,
+                    c.Proj_Archived,
                     c.Project_Progress
                 FROM c
                 WHERE c.Proj_Created_By = "{user_email}"
+                  AND c.Proj_Archived = false
             """
         else:
             query = """
@@ -149,10 +146,11 @@ async def get_all_projects(payload: ProjectFilter):
                     c.Product,
                     c.Proj_Created_On,
                     c.Proj_Created_By,
+                    c.Proj_Archived,
                     c.Project_Progress
                 FROM c
+                WHERE c.Proj_Archived = false
             """
-
         # ---------------------------------------
         # EXECUTE QUERY
         # ---------------------------------------
@@ -164,12 +162,11 @@ async def get_all_projects(payload: ProjectFilter):
         )
 
         # ---------------------------------------
-        # FORMAT RESPONSE: MERGE PROJECT + PROGRESS
+        # FORMAT RESPONSE (NO FIXING)
         # ---------------------------------------
         projects = []
-
         for p in items:
-            progress = p.get("Project_Progress", {}) or {}
+            progress = p.get("Project_Progress") or {}
 
             projects.append({
                 "Project_Id": p.get("Project_Id"),
@@ -178,28 +175,19 @@ async def get_all_projects(payload: ProjectFilter):
                 "Product": p.get("Product"),
                 "Proj_Created_On": p.get("Proj_Created_On"),
                 "Proj_Created_By": p.get("Proj_Created_By"),
-
-                # -----------------------------------
-                # TRF PROGRESS
-                # -----------------------------------
+                "Proj_Archived": p.get("Proj_Archived"),
                 "trf_percentage": progress.get("trf_percentage", 10),
                 "trf_step": progress.get("trf_step"),
                 "trf_last_updated": progress.get("trf_last_updated"),
                 "trf_error": progress.get("trf_error"),
                 "trf_completed": progress.get("trf_completed", "No"),
 
-                # -----------------------------------
-                # CDR PROGRESS
-                # -----------------------------------
                 "cdr_percentage": progress.get("cdr_percentage", 10),
                 "cdr_step": progress.get("cdr_step"),
                 "cdr_last_updated": progress.get("cdr_last_updated"),
                 "cdr_error": progress.get("cdr_error"),
                 "cdr_completed": progress.get("cdr_completed", "No"),
 
-                # -----------------------------------
-                # LETTER PROGRESS
-                # -----------------------------------
                 "letter_percentage": progress.get("letter_percentage", 10),
                 "letter_step": progress.get("letter_step"),
                 "letter_last_updated": progress.get("letter_last_updated"),
@@ -207,16 +195,12 @@ async def get_all_projects(payload: ProjectFilter):
                 "letter_completed": progress.get("letter_completed", "No")
             })
 
-        # ---------------------------------------
-        # RETURN RESPONSE
-        # ---------------------------------------
         return {
             "status": "success",
             "count": len(projects),
             "user_role": user_role,
             "data": projects
         }
-
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
