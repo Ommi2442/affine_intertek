@@ -6,6 +6,10 @@ const msalConfig = {
     redirectUri: 'http://localhost:5173/layout',
     postLogoutRedirectUri: 'http://localhost:5173/login',
   },
+  cache: {
+    cacheLocation: 'sessionStorage',
+    storeAuthStateInCookie: false,
+  },
 };
 
 export default msalConfig;

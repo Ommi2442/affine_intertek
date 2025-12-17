@@ -480,8 +480,6 @@ table {
   table-layout: fixed !important;
 }
 
-
-
 /* Wrapper for smooth animation */
 .animated-progress-wrapper {
   width: 100%;
@@ -505,19 +503,27 @@ table {
   font-size: 12px;
   font-weight: 600;
 
-  transition: width 0.6s ease-in-out, background 0.4s ease-in-out;
+  transition:
+    width 0.6s ease-in-out,
+    background 0.4s ease-in-out;
   animation: pulseBar 1.8s infinite ease-in-out;
 }
 
 /* Pulse animation while loading */
 @keyframes pulseBar {
-  0% { opacity: 0.9; }
-  50% { opacity: 1; }
-  100% { opacity: 0.9; }
+  0% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.9;
+  }
 }
 
 /* Disable pulse when completed */
-.animated-progress-fill[style*="100%"] {
+.animated-progress-fill[style*='100%'] {
   animation: none;
 }
 

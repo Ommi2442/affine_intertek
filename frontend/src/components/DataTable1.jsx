@@ -256,7 +256,10 @@ const DataTable1 = forwardRef(
     const openComment = (t, i) => {
       commentTargetRef.current = { t, i };
       const item = tables?.[t]?.Items?.[i];
-      setCurrentCommentText(item?._comment || '');
+
+      const existingComment = item?.user_comments?.[0]?.comment ?? '';
+
+      setCurrentCommentText(existingComment);
       setIsCommentOpen(true);
     };
 
@@ -266,10 +269,17 @@ const DataTable1 = forwardRef(
 
       setTables((prev) => {
         const next = prev.map((tbl) => ({ ...tbl, Items: [...tbl.Items] }));
+        const item = next[t].Items[i];
+
         next[t].Items[i] = {
-          ...next[t].Items[i],
-          _comment: currentCommentText,
+          ...item,
+          user_comments: [
+            {
+              comment: currentCommentText || null,
+            },
+          ],
         };
+
         return next;
       });
 
@@ -279,9 +289,8 @@ const DataTable1 = forwardRef(
     if (totalPages === 0) return <Typography>No Data</Typography>;
 
     // HOVER ACTIONS: only show when editMode=true AND item editable AND hovered
-    const renderHoverActions = (tIdx, iIdx, editable) => {
-      if (!editMode) return null;
-      if (!editable) return null;
+    const renderHoverActions = (tIdx, iIdx, userEditable) => {
+      if (!userEditable) return null;
       if (tIdx == null || iIdx == null) return null;
       if (hovered.t !== tIdx || hovered.i !== iIdx) return null;
 
@@ -464,14 +473,18 @@ const DataTable1 = forwardRef(
                               />
                             )}
 
-                            {renderHoverActions(tIdx, iIdx, editable)}
+                            {renderHoverActions(
+                              tIdx,
+                              iIdx,
+                              col.user_editable === true
+                            )}
 
-                            {col._comment && (
+                            {col.user_comments?.[0]?.comment && (
                               <Typography
                                 variant="caption"
                                 className="dt-comment-caption"
                               >
-                                💬 {col._comment}
+                                💬 {col.user_comments[0].comment}
                               </Typography>
                             )}
                           </div>
@@ -554,7 +567,11 @@ const DataTable1 = forwardRef(
                                   />
                                 )}
 
-                                {renderHoverActions(tIdx, iIdx, editable)}
+                                {renderHoverActions(
+                                  tIdx,
+                                  iIdx,
+                                  col.user_editable === true
+                                )}
 
                                 {col._comment && (
                                   <Typography
@@ -671,7 +688,11 @@ const DataTable1 = forwardRef(
                               />
                             )}
 
-                            {renderHoverActions(tIdx, iIdx, editable)}
+                            {renderHoverActions(
+                              tIdx,
+                              iIdx,
+                              first.user_editable === true
+                            )}
 
                             {first._comment && (
                               <Typography
@@ -764,7 +785,11 @@ const DataTable1 = forwardRef(
                                   />
                                 )}
 
-                                {renderHoverActions(tIdx, iIdx, editable)}
+                                {renderHoverActions(
+                                  tIdx,
+                                  iIdx,
+                                  r.user_editable === true
+                                )}
 
                                 {r._comment && (
                                   <Typography
@@ -911,7 +936,7 @@ const DataTable1 = forwardRef(
               }
             />
 
-            {renderHoverActions(tIdx, iIdx, editable)}
+            {renderHoverActions(tIdx, iIdx, item.user_editable === true)}
 
             {comment && (
               <Typography variant="caption" className="dt-comment-caption">
