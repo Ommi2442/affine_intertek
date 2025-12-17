@@ -1,6 +1,14 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+/* eslint-disable */
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
+
 import {
-  Box,
   Table,
   TableBody,
   TableCell,
@@ -12,408 +20,1072 @@ import {
   Divider,
   CircularProgress,
   Pagination,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
   IconButton,
+  Checkbox,
 } from '@mui/material';
+
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 
 import './DataTable.css';
-import jsonFromFile from '../utils/final_payload.json';
+import { idb_set, idb_get } from '../utils/idb';
 import CommentDialog from './CommentDialog';
 
-const STORAGE_KEY = 'report_tables_saved_v3';
+const DataTable1 = forwardRef(
+  ({ jsonData, onBookmarkClick, onApprove, editMode = false }, ref) => {
+    const containerRef = useRef(null);
+    const sentinelRef = useRef(null);
+    const pageRefs = useRef({});
 
-function debounce(fn, wait) {
-  let t = null;
-  return (...args) => {
-    if (t) clearTimeout(t);
-    t = setTimeout(() => fn(...args), wait);
-  };
-}
+    const [tables, setTables] = useState([]);
+    const [visiblePages, setVisiblePages] = useState(1);
+    const [currentPageIndex, setCurrentPageIndex] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [hovered, setHovered] = useState({ t: null, i: null });
 
-const DataTable = ({ jsonData = jsonFromFile, onBookmarkClick, onApprove }) => {
-  const tablesRef = useRef([]);
-  const [visiblePages, setVisiblePages] = useState(1);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [renderTick, setRenderTick] = useState(0);
+    const [isCommentOpen, setIsCommentOpen] = useState(false);
+    const [currentCommentText, setCurrentCommentText] = useState('');
+    const commentTargetRef = useRef({ t: null, i: null });
 
-  const [hovered, setHovered] = useState({ table: null, row: null });
+    // Track whether this page load is a browser refresh
+    const isRefreshRef = useRef(false);
 
-  const [isCommentOpen, setIsCommentOpen] = useState(false);
-  const [currentCommentText, setCurrentCommentText] = useState('');
-  const commentTargetRef = useRef({ table: null, row: null });
+    // --------------------
+    // helper: checks
+    // --------------------
+    // Return true only when:
+    //  - item exists
+    //  - item.user_editable === true
+    //  - editMode === true (user clicked Edit/Refine)
+    //  - item.is_textbox !== false (textbox allowed)
+    const isEditable = (item) => {
+      if (!item) return false;
+      if (item.user_editable !== true) return false; // must be explicitly editable
+      if (!editMode) return false; // only editable when edit mode is ON
+      if (item.is_textbox === false) return false; // textbox not allowed
+      return true;
+    };
 
-  const containerRef = useRef(null);
-  const observerRef = useRef(null);
-  const pageRefs = useRef({});
-  const existingCommentsArray = [];
-
-  const saveToStorageDebounced = useRef(
-    debounce((data) => {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      } catch (e) {
-        console.error('save error', e);
-      }
-    }, 800)
-  ).current;
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          tablesRef.current = parsed;
-        } else if (parsed?.Tables) {
-          tablesRef.current = parsed.Tables;
-        } else if (jsonData?.Tables) {
-          tablesRef.current = jsonData.Tables;
-        } else {
-          tablesRef.current = [];
+    // Expose methods to parent via ref
+    useImperativeHandle(ref, () => ({
+      getUpdatedJson: () => ({ Tables: tables }),
+      getFieldValue: (fieldName) => {
+        for (const table of tables) {
+          for (const item of table.Items) {
+            if (item.field === fieldName) {
+              return item.value ?? '';
+            }
+          }
         }
-      } else if (jsonData?.Tables) {
-        tablesRef.current = jsonData.Tables;
-        saveToStorageDebounced(tablesRef.current);
-      } else {
-        tablesRef.current = [];
-      }
-    } catch (err) {
-      console.error('Data load error', err);
-      tablesRef.current = jsonData?.Tables ?? [];
-    }
-    setVisiblePages(1);
-    setRenderTick((t) => t + 1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jsonData]);
-
-  const persistRef = useCallback(() => {
-    saveToStorageDebounced(tablesRef.current);
-  }, [saveToStorageDebounced]);
-
-  const updateCell = (tableIndex, itemIndex, newValue) => {
-    const tables = tablesRef.current;
-    if (!tables?.[tableIndex]) return;
-    tables[tableIndex].Items[itemIndex] = {
-      ...tables[tableIndex].Items[itemIndex],
-      value: newValue,
-    };
-    persistRef();
-    setRenderTick((t) => t + 1);
-  };
-
-  const getVisibleTables = () => {
-    return (tablesRef.current || []).slice(0, visiblePages);
-  };
-
-  const handleBookmark = (tableIndex, itemIndex) => {
-    const item = tablesRef.current?.[tableIndex]?.Items?.[itemIndex];
-    if (!item) return;
-    const payload = {
-      field: item.field ?? item.Field ?? 'Field',
-      value: item.value ?? item.Value ?? '',
-      tableIndex,
-      itemIndex,
-    };
-    if (typeof onBookmarkClick === 'function') onBookmarkClick(payload);
-  };
-
-  const handleApprove = (tableIndex, itemIndex) => {
-    const item = tablesRef.current?.[tableIndex]?.Items?.[itemIndex];
-    if (!item) return;
-    if (typeof onApprove === 'function') {
-      onApprove({
-        tableIndex,
-        itemIndex,
-        field: item.field ?? item.Field,
-        value: item.value ?? item.Value,
-      });
-    }
-  };
-
-  const openComment = (tableIndex, itemIndex) => {
-    const item = tablesRef.current?.[tableIndex]?.Items?.[itemIndex];
-    commentTargetRef.current = { table: tableIndex, row: itemIndex };
-    setCurrentCommentText(item?._comment ?? '');
-    setIsCommentOpen(true);
-  };
-
-  const saveComment = () => {
-    const { table, row } = commentTargetRef.current;
-    if (table == null) {
-      setIsCommentOpen(false);
-      return;
-    }
-    const tables = tablesRef.current;
-    tables[table].Items[row] = {
-      ...tables[table].Items[row],
-      _comment: currentCommentText,
-    };
-    persistRef();
-    setIsCommentOpen(false);
-    setRenderTick((t) => t + 1);
-  };
-
-  useEffect(() => {
-    const sentinel = observerRef.current;
-    if (!sentinel) return;
-    if (!tablesRef.current || tablesRef.current.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const e = entries[0];
-        if (
-          e.isIntersecting &&
-          visiblePages < tablesRef.current.length &&
-          !loading
-        ) {
-          setLoading(true);
-          setTimeout(() => {
-            setVisiblePages((p) => Math.min(p + 1, tablesRef.current.length));
-            setLoading(false);
-          }, 250);
-        }
+        return '';
       },
-      { root: containerRef.current, threshold: 0.15 }
-    );
+      setFieldValue: (fieldName, newValue) => {
+        setTables((prev) => {
+          const next = prev.map((tbl) => ({
+            ...tbl,
+            Items: tbl.Items.map((item) =>
+              item.field === fieldName ? { ...item, value: newValue } : item
+            ),
+          }));
+          return next;
+        });
+      },
+    }));
 
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [visiblePages, loading]);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const onScroll = () => {
-      const scrollTop = el.scrollTop;
-      let active = 1;
-      const offset = 160;
-      for (let p = 1; p <= visiblePages; p++) {
-        const ref = pageRefs.current[p];
-        if (ref && scrollTop + offset >= ref.offsetTop) active = p;
+    // LOAD JSON
+    useEffect(() => {
+      // When API gives new data (Generate TRF clicked)
+      if (isRefreshRef.current) return; // on refresh we keep localStorage data
+      if (jsonData?.Tables) {
+        setTables(jsonData.Tables);
+        setVisiblePages(1);
+        setCurrentPageIndex(0);
       }
-      setCurrentPage(active);
+    }, [jsonData]);
+
+    // Load from IndexedDB ONLY on hard refresh (mount)
+    useEffect(() => {
+      const navEntry =
+        performance.getEntriesByType &&
+        performance.getEntriesByType('navigation') &&
+        performance.getEntriesByType('navigation')[0];
+
+      const isRefresh =
+        (performance.navigation && performance.navigation.type === 1) ||
+        navEntry?.type === 'reload' ||
+        false;
+
+      isRefreshRef.current = !!isRefresh;
+
+      if (isRefreshRef.current) {
+        idb_get('tables').then((saved) => {
+          if (saved) {
+            setTables(saved);
+            setVisiblePages(1);
+            setCurrentPageIndex(0);
+          }
+        });
+      }
+    }, []);
+
+    // Save to IndexedDB whenever tables change
+    useEffect(() => {
+      if (tables && tables.length > 0) {
+        idb_set('tables', tables);
+      }
+    }, [tables]);
+
+    // FLATTEN ITEMS (hide disable_text: true in UI)
+    const allItems = useMemo(() => {
+      const arr = [];
+      (tables || []).forEach((table, tIdx) => {
+        (table.Items || []).forEach((item, realIndex) => {
+          if (item.disable_text === true) return;
+
+          arr.push({
+            ...item,
+            __t: tIdx,
+            __i: realIndex, // ← REAL INDEX FIXES THE PROBLEM
+          });
+        });
+      });
+      return arr;
+    }, [tables]);
+
+    // GROUP BY PAGE NUMBER
+    const { pageNos, pageMap } = useMemo(() => {
+      const map = {};
+      allItems.forEach((item) => {
+        let p = item.page_no ?? item.page_number ?? 1;
+        p = Number(p);
+        if (isNaN(p) || p <= 0) p = 1;
+        if (!map[p]) map[p] = [];
+        map[p].push(item);
+      });
+
+      return {
+        pageNos: Object.keys(map)
+          .map(Number)
+          .sort((a, b) => a - b),
+        pageMap: map,
+      };
+    }, [allItems]);
+
+    const totalPages = pageNos.length;
+    const visiblePageNos = pageNos.slice(0, visiblePages);
+    const safeIndex =
+      totalPages === 0
+        ? 0
+        : Math.min(Math.max(currentPageIndex, 0), totalPages - 1);
+
+    // INFINITE SCROLL
+    useEffect(() => {
+      const sentinel = sentinelRef.current;
+      const root = containerRef.current;
+      if (!sentinel || !root || totalPages === 0) return;
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting && visiblePages < totalPages) {
+            setLoading(true);
+            setTimeout(() => {
+              setVisiblePages((v) => Math.min(v + 1, totalPages));
+              setLoading(false);
+            }, 200);
+          }
+        },
+        { root, threshold: 0.2 }
+      );
+
+      observer.observe(sentinel);
+      return () => observer.disconnect();
+    }, [visiblePages, totalPages]);
+
+    // SCROLL → ACTIVE PAGE
+    useEffect(() => {
+      const el = containerRef.current;
+      if (!el || visiblePageNos.length === 0) return;
+
+      const onScroll = () => {
+        let active = safeIndex;
+        const top = el.scrollTop;
+        const offset = 150;
+
+        visiblePageNos.forEach((p, idx) => {
+          const ref = pageRefs.current[p];
+          if (ref && top + offset >= ref.offsetTop) active = idx;
+        });
+
+        if (active !== safeIndex) setCurrentPageIndex(active);
+      };
+
+      el.addEventListener('scroll', onScroll, { passive: true });
+      return () => el.removeEventListener('scroll', onScroll);
+    }, [visiblePageNos, safeIndex]);
+
+    // PAGINATION
+    const handlePageChange = (e, pageIndex1Based) => {
+      const idx = pageIndex1Based - 1;
+      if (idx < 0 || idx >= totalPages) return;
+
+      const targetPageNo = pageNos[idx];
+      if (!visiblePageNos.includes(targetPageNo)) setVisiblePages(idx + 1);
+      setCurrentPageIndex(idx);
+
+      setTimeout(() => {
+        const ref = pageRefs.current[targetPageNo];
+        if (ref && containerRef.current)
+          containerRef.current.scrollTo({
+            top: ref.offsetTop,
+            behavior: 'smooth',
+          });
+      }, 80);
     };
-    el.addEventListener('scroll', onScroll, { passive: true });
-    return () => el.removeEventListener('scroll', onScroll);
-  }, [visiblePages]);
 
-  const handlePageChange = (e, page) => {
-    setCurrentPage(page);
-    const ref = pageRefs.current[page];
-    if (ref && containerRef.current) {
-      containerRef.current.scrollTo({ top: ref.offsetTop, behavior: 'smooth' });
-    }
-  };
+    // UPDATE CELL VALUE
+    const updateCell = (t, i, val) => {
+      setTables((prev) => {
+        const next = prev.map((tbl) => ({ ...tbl, Items: [...tbl.Items] }));
+        next[t].Items[i] = { ...next[t].Items[i], value: val };
+        return next;
+      });
+    };
 
-  const visibleTables = getVisibleTables();
+    // COMMENT HANDLING
+    const openComment = (t, i) => {
+      commentTargetRef.current = { t, i };
+      const item = tables?.[t]?.Items?.[i];
 
-  return (
-    <>
-      <div className="dt-container" ref={containerRef}>
-        <div className="dt-sticky-header">
-          <div className="dt-header-inner">
+      const existingComment = item?.user_comments?.[0]?.comment ?? '';
+
+      setCurrentCommentText(existingComment);
+      setIsCommentOpen(true);
+    };
+
+    const saveComment = () => {
+      const { t, i } = commentTargetRef.current;
+      if (t == null || i == null) return;
+
+      setTables((prev) => {
+        const next = prev.map((tbl) => ({ ...tbl, Items: [...tbl.Items] }));
+        const item = next[t].Items[i];
+
+        next[t].Items[i] = {
+          ...item,
+          user_comments: [
+            {
+              comment: currentCommentText || null,
+            },
+          ],
+        };
+
+        return next;
+      });
+
+      setIsCommentOpen(false);
+    };
+
+    if (totalPages === 0) return <Typography>No Data</Typography>;
+
+    // HOVER ACTIONS: only show when editMode=true AND item editable AND hovered
+    const renderHoverActions = (tIdx, iIdx, userEditable) => {
+      if (!userEditable) return null;
+      if (tIdx == null || iIdx == null) return null;
+      if (hovered.t !== tIdx || hovered.i !== iIdx) return null;
+
+      return (
+        <div className="dt-hover-actions">
+          <IconButton size="small" onClick={() => onApprove?.(tIdx, iIdx)}>
+            <CheckCircleIcon className="dt-icon-approve" />
+          </IconButton>
+
+          <IconButton size="small" onClick={() => openComment(tIdx, iIdx)}>
+            <ChatBubbleOutlineOutlinedIcon className="dt-icon-comment" />
+          </IconButton>
+
+          {/* Bookmark: send the full row object (safe lookup) */}
+          <IconButton
+            size="small"
+            onClick={() => {
+              const row =
+                // safe access to the row object from tables state
+                (Array.isArray(tables) &&
+                  tables[tIdx] &&
+                  Array.isArray(tables[tIdx].Items) &&
+                  tables[tIdx].Items[iIdx]) ??
+                null;
+
+              // call parent with object; fallback to {__t,__i} if not found
+              onBookmarkClick?.(row ?? { __t: tIdx, __i: iIdx });
+            }}
+          >
+            <MenuBookOutlinedIcon className="dt-icon-bookmark" />
+          </IconButton>
+        </div>
+      );
+    };
+    // TABLE MODE (is_table: true) - grouped table rendering
+    const renderTableGroupsForPage = (pageItems, pageNo) => {
+      const tableItems = pageItems.filter(
+        (it) => it.is_table === true && it.disable_text !== true
+      );
+      if (tableItems.length === 0) return null;
+
+      // group by original table __t
+      const groupsByTable = {};
+      tableItems.forEach((item) => {
+        const key = item.__t ?? 0;
+        if (!groupsByTable[key]) groupsByTable[key] = [];
+        groupsByTable[key].push(item);
+      });
+
+      // helper: get column index with PAGE 7 answer_column → UI_answer_column logic
+      const getColumnIndex = (item) => {
+        let ansCol = item.answer_column;
+        if (
+          pageNo === 7 &&
+          (ansCol === 0 || ansCol === '0') &&
+          item.UI_answer_column != null
+        ) {
+          ansCol = item.UI_answer_column;
+        }
+        const raw =
+          item.rendering_column ?? item.question_column ?? ansCol ?? 0;
+        const num = Number(raw);
+        return Number.isNaN(num) ? 0 : num;
+      };
+
+      const tableGroups = Object.values(groupsByTable).sort((a, b) => {
+        const aMin = Math.min(
+          ...a.map((it) =>
+            typeof it.question_row === 'number' ? it.question_row : 0
+          )
+        );
+        const bMin = Math.min(
+          ...b.map((it) =>
+            typeof it.question_row === 'number' ? it.question_row : 0
+          )
+        );
+        return aMin - bMin;
+      });
+
+      return tableGroups.map((group, gIdx) => {
+        const rowsByQR = {};
+        group.forEach((it) => {
+          const qr = typeof it.question_row === 'number' ? it.question_row : 0;
+          if (!rowsByQR[qr]) rowsByQR[qr] = [];
+          rowsByQR[qr].push(it);
+        });
+
+        const rowKeys = Object.keys(rowsByQR)
+          .map(Number)
+          .sort((a, b) => a - b);
+
+        const maxColumns = Math.max(
+          ...Object.values(rowsByQR).map((rows) => rows.length)
+        );
+
+        return (
+          <TableContainer
+            component={Paper}
+            className="dt-table-container"
+            key={gIdx}
+          >
+            <Table size="small" className="dt-table">
+              <TableBody>
+                {rowKeys.map((qr) => {
+                  const rowItems = rowsByQR[qr]
+                    .slice()
+                    .sort((a, b) => getColumnIndex(a) - getColumnIndex(b));
+
+                  // SINGLE ROW (or explicit single_row)
+                  if (
+                    rowItems.length === 1 ||
+                    rowItems[0].single_row === true
+                  ) {
+                    const col = rowItems[0];
+                    const tIdx = col.__t;
+                    const iIdx = col.__i;
+                    const editable = isEditable(col);
+                    const isPage7 = pageNo === 7;
+                    const isCheckboxUI =
+                      isPage7 && col.checkbox_answer_UI === true;
+                    const value = col.value ?? col.Value ?? '';
+                    const label = col.field ?? col.Field ?? '';
+                    const rows = col.rendering_row ? col.rendering_row : 1;
+
+                    return (
+                      <TableRow key={qr}>
+                        <TableCell
+                          colSpan={maxColumns}
+                          className="dt-single-row-cell"
+                        >
+                          <div
+                            className="dt-value-column dt-relative"
+                            onMouseEnter={() =>
+                              setHovered({ t: tIdx, i: iIdx })
+                            }
+                            onMouseLeave={() =>
+                              setHovered({ t: null, i: null })
+                            }
+                          >
+                            <Typography style={{ marginBottom: 4 }}>
+                              {label}
+                            </Typography>
+
+                            {isCheckboxUI ? (
+                              <div>
+                                {(value || '')
+                                  .split('\n')
+                                  .map((opt) => opt.trim())
+                                  .filter(Boolean)
+                                  .map((opt, idxOpt) => (
+                                    <div
+                                      key={idxOpt}
+                                      style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 4,
+                                      }}
+                                    >
+                                      <Checkbox size="small" />
+                                      <Typography variant="body2">
+                                        {opt}
+                                      </Typography>
+                                    </div>
+                                  ))}
+                              </div>
+                            ) : col.user_editable !== true ? (
+                              // user_editable === false → render plain text
+                              <Typography>{value}</Typography>
+                            ) : (
+                              // user_editable === true → show textarea but enable only when isEditable(col) === true
+                              <textarea
+                                className="dt-textarea dt-textarea-with-actions"
+                                value={value}
+                                rows={rows}
+                                disabled={!editable}
+                                onChange={(e) =>
+                                  editable &&
+                                  updateCell(tIdx, iIdx, e.target.value)
+                                }
+                              />
+                            )}
+
+                            {renderHoverActions(
+                              tIdx,
+                              iIdx,
+                              col.user_editable === true
+                            )}
+
+                            {col.user_comments?.[0]?.comment && (
+                              <Typography
+                                variant="caption"
+                                className="dt-comment-caption"
+                              >
+                                💬 {col.user_comments[0].comment}
+                              </Typography>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  }
+
+                  // MULTI-COLUMN ROW
+                  return (
+                    <React.Fragment key={qr}>
+                      {/* Header row */}
+                      <TableRow>
+                        {rowItems.map((col, idx) => (
+                          <TableCell key={idx} className="dt-thead-cell">
+                            {col.field ?? col.Field ?? ''}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+
+                      {/* Value row */}
+                      <TableRow>
+                        {rowItems.map((col, idx) => {
+                          const tIdx = col.__t;
+                          const iIdx = col.__i;
+                          const editable = isEditable(col);
+                          const isPage7 = pageNo === 7;
+                          const isCheckboxUI =
+                            isPage7 && col.checkbox_answer_UI === true;
+                          const value = col.value ?? col.Value ?? '';
+                          const rows = col.rendering_row
+                            ? col.rendering_row
+                            : 1;
+
+                          return (
+                            <TableCell key={idx}>
+                              <div
+                                className="dt-value-column dt-relative"
+                                onMouseEnter={() =>
+                                  setHovered({ t: tIdx, i: iIdx })
+                                }
+                                onMouseLeave={() =>
+                                  setHovered({ t: null, i: null })
+                                }
+                              >
+                                {isCheckboxUI ? (
+                                  <div>
+                                    {(value || '')
+                                      .split('\n')
+                                      .map((opt) => opt.trim())
+                                      .filter(Boolean)
+                                      .map((opt, idxOpt) => (
+                                        <div
+                                          key={idxOpt}
+                                          style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 4,
+                                          }}
+                                        >
+                                          <Checkbox size="small" />
+                                          <Typography variant="body2">
+                                            {opt}
+                                          </Typography>
+                                        </div>
+                                      ))}
+                                  </div>
+                                ) : col.user_editable !== true ? (
+                                  <Typography>{value}</Typography>
+                                ) : (
+                                  <textarea
+                                    className="dt-textarea dt-textarea-with-actions"
+                                    value={value}
+                                    rows={rows}
+                                    disabled={!editable}
+                                    onChange={(e) =>
+                                      editable &&
+                                      updateCell(tIdx, iIdx, e.target.value)
+                                    }
+                                  />
+                                )}
+
+                                {renderHoverActions(
+                                  tIdx,
+                                  iIdx,
+                                  col.user_editable === true
+                                )}
+
+                                {col._comment && (
+                                  <Typography
+                                    variant="caption"
+                                    className="dt-comment-caption"
+                                  >
+                                    💬 {col._comment}
+                                  </Typography>
+                                )}
+                              </div>
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    </React.Fragment>
+                  );
+                })}
+              </TableBody>
+            </Table>
+
+            <Divider className="dt-divider" />
+          </TableContainer>
+        );
+      });
+    };
+    // NORMAL (NON-TABLE) ITEMS - for pages outside 9–42
+    const renderNormalItems = (normalItems, pageNo) => {
+      if (normalItems.length === 0) return null;
+
+      let groupedNormal = {};
+
+      // PAGE 2 special: group by question_row
+      if (pageNo === 2) {
+        normalItems.forEach((item) => {
+          if (item.disable_text === true) return;
+          const qr =
+            typeof item.question_row === 'number' ? item.question_row : 0;
+          if (!groupedNormal[qr]) groupedNormal[qr] = [];
+          groupedNormal[qr].push(item);
+        });
+      } else {
+        // Default: group by field name
+        normalItems.forEach((item) => {
+          if (item.disable_text === true) return;
+          const field = item.field ?? item.Field ?? '';
+          if (!groupedNormal[field]) groupedNormal[field] = [];
+          groupedNormal[field].push(item);
+        });
+      }
+
+      return (
+        <TableContainer component={Paper} className="dt-table-container">
+          <Table size="small" className="dt-table">
+            <TableHead>
+              <TableRow>
+                <TableCell className="dt-thead-cell dt-field-header">
+                  Field
+                </TableCell>
+                <TableCell className="dt-thead-cell dt-value-header">
+                  Value
+                </TableCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {Object.entries(groupedNormal).map(
+                ([groupKey, rowsArr], idx1) => {
+                  const first = rowsArr[0];
+
+                  const fieldLabel =
+                    pageNo === 2
+                      ? (first.field ?? first.Field ?? '')
+                      : groupKey;
+
+                  // SINGLE ROW
+                  if (first.single_row === true) {
+                    const tIdx = first.__t;
+                    const iIdx = first.__i;
+
+                    const editable = isEditable(first);
+                    const isPage7 = pageNo === 7;
+                    const value =
+                      first.value ??
+                      first.Value ??
+                      first.field ??
+                      first.Field ??
+                      '';
+                    const rows = first.rendering_row ? first.rendering_row : 1;
+
+                    return (
+                      <TableRow key={idx1}>
+                        <TableCell colSpan={2} className="dt-single-row-cell">
+                          <div
+                            className="dt-value-column dt-relative"
+                            onMouseEnter={() =>
+                              setHovered({ t: tIdx, i: iIdx })
+                            }
+                            onMouseLeave={() =>
+                              setHovered({ t: null, i: null })
+                            }
+                          >
+                            {first.user_editable !== true ? (
+                              <Typography>{value}</Typography>
+                            ) : (
+                              <textarea
+                                className="dt-textarea dt-textarea-with-actions"
+                                value={value}
+                                rows={rows}
+                                disabled={!editable}
+                                onChange={(e) =>
+                                  editable &&
+                                  updateCell(tIdx, iIdx, e.target.value)
+                                }
+                              />
+                            )}
+
+                            {renderHoverActions(
+                              tIdx,
+                              iIdx,
+                              first.user_editable === true
+                            )}
+
+                            {first._comment && (
+                              <Typography
+                                variant="caption"
+                                className="dt-comment-caption"
+                              >
+                                💬 {first._comment}
+                              </Typography>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  }
+
+                  // MULTI-VALUE ROW
+                  return (
+                    <TableRow key={idx1}>
+                      <TableCell className="dt-field-cell">
+                        <div className="dt-field-label">
+                          {first.checkbox_value !== undefined ? (
+                            <Checkbox
+                              size="small"
+                              checked={!!first.checkbox_value}
+                            />
+                          ) : null}
+                          {fieldLabel}
+                        </div>
+                      </TableCell>
+
+                      <TableCell className="dt-value-cell">
+                        <div className="dt-value-row">
+                          {rowsArr.map((r, idx2) => {
+                            const tIdx = r.__t;
+                            const iIdx = r.__i;
+
+                            const editable = isEditable(r);
+                            const isPage7 = pageNo === 7;
+                            const isCheckboxUI =
+                              isPage7 && r.checkbox_answer_UI === true;
+
+                            const value = r.value ?? r.Value ?? '';
+                            const rows = r.rendering_row ? r.rendering_row : 1;
+
+                            return (
+                              <div
+                                key={idx2}
+                                className="dt-value-column dt-relative"
+                                onMouseEnter={() =>
+                                  setHovered({ t: tIdx, i: iIdx })
+                                }
+                                onMouseLeave={() =>
+                                  setHovered({ t: null, i: null })
+                                }
+                              >
+                                {isCheckboxUI ? (
+                                  <div>
+                                    {(value || '')
+                                      .split('\n')
+                                      .map((opt) => opt.trim())
+                                      .filter(Boolean)
+                                      .map((opt, idxOpt) => (
+                                        <div
+                                          key={idxOpt}
+                                          style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 4,
+                                          }}
+                                        >
+                                          <Checkbox size="small" />
+                                          <Typography variant="body2">
+                                            {opt}
+                                          </Typography>
+                                        </div>
+                                      ))}
+                                  </div>
+                                ) : r.user_editable !== true ? (
+                                  <Typography>{value}</Typography>
+                                ) : (
+                                  <textarea
+                                    className="dt-textarea dt-textarea-with-actions"
+                                    value={value}
+                                    rows={rows}
+                                    disabled={!editable}
+                                    onChange={(e) =>
+                                      editable &&
+                                      updateCell(tIdx, iIdx, e.target.value)
+                                    }
+                                  />
+                                )}
+
+                                {renderHoverActions(
+                                  tIdx,
+                                  iIdx,
+                                  r.user_editable === true
+                                )}
+
+                                {r._comment && (
+                                  <Typography
+                                    variant="caption"
+                                    className="dt-comment-caption"
+                                  >
+                                    💬 {r._comment}
+                                  </Typography>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                }
+              )}
+            </TableBody>
+          </Table>
+
+          <Divider className="dt-divider" />
+        </TableContainer>
+      );
+    };
+    // PAGE 9 → 42 SPECIAL 4-COLUMN IEC 61010-1 TABLE
+    const renderPart10Table = (pageItems) => {
+      const items = pageItems.filter((i) => i.disable_text !== true);
+
+      // Header row (if exists)
+      const headerItem = items.find((i) => i.table_head === true);
+
+      // Data rows only
+      const dataItems = items.filter((i) => i.table_head !== true);
+
+      // Group rows by clause_row + question_row + field
+      const groupsByRow = {};
+
+      dataItems.forEach((item) => {
+        const fieldLabel = item.field ?? item.Field ?? '';
+
+        const key = [
+          item.clause_row ?? '',
+          item.question_row ?? '',
+          fieldLabel,
+        ].join('|');
+
+        if (!groupsByRow[key]) {
+          groupsByRow[key] = {
+            clause: item.clause ?? item.clause_number ?? '',
+            field: fieldLabel,
+            question_row:
+              typeof item.question_row === 'number' ? item.question_row : 0,
+
+            remarkItem: null,
+            verdictItem: null,
+
+            requirementComment: item._comment ?? null,
+          };
+        } else if (!groupsByRow[key].requirementComment && item._comment) {
+          groupsByRow[key].requirementComment = item._comment;
+        }
+
+        if (item.task_type === 'remark') {
+          groupsByRow[key].remarkItem = item;
+        } else if (item.task_type === 'verdict') {
+          groupsByRow[key].verdictItem = item;
+        }
+      });
+
+      const finalRows = Object.values(groupsByRow).sort(
+        (a, b) => a.question_row - b.question_row
+      );
+
+      const bodyCellSx = {
+        borderRight: '1px solid #ccc',
+        borderBottom: '1px solid #ccc',
+        verticalAlign: 'top',
+      };
+
+      const headerCellSx = {
+        borderRight: '1px solid #aaa',
+        borderBottom: '2px solid #000',
+        fontWeight: 'bold',
+      };
+
+      // Requirement cell (never editable)
+      const renderRequirementCell = (fieldLabel, comment) => {
+        if (!fieldLabel && !comment) return null;
+        return (
+          <div className="dt-value-column dt-relative">
+            <Typography>{fieldLabel}</Typography>
+
+            {comment && (
+              <Typography variant="caption" className="dt-comment-caption">
+                💬 {comment}
+              </Typography>
+            )}
+          </div>
+        );
+      };
+
+      // Remark / Verdict Cells
+      const renderRemarkOrVerdictCell = (item) => {
+        if (!item) return null;
+
+        const tIdx = item.__t;
+        const iIdx = item.__i;
+
+        const editable = isEditable(item);
+
+        const value = item.value ?? item.Value ?? '';
+        const rows = item.rendering_row || 1;
+        const comment = item._comment;
+
+        // if item is not user_editable -> render plain text
+        if (item.user_editable !== true) {
+          return (
+            <div className="dt-value-column dt-relative">
+              <Typography>{value}</Typography>
+              {comment && (
+                <Typography variant="caption" className="dt-comment-caption">
+                  💬 {comment}
+                </Typography>
+              )}
+            </div>
+          );
+        }
+
+        // else user_editable === true -> show textarea (disabled until editMode and other checks)
+        return (
+          <div
+            className="dt-value-column dt-relative"
+            onMouseEnter={() => setHovered({ t: tIdx, i: iIdx })}
+            onMouseLeave={() => setHovered({ t: null, i: null })}
+          >
+            <textarea
+              className="dt-textarea dt-textarea-with-actions"
+              value={value}
+              rows={rows}
+              disabled={!editable}
+              onChange={(e) =>
+                editable && updateCell(tIdx, iIdx, e.target.value)
+              }
+            />
+
+            {renderHoverActions(tIdx, iIdx, item.user_editable === true)}
+
+            {comment && (
+              <Typography variant="caption" className="dt-comment-caption">
+                💬 {comment}
+              </Typography>
+            )}
+          </div>
+        );
+      };
+
+      return (
+        <TableContainer component={Paper} className="dt-table-container">
+          {/* Optional table_head header */}
+          {headerItem && (
+            <div
+              style={{
+                textAlign: 'center',
+                fontWeight: 'bold',
+                padding: '8px 0',
+                borderBottom: '2px solid #000',
+                fontSize: '16px',
+              }}
+            >
+              {headerItem.field ?? headerItem.Field ?? ''}
+            </div>
+          )}
+
+          <Table
+            size="small"
+            className="dt-table"
+            sx={{ border: '1px solid #ccc', borderCollapse: 'collapse' }}
+          >
+            <TableHead>
+              <TableRow>
+                <TableCell className="dt-thead-cell" sx={headerCellSx}>
+                  Clause
+                </TableCell>
+                <TableCell className="dt-thead-cell" sx={headerCellSx}>
+                  Requirement + Test
+                </TableCell>
+                <TableCell className="dt-thead-cell" sx={headerCellSx}>
+                  Result – Remark
+                </TableCell>
+                <TableCell className="dt-thead-cell" sx={headerCellSx}>
+                  Verdict
+                </TableCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {finalRows.map((row, idx) => (
+                <TableRow key={idx}>
+                  <TableCell sx={bodyCellSx}>{row.clause ?? ''}</TableCell>
+
+                  <TableCell sx={bodyCellSx}>
+                    {renderRequirementCell(row.field, row.requirementComment)}
+                  </TableCell>
+
+                  <TableCell sx={bodyCellSx}>
+                    {renderRemarkOrVerdictCell(row.remarkItem)}
+                  </TableCell>
+
+                  <TableCell sx={bodyCellSx}>
+                    {renderRemarkOrVerdictCell(row.verdictItem)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+          <Divider className="dt-divider" />
+        </TableContainer>
+      );
+    };
+    // RENDER FULL UI (final part)
+    return (
+      <>
+        <div className="dt-container" ref={containerRef}>
+          <div className="dt-sticky-header">
             <Typography variant="h6" className="dt-header-title">
               Report
             </Typography>
           </div>
-        </div>
 
-        {(visibleTables || []).map((table, tableIndex) => {
-          const realTableIndex = tableIndex;
-          return (
-            <div
-              className="dt-page"
-              key={realTableIndex}
-              ref={(el) => (pageRefs.current[realTableIndex + 1] = el)}
-            >
-              <Typography className="dt-page-title">
-                Page {realTableIndex + 1} (Table {table.Table})
-              </Typography>
+          {visiblePageNos.map((pageNo) => {
+            const pageItems = pageMap[pageNo] || [];
 
-              <TableContainer component={Paper} className="dt-table-container">
-                <Table size="small" className="dt-table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell className="dt-thead-cell dt-field-header">
-                        Field
-                      </TableCell>
-                      <TableCell className="dt-thead-cell dt-value-header">
-                        Value
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
+            const tableItems = pageItems.filter(
+              (it) => it.is_table === true && it.disable_text !== true
+            );
+            const normalItems = pageItems.filter(
+              (it) => it.is_table !== true && it.disable_text !== true
+            );
 
-                  <TableBody>
-                    {(() => {
-                      const grouped = {};
-                      table.Items.forEach((item, idx) => {
-                        const field = item.field ?? item.Field ?? '';
-                        if (!field) return;
-                        if (!grouped[field]) grouped[field] = [];
-                        grouped[field].push({ ...item, __originalIndex: idx });
-                      });
+            return (
+              <div
+                className="dt-page"
+                key={pageNo}
+                ref={(el) => (pageRefs.current[pageNo] = el)}
+              >
+                <Typography className="dt-page-title">Page {pageNo}</Typography>
 
-                      return Object.entries(grouped).map(
-                        ([field, rows], groupIndex) => (
-                          <TableRow key={groupIndex}>
-                            <TableCell className="dt-field-cell">
-                              {field}
-                            </TableCell>
+                {/* Page 9 → 42 special IEC 61010-1 clause table */}
+                {pageNo >= 9 && pageNo <= 42 ? (
+                  renderPart10Table(pageItems)
+                ) : (
+                  <>
+                    {tableItems.length > 0 &&
+                      renderTableGroupsForPage(pageItems, pageNo)}
+                    {normalItems.length > 0 &&
+                      renderNormalItems(normalItems, pageNo)}
+                  </>
+                )}
 
-                            <TableCell className="dt-value-cell">
-                              <div className="dt-value-row">
-                                {rows.map((r, innerIdx) => {
-                                  const realIndex = r.__originalIndex;
-                                  const value = r.value ?? r.Value ?? '';
+                <Divider className="dt-divider" />
+              </div>
+            );
+          })}
 
-                                  return (
-                                    <div
-                                      key={innerIdx}
-                                      className="dt-value-column"
-                                      onMouseEnter={() =>
-                                        setHovered({
-                                          table: realTableIndex,
-                                          row: realIndex,
-                                        })
-                                      }
-                                      onMouseLeave={() =>
-                                        setHovered({ table: null, row: null })
-                                      }
-                                      style={{ position: 'relative' }} //  Make container relative
-                                    >
-                                      <textarea
-                                        className="dt-textarea"
-                                        value={value}
-                                        onChange={(e) =>
-                                          updateCell(
-                                            realTableIndex,
-                                            realIndex,
-                                            e.target.value
-                                          )
-                                        }
-                                        rows={1}
-                                        style={{
-                                          paddingRight: '70px', //  Space for icons
-                                        }}
-                                      />
+          <div ref={sentinelRef} className="dt-sentinel" />
 
-                                      {hovered.table === realTableIndex &&
-                                        hovered.row === realIndex && (
-                                          <div
-                                            className="dt-hover-actions"
-                                            style={{
-                                              position: 'absolute',
-                                              top: '50%', // vertically center
-                                              right: '5px',
-                                              transform: 'translateY(-50%)',
-                                              display: 'flex',
-                                              gap: '4px',
-                                            }}
-                                          >
-                                            <IconButton
-                                              size="small"
-                                              onClick={() =>
-                                                handleApprove(
-                                                  realTableIndex,
-                                                  realIndex
-                                                )
-                                              }
-                                              aria-label="approve"
-                                            >
-                                              <CheckCircleIcon className="dt-icon-approve" />
-                                            </IconButton>
-
-                                            <IconButton
-                                              size="small"
-                                              onClick={() =>
-                                                openComment(
-                                                  realTableIndex,
-                                                  realIndex
-                                                )
-                                              }
-                                              aria-label="comment"
-                                            >
-                                              <ChatBubbleOutlineOutlinedIcon className="dt-icon-comment" />
-                                            </IconButton>
-
-                                            <IconButton
-                                              size="small"
-                                              onClick={() =>
-                                                handleBookmark(
-                                                  realTableIndex,
-                                                  realIndex
-                                                )
-                                              }
-                                              aria-label="bookmark"
-                                            >
-                                              <MenuBookOutlinedIcon className="dt-icon-bookmark" />
-                                            </IconButton>
-                                          </div>
-                                        )}
-
-                                      {r._comment && (
-                                        <Typography
-                                          variant="caption"
-                                          className="dt-comment-caption"
-                                        >
-                                          💬 {r._comment}
-                                        </Typography>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        )
-                      );
-                    })()}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-
-              <Divider className="dt-divider" />
-            </div>
-          );
-        })}
-
-        <div ref={observerRef} className="dt-sentinel" />
-
-        <div className="dt-pagination-wrapper">
-          <Pagination
-            count={tablesRef.current?.length || 1}
-            page={currentPage}
-            onChange={handlePageChange}
-            color="primary"
-            size="small"
-          />
-        </div>
-
-        {loading && (
-          <div className="dt-loading">
-            <CircularProgress size={28} />
+          <div className="dt-pagination-wrapper">
+            <Pagination
+              count={totalPages}
+              page={safeIndex + 1}
+              onChange={handlePageChange}
+              color="primary"
+              size="small"
+            />
           </div>
-        )}
-      </div>
 
-      <CommentDialog
-        open={isCommentOpen}
-        onClose={() => setIsCommentOpen(false)}
-        comments={existingCommentsArray}
-        currentComment={currentCommentText}
-        setCurrentComment={setCurrentCommentText}
-        onSubmit={saveComment}
-      />
-    </>
-  );
-};
+          {loading && (
+            <div className="dt-loading">
+              <CircularProgress size={28} />
+            </div>
+          )}
+        </div>
 
-export default DataTable;
+        <CommentDialog
+          open={isCommentOpen}
+          onClose={() => setIsCommentOpen(false)}
+          comments={[]}
+          currentComment={currentCommentText}
+          setCurrentComment={setCurrentCommentText}
+          onSubmit={saveComment}
+        />
+      </>
+    );
+  }
+);
+
+export default DataTable1;
