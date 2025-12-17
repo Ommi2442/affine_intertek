@@ -24,7 +24,14 @@ import { fetchProjectsRequest } from '../../redux/features/dashboard/dashboardSl
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
+import { deleteProjectsRequest } from '../../redux/features/deleteProject/deleteProjectSlice';
+import { archieveProjectsRequest } from '../../redux/features/archieveProject/archieveProjectSlice';
 
+/* 👇 USE EXISTING API FILE */
+// import {
+//   deleteProjectApi,
+//   archiveProjectApi,
+// } from '../../redux/api/projectStatusApi';
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -48,30 +55,28 @@ const Dashboard = () => {
     const val = value === true || value === 'true';
 
     const handleClick = () => {
- 
-      localStorage.setItem("projectId", row?.Project_Id);
+      localStorage.setItem('projectId', row?.Project_Id);
 
-      if(val == false) {
-      navigate('/create-project', {
-        state: {
-          standard: row?.Standard,
-          projectId: row?.Project_Id,
-          clientName: row?.Client_Name,
-          product: row?.Product,
-          source: type, // TRF | CDR | LETTER
-        },
-      });
-    }
-      else {
+      if (val == false) {
+        navigate('/create-project', {
+          state: {
+            standard: row?.Standard,
+            projectId: row?.Project_Id,
+            clientName: row?.Client_Name,
+            product: row?.Product,
+            source: type,
+          },
+        });
+      } else {
         navigate('/report-page', {
-        state: {
-          standard: row?.Standard,
-          projectId: row?.Project_Id,
-          clientName: row?.Client_Name,
-          product: row?.Product,
-          source: type, // TRF | CDR | LETTER
-        },
-      });
+          state: {
+            standard: row?.Standard,
+            projectId: row?.Project_Id,
+            clientName: row?.Client_Name,
+            product: row?.Product,
+            source: type, // TRF | CDR | LETTER
+          },
+        });
       }
     };
 
@@ -89,6 +94,29 @@ const Dashboard = () => {
         {val ? 'Yes' : 'No'}
       </Box>
     );
+  };
+
+  /* ---------------- NEW: DELETE ---------------- */
+  const handleDelete = async (row) => {
+    const ok = window.confirm('Are you sure you want to delete this project?');
+    if (!ok) return;
+
+    dispatch(deleteProjectsRequest(row.Project_Id));
+  };
+
+  /* ---------------- NEW: ARCHIVE ---------------- */
+  const handleArchive = async (row) => {
+    const ok = window.confirm('Are you sure you want to archive this project?');
+    if (!ok) return;
+
+    const payload = {
+      param: row.Project_Id,
+      bodyObj: {
+        Proj_Archived: true,
+      },
+    };
+
+    dispatch(archieveProjectsRequest(payload));
   };
 
   const filtered =
@@ -154,20 +182,40 @@ const Dashboard = () => {
         <Table>
           <TableHead sx={{ bgcolor: '#f5f5f5' }}>
             <TableRow>
-              <TableCell align="center"><b>Standard</b></TableCell>
-              <TableCell align="center"><b>Client Name</b></TableCell>
-              <TableCell align="center"><b>Product</b></TableCell>
-              <TableCell align="center"><b>Project ID</b></TableCell>
-              <TableCell align="center"><b>Created On</b></TableCell>
+              <TableCell align="center">
+                <b>Standard</b>
+              </TableCell>
+              <TableCell align="center">
+                <b>Client Name</b>
+              </TableCell>
+              <TableCell align="center">
+                <b>Product</b>
+              </TableCell>
+              <TableCell align="center">
+                <b>Project ID</b>
+              </TableCell>
+              <TableCell align="center">
+                <b>Created On</b>
+              </TableCell>
 
               {user_role === 1 && (
-                <TableCell align="center"><b>Created By</b></TableCell>
+                <TableCell align="center">
+                  <b>Created By</b>
+                </TableCell>
               )}
 
-              <TableCell align="center"><b>TRF Generated</b></TableCell>
-              <TableCell align="center"><b>CDR Generated</b></TableCell>
-              <TableCell align="center"><b>Letter Generated</b></TableCell>
-              <TableCell align="center"><b>Actions</b></TableCell>
+              <TableCell align="center">
+                <b>TRF Generated</b>
+              </TableCell>
+              <TableCell align="center">
+                <b>CDR Generated</b>
+              </TableCell>
+              <TableCell align="center">
+                <b>Letter Generated</b>
+              </TableCell>
+              <TableCell align="center">
+                <b>Actions</b>
+              </TableCell>
             </TableRow>
           </TableHead>
 
@@ -210,10 +258,12 @@ const Dashboard = () => {
                     <IconButton>
                       <img src="/images/edit.png" width={18} height={18} />
                     </IconButton>
-                    <IconButton>
+
+                    <IconButton onClick={() => handleArchive(row)}>
                       <img src="/images/add-file.png" width={18} height={18} />
                     </IconButton>
-                    <IconButton>
+
+                    <IconButton onClick={() => handleDelete(row)}>
                       <img src="/images/delete.png" width={18} height={18} />
                     </IconButton>
                   </TableCell>

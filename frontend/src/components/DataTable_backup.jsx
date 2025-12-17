@@ -29,10 +29,9 @@ import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutline
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 
 import './DataTable.css';
-import { idb_set, idb_get } from '../utils/idb';
 import CommentDialog from './CommentDialog';
 
-const DataTable1 = forwardRef(
+const DataTableBack = forwardRef(
   ({ jsonData, onBookmarkClick, onApprove, editMode = false }, ref) => {
     const containerRef = useRef(null);
     const sentinelRef = useRef(null);
@@ -48,28 +47,26 @@ const DataTable1 = forwardRef(
     const [currentCommentText, setCurrentCommentText] = useState('');
     const commentTargetRef = useRef({ t: null, i: null });
 
-    // Track whether this page load is a browser refresh
-    const isRefreshRef = useRef(false);
-
-    // --------------------
-    // helper: checks
-    // --------------------
-    // Return true only when:
-    //  - item exists
-    //  - item.user_editable === true
-    //  - editMode === true (user clicked Edit/Refine)
-    //  - item.is_textbox !== false (textbox allowed)
+    // === helper: strict editable check ===
     const isEditable = (item) => {
       if (!item) return false;
-      if (item.user_editable !== true) return false; // must be explicitly editable
-      if (!editMode) return false; // only editable when edit mode is ON
-      if (item.is_textbox === false) return false; // textbox not allowed
+
+      // RULE 1: user_editable must be true
+      if (item.user_editable !== true) return false;
+
+      // RULE 2: user clicked edit/refine
+      if (!editMode) return false;
+
+      // RULE 3: textbox must be allowed
+      if (item.is_textbox === false) return false;
+
       return true;
     };
 
-    // Expose methods to parent via ref
+    // EXPOSE UPDATED JSON TO PARENT
     useImperativeHandle(ref, () => ({
       getUpdatedJson: () => ({ Tables: tables }),
+      // NEW: Get value of a field by field name
       getFieldValue: (fieldName) => {
         for (const table of tables) {
           for (const item of table.Items) {
@@ -80,6 +77,8 @@ const DataTable1 = forwardRef(
         }
         return '';
       },
+
+      // NEW: Update value of a field by field name
       setFieldValue: (fieldName, newValue) => {
         setTables((prev) => {
           const next = prev.map((tbl) => ({
@@ -95,60 +94,21 @@ const DataTable1 = forwardRef(
 
     // LOAD JSON
     useEffect(() => {
-      // When API gives new data (Generate TRF clicked)
-      if (isRefreshRef.current) return; // on refresh we keep localStorage data
-      if (jsonData?.Tables) {
-        setTables(jsonData.Tables);
-        setVisiblePages(1);
-        setCurrentPageIndex(0);
-      }
+      const fresh = jsonData?.Tables ?? [];
+      setTables(fresh);
+      setVisiblePages(1);
+      setCurrentPageIndex(0);
     }, [jsonData]);
-
-    // Load from IndexedDB ONLY on hard refresh (mount)
-    useEffect(() => {
-      const navEntry =
-        performance.getEntriesByType &&
-        performance.getEntriesByType('navigation') &&
-        performance.getEntriesByType('navigation')[0];
-
-      const isRefresh =
-        (performance.navigation && performance.navigation.type === 1) ||
-        navEntry?.type === 'reload' ||
-        false;
-
-      isRefreshRef.current = !!isRefresh;
-
-      if (isRefreshRef.current) {
-        idb_get('tables').then((saved) => {
-          if (saved) {
-            setTables(saved);
-            setVisiblePages(1);
-            setCurrentPageIndex(0);
-          }
-        });
-      }
-    }, []);
-
-    // Save to IndexedDB whenever tables change
-    useEffect(() => {
-      if (tables && tables.length > 0) {
-        idb_set('tables', tables);
-      }
-    }, [tables]);
 
     // FLATTEN ITEMS (hide disable_text: true in UI)
     const allItems = useMemo(() => {
       const arr = [];
       (tables || []).forEach((table, tIdx) => {
-        (table.Items || []).forEach((item, realIndex) => {
-          if (item.disable_text === true) return;
-
-          arr.push({
-            ...item,
-            __t: tIdx,
-            __i: realIndex, // ← REAL INDEX FIXES THE PROBLEM
+        (table.Items || [])
+          .filter((item) => item.disable_text !== true)
+          .forEach((item, iIdx) => {
+            arr.push({ ...item, __t: tIdx, __i: iIdx });
           });
-        });
       });
       return arr;
     }, [tables]);
@@ -256,10 +216,7 @@ const DataTable1 = forwardRef(
     const openComment = (t, i) => {
       commentTargetRef.current = { t, i };
       const item = tables?.[t]?.Items?.[i];
-
-      const existingComment = item?.user_comments?.[0]?.comment ?? '';
-
-      setCurrentCommentText(existingComment);
+      setCurrentCommentText(item?._comment || '');
       setIsCommentOpen(true);
     };
 
@@ -269,17 +226,10 @@ const DataTable1 = forwardRef(
 
       setTables((prev) => {
         const next = prev.map((tbl) => ({ ...tbl, Items: [...tbl.Items] }));
-        const item = next[t].Items[i];
-
         next[t].Items[i] = {
-          ...item,
-          user_comments: [
-            {
-              comment: currentCommentText || null,
-            },
-          ],
+          ...next[t].Items[i],
+          _comment: currentCommentText,
         };
-
         return next;
       });
 
@@ -289,8 +239,9 @@ const DataTable1 = forwardRef(
     if (totalPages === 0) return <Typography>No Data</Typography>;
 
     // HOVER ACTIONS: only show when editMode=true AND item editable AND hovered
-    const renderHoverActions = (tIdx, iIdx, userEditable) => {
-      if (!userEditable) return null;
+    const renderHoverActions = (tIdx, iIdx, editable) => {
+      if (!editMode) return null;
+      if (!editable) return null;
       if (tIdx == null || iIdx == null) return null;
       if (hovered.t !== tIdx || hovered.i !== iIdx) return null;
 
@@ -299,26 +250,12 @@ const DataTable1 = forwardRef(
           <IconButton size="small" onClick={() => onApprove?.(tIdx, iIdx)}>
             <CheckCircleIcon className="dt-icon-approve" />
           </IconButton>
-
           <IconButton size="small" onClick={() => openComment(tIdx, iIdx)}>
             <ChatBubbleOutlineOutlinedIcon className="dt-icon-comment" />
           </IconButton>
-
-          {/* Bookmark: send the full row object (safe lookup) */}
           <IconButton
             size="small"
-            onClick={() => {
-              const row =
-                // safe access to the row object from tables state
-                (Array.isArray(tables) &&
-                  tables[tIdx] &&
-                  Array.isArray(tables[tIdx].Items) &&
-                  tables[tIdx].Items[iIdx]) ??
-                null;
-
-              // call parent with object; fallback to {__t,__i} if not found
-              onBookmarkClick?.(row ?? { __t: tIdx, __i: iIdx });
-            }}
+            onClick={() => onBookmarkClick?.(tIdx, iIdx)}
           >
             <MenuBookOutlinedIcon className="dt-icon-bookmark" />
           </IconButton>
@@ -456,35 +393,33 @@ const DataTable1 = forwardRef(
                                     </div>
                                   ))}
                               </div>
-                            ) : col.user_editable !== true ? (
-                              // user_editable === false → render plain text
-                              <Typography>{value}</Typography>
                             ) : (
-                              // user_editable === true → show textarea but enable only when isEditable(col) === true
-                              <textarea
-                                className="dt-textarea dt-textarea-with-actions"
-                                value={value}
-                                rows={rows}
-                                disabled={!editable}
-                                onChange={(e) =>
-                                  editable &&
-                                  updateCell(tIdx, iIdx, e.target.value)
-                                }
-                              />
+                              <>
+                                {/* keep visible textarea but disable typing when not editable */}
+                                {item.user_editable === false ? (
+                                  <Typography>{value}</Typography>
+                                ) : (
+                                  <textarea
+                                    className="dt-textarea"
+                                    value={value}
+                                    disabled={!editable}
+                                    onChange={(e) =>
+                                      editable &&
+                                      updateCell(tIdx, iIdx, e.target.value)
+                                    }
+                                  />
+                                )}
+                              </>
                             )}
 
-                            {renderHoverActions(
-                              tIdx,
-                              iIdx,
-                              col.user_editable === true
-                            )}
+                            {renderHoverActions(tIdx, iIdx, editable)}
 
-                            {col.user_comments?.[0]?.comment && (
+                            {col._comment && (
                               <Typography
                                 variant="caption"
                                 className="dt-comment-caption"
                               >
-                                💬 {col.user_comments[0].comment}
+                                💬 {col._comment}
                               </Typography>
                             )}
                           </div>
@@ -552,26 +487,23 @@ const DataTable1 = forwardRef(
                                         </div>
                                       ))}
                                   </div>
-                                ) : col.user_editable !== true ? (
-                                  <Typography>{value}</Typography>
                                 ) : (
-                                  <textarea
-                                    className="dt-textarea dt-textarea-with-actions"
-                                    value={value}
-                                    rows={rows}
-                                    disabled={!editable}
-                                    onChange={(e) =>
-                                      editable &&
-                                      updateCell(tIdx, iIdx, e.target.value)
-                                    }
-                                  />
+                                  <>
+                                    {/* visible textarea, disabled when not editable */}
+                                    <textarea
+                                      className="dt-textarea dt-textarea-with-actions"
+                                      value={value}
+                                      rows={rows}
+                                      disabled={!editable}
+                                      onChange={(e) =>
+                                        editable &&
+                                        updateCell(tIdx, iIdx, e.target.value)
+                                      }
+                                    />
+                                  </>
                                 )}
 
-                                {renderHoverActions(
-                                  tIdx,
-                                  iIdx,
-                                  col.user_editable === true
-                                )}
+                                {renderHoverActions(tIdx, iIdx, editable)}
 
                                 {col._comment && (
                                   <Typography
@@ -646,7 +578,9 @@ const DataTable1 = forwardRef(
                       ? (first.field ?? first.Field ?? '')
                       : groupKey;
 
-                  // SINGLE ROW
+                  // -----------------------------
+                  // SINGLE ROW FIELD
+                  // -----------------------------
                   if (first.single_row === true) {
                     const tIdx = first.__t;
                     const iIdx = first.__i;
@@ -673,26 +607,18 @@ const DataTable1 = forwardRef(
                               setHovered({ t: null, i: null })
                             }
                           >
-                            {first.user_editable !== true ? (
-                              <Typography>{value}</Typography>
-                            ) : (
-                              <textarea
-                                className="dt-textarea dt-textarea-with-actions"
-                                value={value}
-                                rows={rows}
-                                disabled={!editable}
-                                onChange={(e) =>
-                                  editable &&
-                                  updateCell(tIdx, iIdx, e.target.value)
-                                }
-                              />
-                            )}
+                            <textarea
+                              className="dt-textarea dt-textarea-with-actions"
+                              value={value}
+                              rows={rows}
+                              disabled={!editable}
+                              onChange={(e) =>
+                                editable &&
+                                updateCell(tIdx, iIdx, e.target.value)
+                              }
+                            />
 
-                            {renderHoverActions(
-                              tIdx,
-                              iIdx,
-                              first.user_editable === true
-                            )}
+                            {renderHoverActions(tIdx, iIdx, editable)}
 
                             {first._comment && (
                               <Typography
@@ -708,7 +634,9 @@ const DataTable1 = forwardRef(
                     );
                   }
 
+                  // -----------------------------
                   // MULTI-VALUE ROW
+                  // -----------------------------
                   return (
                     <TableRow key={idx1}>
                       <TableCell className="dt-field-cell">
@@ -770,8 +698,6 @@ const DataTable1 = forwardRef(
                                         </div>
                                       ))}
                                   </div>
-                                ) : r.user_editable !== true ? (
-                                  <Typography>{value}</Typography>
                                 ) : (
                                   <textarea
                                     className="dt-textarea dt-textarea-with-actions"
@@ -785,11 +711,7 @@ const DataTable1 = forwardRef(
                                   />
                                 )}
 
-                                {renderHoverActions(
-                                  tIdx,
-                                  iIdx,
-                                  r.user_editable === true
-                                )}
+                                {renderHoverActions(tIdx, iIdx, editable)}
 
                                 {r._comment && (
                                   <Typography
@@ -905,21 +827,6 @@ const DataTable1 = forwardRef(
         const rows = item.rendering_row || 1;
         const comment = item._comment;
 
-        // if item is not user_editable -> render plain text
-        if (item.user_editable !== true) {
-          return (
-            <div className="dt-value-column dt-relative">
-              <Typography>{value}</Typography>
-              {comment && (
-                <Typography variant="caption" className="dt-comment-caption">
-                  💬 {comment}
-                </Typography>
-              )}
-            </div>
-          );
-        }
-
-        // else user_editable === true -> show textarea (disabled until editMode and other checks)
         return (
           <div
             className="dt-value-column dt-relative"
@@ -936,7 +843,7 @@ const DataTable1 = forwardRef(
               }
             />
 
-            {renderHoverActions(tIdx, iIdx, item.user_editable === true)}
+            {renderHoverActions(tIdx, iIdx, editable)}
 
             {comment && (
               <Typography variant="caption" className="dt-comment-caption">
@@ -1088,4 +995,4 @@ const DataTable1 = forwardRef(
   }
 );
 
-export default DataTable1;
+export default DataTableBack;

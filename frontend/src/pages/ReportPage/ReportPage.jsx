@@ -22,10 +22,11 @@ import { generateTrfApi } from '../../redux/api/generateTrfApi';
 //import RemainingPagesData from '../../components/RemainingPagesData';
 //import NewJson from '../../utils/newJsonFrom42.json';
 //import HtmlPageRenderer from '../../components/HtmlPageRenderer';
-import localCdrJson from '../../utils/cdr_payload_2.json';
+import localCdrJson from '../../utils/cdr_payload_3.json';
 import CdrReport from '../../components/CdrReport';
 import localJson from '../../utils/iec_61010_1614_1012_output_v1.json';
 import PdfViewer from '../../components/PdfViewer';
+//import localJson from '../../utils/pta_final_6.json';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -63,18 +64,17 @@ const ReportPage = () => {
     try {
       const res = await generateTrfApi(projectID); // your API call
       if (res?.reports?.length > 0) {
-        const jsonData = res.reports[0].json; 
+        const jsonData = res.reports[0].json;
         setTrfJson(jsonData);
       }
     } catch (err) {
-      console.error("Error fetching TRF JSON:", err);
+      console.error('Error fetching TRF JSON:', err);
     }
   };
 
-
   useEffect(() => {
     setTrfJson(myData?.trfData?.data);
-    console.log('trfData', myData?.trfData?.data)
+    console.log('trfData', myData?.trfData?.data);
   }, [myData]);
 
   useEffect(() => {
@@ -150,7 +150,7 @@ const ReportPage = () => {
       await checkStatus();
 
       // FIRST CHECK — IF ALREADY COMPLETE → FETCH JSON
-      if (status === "Completed") {
+      if (status === 'Completed') {
         await fetchTrfJson();
         return;
       }
@@ -158,10 +158,10 @@ const ReportPage = () => {
       intervalId = setInterval(async () => {
         await checkStatus();
 
-        if (status === "Completed" || progress === 100) {
+        if (status === 'Completed' || progress === 100) {
           clearInterval(intervalId);
           intervalId = null;
-          await fetchTrfJson();   // << fetch JSON immediately
+          await fetchTrfJson(); // << fetch JSON immediately
           return;
         }
       }, 15000);
@@ -173,10 +173,6 @@ const ReportPage = () => {
       if (intervalId) clearInterval(intervalId);
     };
   }, [projectID, progress, status]);
-
-    
-
-
 
   // ---------------- BOOKMARK HANDLING ----------------
   const handleBookmarkFromChild = (data) => {
@@ -222,65 +218,64 @@ const ReportPage = () => {
   };
 
   // ---------------- LEFT PANEL ----------------
-  // progress < 100 || !trfJson ---  for to load the trf report from api 
+  // progress < 100 || !trfJson ---  for to load the trf report from api
   // ! true ---- for to load local json
   const renderLeftPanel = () => {
     if (progress < 100 || !trfJson) {
       return (
-   <Card className="progress-advanced-card left-card">
-    <Typography className="progress-advanced-title">
-      Processing TRF Report
-    </Typography>
+        <Card className="progress-advanced-card left-card">
+          <Typography className="progress-advanced-title">
+            Processing TRF Report
+          </Typography>
 
-    {/* STAGE STEPS */}
-    <Box className="steps-container">
-      {STAGES.map((stage, index) => {
-        const reached = progress >= stage.threshold;
-        return (
-          <Box key={index} className="step-item">
-            <Box className={`step-circle ${reached ? "active" : ""}`}>
-              {reached ? "✔" : index + 1}
-            </Box>
+          {/* STAGE STEPS */}
+          <Box className="steps-container">
+            {STAGES.map((stage, index) => {
+              const reached = progress >= stage.threshold;
+              return (
+                <Box key={index} className="step-item">
+                  <Box className={`step-circle ${reached ? 'active' : ''}`}>
+                    {reached ? '✔' : index + 1}
+                  </Box>
 
-            <Typography className="step-label">{stage.label}</Typography>
+                  <Typography className="step-label">{stage.label}</Typography>
 
-            {index !== STAGES.length - 1 && (
-              <Box className={`step-line ${reached ? "active" : ""}`} />
-            )}
+                  {index !== STAGES.length - 1 && (
+                    <Box className={`step-line ${reached ? 'active' : ''}`} />
+                  )}
+                </Box>
+              );
+            })}
           </Box>
-        );
-      })}
-    </Box>
 
-    {/* ANIMATED PROGRESS BAR */}
-    <Box className="animated-progress-wrapper">
-      <Box
-        className="animated-progress-fill"
-        style={{
-          width: `${progress}%`,
-          background: progress === 100
-            ? "linear-gradient(90deg, #4caf50, #81c784)"
-            : "linear-gradient(90deg, #2196f3, #64b5f6)"
-        }}
-      >
-        <Typography className="animated-progress-text">
-          {progress}%
-        </Typography>
-      </Box>
-    </Box>
+          {/* ANIMATED PROGRESS BAR */}
+          <Box className="animated-progress-wrapper">
+            <Box
+              className="animated-progress-fill"
+              style={{
+                width: `${progress}%`,
+                background:
+                  progress === 100
+                    ? 'linear-gradient(90deg, #4caf50, #81c784)'
+                    : 'linear-gradient(90deg, #2196f3, #64b5f6)',
+              }}
+            >
+              <Typography className="animated-progress-text">
+                {progress}%
+              </Typography>
+            </Box>
+          </Box>
 
-    <Typography className="progress-advanced-status">
-      {status}
-    </Typography>
+          <Typography className="progress-advanced-status">{status}</Typography>
 
-    <Button
-      disabled={refreshing}
-      className="refresh-advanced-btn"
-      onClick={checkStatus}
-    >
-      {refreshing ? "Refreshing..." : "Refresh Status"}
-    </Button>
-  </Card>
+          <Button
+            disabled={refreshing}
+            className="refresh-advanced-btn"
+            onClick={checkStatus}
+          >
+            {refreshing ? 'Refreshing...' : 'Refresh Status'}
+          </Button>
+        </Card>
       );
     }
     return (
@@ -345,8 +340,8 @@ const ReportPage = () => {
           {reportClick == 'trf' && (
             <DataTable1
               ref={dataTableRef}
-              jsonData={trfJson}           // api json load
-              // jsonData={localJson}     //localJson load
+              jsonData={trfJson} // api json load
+              //jsonData={localJson} //localJson load
               editMode={editMode}
               onBookmarkClick={handleBookmarkFromChild}
             />
@@ -361,23 +356,6 @@ const ReportPage = () => {
               projectId={localStorage.getItem('projectId')}
             />
           )}
-
-          {/* Render Pages 43 to 84 */}
-          {/* {Array.isArray(localJsonRemaining) &&
-            localJsonRemaining
-              .filter((p) => Number(p.page_no) >= 43)
-              .map((p, index) => (
-                <HtmlPageRenderer
-                  key={index}
-                  html={p.code_Data}
-                  pageNo={p.page_no}
-                />
-              ))} */}
-
-          {/* <RemainingPagesData
-            ref={dataTableRef}
-            jsonData={localJsonRemaining}
-          /> */}
         </CardContent>
       </Card>
     );
@@ -629,7 +607,10 @@ const ReportPage = () => {
                 <Box key={i} className="confidence-row">
                   <Box className="confidence-label">
                     <Box style={{ display: 'flex', gap: 5 }}>
-                      <span className={`dot ${row.color}`} />
+                      <span
+                        style={{ marginTop: '8%' }}
+                        className={`dot ${row.color}`}
+                      />
                       <Typography>{row.label}</Typography>
                     </Box>
                     <Typography fontWeight="bold">{row.count}</Typography>

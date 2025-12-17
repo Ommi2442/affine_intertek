@@ -4,6 +4,8 @@ import dashboardSaga from './features/dashboard/dashboardSaga';
 import projectSaga from './features/createProject/createProjectSaga';
 import generateTrfSaga from './features/generateTrf/generateTrfSaga';
 import finaliseReportSaga from './features/finaliseReport/finaliseReportSaga';
+import deleteProjectSaga from './features/deleteProject/deleteProjectSaga';
+import archieveProjectSaga from './features/archieveProject/archieveProjectSaga';
 
 export default function* rootSaga() {
   yield all([
@@ -12,5 +14,7 @@ export default function* rootSaga() {
     projectSaga(),
     generateTrfSaga(),
     finaliseReportSaga(),
+    deleteProjectSaga(),
+    archieveProjectSaga(),
   ]);
 }
