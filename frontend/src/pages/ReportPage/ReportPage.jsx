@@ -23,7 +23,7 @@ import { generateTrfApi } from '../../redux/api/generateTrfApi';
 //import NewJson from '../../utils/newJsonFrom42.json';
 //import HtmlPageRenderer from '../../components/HtmlPageRenderer';
 import localCdrJson from '../../utils/cdr_payload_3.json';
-import CdrReport from '../../components/CdrReport';
+import CdrReport from '../../components/CdrReport/CdrReport';
 import localJson from '../../utils/iec_61010_1614_1012_output_v1.json';
 import PdfViewer from '../../components/PdfViewer';
 //import localJson from '../../utils/pta_final_6.json';
@@ -495,7 +495,7 @@ const ReportPage = () => {
                     action: () => setEditMode(true),
                   },
                   {
-                    text: 'Finalise',
+                    text: 'Finalize',
                     icon: '/images/approve_icon.png',
                     bg: '#396872ff',
                     action: handleFinalise,
@@ -524,18 +524,18 @@ const ReportPage = () => {
                     onClick={btn.action}
                     style={{ background: btn.bg }}
                   >
+                    {/* STATUS DOT (only for Finalize) */}
+                    {btn.text === 'Finalize' && (
+                      <span
+                        className={`finalize-status-dot ${
+                          editMode && !isFinalise ? 'red' : 'green'
+                        }`}
+                      />
+                    )}
                     <img
                       src={btn.icon}
                       alt=""
-                      className={`icon-img ${
-                        btn.text === 'Finalise'
-                          ? isFinalise
-                            ? 'icon-green' // ✔ Finalise overrides everything
-                            : editMode
-                              ? 'icon-red' // ✔ editMode=true → RED
-                              : 'icon-green' // ✔ normal → GREEN
-                          : 'icon-white' // ✔ all others → WHITE
-                      }`}
+                      className={`icon-img icon-white`}
                     />
 
                     {btn.text}

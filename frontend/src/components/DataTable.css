@@ -113,6 +113,7 @@
   font-size: 13px;
   line-height: 1.4;
   box-sizing: border-box;
+  margin-right: 2%;
 }
 
 /* Textarea that needs space for hover actions */
@@ -199,4 +200,29 @@
   border: 1px solid rgba(0, 0, 0, 0.23);
   font-family: Roboto, Helvetica, Arial, sans-serif;
   font-size: 14px;
+}
+
+.confidence-dot {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-top: 8px;
+}
+
+/* Color variants */
+.confidence-dot.green {
+  background-color: #2e7d32; /* green */
+}
+
+.confidence-dot.orange {
+  background-color: #f57c00; /* orange */
+}
+
+.confidence-dot.red {
+  background-color: #d32f2f; /* red */
+}
+
+.confidence-dot.grey {
+  background-color: #858282; /* grey */
 }

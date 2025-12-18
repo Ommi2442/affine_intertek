@@ -534,3 +534,21 @@ table {
   font-weight: bold;
   text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.4);
 }
+
+.finalize-status-dot {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+/* colors */
+.finalize-status-dot.green {
+  background-color: #62e969; /* green */
+}
+
+.finalize-status-dot.red {
+  background-color: #c91c1c; /* red */
+}
