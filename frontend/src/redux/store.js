@@ -7,6 +7,7 @@ import generateTrfReducer from '../redux/features/generateTrf/generateTrfSlice';
 import finaliseReportReducer from '../redux/features/finaliseReport/finaliseReportSlice';
 import deleteProjectReducer from '../redux/features/deleteProject/deleteProjectSlice';
 import archieveProjectReducer from '../redux/features/archieveProject/archieveProjectSlice';
+import confidenceReducer from '../redux/features/confidence/confidenceSlice';
 import rootSaga from './rootSaga';
 
 const sagaMiddleware = createSagaMiddleware();
@@ -20,6 +21,7 @@ export const store = configureStore({
     finaliseReport: finaliseReportReducer,
     deleteProj: deleteProjectReducer,
     archieveProj: archieveProjectReducer,
+    confidence: confidenceReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware),

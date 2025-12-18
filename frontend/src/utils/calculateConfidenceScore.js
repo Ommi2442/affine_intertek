@@ -19,9 +19,15 @@ export const calculateConfidenceScore = (data) => {
   let high = 0;
   let medium = 0;
   let low = 0;
+  let userEditedCount = 0;
   let sumConfidence = 0;
 
   aiFields.forEach((field) => {
+    // 👇 user approved overrides AI confidence
+    if (field.is_user_approved === true) {
+      userEditedCount++;
+      return;
+    }
     const c = field.confidence;
     sumConfidence += c;
 
@@ -36,11 +42,6 @@ export const calculateConfidenceScore = (data) => {
 
   const overallLabel =
     avgConfidence < 50 ? 'Low' : avgConfidence < 75 ? 'Medium' : 'High';
-
-  // user edited count (independent of ai_fillable)
-  const userEditedCount = allItems.filter(
-    (item) => item.user_editable === true && item.value !== null
-  ).length;
 
   return {
     totalAiFields,

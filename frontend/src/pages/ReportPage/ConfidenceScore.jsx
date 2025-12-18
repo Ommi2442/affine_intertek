@@ -1,13 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import './ReportPage.css';
 import { Card, CardContent, Typography, Box, Divider } from '@mui/material';
 import { calculateConfidenceScore } from '../../utils/CalculateConfidenceScore';
+import { setConfidenceScore } from '../../redux/features/confidence/confidenceSlice';
 
 /* ------------------ COMPONENT ------------------ */
 const ConfidenceScore = ({ data }) => {
-  console.log('scorejs', data);
-  const summary = calculateConfidenceScore(data);
-  console.log('summary', summary);
+  const dispatch = useDispatch();
+
+  // ✅ READ FROM REDUX
+  const summary = useSelector((state) => state.confidence.summary);
+  //console.log('summm', summary);
+
+  useEffect(() => {
+    if (!data) return;
+
+    const result = calculateConfidenceScore(data);
+
+    if (result) {
+      dispatch(setConfidenceScore(result));
+    }
+  }, [data, dispatch]);
+
+  // const summary = React.useMemo(() => {
+  //   const result = calculateConfidenceScore(data);
+  //   if (result) {
+  //     dispatch(setConfidenceScore(result));
+  //   }
+  //   return result;
+  // }, [data, dispatch]);
 
   if (!summary || summary.totalAiFields === 0) {
     return (
@@ -24,6 +46,7 @@ const ConfidenceScore = ({ data }) => {
 
   const { totalAiFields, high, medium, low, avgConfidence, userEditedCount } =
     summary;
+  //console.log('userEditedCount', userEditedCount);
 
   return (
     <Card className="confidence-card">

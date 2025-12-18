@@ -31,12 +31,17 @@ import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 import './DataTable.css';
 import { idb_set, idb_get } from '../utils/idb';
 import CommentDialog from './CommentDialog';
+import { useSelector } from 'react-redux';
+import { renderConfidenceColor } from '../utils/renderConfidenceColor';
 
-const DataTable1 = forwardRef(
+const DataTable = forwardRef(
   ({ jsonData, onBookmarkClick, onApprove, editMode = false }, ref) => {
     const containerRef = useRef(null);
     const sentinelRef = useRef(null);
     const pageRefs = useRef({});
+
+    const confidenceScore = useSelector((state) => state.confidence);
+    //console.log('confidencescor', confidenceScore);
 
     const [tables, setTables] = useState([]);
     const [visiblePages, setVisiblePages] = useState(1);
@@ -47,6 +52,7 @@ const DataTable1 = forwardRef(
     const [isCommentOpen, setIsCommentOpen] = useState(false);
     const [currentCommentText, setCurrentCommentText] = useState('');
     const commentTargetRef = useRef({ t: null, i: null });
+    const [commentHistory, setCommentHistory] = useState([]);
 
     // Track whether this page load is a browser refresh
     const isRefreshRef = useRef(false);
@@ -257,25 +263,66 @@ const DataTable1 = forwardRef(
       commentTargetRef.current = { t, i };
       const item = tables?.[t]?.Items?.[i];
 
-      const existingComment = item?.user_comments?.[0]?.comment ?? '';
+      // ✅ get ALL existing comments
+      const history = Array.isArray(item?.user_comments)
+        ? item.user_comments
+        : [];
 
-      setCurrentCommentText(existingComment);
+      // ✅ pick latest comment (if exists)
+      const latestComment =
+        history.length > 0 ? history[history.length - 1].comment : '';
+
+      setCommentHistory(history); // show full history
+      setCurrentCommentText(latestComment); // empty input
       setIsCommentOpen(true);
+    };
+
+    const handleApprove = (tIdx, iIdx) => {
+      setTables((prev) => {
+        const next = prev.map((tbl) => ({ ...tbl, Items: [...tbl.Items] }));
+        const item = next[tIdx].Items[iIdx];
+
+        next[tIdx].Items[iIdx] = {
+          ...item,
+          is_user_approved: true, // on approval user edited increases
+        };
+
+        return next;
+      });
+    };
+
+    const getLoggedInUser = () => {
+      try {
+        const user = localStorage.getItem('name');
+        return user || 'Unknown User';
+      } catch {
+        return 'Unknown User';
+      }
     };
 
     const saveComment = () => {
       const { t, i } = commentTargetRef.current;
-      if (t == null || i == null) return;
+      if (t == null || i == null || !currentCommentText.trim()) return;
+
+      const loggedInUser = getLoggedInUser();
 
       setTables((prev) => {
         const next = prev.map((tbl) => ({ ...tbl, Items: [...tbl.Items] }));
         const item = next[t].Items[i];
 
+        const prevComments = Array.isArray(item.user_comments)
+          ? item.user_comments
+          : [];
+
         next[t].Items[i] = {
           ...item,
           user_comments: [
+            ...prevComments,
             {
-              comment: currentCommentText || null,
+              comment: currentCommentText.trim(),
+              Submited_at: new Date().toISOString(),
+              Submited_By: loggedInUser,
+              Deleted: null,
             },
           ],
         };
@@ -283,6 +330,7 @@ const DataTable1 = forwardRef(
         return next;
       });
 
+      setCurrentCommentText('');
       setIsCommentOpen(false);
     };
 
@@ -296,7 +344,7 @@ const DataTable1 = forwardRef(
 
       return (
         <div className="dt-hover-actions">
-          <IconButton size="small" onClick={() => onApprove?.(tIdx, iIdx)}>
+          <IconButton size="small" onClick={() => handleApprove?.(tIdx, iIdx)}>
             <CheckCircleIcon className="dt-icon-approve" />
           </IconButton>
 
@@ -461,16 +509,19 @@ const DataTable1 = forwardRef(
                               <Typography>{value}</Typography>
                             ) : (
                               // user_editable === true → show textarea but enable only when isEditable(col) === true
-                              <textarea
-                                className="dt-textarea dt-textarea-with-actions"
-                                value={value}
-                                rows={rows}
-                                disabled={!editable}
-                                onChange={(e) =>
-                                  editable &&
-                                  updateCell(tIdx, iIdx, e.target.value)
-                                }
-                              />
+                              <div style={{ display: 'flex' }}>
+                                <textarea
+                                  className="dt-textarea dt-textarea-with-actions"
+                                  value={value}
+                                  rows={rows}
+                                  disabled={!editable}
+                                  onChange={(e) =>
+                                    editable &&
+                                    updateCell(tIdx, iIdx, e.target.value)
+                                  }
+                                />
+                                {renderConfidenceColor(col.confidence)}
+                              </div>
                             )}
 
                             {renderHoverActions(
@@ -555,16 +606,19 @@ const DataTable1 = forwardRef(
                                 ) : col.user_editable !== true ? (
                                   <Typography>{value}</Typography>
                                 ) : (
-                                  <textarea
-                                    className="dt-textarea dt-textarea-with-actions"
-                                    value={value}
-                                    rows={rows}
-                                    disabled={!editable}
-                                    onChange={(e) =>
-                                      editable &&
-                                      updateCell(tIdx, iIdx, e.target.value)
-                                    }
-                                  />
+                                  <div style={{ display: 'flex' }}>
+                                    <textarea
+                                      className="dt-textarea dt-textarea-with-actions"
+                                      value={value}
+                                      rows={rows}
+                                      disabled={!editable}
+                                      onChange={(e) =>
+                                        editable &&
+                                        updateCell(tIdx, iIdx, e.target.value)
+                                      }
+                                    />
+                                    {renderConfidenceColor(col.confidence)}
+                                  </div>
                                 )}
 
                                 {renderHoverActions(
@@ -625,17 +679,6 @@ const DataTable1 = forwardRef(
       return (
         <TableContainer component={Paper} className="dt-table-container">
           <Table size="small" className="dt-table">
-            <TableHead>
-              <TableRow>
-                <TableCell className="dt-thead-cell dt-field-header">
-                  Field
-                </TableCell>
-                <TableCell className="dt-thead-cell dt-value-header">
-                  Value
-                </TableCell>
-              </TableRow>
-            </TableHead>
-
             <TableBody>
               {Object.entries(groupedNormal).map(
                 ([groupKey, rowsArr], idx1) => {
@@ -676,16 +719,19 @@ const DataTable1 = forwardRef(
                             {first.user_editable !== true ? (
                               <Typography>{value}</Typography>
                             ) : (
-                              <textarea
-                                className="dt-textarea dt-textarea-with-actions"
-                                value={value}
-                                rows={rows}
-                                disabled={!editable}
-                                onChange={(e) =>
-                                  editable &&
-                                  updateCell(tIdx, iIdx, e.target.value)
-                                }
-                              />
+                              <div style={{ display: 'flex' }}>
+                                <textarea
+                                  className="dt-textarea dt-textarea-with-actions"
+                                  value={value}
+                                  rows={rows}
+                                  disabled={!editable}
+                                  onChange={(e) =>
+                                    editable &&
+                                    updateCell(tIdx, iIdx, e.target.value)
+                                  }
+                                />
+                                {renderConfidenceColor(first.confidence)}
+                              </div>
                             )}
 
                             {renderHoverActions(
@@ -773,16 +819,24 @@ const DataTable1 = forwardRef(
                                 ) : r.user_editable !== true ? (
                                   <Typography>{value}</Typography>
                                 ) : (
-                                  <textarea
-                                    className="dt-textarea dt-textarea-with-actions"
-                                    value={value}
-                                    rows={rows}
-                                    disabled={!editable}
-                                    onChange={(e) =>
-                                      editable &&
-                                      updateCell(tIdx, iIdx, e.target.value)
-                                    }
-                                  />
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                    }}
+                                  >
+                                    <textarea
+                                      className="dt-textarea dt-textarea-with-actions"
+                                      value={value}
+                                      rows={rows}
+                                      disabled={!editable}
+                                      onChange={(e) =>
+                                        editable &&
+                                        updateCell(tIdx, iIdx, e.target.value)
+                                      }
+                                    />
+
+                                    {renderConfidenceColor(r.confidence)}
+                                  </div>
                                 )}
 
                                 {renderHoverActions(
@@ -935,9 +989,7 @@ const DataTable1 = forwardRef(
                 editable && updateCell(tIdx, iIdx, e.target.value)
               }
             />
-
             {renderHoverActions(tIdx, iIdx, item.user_editable === true)}
-
             {comment && (
               <Typography variant="caption" className="dt-comment-caption">
                 💬 {comment}
@@ -1015,11 +1067,7 @@ const DataTable1 = forwardRef(
     return (
       <>
         <div className="dt-container" ref={containerRef}>
-          <div className="dt-sticky-header">
-            <Typography variant="h6" className="dt-header-title">
-              Report
-            </Typography>
-          </div>
+          <div className="dt-sticky-header"></div>
 
           {visiblePageNos.map((pageNo) => {
             const pageItems = pageMap[pageNo] || [];
@@ -1037,7 +1085,21 @@ const DataTable1 = forwardRef(
                 key={pageNo}
                 ref={(el) => (pageRefs.current[pageNo] = el)}
               >
-                <Typography className="dt-page-title">Page {pageNo}</Typography>
+                {pageNo !== 1 && (
+                  <Typography
+                    sx={{
+                      fontSize: '14px',
+                      color: '#8a8a8a',
+                      marginBottom: '6px',
+                      textAlign: 'right',
+                      paddingBottom: '2%',
+                      paddingRight: '2%',
+                      fontWeight: 600,
+                    }}
+                  >
+                    Page {pageNo} of {pageNos[pageNos.length - 1]}
+                  </Typography>
+                )}
 
                 {/* Page 9 → 42 special IEC 61010-1 clause table */}
                 {pageNo >= 9 && pageNo <= 42 ? (
@@ -1078,7 +1140,7 @@ const DataTable1 = forwardRef(
         <CommentDialog
           open={isCommentOpen}
           onClose={() => setIsCommentOpen(false)}
-          comments={[]}
+          comments={commentHistory}
           currentComment={currentCommentText}
           setCurrentComment={setCurrentCommentText}
           onSubmit={saveComment}
@@ -1088,4 +1150,4 @@ const DataTable1 = forwardRef(
   }
 );
 
-export default DataTable1;
+export default DataTable;
