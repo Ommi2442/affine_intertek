@@ -341,8 +341,8 @@ const ReportPage = () => {
           {reportClick == 'trf' && (
             <DataTable
               ref={dataTableRef}
-              //jsonData={trfJson} // api json load
-              jsonData={localJson} //localJson load
+              jsonData={trfJson} // api json load
+              //jsonData={localJson} //localJson load
               editMode={editMode}
               onBookmarkClick={handleBookmarkFromChild}
             />
