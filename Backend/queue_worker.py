@@ -213,8 +213,9 @@ async def process_message(message) -> bool:
                 trf_step=f"Processed {processed}/{total}",
                 trf_completed=False
             )
-
+        
         result = run_trf_generation(
+            blob_urls,
             vs=vs,
             image_urls=image_urls,
             input_json_path=INPUT_JSON_PATH,

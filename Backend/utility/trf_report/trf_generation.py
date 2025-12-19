@@ -3,6 +3,8 @@ import json
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict, Any
+from urllib.parse import unquote
+import os
 
 # Config values (created earlier in config.py)
 # from config import *
@@ -505,8 +507,60 @@ def update_docx_tables_from_json_arial(docx_path, json_path, output_path):
 # -----------------------
 # Main runner
 # -----------------------
+def attach_blob_urls_to_text_support(data, blob_urls):
+    """
+    Adds 'url' to each text_support item by matching filename
+    WITHOUT considering file extension.
+    """
 
+    # Build base-name → url lookup
+    blob_map = {}
+    for url in blob_urls:
+        fname = unquote(url.split("/")[-1])
+        base = os.path.splitext(fname)[0]
+        blob_map.setdefault(base, url)   # keep first match
+
+    for table in data.get("Tables", []):
+        for item in table.get("Items", []):
+            for ts in item.get("text_support", []):
+                ts["url"] = None
+                fname = ts.get("filename")
+                if not fname:
+                    continue
+
+                base = os.path.splitext(fname)[0]
+                ts["url"] = blob_map.get(base)
+    
+    return data
+
+def attach_blob_urls_to_image_support(data, blob_urls):
+    """
+    Adds 'file_url' to each image_support item
+    by matching pdf_file name WITHOUT extension.
+    """
+
+    # Build base-name → url lookup
+    blob_map = {}
+    for url in blob_urls:
+        fname = unquote(url.split("/")[-1])
+        base = os.path.splitext(fname)[0]
+        blob_map.setdefault(base, url)
+
+    for table in data.get("Tables", []):
+        for item in table.get("Items", []):
+            for img in item.get("image_support", []):
+                img["file_url"] = None
+                pdf_file = img.get("pdf_file")
+                if not pdf_file:
+                    continue
+
+                base = os.path.splitext(pdf_file)[0]
+                img["file_url"] = blob_map.get(base)
+
+    return data
+ 
 def run_trf_generation(
+        blob_urls,
         vs,
         image_urls,
         input_json_path: str,
@@ -519,7 +573,7 @@ def run_trf_generation(
         max_workers: int = 10,
         use_llm_inGrey: bool = False,
         stats: bool = False,
-        progress_callback=None
+        progress_callback=None,
     ):
 
     with open(input_json_path, "r", encoding="utf-8") as f:
@@ -580,6 +634,10 @@ def run_trf_generation(
         pass
 
     update_verdict_dependencies(data)
+    data=attach_blob_urls_to_text_support(data, blob_urls)
+
+    data=attach_blob_urls_to_image_support(data, blob_urls)
+
 
     try:
         with open(output_json_path, "w", encoding="utf-8") as f:
