@@ -24,9 +24,9 @@ import { generateTrfApi } from '../../redux/api/generateTrfApi';
 //import HtmlPageRenderer from '../../components/HtmlPageRenderer';
 import localCdrJson from '../../utils/cdr_payload_3.json';
 import CdrReport from '../../components/CdrReport/CdrReport';
-import localJson from '../../utils/iec_61010_1614_1012_output_v1.json';
+//import localJson from '../../utils/iec_61010_1614_1012_output_v1.json';
 import PdfViewer from '../../components/PdfViewer';
-//import localJson from '../../utils/pta_final_6.json';
+import localJson from '../../utils/pta_final_6.json';
 import ConfidenceScore from './ConfidenceScore';
 
 const ReportPage = () => {
