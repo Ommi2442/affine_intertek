@@ -18,11 +18,13 @@ COSMOS_DB_URI="https://csdb-intertek-esus-dev.documents.azure.com:443/"
 COSMOS_DB_KEY="azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00MFDbK88ApotACDbODLFXA=="
 COSMOS_DB_DATABASE="intertek_poc_dev"
 COSMOS_PROJECT_TRF_CONTAINER="Project_TRF"
+COSMOS_PROJECT_CDR_CONTAINER="Project_CDR"
 
 # Cosmos DB
 cosmos_client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
 database  = cosmos_client.get_database_client(COSMOS_DB_DATABASE)
 trf_container = database.get_container_client(COSMOS_PROJECT_TRF_CONTAINER)
+cdr_container = database.get_container_client(COSMOS_PROJECT_CDR_CONTAINER)
 
 
 
@@ -36,7 +38,8 @@ def save_local_json_to_blob_and_cosmos(
     """
 
     path = Path(file_path)
-
+    print("\n\n\n file_path:", file_path)
+    import time; time.sleep(2)
     if not path.exists():
         raise FileNotFoundError(f"File not found: {file_path}")
 
@@ -78,6 +81,60 @@ def save_local_json_to_blob_and_cosmos(
 
     return cosmos_item
 
+
+
+def save_local_json_to_blob_and_cosmos_cdr(
+    file_path: str,
+    project_id: str
+) -> dict:
+    """
+    Reads a local JSON file, uploads it to Blob Storage,
+    and stores the blob URL in Cosmos DB
+    """
+
+    path = Path(file_path)
+    print("\n\n\n file_path:", file_path)
+    import time; time.sleep(2)
+    if not path.exists():
+        raise FileNotFoundError(f"File not found: {file_path}")
+
+    if path.suffix.lower() != ".json":
+        raise ValueError("Only .json files are allowed")
+
+    filename = path.name
+
+    # ---------- 1. Read local JSON ----------
+    with open(path, "r", encoding="utf-8") as f:
+        json_data = json.load(f)
+
+    # ---------- 2. Upload to Blob ----------
+    blob_path = f"Documents/{project_id}/Generated_CDR_Report/{filename}"
+    blob_client = blob_service.get_blob_client(
+        container=blob_container,
+        blob=blob_path
+    )
+
+    with open(path, "rb") as file_bytes:
+        blob_client.upload_blob(
+            file_bytes,
+            overwrite=True,
+            content_type="application/json"
+        )
+
+    blob_url = blob_client.url
+
+    # ---------- 3. Save metadata in Cosmos ----------
+    cosmos_item = {
+        "id": str(uuid.uuid4()),
+        "project_id": project_id,
+        "filename": filename,
+        "blob_url": blob_url,
+        "uploaded_on": datetime.utcnow().isoformat() + "Z"
+    }
+
+    cdr_container.create_item(cosmos_item)
+
+    return cosmos_item
 
 
 def fetch_json_from_blob(blob_url: str) -> dict:
