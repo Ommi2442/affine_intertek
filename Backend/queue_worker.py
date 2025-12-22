@@ -22,7 +22,7 @@ QUEUE_CONN_STR = "DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;A
 # BLOB_CONTAINER = os.getenv("AZURE_CONTAINER_NAME")
 BLOB_CONTAINER = "stintertekesusdev-blob"
 # QUEUE_NAME = os.getenv("AZURE_QUEUE_NAME")
-QUEUE_NAME = "stintertekesusdev-queue"
+QUEUE_NAME = "stintertekesus-dev-queue"
 
 COSMOS_DB_URI="https://csdb-intertek-esus-dev.documents.azure.com:443/"
 COSMOS_DB_KEY="azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00MFDbK88ApotACDbODLFXA=="
@@ -78,7 +78,7 @@ app = FastAPI(title="Queue Worker Service")
 def update_project_progress(
     project_doc: dict,
     trf_stage: str,
-    trf_percentage: int = 0,
+    trf_percentage: int = 10,
     trf_step: str | None = None,
     error: str | None = None,
     last_updated: datetime | None = None,
@@ -94,32 +94,32 @@ def update_project_progress(
     }
 
     projects_container.upsert_item(project_doc)
-    print(f"✅ Progress updated → {trf_percentage}% | {trf_stage}")
+    print(f" Progress updated → {trf_percentage}% | {trf_stage}")
 
 
 # ==========================================================
 # PROCESS QUEUE MESSAGE (SAFE + IDEMPOTENT)
 # ==========================================================
 async def process_message(message) -> bool:
-    print("\n🚀 Queue message received")
+    print("\n Queue message received")
 
     try:
         if not message.content:
-            print("❌ Empty queue message")
+            print(" Empty queue message")
             return True
 
         event = json.loads(message.content)
         if not isinstance(event, dict):
-            print("❌ Queue message is not a JSON object")
+            print(" Queue message is not a JSON object")
             return True
 
     except Exception as e:
-        print(f"❌ Invalid queue message format: {e}")
+        print(f" Invalid queue message format: {e}")
         return True
 
     project_id = event.get("projectId")
     if not project_id:
-        print("❌ Missing projectId in queue message")
+        print(" Missing projectId in queue message")
         return True
 
     print(f"📦 Processing project: {project_id}")
@@ -133,7 +133,7 @@ async def process_message(message) -> bool:
     )
 
     if not docs:
-        print(f"❌ Project not found: {project_id}")
+        print(f" Project not found: {project_id}")
         return True
 
     project_doc = docs[0]
@@ -145,13 +145,13 @@ async def process_message(message) -> bool:
         if isinstance(doc, dict) and "url" in doc:
             blob_urls.append(doc["url"])
         else:
-            print(f"⚠️ Skipping invalid Source_Doc entry: {doc}")
+            print(f" Skipping invalid Source_Doc entry: {doc}")
 
     if not blob_urls:
-        print(f"⚠️ No valid source documents for project {project_id}")
+        print(f" No valid source documents for project {project_id}")
         return True
 
-    print(f"📄 Files to embed: {len(blob_urls)}")
+    print(f" Files to embed: {len(blob_urls)}")
 
     try:
         # Start at 0%
@@ -165,7 +165,7 @@ async def process_message(message) -> bool:
 
         ingest_files_from_blob_urls_create_embeddings(blob_urls, project_id)
 
-        print(f"🎉 Embeddings completed for project {project_id}")
+        print(f" Embeddings completed for project {project_id}")
 
         # Embedding Complete → 20%
         update_project_progress(
@@ -180,7 +180,7 @@ async def process_message(message) -> bool:
             image_urls = json.load(f)
         print(f"✔ Loaded {len(image_urls)} image URLs from ingestion.")
 
-        print("🔧 Initializing Cosmos + Vectorstore...")
+        print(" Initializing Cosmos + Vectorstore...")
 
         trf_cosmos_client = CosmosClient(
             RAG_COSMOS_URL,
@@ -213,8 +213,9 @@ async def process_message(message) -> bool:
                 trf_step=f"Processed {processed}/{total}",
                 trf_completed=False
             )
-
+        
         result = run_trf_generation(
+            blob_urls,
             vs=vs,
             image_urls=image_urls,
             input_json_path=INPUT_JSON_PATH,
@@ -230,7 +231,7 @@ async def process_message(message) -> bool:
             progress_callback=trf_progress_callback
         )
 
-        print(f"🎉 TRF generation completed for project {project_id}")
+        print(f" TRF generation completed for project {project_id}")
 
         # 95% before saving
         update_project_progress(
@@ -255,11 +256,11 @@ async def process_message(message) -> bool:
             trf_completed=True
         )
 
-        print(f"🎉 Saving TRF Report to the Blob")
+        print(f" Saving TRF Report to the Blob")
         return True
 
     except Exception as e:
-        print(f"❌ Worker failed for project {project_id}: {e}")
+        print(f" Worker failed for project {project_id}: {e}")
 
         update_project_progress(
             project_doc,
@@ -276,23 +277,25 @@ async def process_message(message) -> bool:
 
 
 # ==========================================================
-# QUEUE LISTENER (CORRECT DELETE LOGIC)
+# QUEUE LISTENER (15-SECOND POLLING, SAFE & STABLE)
 # ==========================================================
 async def queue_listener():
-    print("\n📡 Worker started — actively listening to Azure Queue...\n")
+    print("\n Worker started — polling Azure Queue every 15 seconds...\n")
+
+    POLL_INTERVAL_SEC = 15
 
     while True:
         try:
-            # Pull exactly 1 message for strict sequential processing
             messages = queue_client.receive_messages(
                 messages_per_page=1,
-                visibility_timeout=300,  # keep long since TRF pipeline is heavy
+                visibility_timeout=600,  # must be > max TRF processing time
             )
 
             message_found = False
 
             for message in messages:
                 message_found = True
+                print(f" Queue message fetched: {message.id}")
 
                 try:
                     ok = await process_message(message)
@@ -302,25 +305,22 @@ async def queue_listener():
                             message.id,
                             message.pop_receipt
                         )
-                        print(f"✅ Queue message deleted: {message.id}")
+                        print(f" Queue message deleted: {message.id}")
 
                 except Exception as e:
-                    print(f"❌ Error during message handling: {e}")
+                    print(f" Error while processing message {message.id}: {e}")
 
-            # -----------------------------------------------------
-            # ACTIVE LISTENING LOGIC
-            # -----------------------------------------------------
             if not message_found:
-                # No message → short backoff sleep to avoid CPU burn
-                await asyncio.sleep(1)
-            else:
-                # Messages present → check again immediately
-                await asyncio.sleep(0.1)
+                print(" No queue messages found")
+
+            # ✅ ALWAYS wait 15 seconds before next poll
+            await asyncio.sleep(POLL_INTERVAL_SEC)
 
         except Exception as e:
-            print(f"❌ Queue listener failure: {e}")
-            # Do not kill worker; recover after short backoff
-            await asyncio.sleep(2)
+            print(f" Queue listener failure: {e}")
+            # short recovery backoff
+            await asyncio.sleep(5)
+
 
 
 

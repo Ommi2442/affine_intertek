@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Body, Form
+from azure.storage.blob import ContainerClient
 from typing import List
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
 from projects.models import Project
@@ -29,7 +30,7 @@ client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
 database = client.get_database_client(COSMOS_DB_DATABASE)
 trf_container = database.get_container_client(COSMOS_DB_project_TRF_Container)
 # QUEUE_NAME = os.getenv("AZURE_QUEUE_NAME")
-QUEUE_NAME = "stintertekesusdev-queue"
+QUEUE_NAME = "stintertekesus-dev-queue"
 
 CONTAINER_NAME = "stintertekesusdev-blob"
 BLOB_PREFIX = "Documents"   # top-level folder in blob
@@ -57,12 +58,13 @@ async def create_project(payload: ProjectCreate):
             Project_Id=payload.Project_Id,
             Product=payload.Product,
             Client_Name=payload.Client_Name,
+            Proj_Archived=False,
             Proj_Created_By=payload.Proj_Created_By,
             Proj_Created_On=str(datetime.utcnow()),
+            
         )
 
         COSMOS_DB_project_Container.create_item(new_project.dict())
-
         
         def create_folder(folder_path: str):
             if not folder_path.endswith("/"):
@@ -72,7 +74,6 @@ async def create_project(payload: ProjectCreate):
             return folder_path
 
         base_path = f"Documents/{new_project.Project_Id}"
-
         folders_to_create = [f"{base_path}/source_documents",f"{base_path}/TRF Templates",f"{base_path}/CDR Templates",f"{base_path}/Letters Templates",f"{base_path}/Standard Document",f"{base_path}/Generated_trf_Report",f"{base_path}/Generated_cdr_Report"]
         created_folders = [create_folder(folder) for folder in folders_to_create]
         return {
@@ -100,14 +101,11 @@ async def get_project(project_id: str):
                 enable_cross_partition_query=True
             )
         )
-
         if not items:
             raise HTTPException(status_code=404, detail="Project not found")
         return {"status": "success", "data": items[0]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
 
 @router.post("/all")
 async def get_all_projects(payload: ProjectFilter):
@@ -133,9 +131,11 @@ async def get_all_projects(payload: ProjectFilter):
                     c.Product,
                     c.Proj_Created_On,
                     c.Proj_Created_By,
+                    c.Proj_Archived,
                     c.Project_Progress
                 FROM c
                 WHERE c.Proj_Created_By = "{user_email}"
+                  AND c.Proj_Archived = false
             """
         else:
             query = """
@@ -146,10 +146,11 @@ async def get_all_projects(payload: ProjectFilter):
                     c.Product,
                     c.Proj_Created_On,
                     c.Proj_Created_By,
+                    c.Proj_Archived,
                     c.Project_Progress
                 FROM c
+                WHERE c.Proj_Archived = false
             """
-
         # ---------------------------------------
         # EXECUTE QUERY
         # ---------------------------------------
@@ -161,12 +162,11 @@ async def get_all_projects(payload: ProjectFilter):
         )
 
         # ---------------------------------------
-        # FORMAT RESPONSE: MERGE PROJECT + PROGRESS
+        # FORMAT RESPONSE
         # ---------------------------------------
         projects = []
-
         for p in items:
-            progress = p.get("Project_Progress", {}) or {}
+            progress = p.get("Project_Progress") or {}
 
             projects.append({
                 "Project_Id": p.get("Project_Id"),
@@ -175,28 +175,19 @@ async def get_all_projects(payload: ProjectFilter):
                 "Product": p.get("Product"),
                 "Proj_Created_On": p.get("Proj_Created_On"),
                 "Proj_Created_By": p.get("Proj_Created_By"),
-
-                # -----------------------------------
-                # TRF PROGRESS
-                # -----------------------------------
+                "Proj_Archived": p.get("Proj_Archived"),
                 "trf_percentage": progress.get("trf_percentage", 10),
                 "trf_step": progress.get("trf_step"),
                 "trf_last_updated": progress.get("trf_last_updated"),
                 "trf_error": progress.get("trf_error"),
                 "trf_completed": progress.get("trf_completed", "No"),
 
-                # -----------------------------------
-                # CDR PROGRESS
-                # -----------------------------------
                 "cdr_percentage": progress.get("cdr_percentage", 10),
                 "cdr_step": progress.get("cdr_step"),
                 "cdr_last_updated": progress.get("cdr_last_updated"),
                 "cdr_error": progress.get("cdr_error"),
                 "cdr_completed": progress.get("cdr_completed", "No"),
 
-                # -----------------------------------
-                # LETTER PROGRESS
-                # -----------------------------------
                 "letter_percentage": progress.get("letter_percentage", 10),
                 "letter_step": progress.get("letter_step"),
                 "letter_last_updated": progress.get("letter_last_updated"),
@@ -204,16 +195,12 @@ async def get_all_projects(payload: ProjectFilter):
                 "letter_completed": progress.get("letter_completed", "No")
             })
 
-        # ---------------------------------------
-        # RETURN RESPONSE
-        # ---------------------------------------
         return {
             "status": "success",
             "count": len(projects),
             "user_role": user_role,
             "data": projects
         }
-
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -225,31 +212,107 @@ async def update_project(project_id: str, update_data: dict):
         props = COSMOS_DB_project_Container.read()
         pk_path = props["partitionKey"]["paths"][0]
         pk_name = pk_path.lstrip("/")
-        
+
         query = "SELECT * FROM c WHERE c.Project_Id = @pid"
         params = [{"name": "@pid", "value": project_id}]
-        items = list(COSMOS_DB_project_Container.query_items(
-            query=query,
-            parameters=params,
-            enable_cross_partition_query=True
-        ))
+
+        items = list(
+            COSMOS_DB_project_Container.query_items(
+                query=query,
+                parameters=params,
+                enable_cross_partition_query=True
+            )
+        )
 
         if not items:
             raise HTTPException(status_code=404, detail="Project not found")
+
         item = items[0]
-        
+
+        # protect system fields
+        protected_fields = {"id", pk_name}
         for key, value in update_data.items():
-            item[key] = value
+            if key not in protected_fields:
+                item[key] = value
+
         updated_item = COSMOS_DB_project_Container.replace_item(
-            item["id"], item, item["id"])
+            item["id"],
+            item,
+            item[pk_name]
+        )
+
         return {
             "status": "success",
             "message": "Project updated successfully",
             "data": updated_item
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/{project_id}")
+async def update_project(project_id: str, update_data: dict):
+    try:
+        # Fetch container properties
+        props = COSMOS_DB_project_Container.read()
+        pk_path = props["partitionKey"]["paths"][0]
+        pk_name = pk_path.lstrip("/")
+
+        # Query project
+        query = "SELECT * FROM c WHERE c.Project_Id = @pid"
+        params = [{"name": "@pid", "value": project_id}]
+
+        items = list(
+            COSMOS_DB_project_Container.query_items(
+                query=query,
+                parameters=params,
+                enable_cross_partition_query=True
+            )
+        )
+
+        if not items:
+            raise HTTPException(status_code=404, detail="Project not found")
+
+        item = items[0]
+
+        # Prevent updating protected fields
+        protected_fields = {"id", pk_name}
+        for key, value in update_data.items():
+            if key not in protected_fields:
+                item[key] = value
+
+        # Replace item with correct partition key
+        updated_item = COSMOS_DB_project_Container.replace_item(
+            item=item["id"],
+            body=item,
+            partition_key=item[pk_name]
+        )
+
+        return {
+            "status": "success",
+            "message": "Project updated successfully",
+            "data": updated_item
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
+
+
+
+def delete_folder(folder_path: str):
+    if not folder_path.endswith("/"):
+        folder_path += "/"
+    blobs = container_client.list_blobs(name_starts_with=folder_path)
+    deleted = False
+    for blob in blobs:
+        container_client.delete_blob(blob.name)
+        deleted = True
+    return deleted
 
 
 @router.delete("/{project_id}")
@@ -257,23 +320,32 @@ async def delete_project(project_id: str):
     try:
         props = COSMOS_DB_project_Container.read()
         pk_path = props["partitionKey"]["paths"][0]
-        pk_name = pk_path.lstrip("/")             
-        print("Partition key-name ->", pk_name)
+        pk_name = pk_path.lstrip("/")
+
         query = "SELECT * FROM c WHERE c.Project_Id = @pid"
         params = [{"name": "@pid", "value": project_id}]
+
         items = list(COSMOS_DB_project_Container.query_items(
             query=query,
             parameters=params,
-            enable_cross_partition_query=True
-        ))
+            enable_cross_partition_query=True ))
+
         if not items:
             raise HTTPException(status_code=404, detail="Project not found")
+
         item = items[0]
         COSMOS_DB_project_Container.delete_item(
             item=item["id"],
-            partition_key=item[pk_name]
-        )
-        return {"status": "success", "message": "Project deleted successfully"}
+            partition_key=item[pk_name])
+
+        base_path = f"Documents/{project_id}"
+        delete_folder(base_path)
+
+        return {
+            "status": "success",
+            "message": "Project and related documents deleted successfully"
+        }
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -553,7 +625,7 @@ def get_project_report_status(id: str):
     if not progress:
         return {
             "trf_status": "Pending",
-            "trf_percentage": 33,
+            "trf_percentage": 10,
             "trf_completed": 'No'
         }
 

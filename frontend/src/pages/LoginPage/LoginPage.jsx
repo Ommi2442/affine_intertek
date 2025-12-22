@@ -8,30 +8,56 @@ import {
   Button,
 } from '@mui/material';
 
-import { useMsal, useIsAuthenticated } from '@azure/msal-react';
-
-import {
-  InteractionStatus,
-  InteractionRequiredAuthError,
-} from '@azure/msal-browser';
-
+import { useMsal } from '@azure/msal-react';
+import { InteractionStatus } from '@azure/msal-browser';
 import { useNavigate } from 'react-router-dom';
 import { ssouserdataApi } from '../../redux/api/loginApi';
 
+const LOGIN_CLICKED_KEY = 'LOGIN_CLICKED';
+
 export default function LoginPage() {
   const { instance, inProgress } = useMsal();
-  const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
 
-  // ------------------------------------------------------
-  //  SAFE POST-REDIRECT PROCESSING
-  // ------------------------------------------------------
+  /* ------------------------------------------------------
+     HANDLE REDIRECT (ONLY AFTER LOGIN BUTTON CLICK)
+  ------------------------------------------------------ */
   useEffect(() => {
-    if (inProgress === InteractionStatus.None && isAuthenticated) {
-      handleSSOAfterRedirect();
-    }
-  }, [inProgress, isAuthenticated]);
+    if (inProgress !== InteractionStatus.None) return;
 
+    const loginClicked = sessionStorage.getItem(LOGIN_CLICKED_KEY);
+    if (!loginClicked) return;
+
+    const accounts = instance.getAllAccounts();
+    if (!accounts.length) return;
+
+    handleSSOAfterRedirect();
+    sessionStorage.removeItem(LOGIN_CLICKED_KEY);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inProgress]);
+
+  /* ------------------------------------------------------
+     LOGOUT ONLY ON REAL TAB CLOSE (NOT REDIRECT)
+  ------------------------------------------------------ */
+  useEffect(() => {
+    const handlePageHide = (event) => {
+      // If redirecting to Microsoft, DO NOT logout
+      if (sessionStorage.getItem(LOGIN_CLICKED_KEY)) return;
+
+      sessionStorage.clear();
+      localStorage.clear();
+      instance.setActiveAccount(null);
+    };
+
+    window.addEventListener('pagehide', handlePageHide);
+    return () => {
+      window.removeEventListener('pagehide', handlePageHide);
+    };
+  }, [instance]);
+
+  /* ------------------------------------------------------
+     POST-REDIRECT PROCESSING
+  ------------------------------------------------------ */
   const handleSSOAfterRedirect = async () => {
     try {
       const accounts = instance.getAllAccounts();
@@ -45,83 +71,42 @@ export default function LoginPage() {
         account: userAccount,
       });
 
-      //  Store values (kept as you requested)
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('email', userAccount.username);
       localStorage.setItem('name', userAccount.name);
       localStorage.setItem('logintype', 'sso');
 
-      const userInfo = {
+      const backendResponse = await ssouserdataApi({
         name: userAccount.name,
         email: userAccount.username,
         accessToken: response.accessToken,
         expirationTime: response.expiresOn,
         lastLoggedIn: new Date().toISOString(),
-      };
-
-      const backendResponse = await ssouserdataApi(userInfo);
+      });
 
       if (backendResponse?.data?.status === 'success') {
         localStorage.setItem('role', backendResponse.data.role);
-        navigate('/dashboard');
+        navigate('/dashboard', { replace: true });
       }
     } catch (error) {
       console.error('Post-redirect SSO processing failed:', error);
-
-      //  REQUIRED fallback
-      if (error instanceof InteractionRequiredAuthError) {
-        instance.loginRedirect({ scopes: ['User.Read'] });
-      }
     }
   };
 
-  // ------------------------------------------------------
-  //  LOGIN BUTTON HANDLER
-  // ------------------------------------------------------
-  // const submitHandler = () => {
-  //   const accounts = instance.getAllAccounts();
+  /* ------------------------------------------------------
+     LOGIN BUTTON — ALWAYS EMAIL + PASSWORD
+  ------------------------------------------------------ */
+  const submitHandler = () => {
+    sessionStorage.clear();
+    localStorage.clear();
+    instance.setActiveAccount(null);
 
-  //   if (accounts.length > 0) {
-  //     instance.setActiveAccount(accounts[0]);
-  //     navigate("/dashboard");
-  //     return;
-  //   }
+    sessionStorage.setItem(LOGIN_CLICKED_KEY, 'true');
 
-  //   instance.loginRedirect({
-  //     scopes: ["User.Read"],
-  //   });
-  // };
-
-  const submitHandler = async () => {
-    const accounts = instance.getAllAccounts();
-
-    if (accounts.length > 0) {
-      const account = accounts[0];
-      instance.setActiveAccount(account);
-
-      try {
-        const response = await instance.acquireTokenSilent({
-          scopes: ['User.Read'],
-          account,
-        });
-
-        // Store values (same as post-redirect flow)
-        localStorage.setItem('accessToken', response.accessToken);
-        localStorage.setItem('email', account.username);
-        localStorage.setItem('name', account.name);
-        localStorage.setItem('logintype', 'sso');
-
-        navigate('/dashboard');
-        return;
-      } catch (error) {
-        if (error instanceof InteractionRequiredAuthError) {
-          return instance.loginRedirect({ scopes: ['User.Read'] });
-        }
-        console.error('Silent login failed:', error);
-      }
-    }
-
-    instance.loginRedirect({ scopes: ['User.Read'] });
+    instance.loginRedirect({
+      scopes: ['User.Read'],
+      prompt: 'login', // ALWAYS ask email + password
+    });
   };
 
   return (

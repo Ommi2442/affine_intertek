@@ -56,6 +56,7 @@ class Project(BaseModel):
     Product: str
     Source_Doc: List[str] = Field(default_factory=list)
     Project_Progress: Optional[ProjectProgress] = None
+    Proj_Archived: bool = False
     Proj_Created_On: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
     Proj_Created_By: Optional[str] = "system"
     Proj_Deleted_On: Optional[str] = None

@@ -9,23 +9,28 @@ import {
   Button,
   Divider,
   TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import './ReportPage.css';
 import { useDispatch, useSelector } from 'react-redux';
-import DataTable1 from '../../components/DataTable1';
+import DataTable from '../../components/DataTable';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
 
 import { generateTrfApi } from '../../redux/api/generateTrfApi';
-// import localJson from '../../utils/pta_final_5_UI_upd.json';
-//import localJsonRemaining from '../../utils/43_84_page_trf.json';
-//import RemainingPagesData from '../../components/RemainingPagesData';
-//import NewJson from '../../utils/newJsonFrom42.json';
-//import HtmlPageRenderer from '../../components/HtmlPageRenderer';
-import localCdrJson from '../../utils/cdr_payload_2.json';
-import CdrReport from '../../components/CdrReport';
-import localJson from '../../utils/iec_61010_1614_1012_output_v1.json';
+import localCdrJson from '../../utils/cdr_payload_3.json';
+import CdrReport from '../../components/CdrReport/CdrReport';
+//import localJson from '../../utils/pta_final_6.json';
 import PdfViewer from '../../components/PdfViewer';
+import localJson from '../../utils/iec_output_1.json';
+import ConfidenceScore from './ConfidenceScore';
+import { truncateWords } from '../../Helpers/truncateWords';
+import { normalizeNewLines } from '../../Helpers/normalizeNewLines';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -50,10 +55,18 @@ const ReportPage = () => {
   const [isFinalise, setIsFinalise] = useState(false);
   const [reportClick, setReportClick] = useState('trf');
 
+  const [activePdfUrl, setActivePdfUrl] = useState(null);
+
+  const [activeDocUrl, setActiveDocUrl] = useState(null);
+  const [viewerType, setViewerType] = useState(null); // 'pdf' | 'docx'
+
+  const [openCitationDialog, setOpenCitationDialog] = React.useState(false);
+  const [selectedCitation, setSelectedCitation] = React.useState(null);
+
   const myData = useSelector((state) => state?.trf);
 
   const STAGES = [
-    { label: 'Indexing', threshold: 33 },
+    { label: 'Indexing', threshold: 10 },
     { label: 'Generating TRF', threshold: 75 },
     { label: 'TRF Generated', threshold: 100 },
   ];
@@ -63,18 +76,17 @@ const ReportPage = () => {
     try {
       const res = await generateTrfApi(projectID); // your API call
       if (res?.reports?.length > 0) {
-        const jsonData = res.reports[0].json; 
+        const jsonData = res.reports[0].json;
         setTrfJson(jsonData);
       }
     } catch (err) {
-      console.error("Error fetching TRF JSON:", err);
+      console.error('Error fetching TRF JSON:', err);
     }
   };
 
-
   useEffect(() => {
     setTrfJson(myData?.trfData?.data);
-    console.log('trfData', myData?.trfData?.data)
+    console.log('trfData', myData?.trfData?.data);
   }, [myData]);
 
   useEffect(() => {
@@ -150,7 +162,7 @@ const ReportPage = () => {
       await checkStatus();
 
       // FIRST CHECK — IF ALREADY COMPLETE → FETCH JSON
-      if (status === "Completed") {
+      if (status === 'Completed') {
         await fetchTrfJson();
         return;
       }
@@ -158,10 +170,10 @@ const ReportPage = () => {
       intervalId = setInterval(async () => {
         await checkStatus();
 
-        if (status === "Completed" || progress === 100) {
+        if (status === 'Completed' || progress === 100) {
           clearInterval(intervalId);
           intervalId = null;
-          await fetchTrfJson();   // << fetch JSON immediately
+          await fetchTrfJson(); // << fetch JSON immediately
           return;
         }
       }, 15000);
@@ -173,10 +185,6 @@ const ReportPage = () => {
       if (intervalId) clearInterval(intervalId);
     };
   }, [projectID, progress, status]);
-
-    
-
-
 
   // ---------------- BOOKMARK HANDLING ----------------
   const handleBookmarkFromChild = (data) => {
@@ -195,23 +203,32 @@ const ReportPage = () => {
   };
 
   // ---------------- CITATION → PDF MODAL ----------------
-  const handleCitationLinkClick = (filename, page, text) => {
-    setPdfViewerOpen(true);
+  const handleCitationLinkClick = (fileUrl, page, text) => {
+    const lowerUrl = fileUrl?.toLowerCase();
 
-    const url = '/' + filename;
+    // ---------- PDF ----------
+    if (lowerUrl.endsWith('.pdf')) {
+      setViewerType('pdf');
+      setActivePdfUrl(fileUrl);
+      setPdfViewerOpen(true);
 
-    // Wait for modal to render
-    setTimeout(() => {
-      if (!pdfViewerRef.current) return;
-
-      pdfViewerRef.current.loadPdf(url);
-
-      // Allow PDF pages + textLayer to render
       setTimeout(() => {
         if (!pdfViewerRef.current) return;
         pdfViewerRef.current.goToCitation(page, text);
       }, 1200);
-    }, 200);
+
+      return;
+    }
+
+    // ---------- DOCX ----------
+    if (lowerUrl.endsWith('.docx') || lowerUrl.endsWith('.doc')) {
+      setViewerType('docx');
+      setActiveDocUrl(fileUrl);
+      setPdfViewerOpen(true);
+      return;
+    }
+
+    alert('Preview not supported for this file type.');
   };
 
   const handleFinalise = () => {
@@ -222,65 +239,64 @@ const ReportPage = () => {
   };
 
   // ---------------- LEFT PANEL ----------------
-  // progress < 100 || !trfJson ---  for to load the trf report from api 
+  // progress < 100 || !trfJson ---  for to load the trf report from api
   // ! true ---- for to load local json
   const renderLeftPanel = () => {
     if (progress < 100 || !trfJson) {
       return (
-   <Card className="progress-advanced-card left-card">
-    <Typography className="progress-advanced-title">
-      Processing TRF Report
-    </Typography>
+        <Card className="progress-advanced-card left-card">
+          <Typography className="progress-advanced-title">
+            Processing TRF Report
+          </Typography>
 
-    {/* STAGE STEPS */}
-    <Box className="steps-container">
-      {STAGES.map((stage, index) => {
-        const reached = progress >= stage.threshold;
-        return (
-          <Box key={index} className="step-item">
-            <Box className={`step-circle ${reached ? "active" : ""}`}>
-              {reached ? "✔" : index + 1}
-            </Box>
+          {/* STAGE STEPS */}
+          <Box className="steps-container">
+            {STAGES.map((stage, index) => {
+              const reached = progress >= stage.threshold;
+              return (
+                <Box key={index} className="step-item">
+                  <Box className={`step-circle ${reached ? 'active' : ''}`}>
+                    {reached ? '✔' : index + 1}
+                  </Box>
 
-            <Typography className="step-label">{stage.label}</Typography>
+                  <Typography className="step-label">{stage.label}</Typography>
 
-            {index !== STAGES.length - 1 && (
-              <Box className={`step-line ${reached ? "active" : ""}`} />
-            )}
+                  {index !== STAGES.length - 1 && (
+                    <Box className={`step-line ${reached ? 'active' : ''}`} />
+                  )}
+                </Box>
+              );
+            })}
           </Box>
-        );
-      })}
-    </Box>
 
-    {/* ANIMATED PROGRESS BAR */}
-    <Box className="animated-progress-wrapper">
-      <Box
-        className="animated-progress-fill"
-        style={{
-          width: `${progress}%`,
-          background: progress === 100
-            ? "linear-gradient(90deg, #4caf50, #81c784)"
-            : "linear-gradient(90deg, #2196f3, #64b5f6)"
-        }}
-      >
-        <Typography className="animated-progress-text">
-          {progress}%
-        </Typography>
-      </Box>
-    </Box>
+          {/* ANIMATED PROGRESS BAR */}
+          <Box className="animated-progress-wrapper">
+            <Box
+              className="animated-progress-fill"
+              style={{
+                width: `${progress}%`,
+                background:
+                  progress === 100
+                    ? 'linear-gradient(90deg, #4caf50, #81c784)'
+                    : 'linear-gradient(90deg, #2196f3, #64b5f6)',
+              }}
+            >
+              <Typography className="animated-progress-text">
+                {progress}%
+              </Typography>
+            </Box>
+          </Box>
 
-    <Typography className="progress-advanced-status">
-      {status}
-    </Typography>
+          <Typography className="progress-advanced-status">{status}</Typography>
 
-    <Button
-      disabled={refreshing}
-      className="refresh-advanced-btn"
-      onClick={checkStatus}
-    >
-      {refreshing ? "Refreshing..." : "Refresh Status"}
-    </Button>
-  </Card>
+          <Button
+            disabled={refreshing}
+            className="refresh-advanced-btn"
+            onClick={checkStatus}
+          >
+            {refreshing ? 'Refreshing...' : 'Refresh Status'}
+          </Button>
+        </Card>
       );
     }
     return (
@@ -318,9 +334,9 @@ const ReportPage = () => {
 
           {reportClick == 'trf' && (
             <Box className="report-title-container">
-              <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+              {/* <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
                 TEST REPORT
-              </Typography>
+              </Typography> */}
               <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
                 IEC 61010-1
               </Typography>
@@ -343,10 +359,10 @@ const ReportPage = () => {
           )}
 
           {reportClick == 'trf' && (
-            <DataTable1
+            <DataTable
               ref={dataTableRef}
-              jsonData={trfJson}           // api json load
-              // jsonData={localJson}     //localJson load
+              jsonData={trfJson} // api json load
+              //jsonData={localJson} //localJson load
               editMode={editMode}
               onBookmarkClick={handleBookmarkFromChild}
             />
@@ -361,23 +377,6 @@ const ReportPage = () => {
               projectId={localStorage.getItem('projectId')}
             />
           )}
-
-          {/* Render Pages 43 to 84 */}
-          {/* {Array.isArray(localJsonRemaining) &&
-            localJsonRemaining
-              .filter((p) => Number(p.page_no) >= 43)
-              .map((p, index) => (
-                <HtmlPageRenderer
-                  key={index}
-                  html={p.code_Data}
-                  pageNo={p.page_no}
-                />
-              ))} */}
-
-          {/* <RemainingPagesData
-            ref={dataTableRef}
-            jsonData={localJsonRemaining}
-          /> */}
         </CardContent>
       </Card>
     );
@@ -417,7 +416,12 @@ const ReportPage = () => {
             }}
           >
             <Button
-              onClick={() => setPdfViewerOpen(false)}
+              onClick={() => {
+                setPdfViewerOpen(false);
+                setActivePdfUrl(null);
+                setActiveDocUrl(null);
+                setViewerType(null);
+              }}
               sx={{
                 position: 'absolute',
                 top: 10,
@@ -432,7 +436,28 @@ const ReportPage = () => {
             </Button>
 
             {/* PDF VIEWER MUST BE INSIDE THIS RELATIVE BOX */}
-            <PdfViewer ref={pdfViewerRef} />
+            {/* -------- DOCUMENT VIEWER -------- */}
+            {viewerType === 'pdf' && activePdfUrl && (
+              <PdfViewer
+                key={activePdfUrl} // 🔥 force remount
+                ref={pdfViewerRef}
+                pdfUrl={activePdfUrl}
+              />
+            )}
+
+            {viewerType === 'docx' && activeDocUrl && (
+              <iframe
+                title="docx-preview"
+                src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
+                  activeDocUrl
+                )}`}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                }}
+              />
+            )}
           </Box>
         </Box>
       )}
@@ -465,36 +490,64 @@ const ReportPage = () => {
                 Supporting Text
               </Typography>
 
-              {bookmarkData.textSupportRaw.map((item, idx) => (
-                <Box key={idx} sx={{ mb: 3 }}>
-                  {/* Supporting Text */}
-                  <Typography
-                    sx={{ whiteSpace: 'pre-wrap', fontSize: 14, mb: 1 }}
-                  >
-                    {item.text}
-                  </Typography>
+              {bookmarkData.textSupportRaw.map((item, idx) => {
+                const cleanedText = normalizeNewLines(item.text);
+                const truncatedText = truncateWords(cleanedText, 20);
 
-                  {/* Corresponding hyperlink */}
-                  <Typography
-                    sx={{
-                      fontSize: 14,
-                      textDecoration: 'underline',
-                      cursor: 'pointer',
-                      color: '#0077cc',
-                      mt: 0.5,
-                    }}
-                    onClick={() =>
-                      handleCitationLinkClick(
-                        item.filename,
-                        item.page + 1,
-                        item.text
-                      )
-                    }
-                  >
-                    {item.filename} (Page {item.page + 1})
-                  </Typography>
-                </Box>
-              ))}
+                const isTruncated = item.text.split(/\s+/).length > 20;
+
+                return (
+                  <Card key={idx} sx={{ mb: 2 }}>
+                    <CardContent>
+                      {/* Truncated text */}
+                      <Typography sx={{ whiteSpace: 'pre-wrap', fontSize: 14 }}>
+                        {truncatedText}
+                        {isTruncated && (
+                          <Typography
+                            component="span"
+                            sx={{
+                              ml: 0.5,
+                              color: '#0077cc',
+                              cursor: 'pointer',
+                              fontWeight: 500,
+                            }}
+                            onClick={() => {
+                              setSelectedCitation(item);
+                              setOpenCitationDialog(true);
+                            }}
+                          >
+                            ...more
+                          </Typography>
+                        )}
+                      </Typography>
+
+                      {/* File + page */}
+                      <Typography
+                        sx={{
+                          fontSize: 13,
+                          mt: 1,
+                          color: '#1976d2',
+                          textDecoration: 'underline',
+                          cursor: 'pointer',
+                          display: 'block',
+                          wordBreak: 'break-word',
+                          overflowWrap: 'anywhere',
+                          maxWidth: '100%',
+                        }}
+                        onClick={() =>
+                          handleCitationLinkClick(
+                            item.url,
+                            item.page + 1,
+                            item.text
+                          )
+                        }
+                      >
+                        {item.filename} (Page {item.page + 1})
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </Box>
           )}
         </Box>
@@ -516,7 +569,7 @@ const ReportPage = () => {
                     action: () => setEditMode(true),
                   },
                   {
-                    text: 'Finalise',
+                    text: 'Finalize',
                     icon: '/images/approve_icon.png',
                     bg: '#396872ff',
                     action: handleFinalise,
@@ -545,18 +598,18 @@ const ReportPage = () => {
                     onClick={btn.action}
                     style={{ background: btn.bg }}
                   >
+                    {/* STATUS DOT (only for Finalize) */}
+                    {btn.text === 'Finalize' && (
+                      <span
+                        className={`finalize-status-dot ${
+                          editMode && !isFinalise ? 'red' : 'green'
+                        }`}
+                      />
+                    )}
                     <img
                       src={btn.icon}
                       alt=""
-                      className={`icon-img ${
-                        btn.text === 'Finalise'
-                          ? isFinalise
-                            ? 'icon-green' // ✔ Finalise overrides everything
-                            : editMode
-                              ? 'icon-red' // ✔ editMode=true → RED
-                              : 'icon-green' // ✔ normal → GREEN
-                          : 'icon-white' // ✔ all others → WHITE
-                      }`}
+                      className={`icon-img icon-white`}
                     />
 
                     {btn.text}
@@ -605,42 +658,98 @@ const ReportPage = () => {
           </Card>
 
           {/* CONFIDENCE CARD */}
-          <Card className="confidence-card">
-            <CardContent>
-              <Typography variant="h6" className="confidence-header">
-                Confidence Score
-              </Typography>
-
-              <Box className="confidence-summary">
-                <Typography>4/6 fields</Typography>
-                <Typography fontWeight="bold">67%</Typography>
-              </Box>
-
-              <Box className="confidence-bar">
-                <Box className="confidence-fill" style={{ width: '67%' }} />
-              </Box>
-
-              {[
-                { label: 'High', count: 4, color: 'green' },
-                { label: 'Medium', count: 1, color: 'yellow' },
-                { label: 'Low', count: 0, color: 'red' },
-                { label: 'User Edited', count: 12, color: 'grey' },
-              ].map((row, i) => (
-                <Box key={i} className="confidence-row">
-                  <Box className="confidence-label">
-                    <Box style={{ display: 'flex', gap: 5 }}>
-                      <span className={`dot ${row.color}`} />
-                      <Typography>{row.label}</Typography>
-                    </Box>
-                    <Typography fontWeight="bold">{row.count}</Typography>
-                  </Box>
-                  {i < 3 && <Divider />}
-                </Box>
-              ))}
-            </CardContent>
-          </Card>
+          {/* <ConfidenceScore data={trfJson} /> */}
+          <ConfidenceScore data={localJson} />
         </Box>
       )}
+      <Dialog
+        open={openCitationDialog}
+        onClose={() => setOpenCitationDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        {/* ---------- Header with Close Icon ---------- */}
+        <DialogTitle
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            pr: 1,
+          }}
+        >
+          Citation Details
+          <IconButton
+            onClick={() => setOpenCitationDialog(false)}
+            sx={{
+              color: '#000',
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+        {/* ---------- Content ---------- */}
+        <DialogContent
+          dividers
+          sx={{
+            overflowX: 'hidden',
+          }}
+        >
+          {selectedCitation && (
+            <>
+              <Typography
+                sx={{
+                  fontSize: 14,
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                  overflowWrap: 'anywhere',
+                  mb: 2,
+                }}
+              >
+                {normalizeNewLines(selectedCitation.text)}
+              </Typography>
+
+              <Typography
+                sx={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: '#1976d2',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  display: 'inline-block',
+                }}
+                onClick={() =>
+                  handleCitationLinkClick(
+                    selectedCitation.url,
+                    selectedCitation.page + 1,
+                    selectedCitation.text
+                  )
+                }
+              >
+                {selectedCitation.filename} (Page {selectedCitation.page + 1})
+              </Typography>
+            </>
+          )}
+        </DialogContent>
+
+        {/* ---------- Footer with Black Button ---------- */}
+        <DialogActions sx={{ p: 2 }}>
+          <Button
+            variant="contained"
+            onClick={() => setOpenCitationDialog(false)}
+            sx={{
+              backgroundColor: '#000',
+              color: '#fff',
+              textTransform: 'none',
+              '&:hover': {
+                backgroundColor: '#000',
+              },
+            }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

@@ -9,7 +9,6 @@ import {
   IconButton,
   Button,
   Divider,
-  Paper,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -53,29 +52,32 @@ const CommentDialog = ({
         }}
       >
         {comments.length === 0 ? (
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ wordBreak: 'break-word' }}
-          >
-            No comments yet.
+          <Typography variant="caption" color="text.secondary">
+            No comment yet
           </Typography>
         ) : (
           comments.map((c, idx) => (
-            <Paper
+            <Box
               key={idx}
-              variant="outlined"
               sx={{
-                p: 1,
-                mb: 1,
-                wordBreak: 'break-word',
-                whiteSpace: 'pre-wrap',
-                width: '100%',
-                boxSizing: 'border-box',
+                padding: '10px 12px',
+                marginBottom: '10px',
+                borderRadius: '8px',
+                backgroundColor: '#fff',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
               }}
             >
-              <Typography variant="body2">{c}</Typography>
-            </Paper>
+              <Typography variant="body2" sx={{ marginBottom: '4px' }}>
+                {c.comment}
+              </Typography>
+
+              <Typography variant="caption" sx={{ color: '#777' }}>
+                {c.Submited_By || 'User'} ·{' '}
+                {c.Submited_at && (
+                  <> · {new Date(c.Submited_at).toLocaleString()}</>
+                )}
+              </Typography>
+            </Box>
           ))
         )}
       </DialogContent>
