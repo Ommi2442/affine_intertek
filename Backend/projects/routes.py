@@ -18,6 +18,9 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 import json
 import time
 from utility.json_to_blob import *
+from fastapi.responses import FileResponse
+import shutil
+import os
 
 router = APIRouter()
 
@@ -713,7 +716,17 @@ async def generate_trf(projectId: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/download-file")
+def download_file():
+    SOURCE_FILE_PATH = r"C:\Users\affine\Desktop\new_intertek\InterTek-AI-Repo\Backend\data\iec_output.docx"
+    if not os.path.exists(SOURCE_FILE_PATH):
+        raise HTTPException(status_code=404, detail="Source file not found")
 
-    
 
+    shutil.copyfile(SOURCE_FILE_PATH, "iec_output.docx")
 
+    return FileResponse(
+        path=SOURCE_FILE_PATH,
+        filename="iec_output.docx",
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )

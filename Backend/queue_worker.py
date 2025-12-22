@@ -11,7 +11,6 @@ from utility.json_to_blob import *
 from utility.trf_report.trf_generation import run_trf_generation
 from utility.trf_utils import build_vectorstore, build_embeddings
 
-
 # Azure Config
 # --------------------------
 # CONNECTION_STRING = os.getenv("AZURE_CONNECTION_STRING")
@@ -53,18 +52,22 @@ RAG_AZURE_CONN_STRING  = os.getenv("AZURE_CONN_STRING")
 RAG_COSMOS_URL         = os.getenv("COSMOS_URL")
 RAG_COSMOS_KEY         = os.getenv("COSMOS_KEY")
 
-
+print("Rag DB NAME---------------:",RAG_DB_NAME)
+print("Rag CONT NAME:+++++++++++++++",RAG_CONT_NAME)
+        
 
 BASE_DIR = Path(__file__).resolve().parent
 
 INPUT_JSON_PATH = BASE_DIR / "data" / "pta_final_5.json"
 INPUT_DOCX_PATH = BASE_DIR / "data" / "input.docx"
 
+DOWNLOAD_DIR = BASE_DIR  / "src_files"
+
 OUTPUT_JSON = BASE_DIR / "data" / "iec_output.json"
 OUTPUT_DOCX = BASE_DIR / "data" / "iec_output.docx"
 OUTPUT_EXCEL = BASE_DIR / "data" / "iec_output.xlsx"
 
-IMAGE_URLS_PATH = BASE_DIR / "data" / "image_urls.json"  # adjust if needed
+IMAGE_URLS_PATH = BASE_DIR / "image_urls.json"  # adjust if needed
 
 
 
@@ -150,7 +153,8 @@ async def process_message(message) -> bool:
     if not blob_urls:
         print(f" No valid source documents for project {project_id}")
         return True
-
+    
+    print(f"blob_urls source_docs------{blob_urls}")
     print(f" Files to embed: {len(blob_urls)}")
 
     try:
@@ -162,8 +166,8 @@ async def process_message(message) -> bool:
             trf_step="Starting embedding",
             trf_completed=False
         )
-
-        ingest_files_from_blob_urls_create_embeddings(blob_urls, project_id)
+                
+        ingest_files_from_blob_urls_create_embeddings(DOWNLOAD_DIR, blob_urls, project_id)
 
         print(f" Embeddings completed for project {project_id}")
 
@@ -189,7 +193,7 @@ async def process_message(message) -> bool:
         )
 
         embeddings = build_embeddings(AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY)
-
+        
         vs = build_vectorstore(
             embeddings=embeddings,
             client=trf_cosmos_client,
@@ -216,7 +220,7 @@ async def process_message(message) -> bool:
         
         result = run_trf_generation(
             blob_urls,
-            vs=vs,
+            vs,
             image_urls=image_urls,
             input_json_path=INPUT_JSON_PATH,
             docx_input_path=INPUT_DOCX_PATH,

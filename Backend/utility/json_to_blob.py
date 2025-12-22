@@ -8,8 +8,6 @@ from azure.cosmos import CosmosClient
 import os
 
 
-
-# Blob Storage
 AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net'
 blob_service = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
 blob_container = 'stintertekesusdev-blob'
@@ -108,7 +106,7 @@ def save_local_json_to_blob_and_cosmos_cdr(
         json_data = json.load(f)
 
     # ---------- 2. Upload to Blob ----------
-    blob_path = f"Documents/{project_id}/Generated_CDR_Report/{filename}"
+    blob_path = f"Documents/{project_id}/Generated_cdr_Report/{filename}"
     blob_client = blob_service.get_blob_client(
         container=blob_container,
         blob=blob_path
@@ -190,16 +188,3 @@ def load_trf_json_from_blob(project_id):
         "filename": item["filename"],
         "data": json_data
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
