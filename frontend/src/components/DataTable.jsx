@@ -461,6 +461,11 @@ const DataTable = forwardRef(
                     const isPage7 = pageNo === 7;
                     const isCheckboxUI =
                       isPage7 && col.checkbox_answer_UI === true;
+                    const isPage7CheckboxUI =
+                      pageNo === 7 &&
+                      col.take_value_UI === true &&
+                      col.checkbox_value !== undefined;
+
                     const value = col.value ?? col.Value ?? '';
                     const label = col.field ?? col.Field ?? '';
                     const rows = col.rendering_row ? col.rendering_row : 1;
@@ -480,60 +485,98 @@ const DataTable = forwardRef(
                               setHovered({ t: null, i: null })
                             }
                           >
-                            {col.checkbox_value !== undefined ? (
-                              renderFieldWithCheckboxAndNewLines(
-                                col,
-                                tIdx,
-                                iIdx,
-                                updateCell,
-                                setTables
-                              )
-                            ) : (
-                              <Typography style={{ marginBottom: 4 }}>
-                                {renderFieldWithNewLines(label)}
-                              </Typography>
-                            )}
+                            {/* ================= SINGLE ROW ================= */}
+                            {isPage7CheckboxUI ? (
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'flex-start',
+                                  gap: 24,
+                                }}
+                              >
+                                {/* LEFT COLUMN — FIELD TEXT (NO CHECKBOX) */}
+                                <div style={{ flex: 1 }}>
+                                  <Typography
+                                    sx={{
+                                      fontSize: 14,
+                                      whiteSpace: 'pre-wrap',
+                                    }}
+                                  >
+                                    {label}
+                                  </Typography>
+                                </div>
 
-                            {isCheckboxUI ? (
-                              <div>
-                                {(value || '')
-                                  .split('\n')
-                                  .map((opt) => opt.trim())
-                                  .filter(Boolean)
-                                  .map((opt, idxOpt) => (
-                                    <div
-                                      key={idxOpt}
-                                      style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 4,
-                                      }}
-                                    >
-                                      <Checkbox size="small" />
-                                      <Typography variant="body2">
-                                        {opt}
-                                      </Typography>
-                                    </div>
-                                  ))}
+                                {/* RIGHT COLUMN — CHECKBOX OPTIONS FROM VALUE */}
+                                <div style={{ flex: 1 }}>
+                                  {(() => {
+                                    const checkboxIndexes = JSON.parse(
+                                      col.checkbox_index || '[]'
+                                    );
+
+                                    // extract options safely
+                                    const options = (value || '')
+                                      .split('\n')
+                                      .map((v) => v.replace(/\s+/g, ' ').trim()) // normalize junk chars
+                                      .filter((v) => v.includes('[*]')); // ✅ DO NOT use startsWith
+
+                                    return options.map((opt, idx) => {
+                                      const cleanText = opt
+                                        .replace('[*]', '')
+                                        .trim();
+                                      const checkboxKey = `checkbox_value_${checkboxIndexes[idx]}`;
+                                      const checked = !!col[checkboxKey];
+
+                                      return (
+                                        <div
+                                          key={idx}
+                                          style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 6,
+                                            marginBottom: 6,
+                                          }}
+                                        >
+                                          <Checkbox
+                                            size="small"
+                                            checked={checked}
+                                            disabled={!editMode}
+                                            onChange={() => {
+                                              setTables((prev) => {
+                                                const next = prev.map(
+                                                  (tbl) => ({
+                                                    ...tbl,
+                                                    Items: [...tbl.Items],
+                                                  })
+                                                );
+
+                                                const current =
+                                                  next[tIdx].Items[iIdx];
+                                                next[tIdx].Items[iIdx] = {
+                                                  ...current,
+                                                  [checkboxKey]: !checked,
+                                                };
+
+                                                return next;
+                                              });
+                                            }}
+                                          />
+
+                                          <Typography sx={{ fontSize: 14 }}>
+                                            {cleanText}
+                                          </Typography>
+                                        </div>
+                                      );
+                                    });
+                                  })()}
+                                </div>
                               </div>
-                            ) : col.user_editable !== true ? (
-                              // user_editable === false → render plain text
-                              <Typography>{value}</Typography>
                             ) : (
-                              // user_editable === true → show textarea but enable only when isEditable(col) === true
-                              <div style={{ display: 'flex' }}>
-                                <textarea
-                                  className="dt-textarea dt-textarea-with-actions"
-                                  value={value}
-                                  rows={rows}
-                                  disabled={!editable}
-                                  onChange={(e) =>
-                                    editable &&
-                                    updateCell(tIdx, iIdx, e.target.value)
-                                  }
-                                />
-                                {renderConfidenceColor(col.confidence)}
-                              </div>
+                              /* fallback for other pages */
+                              <Typography
+                                sx={{ fontSize: 14, whiteSpace: 'pre-wrap' }}
+                              >
+                                {label}
+                              </Typography>
                             )}
 
                             {renderHoverActions(
@@ -728,7 +771,297 @@ const DataTable = forwardRef(
                               setHovered({ t: null, i: null })
                             }
                           >
-                            {first.user_editable !== true ? (
+                            {pageNo === 5 &&
+                            first.checkbox_value !== undefined &&
+                            ((first.field || '').includes('[*]') ||
+                              (first.value || '').includes('[*]')) ? (
+                              renderFieldWithCheckboxAndNewLines(
+                                first,
+                                tIdx,
+                                iIdx,
+                                setTables,
+                                editMode
+                              )
+                            ) : pageNo === 7 && first.new_logic_1 === true ? (
+                              <div>
+                                {/* FIELD */}
+                                <Typography
+                                  sx={{ fontSize: 14, fontWeight: 500, mb: 1 }}
+                                >
+                                  {fieldLabel}
+                                </Typography>
+
+                                {/* VALUE — render ALL text, replace [*] with checkbox */}
+                                {(first.value || '')
+                                  .split('\n')
+                                  .map((line, lineIdx) => {
+                                    // line contains checkbox markers
+                                    if (line.includes('[*]')) {
+                                      const checkboxIndexes = JSON.parse(
+                                        first.checkbox_index || '[]'
+                                      );
+                                      let cbCounter = 0;
+                                      const parts = line.split(/(\[\*\])/g);
+
+                                      return (
+                                        <Typography
+                                          key={lineIdx}
+                                          sx={{
+                                            fontSize: 14,
+                                            whiteSpace: 'pre-wrap',
+                                            mb: 1,
+                                          }}
+                                        >
+                                          {parts.map((part, idx) => {
+                                            if (part === '[*]') {
+                                              const checkboxKey = `checkbox_value_${checkboxIndexes[cbCounter]}`;
+                                              const checked =
+                                                !!first[checkboxKey];
+                                              cbCounter += 1;
+
+                                              return (
+                                                <Checkbox
+                                                  key={`cb-${idx}`}
+                                                  size="small"
+                                                  checked={checked}
+                                                  disabled={!editMode}
+                                                  sx={{ padding: '0 4px' }}
+                                                  onChange={() => {
+                                                    setTables((prev) => {
+                                                      const next = prev.map(
+                                                        (tbl) => ({
+                                                          ...tbl,
+                                                          Items: [...tbl.Items],
+                                                        })
+                                                      );
+
+                                                      next[tIdx].Items[iIdx] = {
+                                                        ...next[tIdx].Items[
+                                                          iIdx
+                                                        ],
+                                                        [checkboxKey]: !checked,
+                                                      };
+
+                                                      return next;
+                                                    });
+                                                  }}
+                                                />
+                                              );
+                                            }
+
+                                            return (
+                                              <Typography
+                                                key={`txt-${idx}`}
+                                                component="span"
+                                                sx={{ fontSize: 14 }}
+                                              >
+                                                {part}
+                                              </Typography>
+                                            );
+                                          })}
+                                        </Typography>
+                                      );
+                                    }
+
+                                    // normal text line
+                                    return (
+                                      <Typography
+                                        key={lineIdx}
+                                        sx={{
+                                          fontSize: 14,
+                                          whiteSpace: 'pre-wrap',
+                                          mb: 1,
+                                        }}
+                                      >
+                                        {line}
+                                      </Typography>
+                                    );
+                                  })}
+                              </div>
+                            ) : pageNo === 7 &&
+                              first.checkbox_value !== undefined &&
+                              first.take_value_UI !== true &&
+                              (first.value || '').includes('[*]') ? (
+                              <Typography
+                                sx={{ fontSize: 14, whiteSpace: 'pre-wrap' }}
+                              >
+                                {(() => {
+                                  const checkboxIndexes = JSON.parse(
+                                    first.checkbox_index || '[]'
+                                  );
+                                  let cbCounter = 0;
+
+                                  const parts = (first.value || '').split(
+                                    /(\[\*\])/g
+                                  );
+
+                                  return parts.map((part, idx) => {
+                                    if (part === '[*]') {
+                                      const checkboxKey = `checkbox_value_${checkboxIndexes[cbCounter]}`;
+                                      const checked = !!first[checkboxKey];
+                                      cbCounter += 1;
+
+                                      return (
+                                        <Checkbox
+                                          key={`cb-${idx}`}
+                                          size="small"
+                                          checked={checked}
+                                          disabled={!editMode}
+                                          sx={{ padding: '0 4px' }}
+                                          onChange={() => {
+                                            setTables((prev) => {
+                                              const next = prev.map((tbl) => ({
+                                                ...tbl,
+                                                Items: [...tbl.Items],
+                                              }));
+
+                                              next[tIdx].Items[iIdx] = {
+                                                ...next[tIdx].Items[iIdx],
+                                                [checkboxKey]: !checked,
+                                              };
+
+                                              return next;
+                                            });
+                                          }}
+                                        />
+                                      );
+                                    }
+
+                                    return (
+                                      <Typography
+                                        key={`txt-${idx}`}
+                                        component="span"
+                                        sx={{ fontSize: 14 }}
+                                      >
+                                        {part}
+                                      </Typography>
+                                    );
+                                  });
+                                })()}
+                              </Typography>
+                            ) : pageNo === 7 && first.take_value_UI === true ? (
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  gap: 24,
+                                  alignItems: 'flex-start',
+                                }}
+                              >
+                                {/* LEFT: FIELD TEXT */}
+                                <div style={{ flex: 1 }}>
+                                  <Typography
+                                    sx={{
+                                      fontSize: 14,
+                                      whiteSpace: 'pre-wrap',
+                                    }}
+                                  >
+                                    {fieldLabel}
+                                  </Typography>
+                                </div>
+
+                                {/* RIGHT: CHECKBOX VALUES */}
+                                <div style={{ flex: 1 }}>
+                                  {(() => {
+                                    const checkboxIndexes = JSON.parse(
+                                      first.checkbox_index || '[]'
+                                    );
+
+                                    const options = (first.value || '')
+                                      .split('\n')
+                                      .map((v) => v.trim())
+                                      .filter((v) => v.includes('[*]'));
+
+                                    return options.map((opt, idx) => {
+                                      const cleanText = opt
+                                        .replace('[*]', '')
+                                        .trim();
+                                      const checkboxKey = `checkbox_value_${checkboxIndexes[idx]}`;
+                                      const checked = !!first[checkboxKey];
+
+                                      return (
+                                        <div
+                                          key={idx}
+                                          style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 6,
+                                            marginBottom: 6,
+                                          }}
+                                        >
+                                          <Checkbox
+                                            size="small"
+                                            checked={checked}
+                                            disabled={!editMode}
+                                            onChange={() => {
+                                              setTables((prev) => {
+                                                const next = prev.map(
+                                                  (tbl) => ({
+                                                    ...tbl,
+                                                    Items: [...tbl.Items],
+                                                  })
+                                                );
+                                                next[tIdx].Items[iIdx] = {
+                                                  ...next[tIdx].Items[iIdx],
+                                                  [checkboxKey]: !checked,
+                                                };
+                                                return next;
+                                              });
+                                            }}
+                                          />
+                                          <Typography sx={{ fontSize: 14 }}>
+                                            {cleanText}
+                                          </Typography>
+                                        </div>
+                                      );
+                                    });
+                                  })()}
+                                </div>
+                              </div>
+                            ) : pageNo === 8 ? (
+                              /* ===== PAGE 8 ONLY : FIELD + TEXTAREA ===== */
+                              <div>
+                                {/* FIELD */}
+                                <Typography
+                                  sx={{
+                                    fontSize: 14,
+                                    fontWeight: 500,
+                                    whiteSpace: 'pre-wrap',
+                                    mb: 1,
+                                  }}
+                                >
+                                  {fieldLabel}
+                                </Typography>
+
+                                {/* VALUE */}
+                                {!editable ? (
+                                  <Typography
+                                    sx={{
+                                      fontSize: 14,
+                                      whiteSpace: 'pre-wrap',
+                                    }}
+                                  >
+                                    {value}
+                                  </Typography>
+                                ) : (
+                                  <div style={{ display: 'flex' }}>
+                                    <textarea
+                                      className="dt-textarea dt-textarea-with-actions"
+                                      value={value}
+                                      rows={rows}
+                                      disabled={!editable}
+                                      onChange={(e) =>
+                                        editable &&
+                                        updateCell(tIdx, iIdx, e.target.value)
+                                      }
+                                    />
+                                    {renderConfidenceColor(first.confidence)}
+                                  </div>
+                                )}
+                              </div>
+                            ) : first.checkbox_value !== undefined ? (
+                              // ✅ checkbox rows → NEVER show textarea
+                              <Typography>{value}</Typography>
+                            ) : !editable ? (
                               <Typography>{value}</Typography>
                             ) : (
                               <div style={{ display: 'flex' }}>
@@ -775,6 +1108,22 @@ const DataTable = forwardRef(
                             <Checkbox
                               size="small"
                               checked={!!first.checkbox_value}
+                              disabled={!editMode}
+                              onChange={() => {
+                                setTables((prev) => {
+                                  const next = prev.map((tbl) => ({
+                                    ...tbl,
+                                    Items: [...tbl.Items],
+                                  }));
+
+                                  next[first.__t].Items[first.__i] = {
+                                    ...next[first.__t].Items[first.__i],
+                                    checkbox_value: !first.checkbox_value,
+                                  };
+
+                                  return next;
+                                });
+                              }}
                             />
                           ) : null}
                           {fieldLabel}
@@ -806,7 +1155,8 @@ const DataTable = forwardRef(
                                   setHovered({ t: null, i: null })
                                 }
                               >
-                                {r.checkbox_value !== undefined ? (
+                                {r.checkbox_value !== undefined &&
+                                pageNo !== 7 ? (
                                   // ✅ checkbox exists → NEVER show textarea
                                   <Typography>{''}</Typography>
                                 ) : isCheckboxUI ? (
@@ -831,7 +1181,9 @@ const DataTable = forwardRef(
                                         </div>
                                       ))}
                                   </div>
-                                ) : r.user_editable !== true ? (
+                                ) : pageNo === 7 &&
+                                  r.take_value_UI ===
+                                    true ? null : r.user_editable !== true ? ( // ⛔ block textarea for page 7 checkbox UI
                                   <Typography>{value}</Typography>
                                 ) : (
                                   <div
