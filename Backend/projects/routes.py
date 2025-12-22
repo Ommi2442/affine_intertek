@@ -18,6 +18,9 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 import json
 import time
 from utility.json_to_blob import *
+from fastapi.responses import FileResponse
+import shutil
+import os
 
 router = APIRouter()
 
@@ -664,7 +667,7 @@ def generate_trf(projectId: str):
 
             if docs:
                 progress = docs[0].get("Project_Progress") or {}
-                percentage = progress.get("trf_percentage")   # FIXED
+                percentage = progress.get("trf_percentage")
 
                 if percentage == 100:
                     break
@@ -681,8 +684,49 @@ def generate_trf(projectId: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+from fastapi import HTTPException
+from utility.cdr_report.CDR_Pipeline_V2 import main
+from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_local_json_to_blob_and_cosmos_cdr
+
+@router.post("/generate-cdr")
+async def generate_trf(projectId: str):
+    try:
+        
+        import subprocess
+        print("\n\n\n Running CDR pipeline main file...\n\n\n")
+        import sys, subprocess
+        subprocess.run([sys.executable, "-m", "utility.cdr_report.CDR_Pipeline_V2.main"], check=True)
+        
+        path = r"C:\Users\affine\Desktop\intrtk\InterTek-AI-Repo\Backend\utility\cdr_report\CDR_Pipeline_V2\cdr_output.json"
+        cosmos_data = save_local_json_to_blob_and_cosmos_cdr(
+            file_path=path,
+            project_id=projectId
+        )
+        blob_url=cosmos_data.get("blob_url")
+        
+        json=fetch_json_from_blob(blob_url)
+
+        return {
+            "status": "success",
+            "message": "CDR report generated and saved to Blob and Cosmos DB.",
+            "data": cosmos_data,
+            "Blob_json_data":json
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/download-file")
+def download_file():
+    SOURCE_FILE_PATH = r"C:\Users\affine\Desktop\new_intertek\InterTek-AI-Repo\Backend\data\iec_output.docx"
+    if not os.path.exists(SOURCE_FILE_PATH):
+        raise HTTPException(status_code=404, detail="Source file not found")
 
 
-    
+    shutil.copyfile(SOURCE_FILE_PATH, "iec_output.docx")
 
-
+    return FileResponse(
+        path=SOURCE_FILE_PATH,
+        filename="iec_output.docx",
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )

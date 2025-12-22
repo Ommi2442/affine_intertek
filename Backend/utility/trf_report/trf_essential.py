@@ -621,7 +621,7 @@ def process_tasks_with_batches_parallel_grey(
         for doc, score in scored_results:
             filename = doc.metadata.get("source_file", "unknown")
             page = doc.metadata.get("page")
-            preview = doc.page_content[:500].strip()
+            preview = doc.page_content[:].strip()
 
             text_sources.append({
                 "filename": filename,

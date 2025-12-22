@@ -341,7 +341,7 @@ def process_tasks_with_batches_parallel_grey(
                 "filename": doc.metadata.get("source_file", "unknown"),
                 "page": doc.metadata.get("page"),
                 "similarity_score": float(score),
-                "text": doc.page_content[:500].strip()
+                "text": doc.page_content[:].strip()
             })
 
         has_info = any(score > 0.70 for doc, score in scored_results)
@@ -558,7 +558,62 @@ def attach_blob_urls_to_image_support(data, blob_urls):
                 img["file_url"] = blob_map.get(base)
 
     return data
- 
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+# embeddings = build_embeddings(AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY)
+from langchain_azure_ai.vectorstores import AzureCosmosDBNoSqlVectorSearch
+# Build embeddings for retriever
+embeddings = AzureOpenAIEmbeddings(
+    azure_endpoint=AOAI_ENDPOINT,
+    api_key=AOAI_KEY,
+    openai_api_version=API_VERSION,
+    azure_deployment=EMBED_DEPLOY,
+)
+
+# Build Cosmos client
+cosmos_client = CosmosClient(
+    COSMOS_URL,
+    credential=COSMOS_KEY
+)
+
+# MUST MATCH INGESTION EXACTLY
+vs = AzureCosmosDBNoSqlVectorSearch(
+    cosmos_client=cosmos_client,
+    embedding=embeddings,
+    database_name=DB_NAME,
+    container_name=CONT_NAME,
+
+    # REQUIRED keyword-only args
+    vector_embedding_policy={
+        "vectorEmbeddings": [
+            {
+                "path": VECTOR_PATH,
+                "dataType": "float32",
+                "dimensions": EMBED_DIM,
+                "distanceFunction": "cosine",
+            }
+        ]
+    },
+
+    indexing_policy={
+        "includedPaths": [{"path": "/*"}],
+        "excludedPaths": [
+            {"path": "/\"_etag\"/?"}, 
+            {"path": f"{VECTOR_PATH}/*"}
+        ],
+        "vectorIndexes": [
+            {"path": VECTOR_PATH, "type": "quantizedFlat"}
+        ],
+    },
+
+    cosmos_container_properties={"partition_key": "/id"},
+    cosmos_database_properties={},
+
+    vector_search_fields={
+        "text_field": "text",
+        "embedding_field": "vector",
+        "metadata_field": "metadata",
+    }
+)
 def run_trf_generation(
         blob_urls,
         vs,
@@ -579,7 +634,7 @@ def run_trf_generation(
     with open(input_json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    llm = AzureChatOpenAI(
+    llm_itk = AzureChatOpenAI(
         azure_endpoint=AOAI_ENDPOINT,
         api_key=AOAI_KEY,
         openai_api_version=API_VERSION,
@@ -592,14 +647,14 @@ def run_trf_generation(
         api_key=AOAI_KEY,
         openai_api_version=API_VERSION,
         azure_deployment=CHAT_DEPLOY,
-        temperature=0.1,
+        temperature=0,
     ).with_config({"response_format": "verbose"})
 
     retriever = vs.as_retriever(search_kwargs={"k": 5})
 
     rag_image = build_rag_image_pipeline_grey(
         retriever,
-        llm,
+        llm_itk,
         llm2,
         build_vision_message_grey,
         attach_supporting_refs_grey if 'attach_supporting_refs_grey' in globals() else None,
@@ -607,7 +662,8 @@ def run_trf_generation(
     )
 
     tasks, item_refs = build_tasks_with_custom_prompt_grey(data, image_urls)
-
+    # tasks=tasks[:15]
+    # item_refs=item_refs[:15]
     results = process_tasks_with_batches_parallel_grey(
         tasks,
         item_refs,
