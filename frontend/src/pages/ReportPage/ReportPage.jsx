@@ -9,25 +9,28 @@ import {
   Button,
   Divider,
   TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import './ReportPage.css';
 import { useDispatch, useSelector } from 'react-redux';
 import DataTable from '../../components/DataTable';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
 
 import { generateTrfApi } from '../../redux/api/generateTrfApi';
-// import localJson from '../../utils/pta_final_5_UI_upd.json';
-//import localJsonRemaining from '../../utils/43_84_page_trf.json';
-//import RemainingPagesData from '../../components/RemainingPagesData';
-//import NewJson from '../../utils/newJsonFrom42.json';
-//import HtmlPageRenderer from '../../components/HtmlPageRenderer';
 import localCdrJson from '../../utils/cdr_payload_3.json';
 import CdrReport from '../../components/CdrReport/CdrReport';
-//import localJson from '../../utils/iec_61010_1614_1012_output_v1.json';
+//import localJson from '../../utils/pta_final_6.json';
 import PdfViewer from '../../components/PdfViewer';
-import localJson from '../../utils/pta_final_6.json';
+import localJson from '../../utils/iec_output_1.json';
 import ConfidenceScore from './ConfidenceScore';
+import { truncateWords } from '../../Helpers/truncateWords';
+import { normalizeNewLines } from '../../Helpers/normalizeNewLines';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -51,6 +54,14 @@ const ReportPage = () => {
   const [editMode, setEditMode] = useState(false);
   const [isFinalise, setIsFinalise] = useState(false);
   const [reportClick, setReportClick] = useState('trf');
+
+  const [activePdfUrl, setActivePdfUrl] = useState(null);
+
+  const [activeDocUrl, setActiveDocUrl] = useState(null);
+  const [viewerType, setViewerType] = useState(null); // 'pdf' | 'docx'
+
+  const [openCitationDialog, setOpenCitationDialog] = React.useState(false);
+  const [selectedCitation, setSelectedCitation] = React.useState(null);
 
   const myData = useSelector((state) => state?.trf);
 
@@ -192,23 +203,32 @@ const ReportPage = () => {
   };
 
   // ---------------- CITATION → PDF MODAL ----------------
-  const handleCitationLinkClick = (filename, page, text) => {
-    setPdfViewerOpen(true);
+  const handleCitationLinkClick = (fileUrl, page, text) => {
+    const lowerUrl = fileUrl?.toLowerCase();
 
-    const url = '/' + filename;
+    // ---------- PDF ----------
+    if (lowerUrl.endsWith('.pdf')) {
+      setViewerType('pdf');
+      setActivePdfUrl(fileUrl);
+      setPdfViewerOpen(true);
 
-    // Wait for modal to render
-    setTimeout(() => {
-      if (!pdfViewerRef.current) return;
-
-      pdfViewerRef.current.loadPdf(url);
-
-      // Allow PDF pages + textLayer to render
       setTimeout(() => {
         if (!pdfViewerRef.current) return;
         pdfViewerRef.current.goToCitation(page, text);
       }, 1200);
-    }, 200);
+
+      return;
+    }
+
+    // ---------- DOCX ----------
+    if (lowerUrl.endsWith('.docx') || lowerUrl.endsWith('.doc')) {
+      setViewerType('docx');
+      setActiveDocUrl(fileUrl);
+      setPdfViewerOpen(true);
+      return;
+    }
+
+    alert('Preview not supported for this file type.');
   };
 
   const handleFinalise = () => {
@@ -396,7 +416,12 @@ const ReportPage = () => {
             }}
           >
             <Button
-              onClick={() => setPdfViewerOpen(false)}
+              onClick={() => {
+                setPdfViewerOpen(false);
+                setActivePdfUrl(null);
+                setActiveDocUrl(null);
+                setViewerType(null);
+              }}
               sx={{
                 position: 'absolute',
                 top: 10,
@@ -411,7 +436,28 @@ const ReportPage = () => {
             </Button>
 
             {/* PDF VIEWER MUST BE INSIDE THIS RELATIVE BOX */}
-            <PdfViewer ref={pdfViewerRef} />
+            {/* -------- DOCUMENT VIEWER -------- */}
+            {viewerType === 'pdf' && activePdfUrl && (
+              <PdfViewer
+                key={activePdfUrl} // 🔥 force remount
+                ref={pdfViewerRef}
+                pdfUrl={activePdfUrl}
+              />
+            )}
+
+            {viewerType === 'docx' && activeDocUrl && (
+              <iframe
+                title="docx-preview"
+                src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
+                  activeDocUrl
+                )}`}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                }}
+              />
+            )}
           </Box>
         </Box>
       )}
@@ -444,36 +490,64 @@ const ReportPage = () => {
                 Supporting Text
               </Typography>
 
-              {bookmarkData.textSupportRaw.map((item, idx) => (
-                <Box key={idx} sx={{ mb: 3 }}>
-                  {/* Supporting Text */}
-                  <Typography
-                    sx={{ whiteSpace: 'pre-wrap', fontSize: 14, mb: 1 }}
-                  >
-                    {item.text}
-                  </Typography>
+              {bookmarkData.textSupportRaw.map((item, idx) => {
+                const cleanedText = normalizeNewLines(item.text);
+                const truncatedText = truncateWords(cleanedText, 20);
 
-                  {/* Corresponding hyperlink */}
-                  <Typography
-                    sx={{
-                      fontSize: 14,
-                      textDecoration: 'underline',
-                      cursor: 'pointer',
-                      color: '#0077cc',
-                      mt: 0.5,
-                    }}
-                    onClick={() =>
-                      handleCitationLinkClick(
-                        item.filename,
-                        item.page + 1,
-                        item.text
-                      )
-                    }
-                  >
-                    {item.filename} (Page {item.page + 1})
-                  </Typography>
-                </Box>
-              ))}
+                const isTruncated = item.text.split(/\s+/).length > 20;
+
+                return (
+                  <Card key={idx} sx={{ mb: 2 }}>
+                    <CardContent>
+                      {/* Truncated text */}
+                      <Typography sx={{ whiteSpace: 'pre-wrap', fontSize: 14 }}>
+                        {truncatedText}
+                        {isTruncated && (
+                          <Typography
+                            component="span"
+                            sx={{
+                              ml: 0.5,
+                              color: '#0077cc',
+                              cursor: 'pointer',
+                              fontWeight: 500,
+                            }}
+                            onClick={() => {
+                              setSelectedCitation(item);
+                              setOpenCitationDialog(true);
+                            }}
+                          >
+                            ...more
+                          </Typography>
+                        )}
+                      </Typography>
+
+                      {/* File + page */}
+                      <Typography
+                        sx={{
+                          fontSize: 13,
+                          mt: 1,
+                          color: '#1976d2',
+                          textDecoration: 'underline',
+                          cursor: 'pointer',
+                          display: 'block',
+                          wordBreak: 'break-word',
+                          overflowWrap: 'anywhere',
+                          maxWidth: '100%',
+                        }}
+                        onClick={() =>
+                          handleCitationLinkClick(
+                            item.url,
+                            item.page + 1,
+                            item.text
+                          )
+                        }
+                      >
+                        {item.filename} (Page {item.page + 1})
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </Box>
           )}
         </Box>
@@ -588,6 +662,94 @@ const ReportPage = () => {
           <ConfidenceScore data={localJson} />
         </Box>
       )}
+      <Dialog
+        open={openCitationDialog}
+        onClose={() => setOpenCitationDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        {/* ---------- Header with Close Icon ---------- */}
+        <DialogTitle
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            pr: 1,
+          }}
+        >
+          Citation Details
+          <IconButton
+            onClick={() => setOpenCitationDialog(false)}
+            sx={{
+              color: '#000',
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+        {/* ---------- Content ---------- */}
+        <DialogContent
+          dividers
+          sx={{
+            overflowX: 'hidden',
+          }}
+        >
+          {selectedCitation && (
+            <>
+              <Typography
+                sx={{
+                  fontSize: 14,
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                  overflowWrap: 'anywhere',
+                  mb: 2,
+                }}
+              >
+                {normalizeNewLines(selectedCitation.text)}
+              </Typography>
+
+              <Typography
+                sx={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: '#1976d2',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  display: 'inline-block',
+                }}
+                onClick={() =>
+                  handleCitationLinkClick(
+                    selectedCitation.url,
+                    selectedCitation.page + 1,
+                    selectedCitation.text
+                  )
+                }
+              >
+                {selectedCitation.filename} (Page {selectedCitation.page + 1})
+              </Typography>
+            </>
+          )}
+        </DialogContent>
+
+        {/* ---------- Footer with Black Button ---------- */}
+        <DialogActions sx={{ p: 2 }}>
+          <Button
+            variant="contained"
+            onClick={() => setOpenCitationDialog(false)}
+            sx={{
+              backgroundColor: '#000',
+              color: '#fff',
+              textTransform: 'none',
+              '&:hover': {
+                backgroundColor: '#000',
+              },
+            }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
