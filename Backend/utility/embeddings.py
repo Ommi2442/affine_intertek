@@ -217,6 +217,7 @@ def load_and_split_pdfs_text(
             d.metadata["citation"] = f"{base}#page={page}"
 
         docs.extend(raw_docs)
+        # print("Raw docs------",docs)
 
         # ---- OPTIONAL: CAD / SCHEMATIC IMAGE EXTRACTION ----
         if cad_schematics:   # ⭐ ONLY RUN IF ENABLED
@@ -333,10 +334,9 @@ def upload_pdf_images_and_append_urls(
 
     return image_urls
 
-
 # Main runner that mirrors the notebook logic
 
-def ingest_files_from_blob_urls_create_embeddings(blob_urls: list, project_id: str, download_dir: str = "src_files", keep_files: bool = True, verbose: bool = True):
+def ingest_files_from_blob_urls_create_embeddings(download_dir,blob_urls: list, project_id: str, keep_files: bool = True, verbose: bool = True):
     """
     Single-call function that performs the full notebook ingestion pipeline.
     - blob_urls: list of full blob URLs
@@ -363,11 +363,14 @@ def ingest_files_from_blob_urls_create_embeddings(blob_urls: list, project_id: s
         print("All documents deleted successfully!")
     except Exception as e:
         print(f"[WARN] Could not enumerate/delete items: {e}")
+    from pathlib import Path
+    BASE_DIR = Path(__file__).resolve().parent
+    DOWNLOAD_DIR = BASE_DIR  / "src_files"
 
     # 3) Process blob URLs (download/convert/extract)
     extracted_texts, image_urls, downloaded_pdf_paths, converted_pdf_paths = process_blob_urls_2(
         blob_urls, AZURE_CONN_STRING, BLOB_CONTAINER,
-        download_dir=download_dir, keep_files=keep_files, verbose=verbose
+        download_dir=DOWNLOAD_DIR, keep_files=keep_files, verbose=verbose
     )
 
     pdf_paths = downloaded_pdf_paths + converted_pdf_paths
@@ -402,9 +405,11 @@ def ingest_files_from_blob_urls_create_embeddings(blob_urls: list, project_id: s
     except Exception as e:
         print(f"[WARN] upload_pdf_images_and_append_urls failed: {e}")
 
+    print("+++++++++++++++++",pdf_paths)
+    print("--------------",converted_pdf_paths)
     # 8) Chunk PDFs and any extracted texts — notebook calls with cad_schematics=False
     chunks, image_page_metadata_returned = load_and_split_pdfs_text(
-        pdf_paths, CHUNK_SIZE, CHUNK_OVERLAP, extracted_texts=None, cad_schematics=True
+        pdf_paths, CHUNK_SIZE, CHUNK_OVERLAP, extracted_texts=extracted_texts, cad_schematics=True
     )
 
     # 9) Add IDs to chunks and ingest
@@ -415,8 +420,12 @@ def ingest_files_from_blob_urls_create_embeddings(blob_urls: list, project_id: s
     try:
         ingest_to_cosmos_parallel(vs, chunks, batch_size=10, max_workers=10)
         
+        
+        BASE_DIR = Path(__file__).resolve().parent
+        IMAGE_URLS_PATH = BASE_DIR / "image_urls.json"  # adjust if needed
+        
 
-        with open("image_urls.json", "w") as f:
+        with open(IMAGE_URLS_PATH, "w") as f:
             json.dump(image_urls, f, indent=2)
 
     except Exception as e:
