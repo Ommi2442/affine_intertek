@@ -316,10 +316,6 @@ const Dashboard = () => {
                   </TableCell>
 
                   <TableCell align="center">
-                    <IconButton>
-                      <img src="/images/edit.png" width={18} height={18} />
-                    </IconButton>
-
                     <Tooltip title="Archive Project" arrow>
                       <IconButton onClick={() => handleArchive(row)}>
                         <img

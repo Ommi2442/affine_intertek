@@ -33,6 +33,8 @@ import { idb_set, idb_get } from '../utils/idb';
 import CommentDialog from './CommentDialog';
 import { useSelector } from 'react-redux';
 import { renderConfidenceColor } from '../utils/renderConfidenceColor';
+import { renderFieldWithNewLines } from '../Helpers/renderFieldWithNewLines';
+import { renderFieldWithCheckboxAndNewLines } from '../Helpers/renderFieldWithCheckboxAndNewLine';
 
 const DataTable = forwardRef(
   ({ jsonData, onBookmarkClick, onApprove, editMode = false }, ref) => {
@@ -478,9 +480,19 @@ const DataTable = forwardRef(
                               setHovered({ t: null, i: null })
                             }
                           >
-                            <Typography style={{ marginBottom: 4 }}>
-                              {label}
-                            </Typography>
+                            {col.checkbox_value !== undefined ? (
+                              renderFieldWithCheckboxAndNewLines(
+                                col,
+                                tIdx,
+                                iIdx,
+                                updateCell,
+                                setTables
+                              )
+                            ) : (
+                              <Typography style={{ marginBottom: 4 }}>
+                                {renderFieldWithNewLines(label)}
+                              </Typography>
+                            )}
 
                             {isCheckboxUI ? (
                               <div>
@@ -794,7 +806,10 @@ const DataTable = forwardRef(
                                   setHovered({ t: null, i: null })
                                 }
                               >
-                                {isCheckboxUI ? (
+                                {r.checkbox_value !== undefined ? (
+                                  // ✅ checkbox exists → NEVER show textarea
+                                  <Typography>{''}</Typography>
+                                ) : isCheckboxUI ? (
                                   <div>
                                     {(value || '')
                                       .split('\n')
