@@ -67,9 +67,9 @@ OUTPUT_JSON = BASE_DIR / "data" / "iec_output.json"
 OUTPUT_DOCX = BASE_DIR / "data" / "iec_output.docx"
 OUTPUT_EXCEL = BASE_DIR / "data" / "iec_output.xlsx"
 
-IMAGE_URLS_PATH = BASE_DIR / "image_urls.json"  # adjust if needed
+# IMAGE_URLS_PATH = BASE_DIR / "image_urls.json"  # adjust if needed old
 
-
+IMAGE_URLS_PATH = BASE_DIR / "utility" / "image_urls.json"  # adjust if needed
 
 
 app = FastAPI(title="Queue Worker Service")

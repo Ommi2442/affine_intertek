@@ -6,6 +6,7 @@ from azure.storage.blob import BlobClient
 from azure.storage.blob import BlobServiceClient
 from azure.cosmos import CosmosClient
 import os
+from pathlib import Path
 
 
 AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net'
@@ -26,6 +27,70 @@ cdr_container = database.get_container_client(COSMOS_PROJECT_CDR_CONTAINER)
 
 
 
+# def save_local_json_to_blob_and_cosmos(
+#     file_path: str,
+#     project_id: str
+# ) -> dict:
+#     """
+#     Reads a local JSON file, uploads it to Blob Storage,
+#     and stores the blob URL in Cosmos DB
+#     """
+
+#     path = Path(file_path)
+#     print("\n\n\n file_path:", file_path)
+    
+#     if not path.exists():
+#         raise FileNotFoundError(f"File not found: {file_path}")
+
+#     if path.suffix.lower() != ".json":
+#         raise ValueError("Only .json files are allowed")
+    
+#     filename = path.name
+#     from pathlib import Path
+
+#     print("\n\n\n file_path------:", file_path)
+
+#     path = Path(file_path)
+#     filename = path.stem + f"_download-file{project_id}" + path.suffix
+
+#     print("\n\n\n NEw file_path After---:", filename)
+
+#     # ---------- 1. Read local JSON ----------
+#     with open(path, "r", encoding="utf-8") as f:
+#         json_data = json.load(f)
+
+#     # ---------- 2. Upload to Blob ----------
+#     blob_path = f"Documents/{project_id}/Generated_trf_Report/{filename}"
+#     blob_client = blob_service.get_blob_client(
+#         container=blob_container,
+#         blob=blob_path
+#     )
+
+#     with open(path, "rb") as file_bytes:
+#         blob_client.upload_blob(
+#             file_bytes,
+#             overwrite=True,
+#             content_type="application/json"
+#         )
+
+#     blob_url = blob_client.url
+
+#     # ---------- 3. Save metadata in Cosmos ----------
+#     cosmos_item = {
+#         "id": str(uuid.uuid4()),
+#         "project_id": project_id,
+#         "filename": filename,
+#         "blob_url": blob_url,
+#         "uploaded_on": datetime.utcnow().isoformat() + "Z"
+#     }
+
+#     trf_container.create_item(cosmos_item)
+
+#     return cosmos_item
+
+
+
+
 def save_local_json_to_blob_and_cosmos(
     file_path: str,
     project_id: str
@@ -35,22 +100,23 @@ def save_local_json_to_blob_and_cosmos(
     and stores the blob URL in Cosmos DB
     """
 
+    
     path = Path(file_path)
-    print("\n\n\n file_path:", file_path)
-    import time; time.sleep(2)
+    print("\n\n\nOriginal file_path:", file_path)
+    
     if not path.exists():
         raise FileNotFoundError(f"File not found: {file_path}")
 
     if path.suffix.lower() != ".json":
         raise ValueError("Only .json files are allowed")
-
-    filename = path.name
-
-    # ---------- 1. Read local JSON ----------
+    
+    filename = path.stem + f"_{project_id}" + path.suffix
+    print("\n\n\nModified filename After---:", filename)
+    # ---------- 2. Read local JSON ----------
     with open(path, "r", encoding="utf-8") as f:
         json_data = json.load(f)
 
-    # ---------- 2. Upload to Blob ----------
+    # ---------- 3. Upload to Blob ----------
     blob_path = f"Documents/{project_id}/Generated_trf_Report/{filename}"
     blob_client = blob_service.get_blob_client(
         container=blob_container,
@@ -66,7 +132,7 @@ def save_local_json_to_blob_and_cosmos(
 
     blob_url = blob_client.url
 
-    # ---------- 3. Save metadata in Cosmos ----------
+    # ---------- 4. Save metadata in Cosmos ----------
     cosmos_item = {
         "id": str(uuid.uuid4()),
         "project_id": project_id,
@@ -78,6 +144,7 @@ def save_local_json_to_blob_and_cosmos(
     trf_container.create_item(cosmos_item)
 
     return cosmos_item
+
 
 
 
@@ -188,3 +255,32 @@ def load_trf_json_from_blob(project_id):
         "filename": item["filename"],
         "data": json_data
     }
+
+import os
+from azure.storage.blob import BlobServiceClient
+from pathlib import Path
+
+# ---------- Global configuration ----------
+AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net'
+blob_service = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
+blob_container = 'stintertekesusdev-blob'
+
+
+def download_json_from_blob(project_id: str, local_folder: str = "./downloads") -> str:
+
+    docx_file_path = f"Documents/{project_id}/Generated_trf_Report/iec_output_{project_id}.docx"
+    json_file_path = f"Documents/{project_id}/Generated_trf_Report/iec_output_{project_id}.json"
+
+    Path(local_folder).mkdir(parents=True, exist_ok=True)
+
+    local_file_path = os.path.join(local_folder, f"iec_output_{project_id}.docx")
+
+    blob_client = blob_service.get_blob_client(container=blob_container, blob=docx_file_path)
+
+    with open(local_file_path, "wb") as f:
+        download_stream = blob_client.download_blob()
+        f.write(download_stream.readall())
+
+    print(f"File downloaded to: {local_file_path}")
+    return local_file_path,json_file_path,docx_file_path
+
