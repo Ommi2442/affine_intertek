@@ -205,34 +205,43 @@ const ReportPage = () => {
     setBookmarkOpen(true);
   };
 
-  // ---------------- CITATION → PDF MODAL ----------------
-  const handleCitationLinkClick = (fileUrl, page, text) => {
-    const lowerUrl = fileUrl?.toLowerCase();
+// ---------------- CITATION → PDF MODAL ----------------
+const handleCitationLinkClick = (filename, page, text, blob_url) => {
 
-    // ---------- PDF ----------
-    if (lowerUrl.endsWith('.pdf')) {
-      setViewerType('pdf');
-      setActivePdfUrl(fileUrl);
-      setPdfViewerOpen(true);
+  // 🔹 ONLY change: handle XLSX download via blob_url
+  if (filename?.toLowerCase().endsWith(".xlsx")) {
+    const normalizedUrl = blob_url.startsWith("/")
+      ? blob_url.slice(1)
+      : blob_url;
 
-      setTimeout(() => {
-        if (!pdfViewerRef.current) return;
-        pdfViewerRef.current.goToCitation(page, text);
-      }, 1200);
+    const link = document.createElement("a");
+    link.href = normalizedUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    return;
+  }
 
-      return;
-    }
+  // 🔹 EXISTING PDF LOGIC (UNCHANGED)
+  setPdfViewerOpen(true);
 
-    // ---------- DOCX ----------
-    if (lowerUrl.endsWith('.docx') || lowerUrl.endsWith('.doc')) {
-      setViewerType('docx');
-      setActiveDocUrl(fileUrl);
-      setPdfViewerOpen(true);
-      return;
-    }
+  const url = '/' + filename;
 
-    alert('Preview not supported for this file type.');
-  };
+  // Wait for modal to render
+  setTimeout(() => {
+    if (!pdfViewerRef.current) return;
+
+    pdfViewerRef.current.loadPdf(url);
+
+    // Allow PDF pages + textLayer to render
+    setTimeout(() => {
+      if (!pdfViewerRef.current) return;
+      pdfViewerRef.current.goToCitation(page, text);
+    }, 1200);
+  }, 200);
+};
+
 
   const handleFinalise = () => {
     if (!dataTableRef.current) return;
@@ -423,12 +432,7 @@ const ReportPage = () => {
             }}
           >
             <Button
-              onClick={() => {
-                setPdfViewerOpen(false);
-                setActivePdfUrl(null);
-                setActiveDocUrl(null);
-                setViewerType(null);
-              }}
+              onClick={() => setPdfViewerOpen(false)}
               sx={{
                 position: 'absolute',
                 top: 10,
@@ -442,29 +446,9 @@ const ReportPage = () => {
               Close
             </Button>
 
-            {/* PDF VIEWER MUST BE INSIDE THIS RELATIVE BOX */}
-            {/* -------- DOCUMENT VIEWER -------- */}
-            {viewerType === 'pdf' && activePdfUrl && (
-              <PdfViewer
-                key={activePdfUrl} // 🔥 force remount
-                ref={pdfViewerRef}
-                pdfUrl={activePdfUrl}
-              />
-            )}
 
-            {viewerType === 'docx' && activeDocUrl && (
-              <iframe
-                title="docx-preview"
-                src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
-                  activeDocUrl
-                )}`}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  border: 'none',
-                }}
-              />
-            )}
+            {/* PDF VIEWER MUST BE INSIDE THIS RELATIVE BOX */}
+            <PdfViewer ref={pdfViewerRef} />
           </Box>
         </Box>
       )}
@@ -550,9 +534,10 @@ const ReportPage = () => {
                         }}
                         onClick={() =>
                           handleCitationLinkClick(
-                            item.url,
+                            item.filename,
                             item.page + 1,
-                            item.text
+                            item.text,
+                            item.url
                           )
                         }
                       >
