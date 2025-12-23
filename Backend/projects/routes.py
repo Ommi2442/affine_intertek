@@ -21,6 +21,9 @@ from utility.json_to_blob import *
 from fastapi.responses import FileResponse
 import shutil
 import os
+from fastapi import HTTPException
+from utility.cdr_report.CDR_Pipeline_V2 import main
+from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_local_json_to_blob_and_cosmos
 
 router = APIRouter()
 
@@ -683,10 +686,6 @@ def generate_trf(projectId: str):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-from fastapi import HTTPException
-from utility.cdr_report.CDR_Pipeline_V2 import main
-from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_local_json_to_blob_and_cosmos_cdr
 
 @router.post("/generate-cdr")
 async def generate_trf(projectId: str):

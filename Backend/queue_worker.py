@@ -74,7 +74,6 @@ IMAGE_URLS_PATH = BASE_DIR / "utility" / "image_urls.json"  # adjust if needed
 
 app = FastAPI(title="Queue Worker Service")
 
-
 # ==========================================================
 # HELPER: UPDATE PROJECT PROGRESS
 # ==========================================================
@@ -246,10 +245,8 @@ async def process_message(message) -> bool:
             trf_completed=False
         )
 
-        save_local_json_to_blob_and_cosmos(
-            file_path=str(OUTPUT_JSON),
-            project_id=project_id,
-        )
+        
+        save_local_json_to_blob_and_cosmos(str(OUTPUT_JSON),str(OUTPUT_DOCX),project_id=project_id,)
 
         # 100% completed
         update_project_progress(
