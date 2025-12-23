@@ -222,6 +222,7 @@ const ReportPage = () => {
 
   // ---------------- CITATION → PDF MODAL ----------------
   const handleCitationLinkClick = (filename, page, text, blob_url) => {
+    debugger
     // 🔹 ONLY change: handle XLSX download via blob_url
     if (filename?.toLowerCase().endsWith('.xlsx')) {
       const normalizedUrl = blob_url.startsWith('/')
@@ -624,13 +625,14 @@ const ReportPage = () => {
                           }}
                           onClick={() =>
                             handleCitationLinkClick(
-                              item.url,
-                              item.page_number + 1,
-                              rawText
+                              item.filename,
+                              item.page + 1,
+                              rawText,
+                              item.url
                             )
                           }
                         >
-                          {item.filename} (Page {item.page_number + 1})
+                          {item.filename} (Page {item.page + 1})
                         </Typography>
                       )}
 
@@ -648,7 +650,8 @@ const ReportPage = () => {
                             handleCitationLinkClick(
                               item.file,
                               item.page,
-                              rawText
+                              rawText,
+                              item?.url
                             )
                           }
                         >
@@ -848,14 +851,15 @@ const ReportPage = () => {
                   }}
                   onClick={() =>
                     handleCitationLinkClick(
-                      selectedCitation.url,
-                      selectedCitation.page_number + 1,
-                      selectedCitation.text
+                      item?.filename,
+                      selectedCitation.page + 1,
+                      selectedCitation.text,
+                      selectedCitation.url
                     )
                   }
                 >
                   {selectedCitation.filename} (Page{' '}
-                  {selectedCitation.page_number + 1})
+                  {selectedCitation.page + 1})
                 </Typography>
               )}
 
@@ -872,7 +876,7 @@ const ReportPage = () => {
                     handleCitationLinkClick(
                       selectedCitation.file,
                       selectedCitation.page,
-                      getCitationDialogText()
+                      getCitationDialogText(),
                     )
                   }
                 >

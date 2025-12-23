@@ -358,68 +358,87 @@ async def delete_project(project_id: str):
 
 
 @router.get("/fetch-trf-reports")
-async def fetch_trf_reports(project_id: str):
+async def fetch_trf_reports(
+    project_id: str,
+    file_type: str   # e.g. ".json", ".xlsx", ".pdf"
+):
     try:
-        query = "SELECT * FROM c WHERE c.project_id = @pid"
-        parameters = [{"name": "@pid", "value": project_id}]
+        # ---------------------------------------------------
+        # COSMOS QUERY (FIXED)
+        # ---------------------------------------------------
+        query = """
+            SELECT * FROM c
+            WHERE c.project_id = @pid
+            AND c.file_type = @file_type
+        """
 
-        items = list(trf_container.query_items(
-            query=query,
-            parameters=parameters,
-            enable_cross_partition_query=True
-        ))
+        parameters = [
+            {"name": "@pid", "value": project_id},
+            {"name": "@file_type", "value": file_type},
+        ]
+
+        items = list(
+            trf_container.query_items(
+                query=query,
+                parameters=parameters,
+                enable_cross_partition_query=True
+            )
+        )
 
         if not items:
             raise HTTPException(
                 status_code=404,
-                detail="No TRF reports found for this project_id"
+                detail=f"No TRF reports found for project_id={project_id} and file_type={file_type}"
             )
 
         reports_output = []
 
         for item in items:
-            filename = item.get("filename")  # ex: iec_output.json
+            filename = item.get("filename")
             blob_url = item.get("blob_url")
 
             local_path = LOCAL_TRF_FOLDER / filename
             json_data = None
 
-            # ------------------------------
-            # 1) Try reading from local file
-            # ------------------------------
-            if os.path.exists(local_path):
-                with open(local_path, "r", encoding="utf-8") as f:
-                    json_data = json.load(f)
-            else:
-                # ------------------------------
-                # 2) Fallback → load from BLOB
-                # ------------------------------
-                if blob_url:
-                    blob_client = BlobClient.from_blob_url(blob_url)
-                    downloaded_bytes = blob_client.download_blob().readall()
-                    json_data = json.loads(downloaded_bytes.decode("utf-8"))
+            # ---------------------------------------------------
+            # JSON FILE HANDLING
+            # ---------------------------------------------------
+            if file_type == ".json":
+                # 1) Try local file
+                if os.path.exists(local_path):
+                    with open(local_path, "r", encoding="utf-8") as f:
+                        json_data = json.load(f)
                 else:
-                    json_data = None
+                    # 2) Fallback → Blob
+                    if blob_url:
+                        blob_client = BlobClient.from_blob_url(blob_url)
+                        downloaded_bytes = blob_client.download_blob().readall()
+                        json_data = json.loads(downloaded_bytes.decode("utf-8"))
 
             reports_output.append({
                 "id": item["id"],
+                "project_id": item.get("project_id"),
                 "filename": filename,
+                "file_type": item.get("file_type"),
                 "uploaded_on": item.get("uploaded_on"),
-                "json": json_data,
-                "blob_url": blob_url
+                "json": json_data,      # only populated for .json
+                "blob_url": blob_url,
+                "blob_path": item.get("blob_path"),
             })
 
         return {
             "project_id": project_id,
+            "file_type": file_type,
             "reports": reports_output
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500,
             detail=f"Error fetching TRF reports: {str(e)}"
         )
-
 
 
 
