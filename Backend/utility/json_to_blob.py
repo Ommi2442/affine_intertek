@@ -7,6 +7,10 @@ from azure.storage.blob import BlobServiceClient
 from azure.cosmos import CosmosClient
 import os
 from pathlib import Path
+from pathlib import Path
+from datetime import datetime
+import uuid
+import mimetypes
 
 
 AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net'
@@ -91,59 +95,122 @@ cdr_container = database.get_container_client(COSMOS_PROJECT_CDR_CONTAINER)
 
 
 
+# def save_local_json_to_blob_and_cosmos(
+#     file_path: str,
+#     project_id: str
+# ) -> dict:
+#     """
+#     Reads a local JSON file, uploads it to Blob Storage,
+#     and stores the blob URL in Cosmos DB
+#     """
+
+    
+#     path = Path(file_path)
+#     print("\n\n\nOriginal file_path:", file_path)
+    
+#     if not path.exists():
+#         raise FileNotFoundError(f"File not found: {file_path}")
+
+#     if path.suffix.lower() != ".json":
+#         raise ValueError("Only .json files are allowed")
+    
+#     filename = path.stem + f"_{project_id}" + path.suffix
+#     print("\n\n\nModified filename After---:", filename)
+#     # ---------- 2. Read local JSON ----------
+#     with open(path, "r", encoding="utf-8") as f:
+#         json_data = json.load(f)
+
+#     # ---------- 3. Upload to Blob ----------
+#     blob_path = f"Documents/{project_id}/Generated_trf_Report/{filename}"
+#     blob_client = blob_service.get_blob_client(
+#         container=blob_container,
+#         blob=blob_path
+#     )
+
+#     with open(path, "rb") as file_bytes:
+#         blob_client.upload_blob(
+#             file_bytes,
+#             overwrite=True,
+#             content_type="application/json"
+#         )
+
+#     blob_url = blob_client.url
+
+#     # ---------- 4. Save metadata in Cosmos ----------
+#     cosmos_item = {
+#         "id": str(uuid.uuid4()),
+#         "project_id": project_id,
+#         "filename": filename,
+#         "blob_url": blob_url,
+#         "uploaded_on": datetime.utcnow().isoformat() + "Z"
+#     }
+
+#     trf_container.create_item(cosmos_item)
+
+#     return cosmos_item
+
 def save_local_json_to_blob_and_cosmos(
-    file_path: str,
+    json_file_path: str,
+    docx_file_path: str,
     project_id: str
-) -> dict:
+) -> list:
     """
-    Reads a local JSON file, uploads it to Blob Storage,
-    and stores the blob URL in Cosmos DB
+    Uploads both JSON and DOCX files to Blob Storage
+    and returns Cosmos DB items (list)
     """
 
-    
-    path = Path(file_path)
-    print("\n\n\nOriginal file_path:", file_path)
-    
-    if not path.exists():
-        raise FileNotFoundError(f"File not found: {file_path}")
+    cosmos_items = []
 
-    if path.suffix.lower() != ".json":
-        raise ValueError("Only .json files are allowed")
-    
-    filename = path.stem + f"_{project_id}" + path.suffix
-    print("\n\n\nModified filename After---:", filename)
-    # ---------- 2. Read local JSON ----------
-    with open(path, "r", encoding="utf-8") as f:
-        json_data = json.load(f)
+    for file_path in [json_file_path, docx_file_path]:
+        print("\n\n\n file_path:", json_file_path)
+        print("\n\n\n Docx path:", docx_file_path)
+        
+        path = Path(file_path)
 
-    # ---------- 3. Upload to Blob ----------
-    blob_path = f"Documents/{project_id}/Generated_trf_Report/{filename}"
-    blob_client = blob_service.get_blob_client(
-        container=blob_container,
-        blob=blob_path
-    )
+        if not path.exists():
+            raise FileNotFoundError(f"File not found: {file_path}")
 
-    with open(path, "rb") as file_bytes:
-        blob_client.upload_blob(
-            file_bytes,
-            overwrite=True,
-            content_type="application/json"
+        if path.suffix.lower() not in [".json", ".docx"]:
+            raise ValueError("Only .json and .docx files allowed")
+
+        # ---------- filename ----------
+        filename = f"{path.stem}_{project_id}{path.suffix}"
+        print("\n\n\n Modified filename After---:", filename)
+        # ---------- blob path ----------
+        blob_path = f"Documents/{project_id}/Generated_trf_Report/{filename}"
+
+        blob_client = blob_service.get_blob_client(
+            container=blob_container,
+            blob=blob_path
         )
 
-    blob_url = blob_client.url
+        # ---------- content type ----------
+        content_type, _ = mimetypes.guess_type(path.name)
+        content_type = content_type or "application/octet-stream"
 
-    # ---------- 4. Save metadata in Cosmos ----------
-    cosmos_item = {
-        "id": str(uuid.uuid4()),
-        "project_id": project_id,
-        "filename": filename,
-        "blob_url": blob_url,
-        "uploaded_on": datetime.utcnow().isoformat() + "Z"
-    }
+        # ---------- upload ----------
+        with open(path, "rb") as f:
+            blob_client.upload_blob(
+                f,
+                overwrite=True,
+                content_type=content_type
+            )
 
-    trf_container.create_item(cosmos_item)
+        # ---------- cosmos item ----------
+        cosmos_item = {
+            "id": str(uuid.uuid4()),
+            "project_id": project_id,
+            "filename": filename,
+            "file_type": path.suffix.lower(),
+            "blob_path": blob_path,
+            "blob_url": blob_client.url,
+            "uploaded_on": datetime.utcnow().isoformat() + "Z"
+        }
 
-    return cosmos_item
+        trf_container.create_item(cosmos_item)
+        cosmos_items.append(cosmos_item)
+
+    return cosmos_items
 
 
 
