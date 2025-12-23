@@ -6,7 +6,6 @@ import generateTrfSaga from './features/generateTrf/generateTrfSaga';
 import finaliseReportSaga from './features/finaliseReport/finaliseReportSaga';
 import deleteProjectSaga from './features/deleteProject/deleteProjectSaga';
 import archieveProjectSaga from './features/archieveProject/archieveProjectSaga';
-import downloadReportSaga from './features/downloadReport/downloadReportSaga';
 
 export default function* rootSaga() {
   yield all([
@@ -17,6 +16,5 @@ export default function* rootSaga() {
     finaliseReportSaga(),
     deleteProjectSaga(),
     archieveProjectSaga(),
-    downloadReportSaga(),
   ]);
 }
