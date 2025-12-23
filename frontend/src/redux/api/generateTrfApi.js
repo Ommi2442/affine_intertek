@@ -8,11 +8,11 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 // -------------------------------------------------------
 export const generateTrfApi = async (project_id) => {
   const token = localStorage.getItem('token');
-
+  const file_type = '.json'
   const response = await api.get(
     '/projects/fetch-trf-reports',
     {
-      params: { project_id },
+      params: { project_id , file_type},
       headers: {
         Authorization: `Bearer ${token}`,
       },
