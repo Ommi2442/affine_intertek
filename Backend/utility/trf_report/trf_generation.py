@@ -576,13 +576,51 @@ cosmos_client = CosmosClient(
 )
 
 # MUST MATCH INGESTION EXACTLY
+# vs = AzureCosmosDBNoSqlVectorSearch(
+#     cosmos_client=cosmos_client,
+#     embedding=embeddings,
+#     database_name=DB_NAME,
+#     container_name=CONT_NAME,
+
+#     # REQUIRED keyword-only args
+#     vector_embedding_policy={
+#         "vectorEmbeddings": [
+#             {
+#                 "path": VECTOR_PATH,
+#                 "dataType": "float32",
+#                 "dimensions": EMBED_DIM,
+#                 "distanceFunction": "cosine",
+#             }
+#         ]
+#     },
+
+#     indexing_policy={
+#         "includedPaths": [{"path": "/*"}],
+#         "excludedPaths": [
+#             {"path": "/\"_etag\"/?"}, 
+#             {"path": f"{VECTOR_PATH}/*"}
+#         ],
+#         "vectorIndexes": [
+#             {"path": VECTOR_PATH, "type": "quantizedFlat"}
+#         ],
+#     },
+
+#     cosmos_container_properties={"partition_key": "/id"},
+#     cosmos_database_properties={},
+
+#     vector_search_fields={
+#         "text_field": "text",
+#         "embedding_field": "vector",
+#         "metadata_field": "metadata",
+#     }
+# )
+
 vs = AzureCosmosDBNoSqlVectorSearch(
     cosmos_client=cosmos_client,
     embedding=embeddings,
     database_name=DB_NAME,
     container_name=CONT_NAME,
 
-    # REQUIRED keyword-only args
     vector_embedding_policy={
         "vectorEmbeddings": [
             {
@@ -597,7 +635,7 @@ vs = AzureCosmosDBNoSqlVectorSearch(
     indexing_policy={
         "includedPaths": [{"path": "/*"}],
         "excludedPaths": [
-            {"path": "/\"_etag\"/?"}, 
+            {"path": "/\"_etag\"/?"},
             {"path": f"{VECTOR_PATH}/*"}
         ],
         "vectorIndexes": [
@@ -605,7 +643,10 @@ vs = AzureCosmosDBNoSqlVectorSearch(
         ],
     },
 
-    cosmos_container_properties={"partition_key": "/id"},
+    cosmos_container_properties={
+        "partition_key": PartitionKey(path="/id")
+    },
+
     cosmos_database_properties={},
 
     vector_search_fields={
@@ -614,6 +655,7 @@ vs = AzureCosmosDBNoSqlVectorSearch(
         "metadata_field": "metadata",
     }
 )
+
 def run_trf_generation(
         blob_urls,
         vs,
@@ -662,8 +704,8 @@ def run_trf_generation(
     )
 
     tasks, item_refs = build_tasks_with_custom_prompt_grey(data, image_urls)
-    # tasks=tasks[:15]
-    # item_refs=item_refs[:15]
+    # tasks=tasks[:5]
+    # item_refs=item_refs[:5]
     results = process_tasks_with_batches_parallel_grey(
         tasks,
         item_refs,

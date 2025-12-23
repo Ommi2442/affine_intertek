@@ -697,7 +697,8 @@ async def generate_trf(projectId: str):
         import sys, subprocess
         subprocess.run([sys.executable, "-m", "utility.cdr_report.CDR_Pipeline_V2.main"], check=True)
         
-        path = r"C:\Users\affine\Desktop\intrtk\InterTek-AI-Repo\Backend\utility\cdr_report\CDR_Pipeline_V2\cdr_output.json"
+    
+        
         cosmos_data = save_local_json_to_blob_and_cosmos_cdr(
             file_path=path,
             project_id=projectId
@@ -717,16 +718,14 @@ async def generate_trf(projectId: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/download-file")
-def download_file():
-    SOURCE_FILE_PATH = r"C:\Users\affine\Desktop\new_intertek\InterTek-AI-Repo\Backend\data\iec_output.docx"
-    if not os.path.exists(SOURCE_FILE_PATH):
-        raise HTTPException(status_code=404, detail="Source file not found")
-
-
-    shutil.copyfile(SOURCE_FILE_PATH, "iec_output.docx")
-
+def download_file(project_id: str):
+    
+    local_file_path,json_file_path,docx_file_path = download_json_from_blob(project_id)
+    data={"message":"File downloaded successfully","project_id":project_id,"docx_file_path":docx_file_path,
+          "json_path":json_file_path
+          }
     return FileResponse(
-        path=SOURCE_FILE_PATH,
-        filename="iec_output.docx",
-        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        path=local_file_path,
+        filename=f"iec_output_{project_id}.docx",
+        media_type="application/docx"
     )
