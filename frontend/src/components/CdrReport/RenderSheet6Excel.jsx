@@ -4,75 +4,92 @@ import { Box, Typography, TextField, Divider } from '@mui/material';
 
 /* ---------------- COMPONENT ---------------- */
 const RenderSheet6Excel = ({ sheet, editMode, updateField }) => {
-  /* ✅ SAFETY GUARD */
-  if (!sheet || !Array.isArray(sheet.Items)) {
-    return null;
-  }
-
-  const renderTextWithInputs = (text, item) => {
-    if (!text) return null;
-
-    const parts = text.split('___');
-
-    return parts.map((part, idx) => (
-      <React.Fragment key={idx}>
-        <Typography component="span">{part}</Typography>
-
-        {idx < parts.length - 1 && (
-          <TextField
-            size="small"
-            sx={{ mx: 1, width: 120 }}
-            value={item[`val${idx + 1}`] ?? ''}
-            disabled={!(editMode && item.user_editable)}
-            onChange={(e) =>
-              updateField(
-                sheet.sheet_no,
-                `${item.question_cell}_val${idx + 1}`,
-                e.target.value
-              )
-            }
-          />
-        )}
-      </React.Fragment>
-    ));
-  };
+  if (!sheet || !Array.isArray(sheet.Items)) return null;
 
   return (
     <Box>
       {sheet.Items.map((item, idx) => {
-        let content = null;
+        /* ---------------- LABEL LOGIC ---------------- */
+        let label = item.prefix || item.field || '';
 
-        /* -------- CASE 1: NO CHECKBOX -------- */
-        if (item.checkbox === undefined || item.checkbox === null) {
-          content = (
-            <Typography
-              sx={{
-                fontWeight: item.task_type === 'title' ? 700 : 400,
-                fontSize: item.task_type === 'title' ? 16 : 14,
-              }}
-            >
-              {item.field}
-            </Typography>
-          );
+        // ✅ Take value AFTER dash only
+        if (label.includes('-')) {
+          label = label.split('-').slice(1).join('-').trim();
         }
 
-        /* -------- CASE 2: CHECKBOX LOGIC -------- */
-        if (item.checkbox !== undefined) {
-          const statement = item.checkbox === true ? item.st1 : item.st2;
-
-          content = (
-            <Typography component="div">
-              <strong>{item.field}</strong>{' '}
-              {renderTextWithInputs(statement, item)}
-            </Typography>
-          );
-        }
+        const valueText = item.value ?? '';
+        const isLongText = valueText.length > 80 || valueText.includes('\n');
 
         return (
           <Box key={idx} sx={{ py: 1 }}>
-            {content}
+            {/* ================= READ ONLY ================= */}
+            {!item.user_editable ? (
+              <>
+                <Typography
+                  sx={{
+                    fontSize: 14,
+                    fontWeight: 500,
+                    mb: 0.5,
+                  }}
+                >
+                  {label}
+                </Typography>
 
-            {/* ✅ PARTITION LINE */}
+                <Typography
+                  sx={{
+                    fontSize: 14,
+                    whiteSpace: 'pre-wrap',
+                    width: '100%',
+                  }}
+                >
+                  {valueText}
+                </Typography>
+              </>
+            ) : (
+              /* ================= EDITABLE ================= */
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  width: '100%',
+                  gap: 2,
+                }}
+              >
+                {/* -------- LABEL (20%) -------- */}
+                <Box sx={{ width: '20%' }}>
+                  <Typography
+                    sx={{
+                      fontSize: 14,
+                      fontWeight: 500,
+                      whiteSpace: 'pre-wrap',
+                    }}
+                  >
+                    {label}
+                  </Typography>
+                </Box>
+
+                {/* -------- VALUE (80%) -------- */}
+                <Box sx={{ width: '80%' }}>
+                  <TextField
+                    size="small"
+                    fullWidth
+                    multiline={isLongText}
+                    minRows={isLongText ? 3 : 1}
+                    maxRows={12}
+                    value={valueText}
+                    disabled={!editMode}
+                    onChange={(e) =>
+                      updateField(
+                        sheet.sheet_no,
+                        item.question_cell,
+                        e.target.value
+                      )
+                    }
+                  />
+                </Box>
+              </Box>
+            )}
+
             <Divider sx={{ mt: 2 }} />
           </Box>
         );

@@ -23,7 +23,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 
 import { generateTrfApi } from '../../redux/api/generateTrfApi';
-import localCdrJson from '../../utils/cdr_payload_3.json';
+//import localCdrJson from '../../utils/cdr_payload_3.json';
+import localCdrJson from '../../utils/cdr_payload_v5_updated.json';
 import CdrReport from '../../components/CdrReport/CdrReport';
 //import localJson from '../../utils/pta_final_6.json';
 import PdfViewer from '../../components/PdfViewer';
@@ -31,6 +32,8 @@ import localJson from '../../utils/iec_output_1.json';
 import ConfidenceScore from './ConfidenceScore';
 import { truncateWords } from '../../Helpers/truncateWords';
 import { normalizeNewLines } from '../../Helpers/normalizeNewLines';
+import { RenderImageThumbnails } from '../../Helpers/renderImageThumbnails';
+import { downloadReportRequest } from '../../redux/features/downloadReport/downloadReportSlice';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -236,6 +239,10 @@ const ReportPage = () => {
     const updatedPayload = dataTableRef.current.getUpdatedJson();
     dispatch(finaliseReportRequest(updatedPayload));
     setIsFinalise(true);
+  };
+
+  const handleDownload = () => {
+    dispatch(downloadReportRequest());
   };
 
   // ---------------- LEFT PANEL ----------------
@@ -467,7 +474,7 @@ const ReportPage = () => {
         <Box className="bookmark-panel">
           {/* Header */}
           <Box className="bookmark-header">
-            <Typography className="bookmark-title">Citation</Typography>
+            <Typography className="bookmark-title"></Typography>
             <Button size="small" onClick={() => setBookmarkOpen(false)}>
               ✕
             </Button>
@@ -486,7 +493,14 @@ const ReportPage = () => {
           {/* SUPPORTING TEXT + HYPERLINKS (Text-level placement) */}
           {bookmarkData?.textSupportRaw?.length > 0 && (
             <Box mt={2}>
-              <Typography sx={{ fontWeight: 600, mb: 1 }}>
+              <Typography sx={{ fontWeight: 600, mb: 2 }}>
+                Supporting Images
+              </Typography>
+
+              {/* 🔹 IMAGE THUMBNAILS */}
+              <RenderImageThumbnails images={bookmarkData?.image_support} />
+
+              <Typography sx={{ fontWeight: 600, mt: 2, mb: 2 }}>
                 Supporting Text
               </Typography>
 
@@ -495,7 +509,7 @@ const ReportPage = () => {
                 const truncatedText = truncateWords(cleanedText, 20);
 
                 const isTruncated = item.text.split(/\s+/).length > 20;
-
+                //console.log('urll', item.url);
                 return (
                   <Card key={idx} sx={{ mb: 2 }}>
                     <CardContent>
@@ -578,6 +592,7 @@ const ReportPage = () => {
                     text: 'Download',
                     icon: '/images/download_icon.png',
                     bg: '#77D5EA',
+                    action: handleDownload,
                   },
                   {
                     text: 'Missing Field Re..',
