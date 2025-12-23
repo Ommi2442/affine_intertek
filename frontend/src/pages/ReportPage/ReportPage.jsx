@@ -1,6 +1,7 @@
 /* eslint quotes: "off" */
 /* eslint-disable */
 import React, { useRef, useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -13,6 +14,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Tooltip,
 } from '@mui/material';
 import './ReportPage.css';
 import { useDispatch, useSelector } from 'react-redux';
@@ -67,6 +69,19 @@ const ReportPage = () => {
   const [selectedCitation, setSelectedCitation] = React.useState(null);
 
   const myData = useSelector((state) => state?.trf);
+
+  const { state } = useLocation();
+
+    // 🔹 Single source of truth for header info
+    const [projectMeta, setProjectMeta] = useState({
+      standard: state?.standard || '',
+      projectId: state?.projectId || localStorage.getItem('projectId') || '',
+      clientName: state?.clientName || '',
+      product: state?.product || '',
+    });
+  
+    const { standard, projectId, clientName, product } = projectMeta;
+  
 
   const STAGES = [
     { label: 'Indexing', threshold: 10 },
@@ -342,6 +357,38 @@ const ReportPage = () => {
     }
     return (
       <Card className="left-card">
+      <Box sx={{ mt: 2, ml:1, display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Tooltip
+          arrow
+          placement="bottom-start"
+          title={
+            <Box sx={{ fontSize: '13px !important', lineHeight: 1.6 }}>
+              <div>
+                <b>Standard:</b> {standard}
+              </div>
+              <div>
+                <b>Project ID:</b> {projectId}
+              </div>
+              <div>
+                <b>Client Name:</b> {clientName}
+              </div>
+              <div>
+                <b>Product:</b> {product}
+              </div>
+            </Box>
+          }
+        >
+          <Typography
+            sx={{
+              fontSize: '15px',
+              color: 'text.secondary',
+              cursor: 'help',
+            }}
+          >
+            ({standard} / {projectId} / {clientName} / {product})
+          </Typography>
+        </Tooltip>
+      </Box>
         <CardContent className="left-content">
           <Box className="report-header">
             <img
