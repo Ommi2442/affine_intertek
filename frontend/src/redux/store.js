@@ -9,7 +9,7 @@ import deleteProjectReducer from '../redux/features/deleteProject/deleteProjectS
 import archieveProjectReducer from '../redux/features/archieveProject/archieveProjectSlice';
 import confidenceReducer from '../redux/features/confidence/confidenceSlice';
 import rootSaga from './rootSaga';
-import downloadReportReducer from '../redux/features/downloadReport/downloadReportSlice';
+//import downloadReportReducer from '../redux/features/downloadReport/downloadReportSlice';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -23,7 +23,7 @@ export const store = configureStore({
     deleteProj: deleteProjectReducer,
     archieveProj: archieveProjectReducer,
     confidence: confidenceReducer,
-    downloadReport: downloadReportReducer,
+    //downloadReport: downloadReportReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware),

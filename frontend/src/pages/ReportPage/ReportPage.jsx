@@ -33,7 +33,7 @@ import ConfidenceScore from './ConfidenceScore';
 import { truncateWords } from '../../Helpers/truncateWords';
 import { normalizeNewLines } from '../../Helpers/normalizeNewLines';
 import { RenderImageThumbnails } from '../../Helpers/renderImageThumbnails';
-import { downloadReportRequest } from '../../redux/features/downloadReport/downloadReportSlice';
+//import { downloadReportRequest } from '../../redux/features/downloadReport/downloadReportSlice';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -248,8 +248,11 @@ const ReportPage = () => {
     setIsFinalise(true);
   };
 
-  const handleDownload = () => {
-    dispatch(downloadReportRequest());
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+  const handleDownload = (projectId) => {
+    window.open(`${BASE_URL}/projects/download-file?project_id=${projectId}`);
+    //dispatch(downloadReportRequest(projectId));
   };
 
   const getCitationDialogText = () => {
@@ -644,7 +647,7 @@ const ReportPage = () => {
                     text: 'Download',
                     icon: '/images/download_icon.png',
                     bg: '#77D5EA',
-                    action: handleDownload,
+                    action: () => handleDownload(projectID),
                   },
                   {
                     text: 'Missing Field Re..',
