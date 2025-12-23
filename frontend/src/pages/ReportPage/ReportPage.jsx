@@ -205,43 +205,41 @@ const ReportPage = () => {
     setBookmarkOpen(true);
   };
 
-// ---------------- CITATION → PDF MODAL ----------------
-const handleCitationLinkClick = (filename, page, text, blob_url) => {
+  // ---------------- CITATION → PDF MODAL ----------------
+  const handleCitationLinkClick = (filename, page, text, blob_url) => {
+    // 🔹 ONLY change: handle XLSX download via blob_url
+    if (filename?.toLowerCase().endsWith('.xlsx')) {
+      const normalizedUrl = blob_url.startsWith('/')
+        ? blob_url.slice(1)
+        : blob_url;
 
-  // 🔹 ONLY change: handle XLSX download via blob_url
-  if (filename?.toLowerCase().endsWith(".xlsx")) {
-    const normalizedUrl = blob_url.startsWith("/")
-      ? blob_url.slice(1)
-      : blob_url;
+      const link = document.createElement('a');
+      link.href = normalizedUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      return;
+    }
 
-    const link = document.createElement("a");
-    link.href = normalizedUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    return;
-  }
+    // 🔹 EXISTING PDF LOGIC (UNCHANGED)
+    setPdfViewerOpen(true);
 
-  // 🔹 EXISTING PDF LOGIC (UNCHANGED)
-  setPdfViewerOpen(true);
+    const url = '/' + filename;
 
-  const url = '/' + filename;
-
-  // Wait for modal to render
-  setTimeout(() => {
-    if (!pdfViewerRef.current) return;
-
-    pdfViewerRef.current.loadPdf(url);
-
-    // Allow PDF pages + textLayer to render
+    // Wait for modal to render
     setTimeout(() => {
       if (!pdfViewerRef.current) return;
-      pdfViewerRef.current.goToCitation(page, text);
-    }, 1200);
-  }, 200);
-};
 
+      pdfViewerRef.current.loadPdf(url);
+
+      // Allow PDF pages + textLayer to render
+      setTimeout(() => {
+        if (!pdfViewerRef.current) return;
+        pdfViewerRef.current.goToCitation(page, text);
+      }, 1200);
+    }, 200);
+  };
 
   const handleFinalise = () => {
     if (!dataTableRef.current) return;
@@ -252,6 +250,30 @@ const handleCitationLinkClick = (filename, page, text, blob_url) => {
 
   const handleDownload = () => {
     dispatch(downloadReportRequest());
+  };
+
+  const getCitationDialogText = () => {
+    if (!selectedCitation) return '';
+
+    /* -------- TRF -------- */
+    if (reportClick === 'trf') {
+      return normalizeNewLines(selectedCitation.text || '');
+    }
+
+    /* -------- CDR -------- */
+    if (reportClick === 'cdr') {
+      // case 1: string
+      if (typeof selectedCitation === 'string') {
+        return normalizeNewLines(selectedCitation);
+      }
+
+      // case 2: object with content
+      if (typeof selectedCitation.content === 'string') {
+        return normalizeNewLines(selectedCitation.content);
+      }
+    }
+
+    return '';
   };
 
   // ---------------- LEFT PANEL ----------------
@@ -381,6 +403,7 @@ const handleCitationLinkClick = (filename, page, text, blob_url) => {
               //jsonData={localJson} //localJson load
               editMode={editMode}
               onBookmarkClick={handleBookmarkFromChild}
+              reportType="trf"
             />
           )}
 
@@ -391,6 +414,8 @@ const handleCitationLinkClick = (filename, page, text, blob_url) => {
               jsonData={localCdrJson}
               editMode={editMode}
               projectId={localStorage.getItem('projectId')}
+              onBookmarkClick={handleBookmarkFromChild}
+              reportType="cdr"
             />
           )}
         </CardContent>
@@ -446,7 +471,6 @@ const handleCitationLinkClick = (filename, page, text, blob_url) => {
               Close
             </Button>
 
-
             {/* PDF VIEWER MUST BE INSIDE THIS RELATIVE BOX */}
             <PdfViewer ref={pdfViewerRef} />
           </Box>
@@ -488,11 +512,33 @@ const handleCitationLinkClick = (filename, page, text, blob_url) => {
                 Supporting Text
               </Typography>
 
-              {bookmarkData.textSupportRaw.map((item, idx) => {
-                const cleanedText = normalizeNewLines(item.text);
+              {bookmarkData?.textSupportRaw?.map((item, idx) => {
+                //console.log('Itemm', item);
+                let rawText = '';
+                let isTruncated = false;
+
+                /* -------- TRF -------- */
+                if (reportClick === 'trf') {
+                  rawText = item?.text || '';
+                  isTruncated = rawText.split(/\s+/).length > 20;
+                }
+
+                /* -------- CDR -------- */
+                if (reportClick === 'cdr') {
+                  // case 1: string
+                  if (typeof item === 'string') {
+                    rawText = item;
+                  }
+                  // case 2: object with content
+                  else if (typeof item?.content === 'string') {
+                    rawText = item.content;
+                    isTruncated = rawText.split(/\s+/).length > 20;
+                  }
+                }
+
+                const cleanedText = normalizeNewLines(rawText);
                 const truncatedText = truncateWords(cleanedText, 20);
 
-                const isTruncated = item.text.split(/\s+/).length > 20;
                 //console.log('urll', item.url);
                 return (
                   <Card key={idx} sx={{ mb: 2 }}>
@@ -519,30 +565,51 @@ const handleCitationLinkClick = (filename, page, text, blob_url) => {
                         )}
                       </Typography>
 
+                      {/* ---------- TRF LINK ---------- */}
+                      {reportClick === 'trf' && item?.filename && (
+                        <Typography
+                          sx={{
+                            fontSize: 13,
+                            mt: 1,
+                            color: '#1976d2',
+                            cursor: 'pointer',
+                            textDecoration: 'underline',
+                          }}
+                          onClick={() =>
+                            handleCitationLinkClick(
+                              item.url,
+                              item.page_number + 1,
+                              rawText
+                            )
+                          }
+                        >
+                          {item.filename} (Page {item.page_number + 1})
+                        </Typography>
+                      )}
+
+                      {/* ---------- CDR LINK ---------- */}
+                      {reportClick === 'cdr' && item?.file && (
+                        <Typography
+                          sx={{
+                            fontSize: 13,
+                            mt: 1,
+                            color: '#1976d2',
+                            cursor: 'pointer',
+                            textDecoration: 'underline',
+                          }}
+                          onClick={() =>
+                            handleCitationLinkClick(
+                              item.file,
+                              item.page,
+                              rawText
+                            )
+                          }
+                        >
+                          {item.file} (Page {item.page})
+                        </Typography>
+                      )}
+
                       {/* File + page */}
-                      <Typography
-                        sx={{
-                          fontSize: 13,
-                          mt: 1,
-                          color: '#1976d2',
-                          textDecoration: 'underline',
-                          cursor: 'pointer',
-                          display: 'block',
-                          wordBreak: 'break-word',
-                          overflowWrap: 'anywhere',
-                          maxWidth: '100%',
-                        }}
-                        onClick={() =>
-                          handleCitationLinkClick(
-                            item.filename,
-                            item.page + 1,
-                            item.text,
-                            item.url
-                          )
-                        }
-                      >
-                        {item.filename} (Page {item.page + 1})
-                      </Typography>
                     </CardContent>
                   </Card>
                 );
@@ -658,8 +725,21 @@ const handleCitationLinkClick = (filename, page, text, blob_url) => {
           </Card>
 
           {/* CONFIDENCE CARD */}
-          {/* <ConfidenceScore data={trfJson} /> */}
-          <ConfidenceScore data={localJson} />
+          {/* {((reportClick === 'trf' && trfJson) ||
+            (reportClick === 'cdr' && localCdrJson)) && (
+            <ConfidenceScore
+              data={reportClick === 'trf' ? trfJson : localCdrJson}
+              reportType={reportClick}
+            />
+          )} */}
+
+          {((reportClick === 'trf' && localJson) ||
+            (reportClick === 'cdr' && localCdrJson)) && (
+            <ConfidenceScore
+              data={reportClick === 'trf' ? localJson : localCdrJson}
+              reportType={reportClick}
+            />
+          )}
         </Box>
       )}
       <Dialog
@@ -706,28 +786,52 @@ const handleCitationLinkClick = (filename, page, text, blob_url) => {
                   mb: 2,
                 }}
               >
-                {normalizeNewLines(selectedCitation.text)}
+                {getCitationDialogText()}
+                {/* {normalizeNewLines(selectedCitation.text)} */}
               </Typography>
 
-              <Typography
-                sx={{
-                  fontSize: 13,
-                  fontWeight: 500,
-                  color: '#1976d2',
-                  cursor: 'pointer',
-                  textDecoration: 'underline',
-                  display: 'inline-block',
-                }}
-                onClick={() =>
-                  handleCitationLinkClick(
-                    selectedCitation.url,
-                    selectedCitation.page + 1,
-                    selectedCitation.text
-                  )
-                }
-              >
-                {selectedCitation.filename} (Page {selectedCitation.page + 1})
-              </Typography>
+              {reportClick === 'trf' && selectedCitation?.filename && (
+                <Typography
+                  sx={{
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: '#1976d2',
+                    cursor: 'pointer',
+                    textDecoration: 'underline',
+                  }}
+                  onClick={() =>
+                    handleCitationLinkClick(
+                      selectedCitation.url,
+                      selectedCitation.page_number + 1,
+                      selectedCitation.text
+                    )
+                  }
+                >
+                  {selectedCitation.filename} (Page{' '}
+                  {selectedCitation.page_number + 1})
+                </Typography>
+              )}
+
+              {reportClick === 'cdr' && selectedCitation?.file && (
+                <Typography
+                  sx={{
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: '#1976d2',
+                    cursor: 'pointer',
+                    textDecoration: 'underline',
+                  }}
+                  onClick={() =>
+                    handleCitationLinkClick(
+                      selectedCitation.file,
+                      selectedCitation.page,
+                      getCitationDialogText()
+                    )
+                  }
+                >
+                  {selectedCitation.file} (Page {selectedCitation.page})
+                </Typography>
+              )}
             </>
           )}
         </DialogContent>
