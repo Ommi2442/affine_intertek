@@ -1,18 +1,36 @@
 /* eslint-disable */
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { Box, Typography, TextField, Divider } from '@mui/material';
+import HoverActionWrapper from '../Common/HoverActionsWrapper';
+import CommentDialog from '../CommentDialog';
+import { useCommentActions } from '../Common/useCommentActions';
 
 /* ---------------- COMPONENT ---------------- */
-const RenderSheet6Excel = ({ sheet, editMode, updateField }) => {
+const RenderSheet6Excel = ({
+  sheet,
+  editMode,
+  updateField,
+  onBookmarkClick,
+  handleApprove,
+}) => {
   if (!sheet || !Array.isArray(sheet.Items)) return null;
+
+  const [hovered, setHovered] = useState({ i: null });
+  const {
+    isCommentOpen,
+    setIsCommentOpen,
+    commentHistory,
+    currentCommentText,
+    setCurrentCommentText,
+    openComment,
+    saveComment,
+  } = useCommentActions(sheet);
 
   return (
     <Box>
       {sheet.Items.map((item, idx) => {
-        /* ---------------- LABEL LOGIC ---------------- */
         let label = item.prefix || item.field || '';
 
-        // ✅ Take value AFTER dash only
         if (label.includes('-')) {
           label = label.split('-').slice(1).join('-').trim();
         }
@@ -22,31 +40,17 @@ const RenderSheet6Excel = ({ sheet, editMode, updateField }) => {
 
         return (
           <Box key={idx} sx={{ py: 1 }}>
-            {/* ================= READ ONLY ================= */}
             {!item.user_editable ? (
               <>
-                <Typography
-                  sx={{
-                    fontSize: 14,
-                    fontWeight: 500,
-                    mb: 0.5,
-                  }}
-                >
+                <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
                   {label}
                 </Typography>
 
-                <Typography
-                  sx={{
-                    fontSize: 14,
-                    whiteSpace: 'pre-wrap',
-                    width: '100%',
-                  }}
-                >
+                <Typography sx={{ fontSize: 14, whiteSpace: 'pre-wrap' }}>
                   {valueText}
                 </Typography>
               </>
             ) : (
-              /* ================= EDITABLE ================= */
               <Box
                 sx={{
                   display: 'flex',
@@ -55,37 +59,45 @@ const RenderSheet6Excel = ({ sheet, editMode, updateField }) => {
                   gap: 2,
                 }}
               >
-                {/* -------- LABEL (20%) -------- */}
                 <Box sx={{ width: '20%' }}>
-                  <Typography
-                    sx={{
-                      fontSize: 14,
-                      fontWeight: 500,
-                      whiteSpace: 'pre-wrap',
-                    }}
-                  >
+                  <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
                     {label}
                   </Typography>
                 </Box>
 
-                {/* -------- VALUE (80%) -------- */}
                 <Box sx={{ width: '80%' }}>
-                  <TextField
-                    size="small"
-                    fullWidth
-                    multiline={isLongText}
-                    minRows={isLongText ? 3 : 1}
-                    maxRows={12}
-                    value={valueText}
-                    disabled={!editMode}
-                    onChange={(e) =>
-                      updateField(
-                        sheet.sheet_no,
-                        item.question_cell,
-                        e.target.value
-                      )
-                    }
-                  />
+                  <div
+                    className="dt-value-column dt-relative"
+                    onMouseEnter={() => setHovered({ i: idx })}
+                    onMouseLeave={() => setHovered({ i: null })}
+                  >
+                    <TextField
+                      size="small"
+                      fullWidth
+                      multiline={isLongText}
+                      minRows={isLongText ? 3 : 1}
+                      maxRows={12}
+                      value={valueText}
+                      disabled={!editMode}
+                      onChange={(e) =>
+                        updateField(
+                          sheet.sheet_no,
+                          item.question_cell,
+                          e.target.value
+                        )
+                      }
+                    />
+
+                    <HoverActionWrapper
+                      show={hovered.i === idx}
+                      onApprove={() => handleApprove?.(idx)}
+                      onComment={() => openComment(sheet.sheet_no, idx)}
+                      onBookmark={() => {
+                        const row = sheet.Items[idx];
+                        onBookmarkClick?.(row ?? { __i: idx });
+                      }}
+                    />
+                  </div>
                 </Box>
               </Box>
             )}
@@ -94,6 +106,16 @@ const RenderSheet6Excel = ({ sheet, editMode, updateField }) => {
           </Box>
         );
       })}
+
+      {/* ✅ COMMENT DIALOG */}
+      <CommentDialog
+        open={isCommentOpen}
+        onClose={() => setIsCommentOpen(false)}
+        comments={commentHistory}
+        currentComment={currentCommentText}
+        setCurrentComment={setCurrentCommentText}
+        onSubmit={saveComment}
+      />
     </Box>
   );
 };

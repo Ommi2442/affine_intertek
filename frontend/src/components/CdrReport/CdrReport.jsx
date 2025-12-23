@@ -37,7 +37,10 @@ const STORAGE_KEY_PREFIX = 'cdr_report_';
 
 /* ---------------- COMPONENT ---------------- */
 const CdrReport = forwardRef(
-  ({ jsonData, editMode = false, projectId }, ref) => {
+  (
+    { jsonData, editMode = false, projectId, openComment, onBookmarkClick },
+    ref
+  ) => {
     const storageKey = `${STORAGE_KEY_PREFIX}${projectId ?? 'default'}`;
     const isRefreshRef = useRef(false);
 
@@ -137,6 +140,8 @@ const CdrReport = forwardRef(
                   sheet={sheet}
                   editMode={editMode}
                   updateField={updateField}
+                  openComment={openComment}
+                  onBookmarkClick={onBookmarkClick}
                 />
               ) : (
                 <RenderSheetDefaultExcel
