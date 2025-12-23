@@ -704,8 +704,8 @@ def run_trf_generation(
     )
 
     tasks, item_refs = build_tasks_with_custom_prompt_grey(data, image_urls)
-    tasks=tasks[:5]
-    item_refs=item_refs[:5]
+    # tasks=tasks[:5]
+    # item_refs=item_refs[:5]
     results = process_tasks_with_batches_parallel_grey(
         tasks,
         item_refs,
