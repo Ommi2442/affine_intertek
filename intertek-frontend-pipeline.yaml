@@ -1,7 +1,10 @@
 trigger:
   branches:
     include:
-      - feature/devops
+      - Dev
+  paths:
+    include:
+      - frontend
 
 variables:
 - group: intertek-frontend-dev
