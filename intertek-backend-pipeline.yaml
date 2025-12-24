@@ -1,7 +1,10 @@
 trigger:
   branches:
     include:
-    - feature/devops
+    - Dev
+  paths:
+    include:
+      - Backend
 
 variables:
 - group: intertek-backend-dev
