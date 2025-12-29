@@ -1,20 +1,34 @@
 export const calculateConfidenceScore = (data) => {
-  console.log('data', data);
-  if (!data?.Tables) return null;
+  if (!data) return null;
 
-  // flatten all items from all tables
-  const allItems = data.Tables.flatMap((table) => table.Items || []);
-  console.log('allItem', allItems);
+  // 🔹 support TRF (Tables) and CDR (Sheets)
+  const blocks = data.Tables || data.Sheets;
+  if (!Array.isArray(blocks)) return null;
 
-  // AI fillable fields with confidence
-  const aiFields = allItems.filter(
+  // 🔹 collect all possible entries
+  const allEntries = blocks.flatMap((block) => [
+    ...(block.Items || []),
+    ...(block.Rows || []), // CDR support
+  ]);
+
+  // 🔹 normalize confidence (TRF: 1–100, CDR: 0–1)
+  const normalizeConfidence = (value) => {
+    const num = Number(value);
+    if (Number.isNaN(num)) return null;
+    return num <= 1 ? Math.round(num * 100) : Math.round(num);
+  };
+
+  // 🔹 filter valid AI confidence fields
+  const aiFields = allEntries.filter(
     (item) =>
-      item.ai_fillable === true &&
-      item.accuracy_level === true &&
-      typeof item.confidence === 'number'
+      item?.ai_fillable === true &&
+      item?.accuracy_level === true &&
+      item?.confidence !== undefined &&
+      normalizeConfidence(item.confidence) !== null
   );
 
   const totalAiFields = aiFields.length;
+  if (totalAiFields === 0) return null;
 
   let high = 0;
   let medium = 0;
@@ -23,12 +37,15 @@ export const calculateConfidenceScore = (data) => {
   let sumConfidence = 0;
 
   aiFields.forEach((field) => {
-    // 👇 user approved overrides AI confidence
+    // 👇 user-approved fields override AI
     if (field.is_user_approved === true) {
       userEditedCount++;
       return;
     }
-    const c = field.confidence;
+
+    const c = normalizeConfidence(field.confidence);
+    if (c === null) return;
+
     sumConfidence += c;
 
     if (c >= 75) high++;
@@ -36,9 +53,7 @@ export const calculateConfidenceScore = (data) => {
     else low++;
   });
 
-  const avgConfidence = totalAiFields
-    ? Math.round(sumConfidence / totalAiFields)
-    : 0;
+  const avgConfidence = Math.round(sumConfidence / totalAiFields);
 
   const overallLabel =
     avgConfidence < 50 ? 'Low' : avgConfidence < 75 ? 'Medium' : 'High';
