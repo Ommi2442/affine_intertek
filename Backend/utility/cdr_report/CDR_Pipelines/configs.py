@@ -80,23 +80,23 @@ LLM_CONTEXT_MODEL = VISION_MODEL
 
 # ==================== FILE PATHS ====================
 
-TEMPLATE_PATH = Path("cdr_payload.json")  # your uploaded template
+# TEMPLATE_PATH = Path("cdr_payload.json")  # your uploaded template
 
-#c1
-MASTER_SHEET_PATH = "master_bom.xlsx"
-OUTPUT_PATH_FINAL = "s4c1_cc_raw.xlsx"
-CRITICAL_ONLY_EXCEL = "s4c1_cc_filtered.xlsx"
-FINAL_OUTPUT_WITH_EVIDENCE = "s4c1_cc_final.xlsx"
-OUTPUT_JSON_COMPONENTS = "s4.json"
-OUTPUT_JSON_METADATA = "s3.json"
+# #c1
+# MASTER_SHEET_PATH = "master_bom.xlsx"
+# OUTPUT_PATH_FINAL = "s4c1_cc_raw.xlsx"
+# CRITICAL_ONLY_EXCEL = "s4c1_cc_filtered.xlsx"
+# FINAL_OUTPUT_WITH_EVIDENCE = "s4c1_cc_final.xlsx"
+# OUTPUT_JSON_COMPONENTS = "s4.json"
+# OUTPUT_JSON_METADATA = "s3.json"
 
-#c2
-OUTPUT_EXCEL_RAW = "s4c2_cc_raw.xlsx"
-OUTPUT_EXCEL_CLASSIFIED = "s4c2_cc_filtered.xlsx"
-OUTPUT_EXCEL_DEDUPED = "s4c2_cc_final.xlsx"
-OUTPUT_JSON_S4 = "s4.json"
-OUTPUT_JSON_S3 = "s3.json"
-DOWNLOAD_DIR = "downloaded_guides"
+# #c2
+# OUTPUT_EXCEL_RAW = "s4c2_cc_raw.xlsx"
+# OUTPUT_EXCEL_CLASSIFIED = "s4c2_cc_filtered.xlsx"
+# OUTPUT_EXCEL_DEDUPED = "s4c2_cc_final.xlsx"
+# OUTPUT_JSON_S4 = "s4.json"
+# OUTPUT_JSON_S3 = "s3.json"
+# DOWNLOAD_DIR = "downloaded_guides"
 
 # ==================== SETTINGS ====================
 MAX_WORKERS = 4
@@ -115,3 +115,28 @@ GUIDE_KEYWORDS = [
 
 
 
+#hari changes
+
+from pathlib import Path
+
+# Base directory of this file (CDR_Pipelines)
+BASE_DIR = Path(__file__).resolve().parent
+
+# Templates / JSON
+TEMPLATE_PATH = BASE_DIR / "cdr_payload.json"
+OUTPUT_JSON_S4 = BASE_DIR / "s4.json"
+OUTPUT_JSON_S3 = BASE_DIR / "s3.json"
+OUTPUT_JSON_COMPONENTS = BASE_DIR / "s4.json"
+
+# Excel / sheets
+MASTER_SHEET_PATH = BASE_DIR / "master_bom.xlsx"
+OUTPUT_PATH_FINAL = BASE_DIR / "s4c1_cc_raw.xlsx"
+CRITICAL_ONLY_EXCEL = BASE_DIR / "s4c1_cc_filtered.xlsx"
+FINAL_OUTPUT_WITH_EVIDENCE = BASE_DIR / "s4c1_cc_final.xlsx"
+
+OUTPUT_EXCEL_RAW = BASE_DIR / "s4c2_cc_raw.xlsx"
+OUTPUT_EXCEL_CLASSIFIED = BASE_DIR / "s4c2_cc_filtered.xlsx"
+OUTPUT_EXCEL_DEDUPED = BASE_DIR / "s4c2_cc_final.xlsx"
+
+# Directories
+DOWNLOAD_DIR = BASE_DIR / "downloaded_guides"
