@@ -40,10 +40,8 @@ import { RenderImageThumbnails } from '../../Helpers/renderImageThumbnails';
 import { generateCdrRequest } from '../../redux/features/generateCdr/generateCdrSlice';
 import { triggerGenerateCdrApi } from '../../redux/api/generateCdrApi';
 //import { downloadReportRequest } from '../../redux/features/downloadReport/downloadReportSlice';
-import { loadPdfWithCache } from "../../components/loadPdfWithCache";
-
-
-
+import { loadPdfWithCache } from '../../components/loadPdfWithCache';
+import CdrLoader from '../../components/CdrReport/CdrLoader';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -57,6 +55,7 @@ const ReportPage = () => {
   const [bookmarkData, setBookmarkData] = useState(null);
   const [trfJson, setTrfJson] = useState(null);
   const [cdrJson, setCdrJson] = useState(null);
+  const [cdrLoading, setCdrLoading] = useState(false);
 
   const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
 
@@ -129,13 +128,19 @@ const ReportPage = () => {
   // Get CDR report JSON
   const fetchCdrJson = async () => {
     try {
-      const res = await triggerGenerateCdrApi(projectID); // your API call
-      if (res?.reports?.length > 0) {
-        const jsonData = res.reports[0].json;
-        setCdrJson(jsonData);
+      setCdrLoading(true);
+
+      const res = await triggerGenerateCdrApi(projectID);
+      console.log('CDR API RESPONSE:', res);
+
+      if (res?.message === 'CDR Report generated successfully' && res?.data) {
+        setCdrJson(res.data); // STORE JSON
+        setCdrLoading(false);
+      } else {
+        console.log('CDR still processing...');
       }
     } catch (err) {
-      console.error('Error fetching TRF JSON:', err);
+      console.error('CDR generation failed:', err);
     }
   };
 
@@ -161,13 +166,13 @@ const ReportPage = () => {
   //   const checkCdrStatus = async () => {
   //     try {
   //       const res = await getProjectReportStatusApi(projectID);
+  //       const message = res?.message || 'Pending';
+  //       //const status = res?.cdr_status || 'Pending';
+  //       //setCdrStatus(status);
 
-  //       const status = res?.cdr_status || 'Pending';
-  //       setCdrStatus(status);
+  //       console.log('CDR Message:', message);
 
-  //       console.log('CDR STATUS:', status);
-
-  //       if (status === 'Completed') {
+  //       if (message === 'CDR Report generated successfully') {
   //         clearInterval(intervalId);
   //         intervalId = null;
   //         await fetchCdrJson();
@@ -177,16 +182,16 @@ const ReportPage = () => {
   //       console.error('CDR status polling failed', err);
   //     }
   //   };
-
+  //   setCdrLoading(true);
   //   // FIRST HIT (immediate)
   //   checkCdrStatus();
 
   //   // POLLING
-  //   intervalId = setInterval(checkCdrStatus, 10000);
+  //   //intervalId = setInterval(checkCdrStatus, 10000);
 
-  //   return () => {
-  //     if (intervalId) clearInterval(intervalId);
-  //   };
+  //   // return () => {
+  //   //   if (intervalId) clearInterval(intervalId);
+  //   // };
   // }, [reportClick, projectID]);
 
   // const handleIssuedByChange = (e) => {
@@ -211,8 +216,10 @@ const ReportPage = () => {
     }
 
     setReportClick('cdr');
-    setCdrStatus('Pending');
-
+    //setCdrStatus('Pending');
+    setCdrJson(null);
+    setCdrLoading(true);
+    fetchCdrJson();
     //dispatch(generateCdrRequest(projectId));
   };
 
@@ -305,47 +312,33 @@ const ReportPage = () => {
     setBookmarkOpen(true);
   };
 
+  const handleCitationLinkClick = (filename, page, text, blob_url) => {
+    // ---- XLSX → DOWNLOAD ----
+    if (filename?.toLowerCase().endsWith('.xlsx')) {
+      const cleanUrl = blob_url.startsWith('/') ? blob_url.slice(1) : blob_url;
 
-const handleCitationLinkClick = (
-  filename,
-  page,
-  text,
-  blob_url
-) => {
-  // ---- XLSX → DOWNLOAD ----
-  if (filename?.toLowerCase().endsWith(".xlsx")) {
-    const cleanUrl = blob_url.startsWith("/")
-      ? blob_url.slice(1)
-      : blob_url;
+      const link = document.createElement('a');
+      link.href = cleanUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      return;
+    }
 
-    const link = document.createElement("a");
-    link.href = cleanUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    return;
-  }
+    // ---- PDF → INDEXEDDB → VIEWER ----
+    setPdfViewerOpen(true);
 
-  // ---- PDF → INDEXEDDB → VIEWER ----
-  setPdfViewerOpen(true);
+    setTimeout(async () => {
+      if (!pdfViewerRef.current) return;
 
-  setTimeout(async () => {
-    if (!pdfViewerRef.current) return;
+      await loadPdfWithCache(projectID, filename, blob_url, pdfViewerRef);
 
-    await loadPdfWithCache(
-      projectID,
-      filename,
-      blob_url,
-      pdfViewerRef
-    );
-
-    setTimeout(() => {
-      pdfViewerRef.current.goToCitation(page, text);
-    }, 1200);
-  }, 200);
-};
-
+      setTimeout(() => {
+        pdfViewerRef.current.goToCitation(page, text);
+      }, 1200);
+    }, 200);
+  };
 
   const handleFinalise = () => {
     if (!dataTableRef.current) return;
@@ -400,6 +393,7 @@ const handleCitationLinkClick = (
   // progress < 100 || !trfJson ---  for to load the trf report from api
   // ! true ---- for to load local json
   const renderLeftPanel = () => {
+    //if (reportClick === 'cdr') return null;
     if (progress < 100 || !trfJson) {
       return (
         <Card className="progress-advanced-card left-card">
@@ -561,16 +555,21 @@ const handleCitationLinkClick = (
             />
           )}
 
-          {reportClick == 'cdr' && (
-            <CdrReport
-              ref={dataTableRef}
-              jsonData={cdrJson} // use real API trfJson when available
-              //jsonData={localCdrJson}
-              editMode={cdrEditMode}
-              projectId={localStorage.getItem('projectId')}
-              onBookmarkClick={handleBookmarkFromChild}
-              reportType="cdr"
-            />
+          {reportClick === 'cdr' && (
+            <>
+              {cdrLoading && <CdrLoader />}
+
+              {!cdrLoading && cdrJson && (
+                <CdrReport
+                  ref={dataTableRef}
+                  jsonData={cdrJson}
+                  editMode={cdrEditMode}
+                  projectId={localStorage.getItem('projectId')}
+                  onBookmarkClick={handleBookmarkFromChild}
+                  reportType="cdr"
+                />
+              )}
+            </>
           )}
         </CardContent>
       </Card>
@@ -879,14 +878,17 @@ const handleCitationLinkClick = (
                           opacity: isDisabledStyle ? 0.7 : 1,
                         }}
                         onClick={() => {
-                          if (!isFinalise) return; // still prevent action
+                          //if (!isFinalise) return;
+                          if (reportClick === 'trf' && !trfFinalised) return;
+                          if (reportClick === 'cdr' && !cdrFinalised) return;
+                          // still prevent action
                           if (label === 'CDR') {
-                            console.log('cddddd');
+                            //console.log('cddddd');
                             handleGenerateCDR(); // <-- your function
                           } else if (label === 'Letter') {
                             handleGenerateLetter(); // <-- your second function
                           }
-                          console.log(label, 'clicked');
+                          //console.log(label, 'clicked');
                         }}
                       >
                         <img
@@ -905,21 +907,21 @@ const handleCitationLinkClick = (
           </Card>
 
           {/* CONFIDENCE CARD */}
-          {/* {((reportClick === 'trf' && trfJson) ||
-            (reportClick === 'cdr' && localCdrJson)) && (
+          {((reportClick === 'trf' && trfJson) ||
+            (reportClick === 'cdr' && cdrJson)) && (
             <ConfidenceScore
-              data={reportClick === 'trf' ? trfJson : localCdrJson}
+              data={reportClick === 'trf' ? trfJson : cdrJson}
               reportType={reportClick}
             />
-          )} */}
+          )}
 
-          {((reportClick === 'trf' && localJson) ||
+          {/* {((reportClick === 'trf' && localJson) ||
             (reportClick === 'cdr' && localCdrJson)) && (
             <ConfidenceScore
               data={reportClick === 'trf' ? localJson : localCdrJson}
               reportType={reportClick}
             />
-          )}
+          )} */}
         </Box>
       )}
       <Dialog
