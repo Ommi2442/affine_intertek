@@ -67,61 +67,81 @@ def run_sheet_3_and_4():
     else:
         c2_main.run_case2_pipeline()
         
+from pathlib import Path
+import os
+import json
 
-def main2(input_json_file,progress_callback=None):
+
+def main2(input_json_file, progress_callback=None):
     TOTAL = 14
     step = 0
-    # print(os)
-    # BASE_DIR = C:\Users\affine\Desktop\new_intertek\InterTek-AI-Repo\Backend\utility\cdr_report\CDR_Pipelines
 
-    os.chdir(r'.\utility\cdr_report\CDR_Pipelines')
+    # --------------------------------------------------
+    # ABSOLUTE BASE DIR (CDR_Pipelines)
+    # --------------------------------------------------
+    PIPELINE_DIR = Path(__file__).resolve().parent
+
+    SRC_FILES_DIR = PIPELINE_DIR / "src_files"
+    SRC_FILES_DIR.mkdir(parents=True, exist_ok=True)
+
+    EXTRACTED_TXT_PATH = PIPELINE_DIR / "extracted.txt"
+    CDR_PAYLOAD_PATH = PIPELINE_DIR / "cdr_payload.json"
+    OUTPUT_CDR_PATH = PIPELINE_DIR / "cdr_payload_v5_updated.json"
+
     conn_str = AZURE_CONN_STRING
-    
+
     step += 1; progress(step, TOTAL, "Starting pipeline")
 
+    # --------------------------------------------------
     step += 1; progress(step, TOTAL, "Deleting device_images folder if exists")
     count = delete_folder_if_exists(conn_str, container, "device_images")
     print("Deleted blobs:", count)
 
+    # --------------------------------------------------
     step += 1; progress(step, TOTAL, "Listing blob URLs")
     blob_urls = get_blob_urls(conn_str, container)
-    
+
+    # --------------------------------------------------
     step += 1; progress(step, TOTAL, "Processing blobs (extracting text/images/pdfs)")
     extracted_texts, image_urls, downloaded_pdf_paths, converted_pdf_paths = process_blob_urls_2(
-        blob_urls, conn_str, container,
-        download_dir="src_files", keep_files="true", verbose="true"
+        blob_urls,
+        conn_str,
+        container,
+        download_dir=str(SRC_FILES_DIR),
+        keep_files="true",
+        verbose="true"
     )
-    
+
+    # --------------------------------------------------
     step += 1; progress(step, TOTAL, "Downloading images from blobs")
     image_paths = download_images_from_blob_urls(
         blob_urls,
         conn_str=conn_str,
         container=container,
-        download_dir="src_files",
+        download_dir=str(SRC_FILES_DIR),
         overwrite="false",
         verbose="true",
     )
-    
+
+    # --------------------------------------------------
     step += 1; progress(step, TOTAL, "Extracting CIS info")
-    cis_info=extract_cis() 
+    cis_info = extract_cis()
     extracted_texts += cis_info
 
+    # --------------------------------------------------
     step += 1; progress(step, TOTAL, "Saving extracted text")
-    with open("extracted.txt", "w", encoding="utf-8") as f:
+    with open(EXTRACTED_TXT_PATH, "w", encoding="utf-8") as f:
         json.dump(extracted_texts, f, indent=4, default=str)
 
+    # --------------------------------------------------
     step += 1; progress(step, TOTAL, "Collecting PDF paths")
-    pdf_files = [
-        f for f in os.listdir("src_files")
-        if f.lower().endswith(".pdf")
+    pdf_paths = [
+        str(p) for p in SRC_FILES_DIR.glob("*.pdf")
     ]
-    pdf_paths = [os.path.join("src_files", f) for f in pdf_files]
-    
-    
+
+    # --------------------------------------------------
     step += 1; progress(step, TOTAL, "Creating DB/container (Cosmos)")
     container_obj = create_db_and_container()
-    # ✅ use utils.client (created lazily inside create_db_and_container)
-    #db = utils.client.get_database_client(DB_NAME)
 
     db = cosmos_client.get_database_client(DB_NAME)
     print(f"db_created:{db}")
@@ -129,40 +149,31 @@ def main2(input_json_file,progress_callback=None):
     for c in db.list_containers():
         print(" -", c["id"])
 
+    # --------------------------------------------------
     step += 1; progress(step, TOTAL, "Building embeddings + vector store")
     embeddings = build_embeddings()
     vs = build_vectorstore(embeddings)
-    #print(f"vs built:{vs}")
 
+    # --------------------------------------------------
     step += 1; progress(step, TOTAL, "Chunking + ingesting documents into vector store")
     chunks = load_and_split_pdfs_text(pdf_paths, extracted_texts=extracted_texts)
-    # embedd
     ingest_chunks(vs, chunks, max_workers=5, batch_size=10)
-    # Reading TRF Output json
-    # with open("trf_final_data.json", "r", encoding="utf-8") as f:
-    #     trf_filled = json.load(f)
 
+    # --------------------------------------------------
     step += 1; progress(step, TOTAL, "Building TRF ref + generating template/description")
     trf_filled = input_json_file
-    print("trf_filled:\n\n{trf_filled}")
-    ref=build_ref(trf_filled)
-    print(f'\n\n=========\n{ref}')
+    ref = build_ref(trf_filled)
+
     template = references_main(vs, ref)
     product_info = description_main(vs, ref)
     description = build_product_section_items(product_info)
 
+    # --------------------------------------------------
     step += 1; progress(step, TOTAL, "Running Features extraction")
-    print('-------running features---------')
     features = features_main(vs, image_urls)
-    print('features\n', features)
-    
-    # print("Preprocessing: moving device images...")
-    # image_urls = get_image_urls_from_container_sas()
-    # moved = move_device_images_in_blob(image_urls=image_urls,connection_string=configs.AZURE_BLOB_CONNECTION_STRING, container_name=configs.BLOB_CONTAINER_NAME)
-    # print(f"Device images moved: {len(moved)}")
-    
+
+    # --------------------------------------------------
     step += 1; progress(step, TOTAL, "Moving device images")
-    print("Preprocessing: moving device images...")
     image_urls = get_image_urls_from_container_sas()
     moved = move_device_images_in_blob(
         image_urls=image_urls,
@@ -170,22 +181,22 @@ def main2(input_json_file,progress_callback=None):
         container_name=configs.BLOB_CONTAINER_NAME,
     )
     print(f"Device images moved: {len(moved)}")
-    
-    
+
+    # --------------------------------------------------
     step += 1; progress(step, TOTAL, "Running sheet 3 and 4")
     run_sheet_3_and_4()
 
+    # --------------------------------------------------
     step += 1; progress(step, TOTAL, "Post-processing CDR + saving output")
-    with open("cdr_payload.json", "r", encoding="utf-8") as f:
+    with open(CDR_PAYLOAD_PATH, "r", encoding="utf-8") as f:
         cdr = json.load(f)
+
     with open(configs.OUTPUT_JSON_S3, "r", encoding="utf-8") as f:
         s3j = json.load(f)
+
     with open(configs.OUTPUT_JSON_S4, "r", encoding="utf-8") as f:
         s4j = json.load(f)
 
-    # ------------------------------------------------------------
-    # Post-process
-    # ------------------------------------------------------------
     cdr = post_process_cdr(
         cdr=cdr,
         template=template,
@@ -195,15 +206,14 @@ def main2(input_json_file,progress_callback=None):
         s4j=s4j
     )
 
-    # ------------------------------------------------------------
-    # Save once
-    # ------------------------------------------------------------
-    with open("cdr_payload_v5_updated.json", "w", encoding="utf-8") as f:
-        json.dump(cdr, f, indent=2, ensure_ascii="false")
+    # --------------------------------------------------
+    with open(OUTPUT_CDR_PATH, "w", encoding="utf-8") as f:
+        json.dump(cdr, f, indent=2, ensure_ascii=False)
+
     print("📄 CDR payload successfully post-processed")
-    
-    progress(TOTAL, TOTAL, "Done ✅ Output generated", {"output_file": "cdr_payload_v5_updated.json"})
 
-    # return cdr_payload
+    progress(TOTAL, TOTAL, "Done ✅ Output generated", {
+        "output_file": str(OUTPUT_CDR_PATH)
+    })
+
     return cdr
-
