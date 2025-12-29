@@ -161,6 +161,7 @@ def update_project_progress_CDR(
 # ==========================================================
 # PROCESS QUEUE MESSAGE (SAFE + IDEMPOTENT)
 # ==========================================================
+
 async def process_message(message) -> bool:
     print("\n Queue message received")
 
@@ -276,20 +277,6 @@ async def process_message(message) -> bool:
                 trf_completed=False
             )
         
-        def cdr_progress_callback(processed, total):
-            raw_percent = (processed / total) * 100
-            ui_percent = int(20 + (raw_percent * 0.75))  # 0–100 → 20–95
-            if ui_percent > 95:
-                ui_percent = 95
-
-            update_project_progress(
-                project_doc,
-                trf_stage="Generating TRF",
-                trf_percentage=ui_percent,
-                trf_step=f"Processed {processed}/{total}",
-                trf_completed=False
-            )
-        
         result = run_trf_generation(
             blob_urls,
             vs,
@@ -308,7 +295,6 @@ async def process_message(message) -> bool:
         )
 
         print(f" TRF generation completed for project {project_id}")
-        # main2(cdr=cdr_payload')
 
         # 95% before saving
         update_project_progress(
@@ -318,7 +304,6 @@ async def process_message(message) -> bool:
             trf_step="Saving TRF output files",
             trf_completed=False
         )
-
 
         
         save_local_json_to_blob_and_cosmos(str(OUTPUT_JSON),str(OUTPUT_DOCX),project_id=project_id,)
@@ -333,17 +318,6 @@ async def process_message(message) -> bool:
         )
 
         print(f" Saving TRF Report to the Blob")
-        #generating the CDR Report code starts here
-        # read the CDR payload from the generated TRF JSON from the blob storage
-        
-        resp=load_trf_json_from_blob(project_id)
-        trf_json_ouput=resp.get("data")
-        input_cdr_json=trf_json_ouput
-        # cdr_main=main2(input_cdr_json,progress_callback=cdr_progress_callback)
-        #cdr return to fE
-        
-
-        # geenrating the CDR Report code ends here
         return True
 
     except Exception as e:
@@ -408,7 +382,8 @@ async def queue_listener():
             # short recovery backoff
             await asyncio.sleep(5)
 
-
+# -----------------------------------------------------------------------------------------
+# CDR QUEUE PROCESSING Code
 async def process_message_cdr(message) -> bool:
     print("\n Queue message received for CDR")
 
