@@ -9,8 +9,9 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 container = "cdr-test"
 IMAGE_EXTS = {"jpg", "jpeg", "png", "gif", "bmp", "tiff", "tif", "webp", "svg"}
-AZURE_CONN_STRING = "BlobEndpoint=https://stintertekesusdev.blob.core.windows.net/;QueueEndpoint=https://stintertekesusdev.queue.core.windows.net/;FileEndpoint=https://stintertekesusdev.file.core.windows.net/;TableEndpoint=https://stintertekesusdev.table.core.windows.net/;SharedAccessSignature=sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-12-28T15:11:45Z&st=2025-12-13T06:56:45Z&spr=https,http&sig=EZbXjVsN%2FFYp1%2BTbv4CmvDTKDHORkLvuIPLbfKw%2F%2BJo%3D"
-
+# AZURE_CONN_STRING = "BlobEndpoint=https://stintertekesusdev.blob.core.windows.net/;QueueEndpoint=https://stintertekesusdev.queue.core.windows.net/;FileEndpoint=https://stintertekesusdev.file.core.windows.net/;TableEndpoint=https://stintertekesusdev.table.core.windows.net/;SharedAccessSignature=sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-12-28T15:11:45Z&st=2025-12-13T06:56:45Z&spr=https,http&sig=EZbXjVsN%2FFYp1%2BTbv4CmvDTKDHORkLvuIPLbfKw%2F%2BJo%3D"
+# AZURE_CONN_STRING ="BlobEndpoint=https://stintertekesusdev.blob.core.windows.net/;QueueEndpoint=https://stintertekesusdev.queue.core.windows.net/;FileEndpoint=https://stintertekesusdev.file.core.windows.net/;TableEndpoint=https://stintertekesusdev.table.core.windows.net/;SharedAccessSignature=sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-02-01T15:16:32Z&st=2025-12-29T07:01:32Z&spr=https,http&sig=iuomZHAt0FPYroVQvoo5husIq7E1jhqnM6oKT4ZID%2B8%3D%22"
+AZURE_CONN_STRING = "BlobEndpoint=https://stintertekesusdev.blob.core.windows.net/;QueueEndpoint=https://stintertekesusdev.queue.core.windows.net/;FileEndpoint=https://stintertekesusdev.file.core.windows.net/;TableEndpoint=https://stintertekesusdev.table.core.windows.net/;SharedAccessSignature=sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-01-02T16:19:24Z&st=2025-12-29T08:04:24Z&spr=https,http&sig=sc0LegljgBam7ws7omds1JuS%2ByoRp%2FN8wstTCJs8FiY%3D"
 AOAI_ENDPOINT = "https://oai-intertek-esus2-dev.openai.azure.com/"
 AOAI_KEY      = "4v5aVQDu1ZzGxEDldBahCMXEW3vDF4CUj4tNETLtP4VqeoCwEnTkJQQJ99BKACYeBjFXJ3w3AAABACOGrI05"
 API_VERSION   = "2024-12-01-preview"

@@ -440,12 +440,14 @@ def save_cdr_local_json_to_blob_and_cosmos_cdr(json_file_path, project_id) -> li
             raise ValueError("Only .json files are allowed")
 
         # ---------- generate filename ----------
-        filename = path.stem + f"_{project_id}" + path.suffix
+        filename = path.stem  + path.suffix
+
         print("Modified filename after adding project ID:", filename)
 
-        # ---------- blob path ----------
+        
         blob_path = f"Documents/{project_id}/Generated_cdr_Report/{filename}"
 
+        
         blob_client = blob_service.get_blob_client(
             container=blob_container,
             blob=blob_path
@@ -454,6 +456,7 @@ def save_cdr_local_json_to_blob_and_cosmos_cdr(json_file_path, project_id) -> li
         content_type, _ = mimetypes.guess_type(path.name)
         content_type = content_type or "application/octet-stream"
 
+        
         try:
             with open(path, "rb") as f:
                 blob_client.upload_blob(

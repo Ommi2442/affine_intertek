@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from utility.embeddings import ingest_files_from_blob_urls_create_embeddings
 from utility.json_to_blob import *
 from utility.trf_report.trf_generation import run_trf_generation
+from utility.trf_utils import build_vectorstore, build_embeddings
 from utility.cdr_report.CDR_Pipelines.main import main2
 from utility.cdr_report.CDR_Pipelines.compiler import fill_excel_from_json
 # Azure Config
@@ -41,11 +42,11 @@ projects_container = db.get_container_client(COSMOS_PROJECT_CONTAINER)
 
 
 ############################ TRF OPENAI CREDENTIALS ###################################
-# queue_client_cdr.send_message(json.dumps({
-#             "projectId": "G105581614",
-#             "action": "cdr_generation",
-#             "timestamp": datetime.utcnow().isoformat()
-#         }))
+queue_client_cdr.send_message(json.dumps({
+            "projectId": "G105000001",
+            "action": "cdr_generation",
+            "timestamp": datetime.utcnow().isoformat()
+        }))
 
 # Load environment variables
 AOAI_ENDPOINT      = os.getenv("AOAI_ENDPOINT")
@@ -384,6 +385,7 @@ async def queue_listener():
 
 # -----------------------------------------------------------------------------------------
 # CDR QUEUE PROCESSING Code
+
 async def process_message_cdr(message) -> bool:
     print("\n Queue message received for CDR")
 
@@ -403,7 +405,7 @@ async def process_message_cdr(message) -> bool:
 
     project_id = event.get("projectId")
     if not project_id:
-        print(" Missing projectId in queue message")
+        print(" Missing projectId in queue message for CDR")
         return True
 
     print(f"📦 Processing project: {project_id}")
@@ -467,17 +469,22 @@ async def process_message_cdr(message) -> bool:
                 cdr_completed=False
             )
         
-        # resp=load_trf_json_from_blob(project_id)
-        resp=load_trf_json_from_blob("G105581614")
-        trf_json_ouput=resp.get("data")
-        input_cdr_json=trf_json_ouput
+        # resp=load_trf_json_from_blob("G105581614")
+        # trf_json_ouput=resp.get("data")
+        # input_cdr_json=trf_json_ouput
         # queue_client_cdr.send_message(json.dumps({
         #     "projectId": "G105581614",
         #     "action": "cdr_generation",
         #     "timestamp": datetime.utcnow().isoformat()
         # }))
 
+        print("loading trf json from blob for cdr generation_____________________@@@@@@@@@@@@@@")
         # cdr_main=main2(input_cdr_json,progress_callback=cdr_progress_callback)
+        resp=load_trf_json_from_blob(project_id)
+
+        # fetch trf json from blob
+        print("++++++++++++++++++++++ Fetching TRF JSON from Blob +++++++++++++++++++++++")
+        input_cdr_json=resp.get("json_data")
         cdr_main=main2(input_cdr_json)
         #cdr return to fE
         updated_json=cdr_main
