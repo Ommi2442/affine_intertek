@@ -432,12 +432,10 @@ def save_cdr_local_json_to_blob_and_cosmos_cdr(json_file_path, project_id) -> li
         print("\n\nProcessing file:", file_path)
 
         path = Path(file_path)
-
-        # ---------- validate file existence ----------
+        
         if not path.exists():
             raise FileNotFoundError(f"File not found: {file_path}")
 
-        # ---------- validate file type ----------
         if path.suffix.lower() != ".json":
             raise ValueError("Only .json files are allowed")
 
@@ -448,17 +446,14 @@ def save_cdr_local_json_to_blob_and_cosmos_cdr(json_file_path, project_id) -> li
         # ---------- blob path ----------
         blob_path = f"Documents/{project_id}/Generated_cdr_Report/{filename}"
 
-        # ---------- get blob client ----------
         blob_client = blob_service.get_blob_client(
             container=blob_container,
             blob=blob_path
         )
 
-        # ---------- determine content type ----------
         content_type, _ = mimetypes.guess_type(path.name)
         content_type = content_type or "application/octet-stream"
 
-        # ---------- upload to blob ----------
         try:
             with open(path, "rb") as f:
                 blob_client.upload_blob(

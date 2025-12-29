@@ -763,151 +763,6 @@ def get_project_report_status(id: str):
     }
 
 
-
-
-
-# @router.post("/generate-cdr")
-# def generate_cdr(projectId: str):
-#     try:
-#         from utility.cdr_report.CDR_Pipelines.main import main2
-
-#         if not projectId:
-#             raise HTTPException(
-#                 status_code=status.HTTP_400_BAD_REQUEST,
-#                 detail="projectId is required"
-#             )
-
-#         ############### QUEUE LOGIC (COMMENTED) ################
-#         # queue_client_cdr.send_message(json.dumps({
-#         #     "projectId": projectId,
-#         #     "action": "CDR_Generation",
-#         #     "timestamp": datetime.utcnow().isoformat()
-#         # }))
-
-#         # MAX_WAIT_SECONDS = 6000
-#         # POLL_INTERVAL = 2
-#         # elapsed = 0
-
-#         # while elapsed < MAX_WAIT_SECONDS:
-#         #     query = "SELECT * FROM c WHERE c.Project_Id = @pid"
-#         #     params = [{"name": "@pid", "value": projectId}]
-
-#         #     docs = list(projects_container.query_items(
-#         #         query=query,
-#         #         parameters=params,
-#         #         enable_cross_partition_query=True,
-#         #     ))
-
-#         #     if docs:
-#         #         progress = docs[0].get("CDR_Project_Progress") or {}
-#         #         percentage = progress.get("cdr_percentage")
-
-#         #         if percentage == 100:
-#         #             break
-
-#         #     time.sleep(POLL_INTERVAL)
-#         #     elapsed += POLL_INTERVAL
-
-#         # if elapsed >= MAX_WAIT_SECONDS:
-#         #     raise HTTPException(status_code=408, detail="CDR generation timed out")
-#         ############### QUEUE LOGIC END #######################
-
-#         # Query Cosmos DB for blob_url
-#         query = "SELECT c.blob_url FROM c WHERE c.project_id = @pid"
-#         params = [{"name": "@pid", "value": projectId}]
-        
-#         try:
-#             items = list(trf_container.query_items(
-#                 query=query,
-#                 parameters=params,
-#                 enable_cross_partition_query=True,
-#             ))
-
-#         except Exception:
-#             raise HTTPException(
-#                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#                 detail="Failed to query project data from database"
-#             )
-        
-#         if not items:
-#             raise HTTPException(
-#                 status_code=status.HTTP_404_NOT_FOUND,
-#                 detail=f"Project '{projectId}' not found" )
-#         print("+++++++++++++++++++++++++++++++++++++++\n\n")
-#         print("connected to trf container and fetched items from cosmos db:",items)
-#         project = items[0]
-#         if not isinstance(project, dict):
-#             raise HTTPException(
-#                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#                 detail="Invalid project data format in database"
-#             )
-
-#         blob_url = project.get("blob_url")
-#         print("blob url fetched from cosmos db:",blob_url)
-#         if not blob_url or not isinstance(blob_url, str):
-#             raise HTTPException(
-#                 status_code=status.HTTP_404_NOT_FOUND,
-#                 detail="CDR Blob URL not found or invalid in project record"
-#             )
-
-#         # Fetch JSON from blob_url
-#         try:
-            
-#             response = requests.get(blob_url)
-#             response.raise_for_status()  # raise error if request fails
-
-#             # Parse JSON string into Python dict
-#             trf_filled = response.json()
-#             print("Fetched JSON data for CDR generation (type):", type(trf_filled))  # debug print
-
-#             # Call main2 with parsed JSON dictionary
-#             result = main2(trf_filled)
-
-#             from pathlib import Path
-#             import json
-
-#             OUTPUT_JSON_CDR = Path(f"data/iec_output_cdr_{projectId}.json")
-#             OUTPUT_JSON_CDR.parent.mkdir(parents=True, exist_ok=True)
-
-#             with open(OUTPUT_JSON_CDR, "w", encoding="utf-8") as f:
-#                 json.dump(result, f, indent=2, ensure_ascii=False)
-#             # file is not saveing to the OUTPUT_JSON_CDR ,it is saving to the place where main2.py file present
-#             OUTPUT_JSON_CDR = Path(f"data/iec_output_cdr_{projectId}.json")
-#             # am running uvicorn from the Backend folder and above path is at Backend/projects/data/iec_output_cdr_{projectId}.json 
-#             save_cdr_local_json_to_blob_and_cosmos_cdr(OUTPUT_JSON_CDR, projectId)
-            
-
-#             print("📄 CDR payload successfully saved to DB  file:")
-            
-#         except requests.exceptions.RequestException as e:
-#             logger.exception("Failed to fetch JSON from blob_url")
-#             raise HTTPException(
-#                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#                 detail=f"Failed to fetch JSON from blob_url: {e}"
-#             )
-#         except Exception as e:
-#             logger.exception("CDR pipeline execution failed")
-#             raise HTTPException(
-#                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#                 detail=f"Failed to generate CDR report: {e}"
-#             )
-
-#         return {
-#             "message": "CDR Report generated successfully",
-#             "projectId": projectId,
-#             "data": result
-#         }
-
-#     except HTTPException:
-#         raise
-
-#     except Exception:
-#         logger.exception("Unhandled error in generate_trf API")
-#         raise HTTPException(
-#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#             detail="Internal Server Error"
-#         )
-
 @router.post("/generate-cdr")
 def generate_cdr(projectId: str):
     try:
@@ -991,7 +846,6 @@ def generate_cdr(projectId: str):
 
         result = main2(trf_filled)
 
-        
         BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
         OUTPUT_JSON_CDR = BASE_DIR / "data" / f"iec_output_cdr_{projectId}.json"
 
@@ -1000,7 +854,7 @@ def generate_cdr(projectId: str):
         with open(OUTPUT_JSON_CDR, "w", encoding="utf-8") as f:
             json.dump(result, f, indent=2, ensure_ascii=False)
 
-        # ------------------ UPLOAD TO BLOB + COSMOS ------------------
+
         save_cdr_local_json_to_blob_and_cosmos_cdr(
             OUTPUT_JSON_CDR,
             projectId
