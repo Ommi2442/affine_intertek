@@ -71,6 +71,7 @@ from pathlib import Path
 import os
 import json
 
+
 def main2(input_json_file, progress_callback=None):
     TOTAL = 14
     step = 0
