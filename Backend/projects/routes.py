@@ -1,17 +1,4 @@
-import traceback
-from utility.cdr_report.CDR_Pipelines.main import main2
-from pathlib import Path
-import json
-import requests
-import os
-from fastapi import APIRouter, HTTPException, status
-import logging
-import requests
-import json
-import time  # for the polling logic
-from datetime import datetime
-
-from fastapi import APIRouter, HTTPException, Depends, Body, Form, logger
+from fastapi import APIRouter, HTTPException, Depends, Body, Form, UploadFile, File, Query, logger
 from azure.storage.blob import ContainerClient
 from typing import List
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
@@ -21,19 +8,24 @@ import uuid, os
 from fastapi import Depends
 from api.auth.jwt_auth.utils import get_current_user
 from db.database import *
-from fastapi import APIRouter, HTTPException
 from db.database import COSMOS_DB_project_Container, COSMOS_DB_URI,COSMOS_DB_KEY,COSMOS_DB_DATABASE,COSMOS_DB_project_TRF_Container
 from projects.models import Project,ProjectCreate,ProjectFilter
 from azure.cosmos import exceptions
 from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueClient
-from fastapi import APIRouter, UploadFile, File, HTTPException
 import json
 import time
 from utility.json_to_blob import *
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 import shutil
+import requests
+import tempfile          
 import os
+import base64
+from docx2pdf import convert
+from utility.cdr_report.CDR_Pipeline_V2 import main
+from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_local_json_to_blob_and_cosmos
+from projects.helpers import convert_docx_to_pdf
 from fastapi import HTTPException
 
 from utility.cdr_report.CDR_Pipelines.main import main2
@@ -60,7 +52,6 @@ QUEUE_NAME = "stintertekesus-dev-queue"
 CDR_QUEUE_NAME = "stintertekesus-dev-queue-cdr"
 
 
-CONTAINER_NAME = "stintertekesusdev-blob"
 BLOB_PREFIX = "Documents"   # top-level folder in blob
 
 blob_service = BlobServiceClient.from_connection_string(QUEUE_CONN_STR)
@@ -107,7 +98,7 @@ async def create_project(payload: ProjectCreate):
             return folder_path
 
         base_path = f"Documents/{new_project.Project_Id}"
-        folders_to_create = [f"{base_path}/source_documents",f"{base_path}/TRF Templates",f"{base_path}/CDR Templates",f"{base_path}/Letters Templates",f"{base_path}/Standard Document",f"{base_path}/Generated_trf_Report",f"{base_path}/Generated_cdr_Report"]
+        folders_to_create = [f"{base_path}/source_documents",f"{base_path}/TRF Templates",f"{base_path}/CDR Templates",f"{base_path}/Letters Templates",f"{base_path}/Standard Document",f"{base_path}/Generated_trf_Report",f"{base_path}/Generated_cdr_Report",f"{base_path}/Citation_docs"]
         created_folders = [create_folder(folder) for folder in folders_to_create]
         return {
             "status": "success",
@@ -898,3 +889,190 @@ def download_file(project_id: str):
         filename=f"iec_output_{project_id}.docx",
         media_type="application/docx"
     )
+
+
+
+@router.get("/pdf-proxy")
+def pdf_proxy(
+    url: str = Query(..., description="Azure Blob PDF URL")
+):
+    try:
+        resp = requests.get(
+            url,
+            headers={
+                # Azure Blob compatibility
+                "x-ms-version": "2020-10-02"
+            },
+            timeout=30
+        )
+
+        resp.raise_for_status()
+
+        # -------- STRICT PDF VALIDATION --------
+        content_type = resp.headers.get("content-type", "")
+        if "pdf" not in content_type.lower():
+            raise HTTPException(
+                status_code=400,
+                detail=f"Not a PDF. Content-Type: {content_type}"
+            )
+
+        return Response(
+            content=resp.content,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": "inline",
+                "Cache-Control": "no-store"
+            }
+        )
+
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=502, detail=str(e))
+
+
+# def save_pdfs_to_root_for_testing(
+#     project_id: str,
+#     pdf_outputs: list
+# ):
+#     """
+#     Save all PDFs directly in the backend root directory
+#     (for testing only).
+#     """
+#     for pdf in pdf_outputs:
+#         filename = pdf["filename"]
+#         pdf_bytes = base64.b64decode(pdf["data"])
+
+#         # Prefix with project_id to avoid name collisions
+#         # safe_name = f"{project_id}_{filename}"
+#         file_path = os.path.join(os.getcwd(), file_name)
+
+#         with open(file_path, "wb") as f:
+#             f.write(pdf_bytes)
+
+
+
+# @router.get("/project-pdfs-load")
+# def get_project_pdfs(project_id: str = Query(...)):
+#     try:
+#         query = "SELECT * FROM c WHERE c.Project_Id = @pid"
+#         items = list(
+#             COSMOS_DB_project_Container.query_items(
+#                 query=query,
+#                 parameters=[{"name": "@pid", "value": project_id}],
+#                 enable_cross_partition_query=True
+#             )
+#         )
+
+#         if not items:
+#             raise HTTPException(status_code=404, detail="Project not found")
+
+#         project = items[0]
+#         documents = project.get("Source_Doc", [])
+#         pdf_outputs = []
+
+#         for doc in documents:
+#             filename = doc["filename"]
+#             url = doc["url"]
+#             lower = filename.lower()
+
+#             # ---------- PDF ----------
+#             if lower.endswith(".pdf"):
+#                 resp = requests.get(url, timeout=30)
+#                 resp.raise_for_status()
+
+#                 pdf_outputs.append({
+#                     "filename": filename,
+#                     "data": base64.b64encode(resp.content).decode()
+#                 })
+
+#             # ---------- DOCX → PDF (WINDOWS + LINUX) ----------
+#             elif lower.endswith(".docx"):
+#                 with tempfile.TemporaryDirectory() as tmp:
+#                     docx_path = os.path.join(tmp, filename)
+#                     pdf_path = os.path.join(
+#                         tmp, filename.replace(".docx", ".pdf")
+#                     )
+
+#                     resp = requests.get(url, timeout=30)
+#                     resp.raise_for_status()
+
+#                     with open(docx_path, "wb") as f:
+#                         f.write(resp.content)
+
+#                     # 🔥 OS-AWARE CONVERSION
+#                     convert_docx_to_pdf(docx_path, pdf_path)
+
+#                     if not os.path.exists(pdf_path):
+#                         raise RuntimeError("DOCX to PDF conversion failed")
+
+#                     with open(pdf_path, "rb") as f:
+#                         pdf_bytes = f.read()
+
+#                 pdf_outputs.append({
+#                     "filename": filename.replace(".docx", ".pdf"),
+#                     "data": base64.b64encode(pdf_bytes).decode()
+#                 })
+#         save_pdfs_to_root_for_testing(project_id, pdf_outputs)
+
+#         return JSONResponse({
+#             "project_id": project_id,
+#             "pdfs": pdf_outputs
+#         })
+
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@router.get("/project-pdfs-load")
+def get_project_pdfs(project_id: str = Query(...)):
+    try:
+        # ------------------ FETCH PROJECT (VALIDATION ONLY) ------------------
+        query = "SELECT * FROM c WHERE c.Project_Id = @pid"
+        items = list(
+            COSMOS_DB_project_Container.query_items(
+                query=query,
+                parameters=[{"name": "@pid", "value": project_id}],
+                enable_cross_partition_query=True
+            )
+        )
+
+        if not items:
+            raise HTTPException(status_code=404, detail="Project not found")
+
+        pdf_outputs = []
+
+        # ------------------ LIST BLOBS FROM CITATION_DOCS ------------------
+        prefix = f"Documents/{project_id}/Citation_docs/"
+
+        container_client = blob_service.get_container_client(CONTAINER_NAME)
+
+        blobs = container_client.list_blobs(name_starts_with=prefix)
+
+        for blob in blobs:
+            file_name = blob.name.split("/")[-1]
+
+            if not file_name.lower().endswith(".pdf"):
+                continue
+
+            blob_client = blob_service.get_blob_client(
+                container=CONTAINER_NAME,
+                blob=blob.name
+            )
+
+            downloader = blob_client.download_blob()
+            pdf_bytes = downloader.readall()
+
+            pdf_outputs.append({
+                "filename": file_name,
+                "data": base64.b64encode(pdf_bytes).decode()
+            })
+
+        # ------------------ RESPONSE (INDEXEDDB COMPATIBLE) ------------------
+        return JSONResponse({
+            "project_id": project_id,
+            "pdfs": pdf_outputs
+        })
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+

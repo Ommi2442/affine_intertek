@@ -31,6 +31,8 @@ import CdrReport from '../../components/CdrReport/CdrReport';
 //import localJson from '../../utils/pta_final_6.json';
 import PdfViewer from '../../components/PdfViewer';
 import localJson from '../../utils/iec_output_1.json';
+// import localJson2 from '../../utils/iec_output.json';
+
 import ConfidenceScore from './ConfidenceScore';
 import { truncateWords } from '../../Helpers/truncateWords';
 import { normalizeNewLines } from '../../Helpers/normalizeNewLines';
@@ -38,6 +40,10 @@ import { RenderImageThumbnails } from '../../Helpers/renderImageThumbnails';
 import { generateCdrRequest } from '../../redux/features/generateCdr/generateCdrSlice';
 import { triggerGenerateCdrApi } from '../../redux/api/generateCdrApi';
 //import { downloadReportRequest } from '../../redux/features/downloadReport/downloadReportSlice';
+import { loadPdfWithCache } from "../../components/loadPdfWithCache";
+
+
+
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -299,41 +305,47 @@ const ReportPage = () => {
     setBookmarkOpen(true);
   };
 
-  // ---------------- CITATION → PDF MODAL ----------------
-  const handleCitationLinkClick = (filename, page, text, blob_url) => {
-    // 🔹 ONLY change: handle XLSX download via blob_url
-    if (filename?.toLowerCase().endsWith('.xlsx')) {
-      const normalizedUrl = blob_url.startsWith('/')
-        ? blob_url.slice(1)
-        : blob_url;
 
-      const link = document.createElement('a');
-      link.href = normalizedUrl;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      return;
-    }
+const handleCitationLinkClick = (
+  filename,
+  page,
+  text,
+  blob_url
+) => {
+  // ---- XLSX → DOWNLOAD ----
+  if (filename?.toLowerCase().endsWith(".xlsx")) {
+    const cleanUrl = blob_url.startsWith("/")
+      ? blob_url.slice(1)
+      : blob_url;
 
-    // 🔹 EXISTING PDF LOGIC (UNCHANGED)
-    setPdfViewerOpen(true);
+    const link = document.createElement("a");
+    link.href = cleanUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    return;
+  }
 
-    const url = '/' + filename;
+  // ---- PDF → INDEXEDDB → VIEWER ----
+  setPdfViewerOpen(true);
 
-    // Wait for modal to render
+  setTimeout(async () => {
+    if (!pdfViewerRef.current) return;
+
+    await loadPdfWithCache(
+      projectID,
+      filename,
+      blob_url,
+      pdfViewerRef
+    );
+
     setTimeout(() => {
-      if (!pdfViewerRef.current) return;
+      pdfViewerRef.current.goToCitation(page, text);
+    }, 1200);
+  }, 200);
+};
 
-      pdfViewerRef.current.loadPdf(url);
-
-      // Allow PDF pages + textLayer to render
-      setTimeout(() => {
-        if (!pdfViewerRef.current) return;
-        pdfViewerRef.current.goToCitation(page, text);
-      }, 1200);
-    }, 200);
-  };
 
   const handleFinalise = () => {
     if (!dataTableRef.current) return;
@@ -725,7 +737,7 @@ const ReportPage = () => {
                             )
                           }
                         >
-                          {item.filename} (Page {item.page + 1})
+                          {item.filename} (Page {item.page})
                         </Typography>
                       )}
 

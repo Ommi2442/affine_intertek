@@ -27,6 +27,9 @@ import { useNavigate } from 'react-router-dom';
 import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
 import { deleteProjectsRequest } from '../../redux/features/deleteProject/deleteProjectSlice';
 import { archieveProjectsRequest } from '../../redux/features/archieveProject/archieveProjectSlice';
+import { fetchProjectPdfsApi } from "../../redux/api/fetchPdfApi";
+import { savePdfToDb } from "../../components/pdfIndexedDb";
+
 
 /* 👇 USE EXISTING API FILE */
 // import {
@@ -51,12 +54,27 @@ const Dashboard = () => {
     dispatch(fetchProjectsRequest());
   }, [dispatch]);
 
+  const preloadProjectPdfs = async (projectId) => {
+  const res = await fetchProjectPdfsApi(projectId);
+
+  for (const pdf of res.pdfs) {
+    const buffer = Uint8Array.from(
+      atob(pdf.data),
+      (c) => c.charCodeAt(0)
+    ).buffer;
+
+    await savePdfToDb(projectId, pdf.filename, buffer);
+  }
+};
+
   /*  FIX: Pass row details to create-project */
   const renderYesNo = (row, value, type) => {
     const val = value === true || value === 'true';
 
     const handleClick = () => {
       localStorage.setItem('projectId', row?.Project_Id);
+
+      preloadProjectPdfs(row?.Project_Id)
 
       if (val == false) {
         navigate('/create-project', {
