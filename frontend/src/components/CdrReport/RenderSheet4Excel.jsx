@@ -9,10 +9,12 @@ import {
   TableContainer,
   TableRow,
   Paper,
+  Box,
 } from '@mui/material';
 import HoverActionWrapper from '../Common/HoverActionsWrapper';
 import CommentDialog from '../CommentDialog';
 import { useCommentActions } from '../Common/useCommentActions';
+import { renderConfidenceColor } from '../../utils/renderConfidenceColor';
 
 /* ---------------- COMPONENT ---------------- */
 const RenderSheet4Excel = ({
@@ -42,8 +44,8 @@ const RenderSheet4Excel = ({
 
   const border = { border: '1px solid #000' };
 
-  /* ---------------- CELL RENDER ---------------- */
-  const renderCell = (value, editable, itemIndex, onChange = () => {}) => (
+  /* ---------------- CELL RENDER (NO HOVER HERE) ---------------- */
+  const renderCell = (value, editable, onChange = () => {}) => (
     <TableCell
       sx={{
         ...border,
@@ -51,33 +53,24 @@ const RenderSheet4Excel = ({
         wordBreak: 'break-word',
         overflowWrap: 'anywhere',
         verticalAlign: 'middle',
-        position: 'relative', // ✅ REQUIRED
       }}
-      onMouseEnter={() => editable && setHovered({ i: itemIndex })}
-      onMouseLeave={() => editable && setHovered({ i: null })}
     >
-      {editable ? (
-        <>
-          <TextField
-            size="small"
-            fullWidth
-            value={value ?? ''}
-            onChange={onChange}
-          />
-
-          <HoverActionWrapper
-            show={hovered.i === itemIndex}
-            onApprove={() => handleApprove?.(itemIndex)}
-            onComment={() => openComment(sheet.sheet_no, itemIndex)}
-            onBookmark={() => {
-              const row = sheet.Rows[itemIndex];
-              onBookmarkClick?.(row ?? { __i: itemIndex });
-            }}
-          />
-        </>
-      ) : (
-        <Typography>{value ?? ''}</Typography>
-      )}
+      <TextField
+        size="small"
+        fullWidth
+        value={value ?? ''}
+        InputProps={{
+          readOnly: !editable,
+        }}
+        onChange={(e) => {
+          if (!editable) return;
+          onChange(e);
+        }}
+        sx={{
+          backgroundColor: editable ? '#fff' : '#f5f5f5',
+          cursor: editable ? 'text' : 'default',
+        }}
+      />
     </TableCell>
   );
 
@@ -137,15 +130,20 @@ const RenderSheet4Excel = ({
               const editable = editMode && row.user_editable;
 
               return (
-                <TableRow key={idx}>
-                  {renderCell(row.photo_no, false, null)}
-                  {renderCell(row.item_no, false, null)}
+                <TableRow
+                  key={idx}
+                  onMouseEnter={() => setHovered({ i: idx })}
+                  onMouseLeave={() => setHovered({ i: null })}
+                  sx={{ position: 'relative' }}
+                >
+                  {renderCell(row.photo_no, false)}
+                  {renderCell(row.item_no, false)}
 
-                  {renderCell(row.name, editable, idx, (e) =>
+                  {renderCell(row.name, editable, (e) =>
                     updateField(sheet.sheet_no, `name_${idx}`, e.target.value)
                   )}
 
-                  {renderCell(row.manufacturer, editable, idx, (e) =>
+                  {renderCell(row.manufacturer, editable, (e) =>
                     updateField(
                       sheet.sheet_no,
                       `manufacturer_${idx}`,
@@ -153,7 +151,7 @@ const RenderSheet4Excel = ({
                     )
                   )}
 
-                  {renderCell(row.type_model, editable, idx, (e) =>
+                  {renderCell(row.type_model, editable, (e) =>
                     updateField(
                       sheet.sheet_no,
                       `type_model_${idx}`,
@@ -161,7 +159,7 @@ const RenderSheet4Excel = ({
                     )
                   )}
 
-                  {renderCell(row.technical_data, editable, idx, (e) =>
+                  {renderCell(row.technical_data, editable, (e) =>
                     updateField(
                       sheet.sheet_no,
                       `technical_data_${idx}`,
@@ -169,13 +167,58 @@ const RenderSheet4Excel = ({
                     )
                   )}
 
-                  {renderCell(row.marks_of_conf, editable, idx, (e) =>
-                    updateField(
-                      sheet.sheet_no,
-                      `marks_of_conf_${idx}`,
-                      e.target.value
-                    )
-                  )}
+                  {/* -------- LAST COLUMN: SINGLE ROW-LEVEL HOVER -------- */}
+                  <TableCell
+                    sx={{
+                      ...border,
+                      position: 'relative',
+                      whiteSpace: 'normal',
+                      verticalAlign: 'middle',
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1, // space between textbox and dot
+                      }}
+                    >
+                      {/* ✅ MARKS OF CONFORMITY TEXTBOX */}
+                      <TextField
+                        size="small"
+                        fullWidth
+                        value={row.marks_of_conf ?? ''}
+                        InputProps={{
+                          readOnly: !editable, // 🔥 disabled initially, editable on Edit
+                        }}
+                        onChange={(e) => {
+                          if (!editable) return;
+                          updateField(
+                            sheet.sheet_no,
+                            `marks_of_conf_${idx}`,
+                            e.target.value
+                          );
+                        }}
+                        sx={{
+                          backgroundColor: editable ? '#fff' : '#f5f5f5',
+                          cursor: editable ? 'text' : 'default',
+                        }}
+                      />
+
+                      {/* ✅ CONFIDENCE DOT (ALWAYS TO THE RIGHT) */}
+                      {row.user_editable === true &&
+                        row.accuracy_level === true &&
+                        renderConfidenceColor(row.confidence)}
+                    </Box>
+
+                    {/* ✅ ROW-LEVEL HOVER ACTIONS */}
+                    <HoverActionWrapper
+                      show={hovered.i === idx}
+                      onApprove={() => handleApprove?.(idx)}
+                      onComment={() => openComment(sheet.sheet_no, idx)}
+                      onBookmark={() => onBookmarkClick?.(row)}
+                    />
+                  </TableCell>
                 </TableRow>
               );
             })}
@@ -183,7 +226,7 @@ const RenderSheet4Excel = ({
         </Table>
       </TableContainer>
 
-      {/* ✅ COMMENT DIALOG */}
+      {/* ---------------- COMMENT DIALOG ---------------- */}
       <CommentDialog
         open={isCommentOpen}
         onClose={() => setIsCommentOpen(false)}

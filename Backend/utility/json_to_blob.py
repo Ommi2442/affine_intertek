@@ -1,3 +1,9 @@
+from pathlib import Path
+import mimetypes
+import uuid
+from datetime import datetime
+from azure.storage.blob import BlobServiceClient
+
 import json
 import uuid
 from datetime import datetime
@@ -11,6 +17,8 @@ from pathlib import Path
 from datetime import datetime
 import uuid
 import mimetypes
+
+from fastapi import HTTPException
 
 
 AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net'
@@ -323,6 +331,8 @@ def load_trf_json_from_blob(project_id):
         "data": json_data
     }
 
+
+
 import os
 from azure.storage.blob import BlobServiceClient
 from pathlib import Path
@@ -351,3 +361,132 @@ def download_json_from_blob(project_id: str, local_folder: str = "./downloads") 
     print(f"File downloaded to: {local_file_path}")
     return local_file_path,json_file_path,docx_file_path
 
+# def save_cdr_local_json_to_blob_and_cosmos(json_file_path,project_id) -> list:
+#     """
+#     Uploads both JSON and DOCX files to Blob Storage
+#     and returns Cosmos DB items (list)
+#     """
+
+#     cosmos_items = []
+
+#     for file_path in [json_file_path]:
+#         print("\n\n\n file_path:", json_file_path)
+        
+#         path = Path(file_path)
+
+#         if not path.exists():
+#             raise FileNotFoundError(f"File not found: {file_path}")
+
+#         if path.suffix.lower() not in [".json"]:
+#             raise ValueError("Only .json and files allowed")
+        
+#         print("\n\n\n file_path------and name  :", file_path,"-------------",filename)
+#         filename = path.stem + f"_download-file{project_id}" + path.suffix
+#         print("\n\n\n Modified filename After---:", filename)
+#         # ---------- blob path ----------
+#         blob_path = f"Documents/{project_id}/Generated_cdr_Report/{filename}"
+
+#         blob_client = blob_service.get_blob_client(
+#             container=blob_container,
+#             blob=blob_path
+#         )
+
+#         # ---------- content type ----------
+#         content_type, _ = mimetypes.guess_type(path.name)
+#         content_type = content_type or "application/octet-stream"
+
+#         # ---------- upload ----------
+#         with open(path, "rb") as f:
+#             blob_client.upload_blob(
+#                 f,
+#                 overwrite=True,
+#                 content_type=content_type
+#             )
+
+#         # ---------- cosmos item ----------
+#         cosmos_item = {
+#             "id": str(uuid.uuid4()),
+#             "project_id": project_id,
+#             "filename": filename,
+#             "file_type": path.suffix.lower(),
+#             "blob_path": blob_path,
+#             "blob_url": blob_client.url,
+#             "uploaded_on": datetime.utcnow().isoformat() + "Z"
+#         }
+
+#         cdr_container.create_item(cosmos_item)
+#         cosmos_items.append(cosmos_item)
+
+#     return cosmos_items
+
+
+def save_cdr_local_json_to_blob_and_cosmos_cdr(json_file_path, project_id) -> list:
+    """
+    Uploads JSON files to Blob Storage and creates corresponding Cosmos DB items.
+    Returns a list of Cosmos DB item dictionaries.
+    """
+
+    cosmos_items = []
+
+    for file_path in [json_file_path]:
+        print("\n\nProcessing file:", file_path)
+
+        path = Path(file_path)
+        
+        if not path.exists():
+            raise FileNotFoundError(f"File not found: {file_path}")
+
+        if path.suffix.lower() != ".json":
+            raise ValueError("Only .json files are allowed")
+
+        # ---------- generate filename ----------
+        filename = path.stem  + path.suffix
+
+        print("Modified filename after adding project ID:", filename)
+
+        
+        blob_path = f"Documents/{project_id}/Generated_cdr_Report/{filename}"
+
+        
+        blob_client = blob_service.get_blob_client(
+            container=blob_container,
+            blob=blob_path
+        )
+
+        content_type, _ = mimetypes.guess_type(path.name)
+        content_type = content_type or "application/octet-stream"
+
+        
+        try:
+            with open(path, "rb") as f:
+                blob_client.upload_blob(
+                    f,
+                    overwrite=True,
+                    content_type=content_type
+                )
+        except Exception as e:
+            print(f"Failed to upload {filename} to blob: {e}")
+            raise
+
+        # ---------- create Cosmos DB item ----------
+        cosmos_item = {
+            "id": str(uuid.uuid4()),
+            "project_id": project_id,
+            "filename": filename,
+            "file_type": path.suffix.lower(),
+            "blob_path": blob_path,
+            "blob_url": blob_client.url,
+            "uploaded_on": datetime.utcnow().isoformat() + "Z"
+        }
+
+        try:
+            cdr_container.create_item(cosmos_item)
+            print(f"Cosmos item created for {filename}")
+        except Exception as e:
+            print(f"Failed to save {filename} metadata to Cosmos DB: {e}")
+            raise
+
+        cosmos_items.append(cosmos_item)
+
+    print(f"\nTotal {len(cosmos_items)} files uploaded and saved to Cosmos.")
+    return cosmos_items

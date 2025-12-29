@@ -126,6 +126,7 @@ const CdrReport = forwardRef(
                   sheet={sheet}
                   editMode={editMode}
                   updateField={updateField}
+                  onBookmarkClick={onBookmarkClick}
                 />
               ) : sheet.sheet_no === 3 ? (
                 <RenderSheet3Excel sheet={sheet} />
@@ -134,6 +135,7 @@ const CdrReport = forwardRef(
                   sheet={sheet}
                   editMode={editMode}
                   updateField={updateField}
+                  onBookmarkClick={onBookmarkClick}
                 />
               ) : sheet.sheet_no === 6 ? (
                 <RenderSheet6Excel
@@ -148,6 +150,7 @@ const CdrReport = forwardRef(
                   sheet={sheet}
                   editMode={editMode}
                   updateField={updateField}
+                  onBookmarkClick={onBookmarkClick}
                 />
               )}
 

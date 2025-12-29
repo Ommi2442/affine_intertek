@@ -4,6 +4,7 @@ import { Box, Typography, TextField, Divider } from '@mui/material';
 import HoverActionWrapper from '../Common/HoverActionsWrapper';
 import CommentDialog from '../CommentDialog';
 import { useCommentActions } from '../Common/useCommentActions';
+import { renderConfidenceColor } from '../../utils/renderConfidenceColor';
 
 /* ---------------- COMPONENT ---------------- */
 const RenderSheet6Excel = ({
@@ -35,9 +36,14 @@ const RenderSheet6Excel = ({
           label = label.split('-').slice(1).join('-').trim();
         }
 
-        const valueText = item.value ?? '';
-        const isLongText = valueText.length > 80 || valueText.includes('\n');
+        let valueText = item.value ?? '';
 
+        if (typeof valueText === 'string' && valueText.includes('-')) {
+          valueText = valueText.split('-').slice(1).join('-').trim();
+        }
+
+        const isLongText = valueText.length > 80 || valueText.includes('\n');
+        //console.log('conf', item.confidence);
         return (
           <Box key={idx} sx={{ py: 1 }}>
             {!item.user_editable ? (
@@ -70,9 +76,11 @@ const RenderSheet6Excel = ({
                     className="dt-value-column dt-relative"
                     onMouseEnter={() => setHovered({ i: idx })}
                     onMouseLeave={() => setHovered({ i: null })}
+                    style={{ display: 'flex' }}
                   >
                     <TextField
                       size="small"
+                      style={{ marginRight: '2%' }}
                       fullWidth
                       multiline={isLongText}
                       minRows={isLongText ? 3 : 1}
@@ -97,6 +105,9 @@ const RenderSheet6Excel = ({
                         onBookmarkClick?.(row ?? { __i: idx });
                       }}
                     />
+                    {item.ai_fillable === true &&
+                      item.accuracy_level === true &&
+                      renderConfidenceColor(item.confidence)}
                   </div>
                 </Box>
               </Box>
