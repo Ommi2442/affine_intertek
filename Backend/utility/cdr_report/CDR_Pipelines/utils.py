@@ -780,6 +780,11 @@ def delete_folder_if_exists(connection_string: str, container: str, folder_name:
     Deletes all blobs under "device_images/".
     Returns: number of blobs deleted (0 if folder doesn't exist).
     """
+    print("\n")
+    print(f"Checking for folder '{folder_name}' in container '{container}'..." )
+    print(f"Using connection string: {connection_string}..++++@@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("\n")
+
     bsc = BlobServiceClient.from_connection_string(connection_string)
     cc = bsc.get_container_client(container)
 
