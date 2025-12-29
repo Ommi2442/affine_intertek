@@ -4,6 +4,7 @@ import { Box, Typography, TextField } from '@mui/material';
 import HoverActionWrapper from '../Common/HoverActionsWrapper';
 import CommentDialog from '../CommentDialog';
 import { useCommentActions } from '../Common/useCommentActions';
+import { renderConfidenceColor } from '../../utils/renderConfidenceColor';
 
 /* ---------------- COMPONENT ---------------- */
 const RenderSheetDefaultExcel = ({
@@ -30,7 +31,7 @@ const RenderSheetDefaultExcel = ({
   return (
     <>
       {sheet.Items.map((item, idx) => {
-        const editable = editMode && item.user_editable;
+        const isEditable = editMode && item.user_editable;
 
         return (
           <Box
@@ -47,47 +48,52 @@ const RenderSheetDefaultExcel = ({
 
             {/* VALUE */}
             <Box
-              sx={{
-                flex: 2,
-                position: 'relative', // ✅ REQUIRED
-              }}
+              sx={{ flex: 2, position: 'relative' }}
               onMouseEnter={() => setHovered({ i: idx })}
               onMouseLeave={() => setHovered({ i: null })}
             >
-              {editable ? (
-                <>
-                  <TextField
-                    size="small"
-                    fullWidth
-                    value={item.value ?? ''}
-                    onChange={(e) =>
-                      updateField(
-                        sheet.sheet_no,
-                        item.answer_cell ?? item.field,
-                        e.target.value
-                      )
-                    }
-                  />
+              <div style={{ display: 'flex' }}>
+                <TextField
+                  size="small"
+                  fullWidth
+                  value={item.value ?? ''}
+                  InputProps={{
+                    readOnly: !isEditable,
+                  }}
+                  onChange={(e) => {
+                    if (!isEditable) return;
+                    updateField(
+                      sheet.sheet_no,
+                      item.answer_cell ?? item.field,
+                      e.target.value
+                    );
+                  }}
+                  sx={{
+                    backgroundColor: isEditable ? '#fff' : '#f5f5f5',
+                    cursor: isEditable ? 'text' : 'default',
+                  }}
+                />
 
-                  <HoverActionWrapper
-                    show={hovered.i === idx}
-                    onApprove={() => handleApprove?.(idx)}
-                    onComment={() => openComment(sheet.sheet_no, idx)}
-                    onBookmark={() => {
-                      const row = sheet.Items[idx];
-                      onBookmarkClick?.(row ?? { __i: idx });
-                    }}
-                  />
-                </>
-              ) : (
-                <Typography>{item.value ?? ''}</Typography>
-              )}
+                <HoverActionWrapper
+                  show={hovered.i === idx}
+                  onApprove={() => handleApprove?.(idx)}
+                  onComment={() => openComment(sheet.sheet_no, idx)}
+                  onBookmark={() => {
+                    const row = sheet.Items[idx];
+                    onBookmarkClick?.(row ?? { __i: idx });
+                  }}
+                />
+
+                {item.ai_fillable === true &&
+                  item.accuracy_level === true &&
+                  renderConfidenceColor(item.confidence)}
+              </div>
             </Box>
           </Box>
         );
       })}
 
-      {/* ✅ COMMENT DIALOG */}
+      {/* COMMENT DIALOG */}
       <CommentDialog
         open={isCommentOpen}
         onClose={() => setIsCommentOpen(false)}
