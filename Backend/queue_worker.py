@@ -9,8 +9,8 @@ from fastapi import FastAPI
 from utility.embeddings import ingest_files_from_blob_urls_create_embeddings
 from utility.json_to_blob import *
 from utility.trf_report.trf_generation import run_trf_generation
-from utility.trf_utils import build_vectorstore, build_embeddings
-
+from utility.cdr_report.CDR_Pipelines.main import main2
+from utility.cdr_report.CDR_Pipelines.compiler import fill_excel_from_json
 # Azure Config
 # --------------------------
 # CONNECTION_STRING = os.getenv("AZURE_CONNECTION_STRING")
@@ -22,6 +22,7 @@ QUEUE_CONN_STR = "DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;A
 BLOB_CONTAINER = "stintertekesusdev-blob"
 # QUEUE_NAME = os.getenv("AZURE_QUEUE_NAME")
 QUEUE_NAME = "stintertekesus-dev-queue"
+CDR_QUEUE_NAME = "stintertekesus-dev-queue-cdr"
 
 COSMOS_DB_URI="https://csdb-intertek-esus-dev.documents.azure.com:443/"
 COSMOS_DB_KEY="azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00MFDbK88ApotACDbODLFXA=="
@@ -32,6 +33,7 @@ COSMOS_PROJECT_CONTAINER="projects"
 # ---- Azure Clients ----
 blob_service = BlobServiceClient.from_connection_string(QUEUE_CONN_STR)
 queue_client = QueueClient.from_connection_string(QUEUE_CONN_STR, QUEUE_NAME)
+queue_client_cdr = QueueClient.from_connection_string(QUEUE_CONN_STR, CDR_QUEUE_NAME)
 
 cosmos_client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
 db = cosmos_client.get_database_client(COSMOS_DB_DATABASE)
@@ -39,7 +41,11 @@ projects_container = db.get_container_client(COSMOS_PROJECT_CONTAINER)
 
 
 ############################ TRF OPENAI CREDENTIALS ###################################
-
+# queue_client_cdr.send_message(json.dumps({
+#             "projectId": "G105581614",
+#             "action": "cdr_generation",
+#             "timestamp": datetime.utcnow().isoformat()
+#         }))
 
 # Load environment variables
 AOAI_ENDPOINT      = os.getenv("AOAI_ENDPOINT")
@@ -54,7 +60,35 @@ RAG_COSMOS_KEY         = os.getenv("COSMOS_KEY")
 
 print("Rag DB NAME---------------:",RAG_DB_NAME)
 print("Rag CONT NAME:+++++++++++++++",RAG_CONT_NAME)
-        
+
+
+
+########################################################################33
+
+
+# resp=load_trf_json_from_blob(project_id)
+# resp=load_trf_json_from_blob("G105581614")
+# trf_json_ouput=resp.get("data")
+
+# input_cdr_json=trf_json_ouput
+# queue_client_cdr.send_message(json.dumps({
+#     "projectId": "G105581614",
+#     "action": "cdr_generation",
+#     "timestamp": datetime.utcnow().isoformat()
+# }))
+
+#cdr return to fE
+# updated_json=cdr_main
+# data=fill_excel_from_json(updated_json)
+# print("Completed--------")
+
+
+##################################################################
+
+
+
+
+
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -99,9 +133,35 @@ def update_project_progress(
     print(f" Progress updated → {trf_percentage}% | {trf_stage}")
 
 
+def update_project_progress_CDR(
+    project_doc: dict,
+    cdr_stage: str,
+    cdr_percentage: int = 10,
+    cdr_step: str | None = None,
+    error: str | None = None,
+    last_updated: datetime | None = None,
+    cdr_completed: bool = False
+):
+    project_doc["CDR_Project_Progress"] = {
+        "cdr_stage": cdr_stage,
+        "cdr_percentage": cdr_percentage,
+        "cdr_step": cdr_step,
+        "last_updated": (last_updated or datetime.utcnow()).isoformat(),
+        "error": error,
+        "cdr_completed": cdr_completed
+    }
+
+    projects_container.upsert_item(project_doc)
+    print(f" Progress updated → {cdr_percentage}% | {cdr_stage}")
+
+
+
+
+
 # ==========================================================
 # PROCESS QUEUE MESSAGE (SAFE + IDEMPOTENT)
 # ==========================================================
+
 async def process_message(message) -> bool:
     print("\n Queue message received")
 
@@ -322,6 +382,192 @@ async def queue_listener():
             # short recovery backoff
             await asyncio.sleep(5)
 
+# -----------------------------------------------------------------------------------------
+# CDR QUEUE PROCESSING Code
+async def process_message_cdr(message) -> bool:
+    print("\n Queue message received for CDR")
+
+    try:
+        if not message.content:
+            print(" Empty queue message")
+            return True
+
+        event = json.loads(message.content)
+        if not isinstance(event, dict):
+            print(" Queue message is not a JSON object")
+            return True
+
+    except Exception as e:
+        print(f" Invalid queue message format: {e}")
+        return True
+
+    project_id = event.get("projectId")
+    if not project_id:
+        print(" Missing projectId in queue message")
+        return True
+
+    print(f"📦 Processing project: {project_id}")
+
+    query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
+    docs = list(
+        projects_container.query_items(
+            query=query,
+            enable_cross_partition_query=True,
+        )
+    )
+
+    if not docs:
+        print(f" Project not found: {project_id}")
+        return True
+
+    project_doc = docs[0]
+
+    source_docs = project_doc.get("Source_Doc") or []
+
+    blob_urls: list[str] = []
+    for doc in source_docs:
+        if isinstance(doc, dict) and "url" in doc:
+            blob_urls.append(doc["url"])
+        else:
+            print(f" Skipping invalid Source_Doc entry: {doc}")
+
+    if not blob_urls:
+        print(f" No valid source documents for project {project_id}")
+        return True
+    
+    print(f"blob_urls source_docs------{blob_urls}")
+    print(f" Files to embed: {len(blob_urls)}")
+
+    try:
+        # Start at 0%
+        update_project_progress_CDR(
+            project_doc,
+            cdr_stage="steps in Progress",
+            cdr_percentage=0,
+            cdr_step="Starting runnig CDR",
+            cdr_completed=False
+        )
+                
+        # ingest_files_from_blob_urls_create_embeddings(DOWNLOAD_DIR, blob_urls, project_id)
+
+        print(f" Embeddings completed for project cdr {project_id}")
+
+
+        def cdr_progress_callback(processed, total):
+            raw_percent = (processed / total) * 100
+            ui_percent = int(20 + (raw_percent * 0.75))  # 0–100 → 20–95
+            if ui_percent > 95:
+                ui_percent = 95
+
+            update_project_progress_CDR(
+                project_doc,
+                cdr_stage="Generating CDR",
+                cdr_percentage=ui_percent,
+                cdr_step=f"Processed {processed}/{total}",
+                cdr_completed=False
+            )
+        
+        # resp=load_trf_json_from_blob(project_id)
+        resp=load_trf_json_from_blob("G105581614")
+        trf_json_ouput=resp.get("data")
+        input_cdr_json=trf_json_ouput
+        # queue_client_cdr.send_message(json.dumps({
+        #     "projectId": "G105581614",
+        #     "action": "cdr_generation",
+        #     "timestamp": datetime.utcnow().isoformat()
+        # }))
+
+        # cdr_main=main2(input_cdr_json,progress_callback=cdr_progress_callback)
+        cdr_main=main2(input_cdr_json)
+        #cdr return to fE
+        updated_json=cdr_main
+        data=fill_excel_from_json(updated_json)
+        
+        # print(f" CDR generation completed for project {project_id} \n\n",cdr_main)
+        
+
+        print(f" TRF generation completed for project {project_id}")
+        # main2(cdr=cdr_payload')
+
+
+        
+        # save_local_json_to_blob_and_cosmos(str(OUTPUT_JSON),str(OUTPUT_DOCX),project_id=project_id,)
+
+        update_project_progress_CDR(
+                project_doc,
+                cdr_stage="Completed",
+                cdr_percentage=100,
+                cdr_step=f"CDR generated and stored",
+                cdr_completed=True
+            )
+        
+
+        print(f" Saving TRF Report to the Blob")
+        #generating the CDR Report code starts here
+        # read the CDR payload from the generated TRF JSON from the blob storage
+        
+        return True
+
+    except Exception as e:
+        print(f" Worker failed for project {project_id}: {e}")
+
+        update_project_progress_CDR(
+            project_doc,
+            cdr_stage="Failed",
+            cdr_percentage=0,
+            cdr_step="Processing failed",
+            error="error",
+            cdr_completed=False
+        )
+
+        return False
+
+
+
+
+# ==========================================================
+# QUEUE LISTENER (15-SECOND POLLING, SAFE & STABLE)
+# ==========================================================
+async def queue_listener_cdr():
+    print("\n Worker started — polling Azure Queue every 15 seconds...\n")
+    POLL_INTERVAL_SEC = 15
+
+    while True:
+        try:
+            messages = queue_client_cdr.receive_messages(
+                messages_per_page=1,
+                visibility_timeout=600,  # must be > max TRF processing time
+            )
+
+            message_found = False
+
+            for message in messages:
+                message_found = True
+                print(f" Queue message fetched: {message.id}")
+
+                try:
+                    ok = await process_message_cdr(message)
+
+                    if ok:
+                        queue_client_cdr.delete_message(
+                            message.id,
+                            message.pop_receipt
+                        )
+                        print(f" Queue message deleted for CDR : {message.id}")
+
+                except Exception as e:
+                    print(f" Error while processing  CDR message {message.id}: {e}")
+
+            if not message_found:
+                print(" No queue messages found for CDR")
+
+            # ✅ ALWAYS wait 15 seconds before next poll
+            await asyncio.sleep(POLL_INTERVAL_SEC)
+
+        except Exception as e:
+            print(f" Queue listener failure: {e}")
+            # short recovery backoff
+            await asyncio.sleep(5)
 
 
 
@@ -331,3 +577,4 @@ async def queue_listener():
 @app.on_event("startup")
 async def start_worker():
     asyncio.create_task(queue_listener())
+    asyncio.create_task(queue_listener_cdr())

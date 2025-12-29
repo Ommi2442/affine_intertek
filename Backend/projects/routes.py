@@ -1,4 +1,17 @@
-from fastapi import APIRouter, HTTPException, Depends, Body, Form
+import traceback
+from utility.cdr_report.CDR_Pipelines.main import main2
+from pathlib import Path
+import json
+import requests
+import os
+from fastapi import APIRouter, HTTPException, status
+import logging
+import requests
+import json
+import time  # for the polling logic
+from datetime import datetime
+
+from fastapi import APIRouter, HTTPException, Depends, Body, Form, logger
 from azure.storage.blob import ContainerClient
 from typing import List
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
@@ -22,10 +35,17 @@ from fastapi.responses import FileResponse
 import shutil
 import os
 from fastapi import HTTPException
-from utility.cdr_report.CDR_Pipeline_V2 import main
-from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_local_json_to_blob_and_cosmos
+
+from utility.cdr_report.CDR_Pipelines.main import main2
+from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_cdr_local_json_to_blob_and_cosmos_cdr,save_local_json_to_blob_and_cosmos
+
+
 
 router = APIRouter()
+
+# Setup logging
+
+logger = logging.getLogger(__name__)
 
 # CONNECTION_STRING = os.getenv("AZURE_CONNECTION_STRING")
 CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net"
@@ -37,6 +57,8 @@ database = client.get_database_client(COSMOS_DB_DATABASE)
 trf_container = database.get_container_client(COSMOS_DB_project_TRF_Container)
 # QUEUE_NAME = os.getenv("AZURE_QUEUE_NAME")
 QUEUE_NAME = "stintertekesus-dev-queue"
+CDR_QUEUE_NAME = "stintertekesus-dev-queue-cdr"
+
 
 CONTAINER_NAME = "stintertekesusdev-blob"
 BLOB_PREFIX = "Documents"   # top-level folder in blob
@@ -48,6 +70,11 @@ container_client = blob_service.get_container_client(CONTAINER_NAME)
 queue_client = QueueClient.from_connection_string(
     conn_str=QUEUE_CONN_STR,
     queue_name=QUEUE_NAME
+)
+
+queue_client_cdr = QueueClient.from_connection_string(
+    conn_str=QUEUE_CONN_STR,
+    queue_name=CDR_QUEUE_NAME
 )
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -706,34 +733,158 @@ def generate_trf(projectId: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/generate-cdr")
-async def generate_trf(projectId: str):
-    try:
-        
-        import subprocess
-        print("\n\n\n Running CDR pipeline main file...\n\n\n")
-        import sys, subprocess
-        subprocess.run([sys.executable, "-m", "utility.cdr_report.CDR_Pipeline_V2.main"], check=True)
-        
-    
-        
-        cosmos_data = save_local_json_to_blob_and_cosmos_cdr(
-            file_path=path,
-            project_id=projectId
-        )
-        blob_url=cosmos_data.get("blob_url")
-        
-        json=fetch_json_from_blob(blob_url)
 
+
+@router.get("/report/status")
+def get_project_report_status(id: str):
+    query = f"SELECT * FROM c WHERE c.Project_Id = '{id}'"
+    docs = list(COSMOS_DB_project_Container.query_items(
+        query=query,
+        enable_cross_partition_query=True
+    ))
+
+    if not docs:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    progress = docs[0].get("Project_Progress")
+
+    if not progress:
         return {
-            "status": "success",
-            "message": "CDR report generated and saved to Blob and Cosmos DB.",
-            "data": cosmos_data,
-            "Blob_json_data":json
+            "trf_status": "Pending",
+            "trf_percentage": 10,
+            "trf_completed": 'No'
         }
 
+    return {
+        "trf_status": progress.get("trf_stage"),
+        "trf_percentage": progress.get("trf_percentage"),
+        "trf_step": progress.get("trf_step"),
+        "trf_error": progress.get("trf_error"),
+        "trf_completed": progress.get("trf_completed")
+    }
+
+
+@router.post("/generate-cdr")
+def generate_cdr(projectId: str):
+    try:
+       
+
+        if not projectId:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="projectId is required"
+            )
+
+        ############### QUEUE LOGIC (COMMENTED) ################
+        # queue_client_cdr.send_message(json.dumps({
+        #     "projectId": projectId,
+        #     "action": "CDR_Generation",
+        #     "timestamp": datetime.utcnow().isoformat()
+        # }))
+        #
+        # MAX_WAIT_SECONDS = 6000
+        # POLL_INTERVAL = 2
+        # elapsed = 0
+        #
+        # while elapsed < MAX_WAIT_SECONDS:
+        #     query = "SELECT * FROM c WHERE c.Project_Id = @pid"
+        #     params = [{"name": "@pid", "value": projectId}]
+        #
+        #     docs = list(projects_container.query_items(
+        #         query=query,
+        #         parameters=params,
+        #         enable_cross_partition_query=True,
+        #     ))
+        #
+        #     if docs:
+        #         progress = docs[0].get("CDR_Project_Progress") or {}
+        #         percentage = progress.get("cdr_percentage")
+        #
+        #         if percentage == 100:
+        #             break
+        #
+        #     time.sleep(POLL_INTERVAL)
+        #     elapsed += POLL_INTERVAL
+        #
+        # if elapsed >= MAX_WAIT_SECONDS:
+        #     raise HTTPException(status_code=408, detail="CDR generation timed out")
+        ############### QUEUE LOGIC END #######################
+
+        # ------------------ COSMOS QUERY ------------------
+        query = "SELECT c.blob_url FROM c WHERE c.project_id = @pid"
+        params = [{"name": "@pid", "value": projectId}]
+
+        try:
+            items = list(trf_container.query_items(
+                query=query,
+                parameters=params,
+                enable_cross_partition_query=True,
+            ))
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to query project data from database"
+            )
+
+        if not items:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Project '{projectId}' not found"
+            )
+
+        project = items[0]
+        blob_url = project.get("blob_url")
+
+        if not blob_url or not isinstance(blob_url, str):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="CDR Blob URL not found or invalid"
+            )
+
+        response = requests.get(blob_url)
+        response.raise_for_status()
+        trf_filled = response.json()
+
+        result = main2(trf_filled)
+
+        BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
+        OUTPUT_JSON_CDR = BASE_DIR / "data" / f"iec_output_cdr_{projectId}.json"
+
+        OUTPUT_JSON_CDR.parent.mkdir(parents=True, exist_ok=True)
+
+        with open(OUTPUT_JSON_CDR, "w", encoding="utf-8") as f:
+            json.dump(result, f, indent=2, ensure_ascii=False)
+
+
+        save_cdr_local_json_to_blob_and_cosmos_cdr(
+            OUTPUT_JSON_CDR,
+            projectId
+        )
+
+        print(f"📄 CDR saved at: {OUTPUT_JSON_CDR}")
+
+        return {
+            "message": "CDR Report generated successfully",
+            "projectId": projectId,
+            "data": result
+        }
+
+    except HTTPException:
+        raise
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        error_details = traceback.format_exc()
+        logger.exception("Unhandled error in generate_trf API")
+        print("\n===== FULL TRACEBACK START =====")
+        print(error_details)
+        print("===== FULL TRACEBACK END =====\n")
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+
 
 @router.get("/download-file")
 def download_file(project_id: str):
