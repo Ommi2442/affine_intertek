@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import './ReportPage.css';
 import { Card, CardContent, Typography, Box, Divider } from '@mui/material';
-import { calculateConfidenceScore } from '../../utils/CalculateConfidenceScore';
+import { calculateConfidenceScore } from '../../utils/calculateConfidenceScore';
 import { setConfidenceScore } from '../../redux/features/confidence/confidenceSlice';
 
 /* ------------------ COMPONENT ------------------ */
