@@ -30,7 +30,8 @@ import localCdrJson from '../../utils/cdr_payload_v5_updated.json';
 import CdrReport from '../../components/CdrReport/CdrReport';
 //import localJson from '../../utils/pta_final_6.json';
 import PdfViewer from '../../components/PdfViewer';
-import localJson from '../../utils/iec_output_1.json';
+//import localJson from '../../utils/iec_output_1.json';
+import localJson from '../../utils/pta_final_6_2_output.json';
 // import localJson2 from '../../utils/iec_output.json';
 
 import ConfidenceScore from './ConfidenceScore';
@@ -79,6 +80,7 @@ const ReportPage = () => {
   const [reportClick, setReportClick] = useState('trf');
 
   const [activePdfUrl, setActivePdfUrl] = useState(null);
+  const [confidenceTick, setConfidenceTick] = useState(0);
 
   const [activeDocUrl, setActiveDocUrl] = useState(null);
   const [viewerType, setViewerType] = useState(null); // 'pdf' | 'docx'
@@ -552,6 +554,9 @@ const ReportPage = () => {
               editMode={trfEditMode}
               onBookmarkClick={handleBookmarkFromChild}
               reportType="trf"
+              onConfidenceChange={() => {
+                setConfidenceTick((v) => v + 1);
+              }}
             />
           )}
 
@@ -567,10 +572,30 @@ const ReportPage = () => {
                   projectId={localStorage.getItem('projectId')}
                   onBookmarkClick={handleBookmarkFromChild}
                   reportType="cdr"
+                  cdrFinalised={cdrFinalised}
+                  onConfidenceChange={() => {
+                    setConfidenceTick((v) => v + 1);
+                  }}
                 />
               )}
             </>
           )}
+
+          {/* local rendering of cdr report */}
+          {/* {reportClick === 'cdr' && (
+            <CdrReport
+              ref={dataTableRef}
+              jsonData={localCdrJson}
+              editMode={cdrEditMode}
+              projectId={localStorage.getItem('projectId')}
+              onBookmarkClick={handleBookmarkFromChild}
+              reportType="cdr"
+              cdrFinalised={cdrFinalised}
+              onConfidenceChange={() => {
+                setConfidenceTick((v) => v + 1);
+              }}
+            />
+          )} */}
         </CardContent>
       </Card>
     );
@@ -912,14 +937,19 @@ const ReportPage = () => {
             <ConfidenceScore
               data={reportClick === 'trf' ? trfJson : cdrJson}
               reportType={reportClick}
+              confidenceTick={confidenceTick}
+              projectId={projectId}
             />
           )}
 
+          {/* local rendering of cdr report */}
           {/* {((reportClick === 'trf' && localJson) ||
             (reportClick === 'cdr' && localCdrJson)) && (
             <ConfidenceScore
               data={reportClick === 'trf' ? localJson : localCdrJson}
               reportType={reportClick}
+              confidenceTick={confidenceTick}
+              projectId={projectId}
             />
           )} */}
         </Box>

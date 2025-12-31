@@ -38,7 +38,15 @@ const STORAGE_KEY_PREFIX = 'cdr_report_';
 /* ---------------- COMPONENT ---------------- */
 const CdrReport = forwardRef(
   (
-    { jsonData, editMode = false, projectId, openComment, onBookmarkClick },
+    {
+      jsonData,
+      editMode = false,
+      projectId,
+      openComment,
+      onBookmarkClick,
+      cdrFinalised,
+      onConfidenceChange,
+    },
     ref
   ) => {
     const storageKey = `${STORAGE_KEY_PREFIX}${projectId ?? 'default'}`;
@@ -84,6 +92,36 @@ const CdrReport = forwardRef(
     const persist = (next) =>
       idb_set(storageKey, next, STORES.CDR).catch(() => {});
 
+    //handleapprove for approving ai confidence score
+    const handleApprove = (sheet_no, itemIndex) => {
+      setFullJson((prev) => {
+        const next = JSON.parse(JSON.stringify(prev));
+        const sheet = next.Sheets.find((s) => s.sheet_no === sheet_no);
+        if (!sheet) return prev;
+
+        const item = sheet.Items[itemIndex];
+        if (!item || item.is_user_approved) return prev;
+
+        const c = Number(item.confidence);
+
+        // CASE 1: Edited + approve → User Edited
+        if (item.is_user_modified === true) {
+          item.is_user_approved = true;
+          item.is_user_edited = true;
+          item.confidence = 100;
+        }
+        // CASE 2: Medium / Low + approve → Promote to High
+        else if (!Number.isNaN(c) && c < 75) {
+          item.is_user_approved = true;
+          item.confidence = 100;
+        }
+
+        persist(next);
+        onConfidenceChange?.();
+        return next;
+      });
+    };
+
     /* -------- UPDATE FIELD -------- */
     const updateField = (sheet_no, key, value) => {
       setFullJson((prev) => {
@@ -94,9 +132,18 @@ const CdrReport = forwardRef(
         const item = sheet.Items.find(
           (i) => (i.answer_cell ?? i.field) === key
         );
-        if (item) item.value = value;
+        if (!item) return prev;
+
+        // mark user modification only if value changed
+        const isModified = item.value !== value;
+
+        item.value = value;
+        if (isModified) {
+          item.is_user_modified = true;
+        }
 
         persist(next);
+        onConfidenceChange?.(); // realtime update
         return next;
       });
     };
@@ -126,15 +173,28 @@ const CdrReport = forwardRef(
                   sheet={sheet}
                   editMode={editMode}
                   updateField={updateField}
+                  handleApprove={(itemIndex) =>
+                    handleApprove(sheet.sheet_no, itemIndex)
+                  }
                   onBookmarkClick={onBookmarkClick}
                 />
               ) : sheet.sheet_no === 3 ? (
-                <RenderSheet3Excel sheet={sheet} />
+                <RenderSheet3Excel
+                  sheet={sheet}
+                  editMode={editMode}
+                  isFinalised={cdrFinalised}
+                  onChange={(updatedItems) => {
+                    sheet.Items = updatedItems;
+                  }}
+                />
               ) : sheet.sheet_no === 4 ? (
                 <RenderSheet4Excel
                   sheet={sheet}
                   editMode={editMode}
                   updateField={updateField}
+                  handleApprove={(itemIndex) =>
+                    handleApprove(sheet.sheet_no, itemIndex)
+                  }
                   onBookmarkClick={onBookmarkClick}
                 />
               ) : sheet.sheet_no === 6 ? (
@@ -143,6 +203,9 @@ const CdrReport = forwardRef(
                   editMode={editMode}
                   updateField={updateField}
                   openComment={openComment}
+                  handleApprove={(itemIndex) =>
+                    handleApprove(sheet.sheet_no, itemIndex)
+                  }
                   onBookmarkClick={onBookmarkClick}
                 />
               ) : (
@@ -150,6 +213,9 @@ const CdrReport = forwardRef(
                   sheet={sheet}
                   editMode={editMode}
                   updateField={updateField}
+                  handleApprove={(itemIndex) =>
+                    handleApprove(sheet.sheet_no, itemIndex)
+                  }
                   onBookmarkClick={onBookmarkClick}
                 />
               )}

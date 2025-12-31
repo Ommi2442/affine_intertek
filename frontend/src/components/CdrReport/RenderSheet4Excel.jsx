@@ -208,7 +208,10 @@ const RenderSheet4Excel = ({
                       {/* ✅ CONFIDENCE DOT (ALWAYS TO THE RIGHT) */}
                       {row.user_editable === true &&
                         row.accuracy_level === true &&
-                        renderConfidenceColor(row.confidence)}
+                        renderConfidenceColor(
+                          row.confidence,
+                          row.is_user_edited
+                        )}
                     </Box>
 
                     {/* ✅ ROW-LEVEL HOVER ACTIONS */}

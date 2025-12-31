@@ -1,35 +1,52 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import './ReportPage.css';
 import { Card, CardContent, Typography, Box, Divider } from '@mui/material';
-import { calculateConfidenceScore } from '../../utils/CalculateConfidenceScore';
+import { calculateConfidenceScore } from '../../utils/calculateConfidenceScore';
 import { setConfidenceScore } from '../../redux/features/confidence/confidenceSlice';
+import { idb_get, STORES } from '../../utils/idb';
 
 /* ------------------ COMPONENT ------------------ */
-const ConfidenceScore = ({ data }) => {
+const ConfidenceScore = ({ data, confidenceTick, projectId }) => {
   const dispatch = useDispatch();
 
   // ✅ READ FROM REDUX
   const summary = useSelector((state) => state.confidence.summary);
-  //console.log('summm', summary);
 
   useEffect(() => {
-    if (!data) return;
+    let isMounted = true;
 
-    const result = calculateConfidenceScore(data);
+    const loadAndCalculate = async () => {
+      let sourceData = data;
 
-    if (result) {
-      dispatch(setConfidenceScore(result));
-    }
-  }, [data, dispatch]);
+      /* ---------- TRF ---------- */
+      const idbTables = await idb_get('tables');
+      if (Array.isArray(idbTables) && idbTables.length > 0) {
+        sourceData = { Tables: idbTables };
+      }
 
-  // const summary = React.useMemo(() => {
-  //   const result = calculateConfidenceScore(data);
-  //   if (result) {
-  //     dispatch(setConfidenceScore(result));
-  //   }
-  //   return result;
-  // }, [data, dispatch]);
+      /* ---------- CDR ---------- */
+      const cdrKey = `cdr_report_${projectId ?? 'default'}`;
+      const idbCdr = await idb_get(cdrKey, STORES.CDR);
+      if (idbCdr?.Sheets?.length) {
+        sourceData = idbCdr;
+      }
+
+      if (!sourceData) return;
+
+      const result = calculateConfidenceScore(sourceData);
+
+      if (result && isMounted) {
+        dispatch(setConfidenceScore(result));
+      }
+    };
+
+    loadAndCalculate();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [data, confidenceTick, projectId, dispatch]);
 
   if (!summary || summary.totalAiFields === 0) {
     return (
@@ -46,7 +63,6 @@ const ConfidenceScore = ({ data }) => {
 
   const { totalAiFields, high, medium, low, avgConfidence, userEditedCount } =
     summary;
-  //console.log('userEditedCount', userEditedCount);
 
   return (
     <Card className="confidence-card">
@@ -59,7 +75,7 @@ const ConfidenceScore = ({ data }) => {
         {/* SUMMARY */}
         <Box className="confidence-summary">
           <Typography>
-            {high}/{totalAiFields} fields
+            {high + userEditedCount}/{totalAiFields} fields
           </Typography>
           <Typography fontWeight="bold">{avgConfidence}%</Typography>
         </Box>
@@ -87,7 +103,6 @@ const ConfidenceScore = ({ data }) => {
               </Box>
               <Typography fontWeight="bold">{row.count}</Typography>
             </Box>
-
             {i < 3 && <Divider />}
           </Box>
         ))}
