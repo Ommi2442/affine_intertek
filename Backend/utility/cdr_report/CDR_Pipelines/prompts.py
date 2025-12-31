@@ -135,11 +135,9 @@ Rules:
 
 spacing_instruction = """
 Fill spacing values ONLY if they are visible in the text evidence or can be clearly read from the images.
-If a specific dimension is not visible in either text or images, set that field to "unknown".
+If a specific dimension is not visible in either text or images, set that field to "__".
 Also generate one concise CDR-style sentence summarizing the spacing.
-
-From the provided image_urls, return ONLY the URLs that directly support the extracted spacing values
-or the referenced Illustration. If none are relevant, return an empty list.
+Return ONLY relevant_image_ids from the IMAGE CANDIDATES list. If none, return [].
 """.strip()
 
 spacing_template = """
@@ -153,8 +151,8 @@ spacing_json_schema = """
   "section_name": "Spacing",
   "source_used": "text | images | both",
   "filled_text": "Single CDR-style sentence with placeholders replaced by actual values or '__'.",
-  "relevant_image_urls": ["list of URLs (strings). Only include images that directly support extracted values or the illustration; else []"],
-  "overall_confidence": "number 0.0 to 100.0",
+  "relevant_image_ids": ["img_01", "img_03"],
+  "overall_confidence": "number 0.0 to 100" e.g 85.0,
   "field_confidence": {
     "minimum_spacing_through_air": "number 0.0 to 1.0",
     "minimum_spacing_over_surfaces_of_insulating_material_between_current_carrying_parts_of_opposite_polarity": "number 0.0 to 1.0",
@@ -167,7 +165,7 @@ spacing_json_schema = """
       "minimum_spacing_over_surfaces_of_insulating_material_between_current_carrying_parts_of_opposite_polarity": "number in mm as string or '__'",
       "minimum_spacing_between_current_carrying_parts_and_dead_metal_parts_or_low_voltage_isolated_circuits": "number in mm as string or '__'"
     },
-    "Refer_to_Illustration": "e.g. 'Illustration 3-2' or 'unknown'"
+    "Refer_to_Illustration": "e.g. 'Illustration 3-2' or '__'"
   }
 }
 """.strip()
@@ -184,12 +182,14 @@ EVIDENCE RULES:
 
 OUTPUT RULES:
 - Return ONLY a single valid JSON object matching the schema exactly.
-- If not applicable: set 'applicable' = false and set both 'filled_text' and 'mechanical_assembly_status' to "N/A".
-- 'relevant_image_urls' must include ONLY the URLs that directly support your conclusion.
-  If none support it, return [].
+- If not applicable:
+    - set 'applicable' = false
+    - set both 'filled_text' and 'mechanical_assembly_status' to "N/A"
+    - set 'source_used' = "none"
+- Return ONLY relevant_image_ids from the IMAGE CANDIDATES list. If none, return [].
 
 CONFIDENCE RULES:
-- overall_confidence and field_confidence must be numbers between 0.0 and 100.0.
+- overall_confidence and each field_confidence value must be numbers between 0.0 and 100.0.
 """.strip()
 
 mechanical_template = """
@@ -206,11 +206,14 @@ mechanical_json_schema = """
   "applicable": true,
   "filled_text": "If applicable: final CDR-style sentence based on the template and evidence. If not applicable: 'N/A'.",
   "mechanical_assembly_status": "If applicable: concise status sentence (may be same as filled_text). If not applicable: 'N/A'.",
-  "relevant_image_urls": [
-    "URLs only. MUST be a subset of the provided image_urls. Copy-paste exactly. Do not invent/modify. If none, return []"
-  ],
-  "overall_confidence": 0.0,
-  "reason": "Short explanation: cite what in text/images supports the conclusion (file/page if from text chunks), or say 'No evidence found'."
+  "reason": "Short explanation: cite what in text/images supports the conclusion (file/page if from text chunks), or say 'No evidence found'.",
+  "overall_confidence": 85.0,
+  "field_confidence": {
+    "applicable": 90.0,
+    "filled_text": 80.0,
+    "mechanical_assembly_status": 80.0
+  },
+  "relevant_image_ids": ["img_01", "img_03"]
 }
 """.strip()
 
@@ -225,6 +228,7 @@ are protected against corrosion.
 - If this topic is not applicable to this product (no ferrous parts, or not evaluable),
   set both 'filled_text' and 'corrosion_protection_status' to "N/A" and explain why in 'reason'.
 - Provide confidence score based on the evidence
+Return ONLY relevant_image_ids from the IMAGE CANDIDATES list. If none, return [].
 """.strip()
 
 corrosion_template = """
@@ -240,7 +244,8 @@ corrosion_json_schema = """
   "applicable": "true or false",
   "filled_text": "If applicable: final CDR-style sentence based on the template and evidence. If not applicable: 'N/A'.",
   "corrosion_protection_status": "If applicable: concise status (e.g. 'All ferrous parts painted/plated.') or similar. If not applicable: 'N/A'.",
-  "overall_confidence": "number 0 to 100"
+  "overall_confidence": "number 0 to 100",
+  "relevant_image_ids": ["img_01", "img_03"],
   "reason": "Short explanation of how you arrived at the status, including which images/pages showed coatings or why it is 'N/A'."
   
 }
@@ -270,6 +275,7 @@ Use both the text evidence and all images to evaluate accessibility of primary l
 Do NOT invent details that are not supported by text or images.
 If a detail cannot be determined, use 'unknown' (not '___').
 Also include an 'overall_confidence' score (0.0 to 100.0) based on the strength and completeness of the evidence used.
+Return ONLY relevant_image_ids from the IMAGE CANDIDATES list. If none, return [].
 """.strip()
 
 access_template = """
@@ -289,7 +295,8 @@ access_json_schema = """
   "filled_text": "If applicable: final CDR-style sentence based on the template and evidence, with <metal or non-metallic> resolved. If not applicable: 'N/A'.",
   "accessibility_status": "Short status summary, e.g. 'All primary live parts housed in metal enclosure with no accessible openings.' or 'N/A'.",
   "reason": "Short explanation of how you arrived at these conclusions, including which images/pages were used or why it is 'N/A' or 'unknown'.",
-  "overall_confidence": "number from 0.0 to 100.0 indicating confidence based on evidence quality/coverage"
+  "overall_confidence": "number from 0.0 to 100.0 indicating confidence based on evidence quality/coverage",
+  "relevant_image_ids": ["img_01", "img_03"]
 }
 """.strip()
 
@@ -317,7 +324,10 @@ B) If grounded=true:
 Rules:
 - Do NOT mention any standard/clause.
 - Decide grounded vs not grounded ONLY from evidence (PE terminal/cord, Class II/III, SELV, etc.).
-- Populate evidence fields: source_used (text/images/both), text_evidence[], image_evidence[{file_name, blob_url, comment}].
+- relevant_image_ids: list of IMAGE CANDIDATES ids that directly support the grounding decision (or []).
+- image_evidence objects must also include:
+    • image_id – one of the IMAGE CANDIDATES ids like "img_01"
+  Choose image_id ONLY from the IMAGE CANDIDATES list (do NOT invent).
 Return ONLY JSON.
 - Provide 'overall_confidence' based on the evidence and the result
 """.strip()
@@ -355,24 +365,26 @@ grounding_json_schema = {
       "items": {
         "type": "object",
         "properties": {
+          "image_id":  {"type": "string"},
           "file_name": {"type": "string"},
-          "blob_url": {"type": "string"},
-          "comment": {"type": "string"}
+          "blob_url":  {"type": "string"},
+          "comment":   {"type": "string"}
         },
-        "required": ["file_name", "blob_url"]
+        "required": ["image_id", "file_name"]
       }
     },
-      "overall_confidence" : "number 0 to 100"
+    "relevant_image_ids": ["img_01", "img_03"],
+    "overall_confidence" : "number 0 to 100"
   },
   "required": [
     "filled_text",
-    "grounded",
-    "case",
+    "grounded",    "case",
     "grounding_path",
     "reason_text",
     "source_used",
     "text_evidence",
-    "image_evidence"
+    "image_evidence",
+    "relevant_image_ids"
   ]
 }
 
@@ -385,6 +397,8 @@ Rules:
    - For 'filled_text', keep the main statement EXACT as in the template (do not change wording),
      but you may append an additional sentence describing specific construction details
      (e.g., keyed connector shape, blade size difference, keyed IEC inlet) if clearly visible in evidence.
+   - No image IDs (img_02) in filled_texts/reason.
+   - No parentheses/brackets in the added detail sentence.
 
 2) If the product does NOT have a polarized connection:
    - Set 'polarized' = false.
@@ -398,7 +412,8 @@ Rules:
 
 Do NOT partially rewrite or paraphrase the core template text.
 Either use it verbatim (plus optional extra sentence) or return 'N/A' as described.
-provide an 'overall_confidence' score based on the text and image evidence
+provide an 'overall_confidence' score based on the text and image evidence.
+Return ONLY relevant_image_ids from the IMAGE CANDIDATES list. If none, return [].
 """.strip()
 
 polarized_template = """
@@ -414,7 +429,8 @@ polarized_json_schema = """
   "polarized": "true | false | unknown",
   "filled_text": "If polarized = true: the EXACT template text plus optionally one extra sentence with construction details. If polarized = false or unknown: 'N/A'.",
   "reason": "Short explanation based on evidence: how you concluded polarized vs not polarized vs unknown, and any details about construction if known.",
-  "overall_confidence" : number 0 to 100
+  "overall_confidence" : number 0 to 100,
+   "relevant_image_ids": ["img_01", "img_03"]
 }
 """.strip()
 
@@ -429,9 +445,9 @@ Use both the text evidence and all images to describe internal wiring routing an
 2) For AWG, voltage rating, and temperature rating:
    - Extract these ONLY if clearly visible on wire marking, documentation, or in the text evidence.
    - If visible:
-       - 'awg_min' 
-       - 'voltage_rating' 
-       - 'temperature_rating' 
+       - 'awg_min' → smallest AWG actually seen (e.g. "18")
+       - 'voltage_rating' → e.g. "300V"
+       - 'temperature_rating' → e.g. "105°C"
    - If NOT visible:
        - Keep placeholders EXACTLY as:
            awg_min = "++"
@@ -446,7 +462,8 @@ Use both the text evidence and all images to describe internal wiring routing an
        - If unknown, leave the placeholders "++", "++V", "++°C" in place (as per your policy).
 
 4) Do NOT hallucinate AWG, voltage, or temperature if not supported.
-provide 'overall_confidence'
+provide 'overall_confidence' number from 0 to 100
+Return ONLY relevant_image_ids from the IMAGE CANDIDATES list. If none, return [].
 """.strip()
 
 internal_wiring_template = """
@@ -467,14 +484,17 @@ internal_wiring_json_schema = """
   "voltage_rating": "Actual voltage rating (e.g. '300V') or '++V' if not visible.",
   "temperature_rating": "Actual temperature rating (e.g. '105°C') or '++°C' if not visible.",
   "reason": "Short explanation pointing to the kind of evidence (wire legend, datasheet text, photos) used for these conclusions."
-  "overall_confidence": number 0 to 100
+  "overall_confidence": number 0 to 100,
+  "relevant_image_ids": ["img_01", "img_03"]
 }
 """.strip()
 
 
 markings_template = """
 {% if markings_status == "unknown" %}
-Null
+Markings - The product is marked as follows: 
+
+The following markings in French are required:
 {% else %}
 Markings - The product is marked on as follows: {{ markings_summary }}.
 
@@ -493,16 +513,21 @@ Rules:
   "Applicant's name", "brand name", "model number", "date of manufacture",
   "electrical ratings", "symbols", "warnings", etc.
 - NEVER write the French markings content. Do NOT add any sentence about packaging/illustrations.
+- If markings_status is "present" then markings_summary MUST be non-empty. If you cannot produce a non-empty summary from evidence, set markings_status="unknown" and use the unknown filled_text format.
 
 filled_text format:
-- If you cannot determine markings from evidence: set markings_status="unknown" and filled_text="Null".
-- Otherwise filled_text MUST be EXACTLY this 2-line block (with a blank line between):
+- If you cannot determine markings from evidence: set markings_status="unknown" and filled_text MUST be EXACTLY this 3-line block (with a blank line between):
+  Line 1: "Markings - The product is marked as follows: "
+  Line 2: (blank line)
+  Line 3: "The following markings in French are required:"
 
-Line 1: "Markings - The product is marked on as follows: <markings_summary>."
+- Otherwise filled_text MUST be EXACTLY this 3-line block (with a blank line between):
+Line 1: "Markings - The product is marked as follows: <markings_summary>."
 Line 2: (blank line)
 Line 3: "The following markings in French are required:"
 
 Also include overall_confidence (0.0 to 100.0) based on evidence quality/coverage.
+relevant_image_ids: list of IMAGE CANDIDATES ids that support the conclusion (or [])
 """.strip()
 
 
@@ -520,13 +545,14 @@ markings_json_schema = {
         "type": "object",
         "properties": {
           "file_name": {"type": "string"},
-          "blob_url": {"type": "string"},
+          "image_ids": {"type": "string"},
           "comment": {"type": "string"}
         },
-        "required": ["file_name", "blob_url"]
+        "required": ["file_name", "image_ids"]
       }
     },
-    "overall_confidence": {"type": "number"}
+    "relevant_image_ids": ["img_01", "img_03"],
+    "overall_confidence": "number 0 to 100"
   },
   "required": [
     "filled_text",
@@ -535,7 +561,8 @@ markings_json_schema = {
     "source_used",
     "text_evidence",
     "image_evidence",
-    "overall_confidence"
+    "overall_confidence",
+    "relevant_image_ids"
   ]
 }
 
@@ -567,7 +594,10 @@ filled_text MUST be:
 - unknown: "Null"
 
 Also include overall_confidence (0.0 to 100.0) based on evidence quality/coverage.
-Populate: source_used (text/images/both), text_evidence[], image_evidence[{file_name, blob_url, comment}], and reason_text.
+Populate: 
+-source_used (text/images/both), text_evidence[], image_evidence[{file_name, image_ids, comment}], and reason_text.
+-relevant_image_ids: list of IMAGE CANDIDATES ids that directly support the instructions conclusion (or []).
+
 """.strip()
 
 instructions_json_schema = {
@@ -584,13 +614,18 @@ instructions_json_schema = {
         "type": "object",
         "properties": {
           "file_name": {"type": "string"},
-          "blob_url": {"type": "string"},
+          "image_ids": {"type": "string"},
           "comment": {"type": "string"}
         },
-        "required": ["file_name", "blob_url"]
+        "required": ["file_name", "image_ids"]
       }
     },
-    "overall_confidence": {"type": "number"}
+    "relevant_image_ids": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "List of IMAGE CANDIDATES ids (e.g., 'img_01') that support the instructions conclusion. If none, return []."
+    },
+    "overall_confidence": "number from 0 to 100"
   },
   "required": [
     "filled_text",
@@ -599,6 +634,7 @@ instructions_json_schema = {
     "source_used",
     "text_evidence",
     "image_evidence",
+    "relevant_image_ids",
     "overall_confidence"
   ]
 }

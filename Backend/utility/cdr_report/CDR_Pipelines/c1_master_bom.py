@@ -1,6 +1,9 @@
 import pandas as pd
 from io import BytesIO
 import requests
+from urllib.parse import urlparse
+import os
+
 from utility.cdr_report.CDR_Pipelines.switch import find_bom_blob_url
 
 # ===================== CONFIG =====================
@@ -91,8 +94,14 @@ def merge_bom_sheets_from_sas_url(bom_sas_url: str) -> pd.DataFrame:
         df = df.dropna(how="all")
 
         # ✅ Add required metadata columns
+        # ✅ Add required metadata columns
+        parsed = urlparse(bom_sas_url)
+        file_name = os.path.basename(parsed.path)
+
         df["sheet_name"] = sheet
-        df["source_doc"] = bom_sas_url
+        df["source_doc"] = file_name   # just the file name
+        df["url"] = bom_sas_url        # full SAS URL
+
 
         merged_rows.append(df)
 

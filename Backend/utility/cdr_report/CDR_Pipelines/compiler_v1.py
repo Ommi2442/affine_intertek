@@ -10,14 +10,9 @@ from openpyxl.styles import Border, Side, Font
 
 # ===================== CONFIG =====================
 
-from pathlib import Path
-
-# Base directory of this file (CDR_Pipelines)
-BASE_DIR = Path(__file__).resolve().parent
-
-EXCEL_TEMPLATE = BASE_DIR / "CDR_template.xlsx"
-OUTPUT_EXCEL = BASE_DIR / "cdr_filled.xlsx"
-JSON_PATH = BASE_DIR / "cdr_payload_v5_updated.json"
+EXCEL_TEMPLATE = "CDR_template.xlsx"
+OUTPUT_EXCEL = "cdr_filled.xlsx"
+JSON_PATH = "cdr_payload_v5_updated.json"
 
 TABLE_COLUMNS = [
     "photo_no",
@@ -371,3 +366,7 @@ def fill_excel_from_json():
 
     wb.save(OUTPUT_EXCEL)
     print(f"✅ Excel generated: {OUTPUT_EXCEL}")
+
+
+
+fill_excel_from_json()

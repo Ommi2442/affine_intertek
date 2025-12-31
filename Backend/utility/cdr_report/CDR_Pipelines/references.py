@@ -15,7 +15,7 @@ from utility.cdr_report.CDR_Pipelines.configs import(
     score_llm,
     llm
 )
-#from prompts import 
+#from utility.cdr_report.CDR_Pipelines.prompts import 
 from collections import defaultdict
 from utility.cdr_report.CDR_Pipelines.prompts import ref_prompt as prompt
 from utility.cdr_report.CDR_Pipelines.prompts import score_prompt

@@ -192,7 +192,7 @@ def save_local_json_to_blob_and_cosmos(
             raise ValueError("Only .json and .docx files allowed")
 
         # ---------- filename ----------
-        filename = path.stem + f"_download-file{project_id}" + path.suffix
+        filename = path.stem + f"_{project_id}" + path.suffix
         print("\n\n\n Modified filename After---:", filename)
         # ---------- blob path ----------
         blob_path = f"Documents/{project_id}/Generated_trf_Report/{filename}"

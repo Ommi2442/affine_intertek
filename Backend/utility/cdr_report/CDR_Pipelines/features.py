@@ -6,7 +6,7 @@ from pathlib import Path
 # Instead of: from langchain.schema import HumanMessage, AIMessage, SystemMessage
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 import utility.cdr_report.CDR_Pipelines.configs as configs
-OUTPUT_PATH   = Path(r".\utility\cdr_report\CDR_Pipelines\features.json")
+OUTPUT_PATH   = Path("features.json")
 import json
 import textwrap
 # import matplotlib.pyplot as plt
@@ -15,7 +15,8 @@ import requests
 from io import BytesIO
 from utility.cdr_report.CDR_Pipelines.json_utils import fill_sheet6_from_final_sections
 from utility.cdr_report.CDR_Pipelines.configs import (AOAI_ENDPOINT, API_VERSION, AOAI_KEY)
-from utility.cdr_report.CDR_Pipelines.configs import llm
+#from utility.cdr_report.CDR_Pipelines.configs import llm
+from utility.cdr_report.CDR_Pipelines.utils import _get_status_code_from_exception, is_rate_limit_error, invoke_with_rate_limit_retry
 # Cell 1: Imports & LLM setup
 
 from langchain_openai import AzureChatOpenAI
@@ -30,24 +31,18 @@ import requests
 from io import BytesIO
 from typing import List, Dict, Any
 
-# Your existing AOAI config
-# AOAI_ENDPOINT = "https://YOUR-ENDPOINT.openai.azure.com/"
-# AOAI_KEY      = "YOUR_KEY"
-# API_VERSION   = "2024-12-01-preview"
-# CHAT_DEPLOY   = "gpt-4o"
-# CHAT_DEPLOY   = "gpt-4o"
-# llm = AzureChatOpenAI(
-#     azure_endpoint=AOAI_ENDPOINT,
-#     api_key=AOAI_KEY,
-#     openai_api_version=API_VERSION,
-#     azure_deployment=CHAT_DEPLOY,
-#     temperature=0.0,
-#     # Force JSON output from the model
-#     model_kwargs={"response_format": {"type": "json_object"}},
-# )
-
 
 # Cell 2: Multimodal RAG retrieval (text from VS + image URLs as-is)
+from urllib.parse import urlparse, unquote
+import os
+
+def build_image_candidates(image_urls):
+    out = []
+    for i, u in enumerate(image_urls or [], start=1):
+        path = unquote(urlparse(u).path)  # remove %20 etc
+        name = os.path.basename(path) or f"image_{i}"
+        out.append({"id": f"img_{i:02d}", "name": name, "url": u})
+    return out
 
 def rag_multimodal_retrieve(
     section_name: str,
@@ -62,17 +57,22 @@ def rag_multimodal_retrieve(
     - ALWAYS carries all provided images
     - Deduplicates by (source_file, page)
     """
-
+    image_candidates = build_image_candidates(image_urls)
     queries = [section_name]
     if custom_queries:
         queries.extend(custom_queries)
 
     retrieved = []
+    retrieval_errors = []
     for q in queries:
         try:
             retrieved.extend(vs.similarity_search_with_score(q, k=k))
         except Exception as e:
-            print(f"[WARN] similarity_search failed for query '{q}': {e}")
+            #print(f"[WARN] similarity_search failed for query '{q}': {e}")
+            retrieval_errors.append(f"{q}: {repr(e)}")
+    if retrieval_errors:
+        # Option 1 (best for correctness): fail fast so you notice it immediately
+        raise RuntimeError("RAG retrieval failed: " + " | ".join(retrieval_errors))
 
     # Deduplicate by (filename, page)
     seen = set()
@@ -93,61 +93,17 @@ def rag_multimodal_retrieve(
                 "filename": d.metadata.get("source_file"),
                 "page": d.metadata.get("page"),
                 "text": d.page_content,
-                "score": d.metadata.get("score"),
+                "similarity_score": d.metadata.get("score"),
             }
             for d in text_chunks
         ],
-        "image_urls": image_urls or [],
+        "image_urls": [c["url"] for c in image_candidates],
+        "image_candidates": [{"id": c["id"], "name": c["name"]} for c in image_candidates],
+        "image_candidates_full": image_candidates, 
     }
 
     return evidence
 
-
-# Cell 3: Debug helper – show retrieved chunks + image grid
-
-# def debug_evidence(evidence: Dict[str, Any], max_chunks: int = 5):
-#     print("==== DEBUG: TEXT CHUNKS USED ====")
-#     for i, chunk in enumerate(evidence["text_chunks"][:max_chunks], start=1):
-#         print(f"[{i}] File: {chunk['file']} | Page: {chunk['page']}")
-#         print(textwrap.shorten(chunk["content"], width=400, placeholder="..."))
-#         print("-" * 80)
-
-#     urls = evidence.get("image_urls", [])
-#     if not urls:
-#         print("No images in evidence.")
-#         return
-
-#     print("==== DEBUG: IMAGES USED ====")
-#     n = len(urls)
-#     cols = min(3, n)
-#     rows = (n + cols - 1) // cols
-
-#     fig, axes = plt.subplots(rows, cols, figsize=(4 * cols, 4 * rows))
-#     if rows == 1 and cols == 1:
-#         axes = [[axes]]
-#     elif rows == 1:
-#         axes = [axes]
-
-#     for idx, url in enumerate(urls):
-#         r, c = divmod(idx, cols)
-#         ax = axes[r][c]
-#         try:
-#             resp = requests.get(url)
-#             img = Image.open(BytesIO(resp.content))
-#             ax.imshow(img)
-#             ax.set_title(f"Image {idx+1}")
-#             ax.axis("off")
-#         except Exception as e:
-#             ax.text(0.5, 0.5, f"Error\n{e}", ha="center", va="center")
-#             ax.axis("off")
-
-#     # Hide any unused axes
-#     for j in range(n, rows * cols):
-#         r, c = divmod(j, cols)
-#         axes[r][c].axis("off")
-
-#     plt.tight_layout()
-#     plt.show()
 
 
 # Cell 4: Prompt template + multimodal message construction
@@ -205,7 +161,22 @@ NARRATIVE TEMPLATE (for the final 'filled_text' sentence):
 TEXT EVIDENCE (from RAG):
 {evidence['context_text']}
 """.strip()
-
+    
+    # ✅ STEP 3: Append image candidates list (IDs + names) so model can return only IDs
+    candidates = evidence.get("image_candidates", [])
+    if candidates:
+        candidates_lines = "\n".join(
+            f"{c['id']} | {c.get('name','')}".strip()
+            for c in candidates
+            if isinstance(c, dict) and c.get("id")
+        )
+        text_block += (
+            "\n\nIMAGE CANDIDATES (choose from these IDs ONLY; do NOT invent):\n"
+            f"{candidates_lines}\n\n"
+            "Return ONLY IDs that appear in the list above.\n"
+            "When selecting images, return ONLY the relevant IDs in the output field "
+            "'relevant_image_ids'. If none are relevant, return []."
+        )
     # Start with text
     content: List[Dict[str, Any]] = [{"type": "text", "text": text_block}]
 
@@ -222,23 +193,17 @@ TEXT EVIDENCE (from RAG):
 
     return [system_msg, human_msg]
 
-
-# Cell 5: LLM call wrapper – returns parsed JSON
-
 def llm_generate_multimodal(messages, llm: AzureChatOpenAI) -> Dict[str, Any]:
-    """
-    Sends messages to GPT-4o (AzureChatOpenAI).
-    - Model is already configured to return JSON (response_format=json_object).
-    - We parse response.content into a Python dict.
-    """
-    response = llm.invoke(messages)
+    response = invoke_with_rate_limit_retry(
+        llm,
+        messages,
+        retries=6,
+        wait_seconds=5.0,
+        jitter=0.5
+    )
 
-    # Depending on LangChain version, response.content may be:
-    # - str (JSON)
-    # - list[...] (multi-part) – but with response_format=json_object it should be a single JSON string.
     content = response.content
     if isinstance(content, list):
-        # If it's list[dict], take the first text block
         text_parts = [c.get("text", "") for c in content if isinstance(c, dict)]
         content = "".join(text_parts)
 
@@ -249,6 +214,7 @@ def llm_generate_multimodal(messages, llm: AzureChatOpenAI) -> Dict[str, Any]:
         data = {"raw_content": content}
 
     return data
+
 
 
 # Cell 6: Run one multimodal section end-to-end
@@ -427,6 +393,56 @@ section_cfgs = [
     },
 ]
 
+from typing import List, Dict, Any
+
+def pick_image_support(section_json: dict, evidence: dict) -> List[str]:
+    # Build id -> url map from evidence (best source of truth)
+    id2url = {}
+    for c in (evidence.get("image_candidates_full") or []):
+        if isinstance(c, dict) and isinstance(c.get("id"), str) and isinstance(c.get("url"), str):
+            id2url[c["id"]] = c["url"]
+
+    out: List[str] = []
+    seen = set()
+
+    # 1) Preferred: relevant_image_ids (Option A)
+    ids = section_json.get("relevant_image_ids")
+    if isinstance(ids, list):
+        for img_id in ids:
+            if isinstance(img_id, str):
+                url = id2url.get(img_id)
+                if url and url not in seen:
+                    out.append(url)
+                    seen.add(url)
+        return out
+
+    # 2) Fallback: image_evidence
+    ev = section_json.get("image_evidence")
+    if isinstance(ev, list):
+        for item in ev:
+            if not isinstance(item, dict):
+                continue
+
+            # Prefer image_id if present (also maps to URL)
+            img_id = item.get("image_id")
+            if isinstance(img_id, str):
+                url = id2url.get(img_id)
+                if url and url not in seen:
+                    out.append(url)
+                    seen.add(url)
+                continue
+
+            # Otherwise accept blob_url if present
+            blob_url = item.get("blob_url")
+            if isinstance(blob_url, str) and blob_url.strip():
+                if blob_url not in seen:
+                    out.append(blob_url)
+                    seen.add(blob_url)
+
+        return out
+
+    return []
+
 
 import re
 
@@ -470,23 +486,30 @@ def build_all_sections_final_json(
         spacing_filled_text = (spacing_section_json.get("filled_text") or "").replace("unknown", "___")
 
         spacing_filled_text = re.sub(
-            r'\bForm\b\s+[^\s]+\s+for\s+areas\s+to\s+verify\b',
-            'Form __ for areas to verify',
+            r'(\bIllustration\b)\s+[^\s.]+(\s+for\s+areas\s+to\s+verify\b)',
+            r'\1 __\2',
             spacing_filled_text,
             flags=re.IGNORECASE
         )
 
-        spacing_filled_text = re.sub(
-            r'(\bIllustration\s*)\d+\b',
-            r'\1__',
-            spacing_filled_text,
-            flags=re.IGNORECASE
-        )
+        # spacing_filled_text = re.sub(
+        #     r'\bForm\b\s+[^\s]+\s+for\s+areas\s+to\s+verify\b',
+        #     'Form __ for areas to verify',
+        #     spacing_filled_text,
+        #     flags=re.IGNORECASE
+        # )
+
+        # spacing_filled_text = re.sub(
+        #     r'(\bIllustration\s*)\d+\b',
+        #     r'\1__',
+        #     spacing_filled_text,
+        #     flags=re.IGNORECASE
+        # )
 
         final["spacing"] = {
             "filled_text": spacing_filled_text,
             "text_support": spacing_evidence["text_chunks"][0:5],
-            "image_support": spacing_evidence["image_urls"],
+            "image_support": pick_image_support(spacing_section_json, spacing_evidence),
             "confidence": spacing_section_json.get("overall_confidence"),
         }
 
@@ -502,7 +525,7 @@ def build_all_sections_final_json(
         final["mechanical"] = {
             "filled_text": mechanical_filled_text,
             "text_support": mechanical_evidence["text_chunks"][0:5],
-            "image_support": mechanical_evidence["image_urls"],
+            "image_support": pick_image_support(mechanical_section_json, mechanical_evidence),
             "confidence": mechanical_section_json.get("overall_confidence"),
         }
 
@@ -518,7 +541,7 @@ def build_all_sections_final_json(
         final["corrosion"] = {
             "filled_text": corrosion_filled_text,
             "text_support": corrosion_evidence["text_chunks"][0:5],
-            "image_support": corrosion_evidence["image_urls"],
+            "image_support": pick_image_support(corrosion_section_json, corrosion_evidence),
             "confidence": corrosion_section_json.get("overall_confidence"),
         }
 
@@ -534,7 +557,7 @@ def build_all_sections_final_json(
         final["access"] = {
             "filled_text": access_filled_text,
             "text_support": access_evidence["text_chunks"][0:5],
-            "image_support": access_evidence["image_urls"],
+            "image_support": pick_image_support(access_section_json, access_evidence),
             "confidence": access_section_json.get("overall_confidence"),
         }
 
@@ -550,7 +573,7 @@ def build_all_sections_final_json(
         final["grounding"] = {
             "filled_text": grounding_filled_text,
             "text_support": grounding_evidence["text_chunks"][0:5],
-            "image_support": grounding_evidence["image_urls"],
+            "image_support": pick_image_support(grounding_section_json, grounding_evidence),
             "confidence": grounding_section_json.get("overall_confidence"),
         }
 
@@ -566,7 +589,7 @@ def build_all_sections_final_json(
         final["polarized"] = {
             "filled_text": polarized_filled_text,
             "text_support": polarized_evidence["text_chunks"][0:5],
-            "image_support": polarized_evidence["image_urls"],
+            "image_support": pick_image_support(polarized_section_json, polarized_evidence),
             "confidence": polarized_section_json.get("overall_confidence"),
         }
 
@@ -582,7 +605,7 @@ def build_all_sections_final_json(
         final["internal_wiring"] = {
             "filled_text": internal_wiring_filled_text,
             "text_support": internal_wiring_evidence["text_chunks"][0:5],
-            "image_support": internal_wiring_evidence["image_urls"],
+            "image_support": pick_image_support(internal_wiring_section_json, internal_wiring_evidence),
             "confidence": internal_wiring_section_json.get("overall_confidence"),
         }
 
@@ -603,7 +626,7 @@ def build_all_sections_final_json(
         final["markings"] = {
             "filled_text": markings_filled_text,
             "text_support": markings_evidence["text_chunks"][0:5],
-            "image_support": markings_evidence["image_urls"],
+            "image_support": pick_image_support(markings_section_json, markings_evidence),
             "confidence": markings_section_json.get("overall_confidence"),
         }
 
@@ -622,7 +645,7 @@ def build_all_sections_final_json(
         final["instructions"] = {
             "filled_text": instructions_filled_text,
             "text_support": instructions_evidence["text_chunks"][0:5],
-            "image_support": instructions_evidence["image_urls"],
+            "image_support": pick_image_support(instructions_section_json, instructions_evidence),
             "confidence": instructions_section_json.get("overall_confidence"),
         }
 
@@ -632,7 +655,8 @@ def build_all_sections_final_json(
         "errors": parallel_errors,
     }
 
-def features_main(vs, image_urls):
+def features_main(vs, image_urls, llm=None):
+    llm = llm or configs.llm
     all_out = build_all_sections_final_json(
         section_cfgs=section_cfgs,
         vs=vs,

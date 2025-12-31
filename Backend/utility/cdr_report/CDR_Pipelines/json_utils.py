@@ -55,9 +55,10 @@ def sheet1_json_main(data_json, template):
     report_map = {
         "Report Number": data_json.get("Report Number"),
         "Standard(s)": data_json.get("Standard"),
+        "Original Issued:" : data_json.get("Date of issue")
     }
     fill_block(items, "Report", report_map)
-
+    #fill_block(items, "Original Issued:", report_map)
     # --- 2) Fill Applicant block ---
     fill_block(items, "Applicant", data_json.get("ApplicantSection", {}))
 
@@ -339,7 +340,7 @@ def top_chunks_as_json(vs, question: str, k_search: int = 300, top_k: int = 5, t
         out.append({
             "filename": source,
             "page": int(page) if isinstance(page, (int, float)) else page,
-            "score": float(score),
+            "similarity_score": float(score),
             "text": (doc.page_content or "")[:text_chars],
         })
 

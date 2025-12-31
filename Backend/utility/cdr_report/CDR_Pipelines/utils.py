@@ -38,6 +38,12 @@ import json
 from types import SimpleNamespace
 from collections import defaultdict
 import subprocess
+import threading
+import time
+import random
+from openai import RateLimitError
+
+_EMBED_SEMAPHORE = threading.Semaphore(1)  # 👈 HARD GATE
 
 from utility.cdr_report.CDR_Pipelines.configs import (
     container,
@@ -752,11 +758,39 @@ def load_and_split_pdfs_text(pdf_paths, extracted_texts=None):
     # finally split all collected documents (pdf chunks + plain-text docs)
     return splitter.split_documents(docs)
 
-def add_batch(batch, idx_start, vs):
-    # helpful for logging
+# def add_batch(batch, idx_start, vs):
+#     # helpful for logging
+#     print(f"Ingesting batch starting at {idx_start} (size={len(batch)})")
+#     vs.add_documents(batch)
+#     return idx_start, len(batch)
+
+# def ingest_chunks(vs, chunks, max_workers=5, batch_size=10):
+#     futures = []
+#     with ThreadPoolExecutor(max_workers=max_workers) as executor:
+#         for i in range(0, len(chunks), batch_size):
+#             batch = chunks[i:i + batch_size]
+#             futures.append(executor.submit(add_batch, batch, i, vs))
+
+#         for f in as_completed(futures):
+#             idx_start, size = f.result()
+#             print(f"✅ Finished batch starting at {idx_start}, size={size}")
+
+def add_batch(batch, idx_start, vs, max_retries=5):
     print(f"Ingesting batch starting at {idx_start} (size={len(batch)})")
-    vs.add_documents(batch)
-    return idx_start, len(batch)
+
+    for attempt in range(max_retries):
+        try:
+            with _EMBED_SEMAPHORE:   # 🔒 critical line
+                vs.add_documents(batch)
+
+            return idx_start, len(batch)
+
+        except RateLimitError:
+            wait = min(2 ** attempt + random.random(), 30)
+            print(f"⚠️ Rate limited at batch {idx_start}, retrying in {wait:.1f}s")
+            time.sleep(wait)
+
+    raise RuntimeError(f"❌ Failed batch at {idx_start}")
 
 def ingest_chunks(vs, chunks, max_workers=5, batch_size=10):
     futures = []
@@ -770,7 +804,6 @@ def ingest_chunks(vs, chunks, max_workers=5, batch_size=10):
             print(f"✅ Finished batch starting at {idx_start}, size={size}")
 
 
-
 from azure.storage.blob import BlobServiceClient
 
 def delete_folder_if_exists(connection_string: str, container: str, folder_name: str) -> int:
@@ -780,11 +813,6 @@ def delete_folder_if_exists(connection_string: str, container: str, folder_name:
     Deletes all blobs under "device_images/".
     Returns: number of blobs deleted (0 if folder doesn't exist).
     """
-    print("\n")
-    print(f"Checking for folder '{folder_name}' in container '{container}'..." )
-    print(f"Using connection string: {connection_string}..++++@@@@@@@@@@@@@@@@@@@@@@@@@")
-    print("\n")
-
     bsc = BlobServiceClient.from_connection_string(connection_string)
     cc = bsc.get_container_client(container)
 
@@ -921,7 +949,7 @@ def move_device_images_in_blob(
             continue
 
         caption = info.get("caption") or "device-view"
-        slug = f"Photo-{photo_idx}-{slugify(caption)}"
+        slug = f"{slugify(caption)}"
 
         try:
             src_blob_name = blob_name_from_url(url, container_name)
@@ -953,3 +981,90 @@ def move_device_images_in_blob(
         print(f"✅ Moved device image → {dest_blob_name}")
 
     return moved_blobs
+
+import time
+import random
+from typing import Optional
+
+def _get_status_code_from_exception(e: Exception) -> Optional[int]:
+    """
+    Try to extract HTTP status code from different exception shapes:
+    - openai.* exceptions (often have .status_code)
+    - httpx.HTTPStatusError (has .response.status_code)
+    - generic wrappers
+    """
+    # openai exceptions sometimes expose status_code directly
+    code = getattr(e, "status_code", None)
+    if isinstance(code, int):
+        return code
+
+    # httpx style
+    resp = getattr(e, "response", None)
+    if resp is not None:
+        sc = getattr(resp, "status_code", None)
+        if isinstance(sc, int):
+            return sc
+
+    # some exceptions wrap another exception
+    inner = getattr(e, "__cause__", None) or getattr(e, "__context__", None)
+    if inner and inner is not e:
+        return _get_status_code_from_exception(inner)
+
+    return None
+
+
+def is_rate_limit_error(e: Exception) -> bool:
+    """
+    Return True if this looks like a rate limit / quota / 429 error.
+    We check both status codes and message text because LangChain/OpenAI/Azure
+    may wrap the error differently.
+    """
+    status_code = _get_status_code_from_exception(e)
+    if status_code == 429:
+        return True
+
+    msg = (str(e) or "").lower()
+    # common Azure/OpenAI rate limit messages
+    keywords = [
+        "rate limit",
+        "429",
+        "too many requests",
+        "quota",
+        "exceeded",
+        "throttl",
+        "retry after",
+    ]
+    return any(k in msg for k in keywords)
+
+
+def invoke_with_rate_limit_retry(
+    llm,
+    messages,
+    *,
+    retries: int = 6,
+    wait_seconds: float = 5.0,
+    jitter: float = 0.5,   # small randomness helps when many threads retry together
+):
+    """
+    Calls llm.invoke(messages) with retry ONLY for rate-limit errors.
+    Waits wait_seconds (plus small jitter) before retrying.
+    """
+    last_err = None
+    for attempt in range(1, retries + 1):
+        try:
+            return llm.invoke(messages)
+        except Exception as e:
+            last_err = e
+
+            if not is_rate_limit_error(e):
+                # Not a rate limit -> fail fast
+                raise
+
+            # Rate limit -> wait and retry
+            sleep_for = wait_seconds + random.uniform(0, jitter)
+            print(f"[RATE_LIMIT] attempt {attempt}/{retries} -> sleeping {sleep_for:.2f}s then retrying...")
+            time.sleep(sleep_for)
+
+    # exhausted
+    raise last_err
+
