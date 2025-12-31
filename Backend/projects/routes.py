@@ -1094,7 +1094,7 @@ async def finalize_reports(payload: FinalizeReportPayload):
     try:
         projectId = payload.projectId
         report = payload.report
-        updated_data = payload.updated_data
+        # updated_data = payload.updated_data
 
         if not projectId:
             raise HTTPException(status_code=400, detail="projectId is required")
@@ -1107,7 +1107,7 @@ async def finalize_reports(payload: FinalizeReportPayload):
         DATA_DIR.mkdir(parents=True, exist_ok=True)
 
         if report == "CDR":
-            path,blob_url=finalize_cdr_report_to_blob_and_cosmos_cdr(projectId, updated_data)
+            # path,blob_url=finalize_cdr_report_to_blob_and_cosmos_cdr(projectId, updated_data)
 
             print(" Json File ove blob has been updated for CDR report")
             query = "SELECT c.blob_url FROM c WHERE c.project_id = @pid"
