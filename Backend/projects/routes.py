@@ -25,8 +25,6 @@ import base64
 from docx2pdf import convert
 from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_local_json_to_blob_and_cosmos
 from projects.helpers import convert_docx_to_pdf
-from fastapi import HTTPException
-
 from utility.cdr_report.CDR_Pipelines.main import main2
 from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_cdr_local_json_to_blob_and_cosmos_cdr,save_local_json_to_blob_and_cosmos
 import logging
