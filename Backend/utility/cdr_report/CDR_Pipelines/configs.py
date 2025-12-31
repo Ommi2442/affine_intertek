@@ -137,6 +137,10 @@ FINAL_OUTPUT_WITH_EVIDENCE = BASE_DIR / "s4c1_cc_final.xlsx"
 OUTPUT_EXCEL_RAW = BASE_DIR / "s4c2_cc_raw.xlsx"
 OUTPUT_EXCEL_CLASSIFIED = BASE_DIR / "s4c2_cc_filtered.xlsx"
 OUTPUT_EXCEL_DEDUPED = BASE_DIR / "s4c2_cc_final.xlsx"
+# report generation paths
+OUTPUT_EXCEL_AI_GEN_PATH = BASE_DIR / "CDR_Report_AI.xlsx"
+OUTPUT_EXCEL_AI_FINAL_PATH = BASE_DIR / "CDR_Final_Report_AI.xlsx"
+
 
 # Directories
 DOWNLOAD_DIR = BASE_DIR / "downloaded_guides"

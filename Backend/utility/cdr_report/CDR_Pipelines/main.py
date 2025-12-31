@@ -1,5 +1,4 @@
 # NEW main.py
-
 import os
 import json
 
@@ -32,6 +31,7 @@ from utility.cdr_report.CDR_Pipelines.switch import find_bom_blob_url
 import utility.cdr_report.CDR_Pipelines.c1_main as c1_main
 import utility.cdr_report.CDR_Pipelines.c2_main as c2_main
 import utility.cdr_report.CDR_Pipelines.configs as configs
+import utility.cdr_report.CDR_Pipelines.compiler as compiler
 #import utility.cdr_report.CDR_Pipelines.description
 
 
@@ -209,6 +209,8 @@ def main2(input_json_file, progress_callback=None):
     # --------------------------------------------------
     with open(OUTPUT_CDR_PATH, "w", encoding="utf-8") as f:
         json.dump(cdr, f, indent=2, ensure_ascii=False)
+
+    compiler.fill_excel_from_json(cdr,configs.OUTPUT_EXCEL_AI_GEN_PATH) 
 
     print("📄 CDR payload successfully post-processed")
 

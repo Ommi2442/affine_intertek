@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, Depends, Body, Form, UploadFile, File, Query, logger
+import traceback
+from fastapi import APIRouter, HTTPException, Depends, Body, Form, UploadFile, File, Query, logger, status
 from azure.storage.blob import ContainerClient
 from typing import List
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
@@ -9,7 +10,7 @@ from fastapi import Depends
 from api.auth.jwt_auth.utils import get_current_user
 from db.database import *
 from db.database import COSMOS_DB_project_Container, COSMOS_DB_URI,COSMOS_DB_KEY,COSMOS_DB_DATABASE,COSMOS_DB_project_TRF_Container
-from projects.models import Project,ProjectCreate,ProjectFilter
+from projects.models import Project,ProjectCreate,ProjectFilter,FinalizeReportPayload
 from azure.cosmos import exceptions
 from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueClient
@@ -26,7 +27,12 @@ from docx2pdf import convert
 from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_local_json_to_blob_and_cosmos
 from projects.helpers import convert_docx_to_pdf
 from utility.cdr_report.CDR_Pipelines.main import main2
-from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_cdr_local_json_to_blob_and_cosmos_cdr,save_local_json_to_blob_and_cosmos
+from utility.cdr_report.CDR_Pipelines.compiler import fill_excel_from_json
+
+from utility.cdr_report.CDR_Pipelines.configs import OUTPUT_EXCEL_AI_FINAL_PATH
+
+
+from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_cdr_local_json_to_blob_and_cosmos_cdr,save_local_json_to_blob_and_cosmos,save_local_xlsx_to_blob_and_cosmos_cdr
 import logging
 
 
@@ -834,29 +840,33 @@ def generate_cdr(projectId: str):
         trf_filled = response.json()
 
         result = main2(trf_filled)
-
+       
         BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
+        
         OUTPUT_JSON_CDR = BASE_DIR / "data" / f"iec_output_cdr_{projectId}.json"
-
         OUTPUT_JSON_CDR.parent.mkdir(parents=True, exist_ok=True)
-
         with open(OUTPUT_JSON_CDR, "w", encoding="utf-8") as f:
             json.dump(result, f, indent=2, ensure_ascii=False)
 
-
-        save_cdr_local_json_to_blob_and_cosmos_cdr(
-            OUTPUT_JSON_CDR,
+        save_cdr_local_json_to_blob_and_cosmos_cdr(OUTPUT_JSON_CDR,projectId)
+        print("----- Json CDR Data has uploded -------")
+        output_excel_path = (BASE_DIR / "data" / f"Final_iec_output_sheet_{projectId}.xlsx")
+        output_excel_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        cosmos_items = save_local_xlsx_to_blob_and_cosmos_cdr(
+            str(output_excel_path),
             projectId
         )
+        print("----- Excle CDR Data has uploded -------")
+
 
         print(f"📄 CDR saved at: {OUTPUT_JSON_CDR}")
 
         return {
             "message": "CDR Report generated successfully",
             "projectId": projectId,
-            "data": result
-        }
-
+            "data": result        }
+    
     except HTTPException:
         raise
 
@@ -1073,3 +1083,133 @@ def get_project_pdfs(project_id: str = Query(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# @router.post("/finalize_report")
+# async def finalize_reports(payload: FinalizeReportPayload):
+#     try:
+#         projectId = payload.projectId
+#         report = payload.report
+#         # updated_data = payload.updated_data
+
+#         if report not in ["TRF", "CDR"]:
+#             raise HTTPException(status_code=400, detail="Invalid report type")
+        
+#         if report == "TRF":
+#             pass
+
+#         elif report == "CDR":
+
+#             # path,blob_url=finalize_cdr_report_to_blob_and_cosmos_cdr(projectId, updated_data)
+#             print("updated the blob json file ")
+#                 # ------------------ COSMOS QUERY ------------------
+#             query = "SELECT c.blob_url FROM c WHERE c.project_id = @pid"
+#             params = [{"name": "@pid", "value": projectId}]
+
+#             try:
+#                 items = list(cdr_container.query_items(
+#                     query=query,
+#                     parameters=params,
+#                     enable_cross_partition_query=True,
+#                 ))
+#             except Exception:
+#                 raise HTTPException(
+#                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#                     detail="Failed to query project data from database"
+#                 )
+
+#             if not items:
+#                 raise HTTPException(
+#                     status_code=status.HTTP_404_NOT_FOUND,
+#                     detail=f"Project '{projectId}' not found"
+#                 )
+
+#             project = items[0]
+#             blob_url = project.get("blob_url")
+
+#             if not blob_url or not isinstance(blob_url, str):
+#                 raise HTTPException(
+#                     status_code=status.HTTP_404_NOT_FOUND,
+#                     detail="CDR Blob URL not found or invalid"
+#                 )
+#             json_data=fetch_json_from_blob(blob_url)
+#             print("----------- Updated json fetched here from blob -----------")
+#             with open("cdr_output_input.json", "w", encoding="utf-8") as f:
+#                 json.dump(json_data, f, indent=2, ensure_ascii=False)
+
+#             print("------- Updated json_data ------  ")
+#             result = fill_excel_from_json(json_data,OUTPUT_EXCEL_AI_FINAL_PATH) # final
+                    
+#             BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
+#             OUTPUT_JSON_CDR_DOCS = BASE_DIR / "data" / f"Final_iec_output_sheet{projectId}.xlsx"
+
+#             OUTPUT_JSON_CDR_DOCS.parent.mkdir(parents=True, exist_ok=True)
+
+#             with open(OUTPUT_JSON_CDR_DOCS, "w", encoding="utf-8") as f:
+#                 json.dump(result, f, indent=2, ensure_ascii=False)
+            
+#             save_local_xlsx_to_blob_and_cosmos_cdr(OUTPUT_JSON_CDR_DOCS,projectId)
+#             print(f"📄 CDR saved at: {OUTPUT_JSON_CDR_DOCS}")
+
+#         return {"status": "success", "report": report, "projectId": projectId,"Blob url":blob_url}
+    
+    
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/finalize_report")
+async def finalize_reports(payload: FinalizeReportPayload):
+    try:
+        projectId = payload.projectId
+        report = payload.report
+
+        if report not in ("TRF", "CDR"):
+            raise HTTPException(status_code=400, detail="Invalid report type")
+
+        if report == "CDR":
+            query = "SELECT c.blob_url FROM c WHERE c.project_id = @pid"
+            params = [{"name": "@pid", "value": projectId}]
+
+            items = list(
+                cdr_container.query_items(
+                    query=query,
+                    parameters=params,
+                    enable_cross_partition_query=True
+                )
+            )
+
+            if not items:
+                raise HTTPException(404, "Project not found")
+
+            blob_url = items[0].get("blob_url")
+            if not isinstance(blob_url, str):
+                raise HTTPException(404, "Invalid blob URL")
+
+            json_data = fetch_json_from_blob(blob_url)            
+            BASE_DIR = Path(__file__).resolve().parents[1]
+            output_excel_path = (
+                BASE_DIR / "data" / f"Final_iec_output_sheet_{projectId}.xlsx"
+            )
+            output_excel_path.parent.mkdir(parents=True, exist_ok=True)
+
+            fill_excel_from_json(json_data, str(output_excel_path))
+
+            cosmos_items = save_local_xlsx_to_blob_and_cosmos_cdr(
+                str(output_excel_path),
+                projectId
+            )
+
+            return {
+                "status": "success",
+                "report": report,
+                "projectId": projectId,
+                "blob_url": cosmos_items[0]["blob_url"]
+            }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
