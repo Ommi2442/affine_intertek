@@ -35,10 +35,11 @@ export const calculateConfidenceScore = (data) => {
   let low = 0;
   let userEditedCount = 0;
   let sumConfidence = 0;
+  let aiConfidenceCount = 0; //  only AI-driven fields
 
   aiFields.forEach((field) => {
-    // 👇 user-approved fields override AI
-    if (field.is_user_approved === true) {
+    // USER OVERRIDE (approve OR manual edit)
+    if (field.is_user_modified === true && field.is_user_approved === true) {
       userEditedCount++;
       return;
     }
@@ -47,13 +48,15 @@ export const calculateConfidenceScore = (data) => {
     if (c === null) return;
 
     sumConfidence += c;
+    aiConfidenceCount++;
 
     if (c >= 75) high++;
     else if (c >= 50) medium++;
     else low++;
   });
 
-  const avgConfidence = Math.round(sumConfidence / totalAiFields);
+  const avgConfidence =
+    aiConfidenceCount > 0 ? Math.round(sumConfidence / aiConfidenceCount) : 0;
 
   const overallLabel =
     avgConfidence < 50 ? 'Low' : avgConfidence < 75 ? 'Medium' : 'High';

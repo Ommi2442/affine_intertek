@@ -22,6 +22,7 @@ import {
   Pagination,
   IconButton,
   Checkbox,
+  Box,
 } from '@mui/material';
 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -35,9 +36,13 @@ import { useSelector } from 'react-redux';
 import { renderConfidenceColor } from '../utils/renderConfidenceColor';
 import { renderFieldWithNewLines } from '../Helpers/renderFieldWithNewLines';
 import { renderFieldWithCheckboxAndNewLines } from '../Helpers/renderFieldWithCheckboxAndNewLine';
+import { RenderPage6Images } from '../Helpers/RenderPage6Images';
 
 const DataTable = forwardRef(
-  ({ jsonData, onBookmarkClick, onApprove, editMode = false }, ref) => {
+  (
+    { jsonData, onBookmarkClick, onConfidenceChange, editMode = false },
+    ref
+  ) => {
     const containerRef = useRef(null);
     const sentinelRef = useRef(null);
     const pageRefs = useRef({});
@@ -255,7 +260,17 @@ const DataTable = forwardRef(
     const updateCell = (t, i, val) => {
       setTables((prev) => {
         const next = prev.map((tbl) => ({ ...tbl, Items: [...tbl.Items] }));
-        next[t].Items[i] = { ...next[t].Items[i], value: val };
+        const item = next[t].Items[i];
+
+        // 🔹 only mark modified if value ACTUALLY changed
+        const isModified = item.value !== val;
+
+        next[t].Items[i] = {
+          ...item,
+          value: val,
+          ...(isModified ? { is_user_modified: true } : {}),
+        };
+
         return next;
       });
     };
@@ -284,13 +299,38 @@ const DataTable = forwardRef(
         const next = prev.map((tbl) => ({ ...tbl, Items: [...tbl.Items] }));
         const item = next[tIdx].Items[iIdx];
 
-        next[tIdx].Items[iIdx] = {
-          ...item,
-          is_user_approved: true, // on approval user edited increases
-        };
+        // Prevent double approve
+        if (item.is_user_approved) return prev;
 
-        return next;
+        const c = Number(item.confidence);
+
+        // User edited + approve → User Edited
+        if (item.is_user_modified === true) {
+          next[tIdx].Items[iIdx] = {
+            ...item,
+            is_user_approved: true,
+            is_user_edited: true,
+            confidence: 100, // safe
+          };
+          return next;
+        }
+
+        // Medium / Low + approve → Promote to HIGH
+        if (!Number.isNaN(c) && c < 75) {
+          next[tIdx].Items[iIdx] = {
+            ...item,
+            is_user_approved: true,
+            confidence: 100,
+          };
+          return next;
+        }
+
+        // Already high + approve → no change
+        return prev;
       });
+
+      // trigger realtime confidence recalculation
+      onConfidenceChange?.();
     };
 
     const getLoggedInUser = () => {
@@ -672,7 +712,10 @@ const DataTable = forwardRef(
                                         updateCell(tIdx, iIdx, e.target.value)
                                       }
                                     />
-                                    {renderConfidenceColor(col.confidence)}
+                                    {renderConfidenceColor(
+                                      col.confidence,
+                                      col.is_user_edited
+                                    )}
                                   </div>
                                 )}
 
@@ -711,6 +754,28 @@ const DataTable = forwardRef(
       if (normalItems.length === 0) return null;
 
       let groupedNormal = {};
+
+      if (pageNo === 6) {
+        return normalItems.map((item, idx) => {
+          if (!item.image_upload_url) return null;
+          console.log('page6_item', item);
+          return (
+            <Box key={idx} sx={{ mb: 3 }}>
+              <Typography sx={{ fontSize: 14, whiteSpace: 'pre-wrap', mb: 1 }}>
+                {item.field}
+              </Typography>
+
+              <RenderPage6Images
+                item={item}
+                tIdx={item.__t}
+                iIdx={item.__i}
+                editMode={editMode && item.user_editable === true}
+                setTables={setTables}
+              />
+            </Box>
+          );
+        });
+      }
 
       // PAGE 2 special: group by question_row
       if (pageNo === 2) {
@@ -1054,7 +1119,10 @@ const DataTable = forwardRef(
                                         updateCell(tIdx, iIdx, e.target.value)
                                       }
                                     />
-                                    {renderConfidenceColor(first.confidence)}
+                                    {renderConfidenceColor(
+                                      first.confidence,
+                                      first.is_user_edited
+                                    )}
                                   </div>
                                 )}
                               </div>
@@ -1075,7 +1143,10 @@ const DataTable = forwardRef(
                                     updateCell(tIdx, iIdx, e.target.value)
                                   }
                                 />
-                                {renderConfidenceColor(first.confidence)}
+                                {renderConfidenceColor(
+                                  first.confidence,
+                                  first.is_user_edited
+                                )}
                               </div>
                             )}
 
@@ -1202,7 +1273,10 @@ const DataTable = forwardRef(
                                       }
                                     />
 
-                                    {renderConfidenceColor(r.confidence)}
+                                    {renderConfidenceColor(
+                                      r.confidence,
+                                      r.is_user_edited
+                                    )}
                                   </div>
                                 )}
 
@@ -1440,10 +1514,15 @@ const DataTable = forwardRef(
             const pageItems = pageMap[pageNo] || [];
 
             const tableItems = pageItems.filter(
-              (it) => it.is_table === true && it.disable_text !== true
+              (it) =>
+                it.is_table === true &&
+                it.page_no !== 6 &&
+                it.disable_text !== true
             );
             const normalItems = pageItems.filter(
-              (it) => it.is_table !== true && it.disable_text !== true
+              (it) =>
+                (it.is_table !== true || it.page_no === 6) &&
+                it.disable_text !== true
             );
 
             return (
