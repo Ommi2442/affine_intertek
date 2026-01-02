@@ -540,6 +540,8 @@ const DataTable = forwardRef(
                                     sx={{
                                       fontSize: 14,
                                       whiteSpace: 'pre-wrap',
+                                      fontWeight:
+                                        col.is_bold === true ? 700 : 400,
                                     }}
                                   >
                                     {label}
@@ -692,7 +694,15 @@ const DataTable = forwardRef(
                                           }}
                                         >
                                           <Checkbox size="small" />
-                                          <Typography variant="body2">
+                                          <Typography
+                                            variant="body2"
+                                            sx={{
+                                              fontWeight:
+                                                col.is_bold === true
+                                                  ? 700
+                                                  : 400,
+                                            }}
+                                          >
                                             {opt}
                                           </Typography>
                                         </div>
@@ -757,21 +767,31 @@ const DataTable = forwardRef(
 
       if (pageNo === 6) {
         return normalItems.map((item, idx) => {
-          if (!item.image_upload_url) return null;
-          console.log('page6_item', item);
+          const hasImages =
+            Array.isArray(item.marking_urls) && item.marking_urls.length > 0;
           return (
             <Box key={idx} sx={{ mb: 3 }}>
-              <Typography sx={{ fontSize: 14, whiteSpace: 'pre-wrap', mb: 1 }}>
+              <Typography
+                style={{
+                  fontSize: 14,
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                  fontWeight: item.is_bold === true ? 700 : 400,
+                  mb: 1,
+                }}
+              >
                 {item.field}
               </Typography>
 
-              <RenderPage6Images
-                item={item}
-                tIdx={item.__t}
-                iIdx={item.__i}
-                editMode={editMode && item.user_editable === true}
-                setTables={setTables}
-              />
+              {hasImages && (
+                <RenderPage6Images
+                  item={item}
+                  tIdx={item.__t}
+                  iIdx={item.__i}
+                  editMode={editMode && item.user_editable === true}
+                  setTables={setTables}
+                />
+              )}
             </Box>
           );
         });
@@ -823,6 +843,17 @@ const DataTable = forwardRef(
                       first.Field ??
                       '';
                     const rows = first.rendering_row ? first.rendering_row : 1;
+                    //  PAGE 8: remove duplicated field text from value
+                    let cleanValue = value;
+
+                    if (
+                      pageNo === 8 &&
+                      typeof value === 'string' &&
+                      typeof fieldLabel === 'string' &&
+                      value.startsWith(fieldLabel)
+                    ) {
+                      cleanValue = value.replace(fieldLabel, '').trim();
+                    }
 
                     return (
                       <TableRow key={idx1}>
@@ -851,7 +882,14 @@ const DataTable = forwardRef(
                               <div>
                                 {/* FIELD */}
                                 <Typography
-                                  sx={{ fontSize: 14, fontWeight: 500, mb: 1 }}
+                                  style={{
+                                    fontSize: 14,
+                                    mb: 1,
+                                    whiteSpace: 'pre-wrap',
+                                    wordBreak: 'break-word',
+                                    fontWeight:
+                                      first.is_bold === true ? 700 : 500,
+                                  }}
                                 >
                                   {fieldLabel}
                                 </Typography>
@@ -1015,9 +1053,12 @@ const DataTable = forwardRef(
                                 {/* LEFT: FIELD TEXT */}
                                 <div style={{ flex: 1 }}>
                                   <Typography
-                                    sx={{
+                                    style={{
                                       fontSize: 14,
                                       whiteSpace: 'pre-wrap',
+                                      wordBreak: 'break-word',
+                                      fontWeight:
+                                        first.is_bold === true ? 700 : 400,
                                     }}
                                   >
                                     {fieldLabel}
@@ -1084,13 +1125,15 @@ const DataTable = forwardRef(
                               </div>
                             ) : pageNo === 8 ? (
                               /* ===== PAGE 8 ONLY : FIELD + TEXTAREA ===== */
+
                               <div>
                                 {/* FIELD */}
                                 <Typography
-                                  sx={{
+                                  style={{
                                     fontSize: 14,
                                     fontWeight: 500,
                                     whiteSpace: 'pre-wrap',
+                                    wordBreak: 'break-word',
                                     mb: 1,
                                   }}
                                 >
@@ -1103,20 +1146,25 @@ const DataTable = forwardRef(
                                     sx={{
                                       fontSize: 14,
                                       whiteSpace: 'pre-wrap',
+                                      wordBreak: 'break-word',
                                     }}
                                   >
-                                    {value}
+                                    {cleanValue}
                                   </Typography>
                                 ) : (
                                   <div style={{ display: 'flex' }}>
                                     <textarea
                                       className="dt-textarea dt-textarea-with-actions"
-                                      value={value}
+                                      value={cleanValue}
                                       rows={rows}
                                       disabled={!editable}
                                       onChange={(e) =>
                                         editable &&
-                                        updateCell(tIdx, iIdx, e.target.value)
+                                        updateCell(
+                                          tIdx,
+                                          iIdx,
+                                          `${fieldLabel}\n${e.target.value}`
+                                        )
                                       }
                                     />
                                     {renderConfidenceColor(
@@ -1175,28 +1223,40 @@ const DataTable = forwardRef(
                     <TableRow key={idx1}>
                       <TableCell className="dt-field-cell">
                         <div className="dt-field-label">
-                          {first.checkbox_value !== undefined ? (
-                            <Checkbox
-                              size="small"
-                              checked={!!first.checkbox_value}
-                              disabled={!editMode}
-                              onChange={() => {
-                                setTables((prev) => {
-                                  const next = prev.map((tbl) => ({
-                                    ...tbl,
-                                    Items: [...tbl.Items],
-                                  }));
+                          {first.checkbox_index !== undefined
+                            ? (() => {
+                                const index = Math.floor(
+                                  Number(first.checkbox_index)
+                                );
+                                if (Number.isNaN(index)) return null;
+                                const checkboxKey = `checkbox_value_${index}`;
+                                const checked = !!first[checkboxKey];
 
-                                  next[first.__t].Items[first.__i] = {
-                                    ...next[first.__t].Items[first.__i],
-                                    checkbox_value: !first.checkbox_value,
-                                  };
+                                return (
+                                  <Checkbox
+                                    size="small"
+                                    checked={checked}
+                                    disabled={!editMode}
+                                    onChange={() => {
+                                      setTables((prev) => {
+                                        const next = prev.map((tbl) => ({
+                                          ...tbl,
+                                          Items: [...tbl.Items],
+                                        }));
 
-                                  return next;
-                                });
-                              }}
-                            />
-                          ) : null}
+                                        next[first.__t].Items[first.__i] = {
+                                          ...next[first.__t].Items[first.__i],
+                                          [checkboxKey]: !checked,
+                                        };
+
+                                        return next;
+                                      });
+                                    }}
+                                  />
+                                );
+                              })()
+                            : null}
+
                           {fieldLabel}
                         </div>
                       </TableCell>
@@ -1376,7 +1436,15 @@ const DataTable = forwardRef(
         if (!fieldLabel && !comment) return null;
         return (
           <div className="dt-value-column dt-relative">
-            <Typography>{fieldLabel}</Typography>
+            <Typography
+              style={{
+                fontSize: 14,
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+              }}
+            >
+              {fieldLabel}
+            </Typography>
 
             {comment && (
               <Typography variant="caption" className="dt-comment-caption">
@@ -1417,7 +1485,9 @@ const DataTable = forwardRef(
         // else user_editable === true -> show textarea (disabled until editMode and other checks)
         return (
           <div
-            className="dt-value-column dt-relative"
+            className={`dt-value-column dt-relative ${
+              item.is_bold === true ? 'bold' : ''
+            }`}
             onMouseEnter={() => setHovered({ t: tIdx, i: iIdx })}
             onMouseLeave={() => setHovered({ t: null, i: null })}
           >

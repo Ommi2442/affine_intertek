@@ -31,7 +31,7 @@ import CdrReport from '../../components/CdrReport/CdrReport';
 //import localJson from '../../utils/pta_final_6.json';
 import PdfViewer from '../../components/PdfViewer';
 //import localJson from '../../utils/iec_output_1.json';
-import localJson from '../../utils/pta_final_6_2_output.json';
+import localJson from '../../utils/iec_61010_output_v12.json';
 // import localJson2 from '../../utils/iec_output.json';
 
 import ConfidenceScore from './ConfidenceScore';
@@ -43,6 +43,7 @@ import { triggerGenerateCdrApi } from '../../redux/api/generateCdrApi';
 //import { downloadReportRequest } from '../../redux/features/downloadReport/downloadReportSlice';
 import { loadPdfWithCache } from '../../components/loadPdfWithCache';
 import CdrLoader from '../../components/CdrReport/CdrLoader';
+import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -367,6 +368,10 @@ const ReportPage = () => {
     //dispatch(downloadReportRequest(projectId));
   };
 
+  const handleMissingField = (data, projectID, reportClick) => {
+    DownloadMissingFieldsExcel(data, projectID, reportClick);
+  };
+
   const getCitationDialogText = () => {
     if (!selectedCitation) return '';
 
@@ -509,13 +514,14 @@ const ReportPage = () => {
                   Test Report issued under the responsibility of:
                 </Typography>
 
-                {/* <TextField
-                  variant="outlined"
-                  size="small"
-                  value={issuedBy}
-                  onChange={handleIssuedByChange}
-                  style={{ flex: 2 }} // makes textbox expand
-                /> */}
+                <img
+                  src="/images/intertek_logo.svg"
+                  alt="logo"
+                  style={{
+                    maxWidth: '80%',
+                    height: 'auto',
+                  }}
+                />
               </div>
             )}
           </Box>
@@ -847,6 +853,14 @@ const ReportPage = () => {
                     text: 'Missing Field Re..',
                     icon: '/images/file_icon.png',
                     bg: '#5191a0ff',
+                    action: () =>
+                      handleMissingField(
+                        reportClick === 'cdr'
+                          ? (cdrJson ?? localCdrJson)
+                          : (trfJson ?? localJson),
+                        projectID,
+                        reportClick
+                      ),
                   },
                   {
                     text: 'Regenerate',
