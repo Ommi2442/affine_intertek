@@ -17,6 +17,7 @@
     "@mui/material": "^7.3.5",
     "@reduxjs/toolkit": "^2.10.1",
     "axios": "^1.13.2",
+    "file-saver": "^2.0.5",
     "idb": "^8.0.3",
     "pdfjs-dist": "^4.5.136",
     "react": "^19.1.1",
@@ -25,7 +26,8 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.6",
     "redux-saga": "^1.4.2",
-    "valtio": "^2.2.0"
+    "valtio": "^2.2.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

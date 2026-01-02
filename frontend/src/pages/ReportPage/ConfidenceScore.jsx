@@ -7,12 +7,11 @@ import { setConfidenceScore } from '../../redux/features/confidence/confidenceSl
 import { idb_get, STORES } from '../../utils/idb';
 
 /* ------------------ COMPONENT ------------------ */
-const ConfidenceScore = ({ data, confidenceTick, projectId }) => {
+const ConfidenceScore = ({ data, confidenceTick, projectId, reportType }) => {
   const dispatch = useDispatch();
 
-  // ✅ READ FROM REDUX
+  // READ FROM REDUX
   const summary = useSelector((state) => state.confidence.summary);
-
   useEffect(() => {
     let isMounted = true;
 
@@ -20,16 +19,20 @@ const ConfidenceScore = ({ data, confidenceTick, projectId }) => {
       let sourceData = data;
 
       /* ---------- TRF ---------- */
-      const idbTables = await idb_get('tables');
-      if (Array.isArray(idbTables) && idbTables.length > 0) {
-        sourceData = { Tables: idbTables };
+      if (reportType === 'trf') {
+        const idbTables = await idb_get('tables');
+        if (Array.isArray(idbTables) && idbTables.length > 0) {
+          sourceData = { Tables: idbTables };
+        }
       }
 
       /* ---------- CDR ---------- */
-      const cdrKey = `cdr_report_${projectId ?? 'default'}`;
-      const idbCdr = await idb_get(cdrKey, STORES.CDR);
-      if (idbCdr?.Sheets?.length) {
-        sourceData = idbCdr;
+      if (reportType === 'cdr') {
+        const cdrKey = `cdr_report_${projectId ?? 'default'}`;
+        const idbCdr = await idb_get(cdrKey, STORES.CDR);
+        if (idbCdr?.Sheets?.length) {
+          sourceData = idbCdr;
+        }
       }
 
       if (!sourceData) return;
