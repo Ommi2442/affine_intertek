@@ -1,3 +1,13 @@
+
+from pathlib import Path
+from datetime import datetime
+import uuid
+import mimetypes
+from azure.storage.blob import ContentSettings
+
+
+import traceback
+import logging
 from pathlib import Path
 import mimetypes
 import uuid
@@ -182,7 +192,7 @@ def save_local_json_to_blob_and_cosmos(
             raise ValueError("Only .json and .docx files allowed")
 
         # ---------- filename ----------
-        filename = path.stem + f"_download-file{project_id}" + path.suffix
+        filename = path.stem + f"_{project_id}" + path.suffix
         print("\n\n\n Modified filename After---:", filename)
         # ---------- blob path ----------
         blob_path = f"Documents/{project_id}/Generated_trf_Report/{filename}"
@@ -282,18 +292,29 @@ def fetch_json_from_blob(blob_url: str) -> dict:
     Downloads a JSON file from Azure Blob Storage using its URL
     and returns its content as a Python dictionary.
     """
+    try:
+        # Create a blob client directly from the URL
+        blob_client = BlobClient.from_blob_url(blob_url)
 
-    # Create a blob client directly from the URL
-    blob_client = BlobClient.from_blob_url(blob_url)
+        # Download the blob content
+        stream = blob_client.download_blob()
+        json_bytes = stream.readall()
 
-    # Download the blob content
-    stream = blob_client.download_blob()
-    json_bytes = stream.readall()
+        # Convert bytes → JSON object
+        json_data = json.loads(json_bytes.decode("utf-8"))
 
-    # Convert bytes → JSON object
-    json_data = json.loads(json_bytes.decode("utf-8"))
+        return json_data
+    except Exception as e:
+        error_details = traceback.format_exc()
+        logger.exception("Unhandled error in generate_trf API")
+        print("\n===== FULL TRACEBACK START =====")
+        print(error_details)
+        print("===== FULL TRACEBACK END =====\n")
 
-    return json_data
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
 
 
 
@@ -489,4 +510,84 @@ def save_cdr_local_json_to_blob_and_cosmos_cdr(json_file_path, project_id) -> li
         cosmos_items.append(cosmos_item)
 
     print(f"\nTotal {len(cosmos_items)} files uploaded and saved to Cosmos.")
+    return cosmos_items
+
+
+
+def finalize_cdr_report_to_blob_and_cosmos_cdr(project_id, updated_data: dict):
+    try:
+        cdr_container = database.get_container_client(COSMOS_PROJECT_CDR_CONTAINER)
+        query = "SELECT * FROM c WHERE c.project_id = @pid"
+        params = [{"name": "@pid", "value": project_id}]
+        items = list(cdr_container.query_items(
+            query=query,
+            parameters=params,
+            enable_cross_partition_query=True
+        ))
+        if not items:
+            raise HTTPException(status_code=404, detail="Project not found")
+        item = items[0]
+
+        filename = item.get("filename")
+        blob_url=item.get("blob_url")
+        if not filename:
+            raise HTTPException(status_code=400, detail="File not found in record")
+        
+        blob_path = f"Documents/{project_id}/Generated_cdr_Report/{filename}"
+        print("Blob pathh---- ",blob_path)
+        blob_client = blob_service.get_blob_client(container=blob_container, blob=blob_path)
+        
+        json_bytes = json.dumps(updated_data, indent=2).encode("utf-8")
+
+        blob_client.upload_blob(json_bytes, overwrite=True)
+        item["last_updated"] = str(datetime.utcnow())
+        cdr_container.upsert_item(item)
+
+        return blob_path,blob_url
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+def save_local_xlsx_to_blob_and_cosmos_cdr(xlsx_file_path: str, project_id: str) -> list:
+    cosmos_items = []
+
+    path = Path(xlsx_file_path)
+
+    if not path.exists():
+        raise FileNotFoundError(f"File not found: {path}")
+
+    if path.suffix.lower() != ".xlsx":
+        raise ValueError("Only .xlsx files are allowed")
+
+    filename = path.name
+    blob_path = f"Documents/{project_id}/Generated_cdr_Report/{filename}"
+
+    blob_client = blob_service.get_blob_client(
+        container=blob_container,
+        blob=blob_path
+    )
+
+    content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+    with path.open("rb") as f:
+        blob_client.upload_blob(
+            f,
+            overwrite=True,
+            content_settings=ContentSettings(content_type=content_type)
+        )
+
+    cosmos_item = {
+        "id": str(uuid.uuid4()),
+        "project_id": project_id,
+        "filename": filename,
+        "file_type": ".xlsx",
+        "blob_path": blob_path,
+        "blob_url": blob_client.url,
+        "uploaded_on": datetime.utcnow().isoformat() + "Z"
+    }
+
+    cdr_container.create_item(cosmos_item)
+    cosmos_items.append(cosmos_item)
+
     return cosmos_items

@@ -6,13 +6,16 @@ from openpyxl.drawing.image import Image
 from openpyxl.utils import column_index_from_string, get_column_letter
 from openpyxl.styles import Border, Side, Font
 from pathlib import Path
+# Base directory of this file (CDR_Pipelines)
+BASE_DIR = Path(__file__).resolve().parent
 
 # utility.cdr_report.CDR_Pipelines.
 # ===================== CONFIG =====================
 
-EXCEL_TEMPLATE = Path("CDR_template.xlsx")
+# EXCEL_TEMPLATE = Path("CDR_template.xlsx")
+EXCEL_TEMPLATE = BASE_DIR /"CDR_template.xlsx"
 # OUTPUT_EXCEL = Path(r".\utility\cdr_report\CDR_Pipelines\CDR_Report.xlsx")
-OUTPUT_EXCEL = Path("Final_output_data.xlsx")
+# OUTPUT_EXCEL = Path("Final_CDR_Report_@@@@@@@.xlsx")
 # JSON_PATH = Path(r".\utility\cdr_report\CDR_Pipelines\cdr_payload_v5_updated.json")
 
 TABLE_COLUMNS = [
@@ -72,7 +75,7 @@ def set_uniform_row_height_px(ws, start_row, height_px):
     """
     height_points = height_px * 0.75  # px → points
 
-    for r in range(start_row, ws.max_row + 100):
+    for r in range(start_row, ws.max_row + 500):
         ws.row_dimensions[r].height = height_points
 
 
@@ -158,7 +161,7 @@ from openpyxl.utils import range_boundaries
 # CONFIG (UNCHANGED)
 # -------------------------
 TEMPLATE_XLSX = EXCEL_TEMPLATE
-OUT_XLSX      = OUTPUT_EXCEL
+#OUT_XLSX      = OUTPUT_EXCEL
 
 SHEET_NAME     = "1.0 Reference"
 OUT_SHEET_NAME = "1.0 Reference"
@@ -522,7 +525,7 @@ def handle_sheet_6(ws, items):
 
 # ===================== MAIN =====================
 
-def fill_excel_from_json(JSON_PATH):
+def fill_excel_from_json(JSON_PATH, OUTPUT_EXCEL_PATH):
     # with open(JSON_PATH, "r", encoding="utf-8") as f:
     payload = JSON_PATH
 
@@ -560,9 +563,9 @@ def fill_excel_from_json(JSON_PATH):
             continue
 
 
-    wb.save(OUTPUT_EXCEL)
-    print(f"✅ Excel generated: {OUTPUT_EXCEL}")
-    return OUTPUT_EXCEL
+    wb.save(OUTPUT_EXCEL_PATH)
+    print(f"✅ Excel generated: {OUTPUT_EXCEL_PATH}")
+    return OUTPUT_EXCEL_PATH
 
-# fill_excel_from_json()
+#fill_excel_from_json("cdr_payload_v5_updated.json")
 # fill_excel_from_json()

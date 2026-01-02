@@ -26,7 +26,7 @@ CRITICALITY RULES:
 DECISION LOGIC:
 - If ANY rule is satisfied → component is CRITICAL
 - Rule score = rules_passed / total_rules
-- Confidence = 0.0–1.0 (engineering certainty)
+- Confidence = 0–100 (engineering certainty)
 - Be conservative. Do NOT guess.
 
 Respond ONLY in JSON array.
@@ -37,7 +37,7 @@ RESPONSE FORMAT:
   {{
     "index": 0,
     "critical": true/false,
-    "confidence": 0.0,
+    "confidence": 0-100,
     "rules_passed": [1,4],
     "rule_score": 0.25,
     "reasoning": "concise technical justification"
@@ -68,7 +68,7 @@ COMPONENTS:
     for r in results:
         output[r["index"]] = {
             "critical": bool(r.get("critical", False)),
-            "confidence": float(r.get("confidence", 0.0)),
+            "confidence": int(r.get("confidence", 0)),
             "rules_passed": r.get("rules_passed", []),
             "rules_passed_count": len(r.get("rules_passed", [])),
             "rule_score": float(r.get("rule_score", 0.0)),
@@ -101,7 +101,7 @@ def run_classification(df):
     for i in range(len(records)):
         result_rows.append(results_map.get(i, {
             "critical": False,
-            "confidence": 0.0,
+            "confidence": 0,
             "reasoning": "Classification failed"
         }))
     
@@ -138,7 +138,7 @@ def deduplicate_components(df):
         pd.to_numeric(deduped_df["rules_passed_count"], errors="coerce").fillna(0) > 1
     ]
 
-    deduped_df["_image_id"] = deduped_df["Image URLs"].apply(c2_utils.normalize_image_url)
+    deduped_df["_image_id"] = deduped_df["URL"].apply(c2_utils.normalize_image_url)
     deduped_df["_image_sort_key"] = deduped_df["_image_id"].where(deduped_df["_image_id"].notna(), "zzzz_guide")
     deduped_df = deduped_df.sort_values("_image_sort_key").reset_index(drop=True)
 

@@ -45,9 +45,20 @@ def create_s4_json(input_excel, output_json):
             "user_editable": True,
             "ai_fillable": True,
             "accuracy_level": False,
-            "image_support": c2_utils.clean_value(row.get("Image URLs")),
-            "text_support": c2_utils.clean_value(row.get("Guide Reference")),
-            "confidence": c2_utils.clean_value(row.get("confidence"))
+            "image_support": c2_utils.clean_value(row.get("URL")),
+            "text_support": [
+                                {
+                                    "filename": c2_utils.clean_value(row.get("Filename")),
+                                    "page": (int(row.get("Page Number"))
+                                                if pd.notna(row.get("Page Number"))
+                                                else None
+                                            ),
+                                    "similarity_score": None,
+                                    "text": c2_utils.clean_value(row.get("Guide Reference")),
+                                    "url": c2_utils.clean_value(row.get("URL")),
+                                }
+                            ],
+            "confidence": int(c2_utils.clean_value(row.get("confidence")))
         }
         items.append(item)
         current_row += 1
@@ -61,7 +72,7 @@ def create_s4_json(input_excel, output_json):
 def create_s3_json(input_excel, output_json):
     df = pd.read_excel(input_excel, dtype=str)
 
-    REQUIRED_COLS = {"photo_no", "Image URLs", "Source Types"}
+    REQUIRED_COLS = {"photo_no", "URL", "Source Type"}
     missing = REQUIRED_COLS - set(df.columns)
     if missing:
         print(f"⚠ Missing required columns for Sheet 3: {missing}")
@@ -71,8 +82,8 @@ def create_s3_json(input_excel, output_json):
     # Strict image validation
     # --------------------------------
     def has_real_image(row):
-        img = str(row.get("Image URLs", "")).strip().lower()
-        src = str(row.get("Source Types", "")).strip().lower()
+        img = str(row.get("URL", "")).strip().lower()
+        src = str(row.get("Source Type", "")).strip().lower()
         photo = str(row.get("photo_no", "")).strip().lower()
 
         if not photo or photo in ("guide", "nan", "none"):
@@ -148,10 +159,10 @@ def create_s3_json(input_excel, output_json):
             "prefix": "Product",
             "field": build_field_text(
                 c2_utils.clean_value(row.get("photo_no")),
-                c2_utils.clean_value(row.get("Image Captions"))
+                c2_utils.clean_value(row.get("Filename"))
             ),
             "answer_cell": f"{column}{current_row + 1}",
-            "photo_path": c2_utils.clean_value(row.get("Image URLs")),
+            "photo_path": c2_utils.clean_value(row.get("URL")),
             "field_merged": False,
             "fm_range": None,
             "value_merged": False,

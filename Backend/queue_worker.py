@@ -42,11 +42,11 @@ projects_container = db.get_container_client(COSMOS_PROJECT_CONTAINER)
 
 
 ############################ TRF OPENAI CREDENTIALS ###################################
-queue_client_cdr.send_message(json.dumps({
-            "projectId": "G105000001",
-            "action": "cdr_generation",
-            "timestamp": datetime.utcnow().isoformat()
-        }))
+# queue_client_cdr.send_message(json.dumps({
+#             "projectId": "G105000001",
+#             "action": "cdr_generation",
+#             "timestamp": datetime.utcnow().isoformat()
+#         }))
 
 # Load environment variables
 AOAI_ENDPOINT      = os.getenv("AOAI_ENDPOINT")
