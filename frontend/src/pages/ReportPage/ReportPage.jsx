@@ -25,6 +25,10 @@ import DataTable from '../../components/DataTable';
 import PdfViewer from '../../components/PdfViewer';
 import CdrReport from '../../components/CdrReport/CdrReport';
 import CdrLoader from '../../components/CdrReport/CdrLoader';
+//import localJson from '../../utils/iec_output_1.json';
+import localJson from '../../utils/iec_61010_output_v12.json';
+// import localJson2 from '../../utils/iec_output.json';
+
 import ConfidenceScore from './ConfidenceScore';
 
 import { truncateWords } from '../../Helpers/truncateWords';
@@ -40,6 +44,8 @@ import { triggerGenerateCdrApi } from '../../redux/api/generateCdrApi';
 import { loadPdfWithCache } from '../../components/loadPdfWithCache';
 
 const TOTAL_PARTS = 5;
+import CdrLoader from '../../components/CdrReport/CdrLoader';
+import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -79,6 +85,18 @@ const ReportPage = () => {
 
   const [cdrEditMode, setCdrEditMode] = useState(false);
   const [cdrFinalised, setCdrFinalised] = useState(false);
+
+
+  const [activePdfUrl, setActivePdfUrl] = useState(null);
+  const [confidenceTick, setConfidenceTick] = useState(0);
+
+  const [activeDocUrl, setActiveDocUrl] = useState(null);
+  const [viewerType, setViewerType] = useState(null); // 'pdf' | 'docx'
+
+
+  const myData = useSelector((state) => state?.trf);
+  const cdrReportData = useSelector((state) => state?.cdr);
+
 
   const isEditMode = reportClick === 'cdr' ? cdrEditMode : trfEditMode;
   const isFinalised = reportClick === 'cdr' ? cdrFinalised : trfFinalised;
@@ -203,7 +221,7 @@ const handleBookmarkFromChild = (data) => {
       ? data.text_support.map((item) => item.preview_text || '')
       : [];
 
-    debugger
+
 
   setBookmarkData({
     ...data,
@@ -327,25 +345,25 @@ const handleBookmarkFromChild = (data) => {
   }, [trfJsonParts]);
 
 
-  
-  // --------------------------------------------------
-  // TRIGGER TRF ONCE
-  // --------------------------------------------------
-  useEffect(() => {
-    if (!projectID) return;
+  const handleMissingField = (data, projectID, reportClick) => {
+    DownloadMissingFieldsExcel(data, projectID, reportClick);
+  };
 
-    // Wait until backend status is known
-    if (progress === null) return;
+  // const getCitationDialogText = () => {
+  //   if (!selectedCitation) return '';
 
-    // Already completed → do nothing
-    if (progress === 100) return;
+  //   // Wait until backend status is known
+  //   if (progress === null) return;
 
-    // Prevent multiple triggers
-    if (trfTriggeredRef.current) return;
+  //   // Already completed → do nothing
+  //   if (progress === 100) return;
 
-    trfTriggeredRef.current = true;
-    generateTrfApi(projectID);
-  }, [projectID, progress]);
+  //   // Prevent multiple triggers
+  //   if (trfTriggeredRef.current) return;
+
+  //   trfTriggeredRef.current = true;
+  //   generateTrfApi(projectID);
+  // }, [projectID, progress]);
 
 
   useEffect(() => {
@@ -432,14 +450,15 @@ const handleBookmarkFromChild = (data) => {
                           <Typography className="header-text">
                             Test Report issued under the responsibility of:
                           </Typography>
-          
-                          {/* <TextField
-                            variant="outlined"
-                            size="small"
-                            value={issuedBy}
-                            onChange={handleIssuedByChange}
-                            style={{ flex: 2 }} // makes textbox expand
-                          /> */}
+
+                        <img
+                          src="/images/intertek_logo.svg"
+                          alt="logo"
+                          style={{
+                            maxWidth: '80%',
+                            height: 'auto',
+                          }}
+                        />
                         </div>
                       )}
                     </Box>
@@ -476,25 +495,34 @@ const handleBookmarkFromChild = (data) => {
                       editMode={trfEditMode}
                       onBookmarkClick={handleBookmarkFromChild}
                       reportType="trf"
+                      onConfidenceChange={() => {
+                        setConfidenceTick((v) => v + 1);
+                      }}
                     />
                   )}
 
-                  {reportClick === 'cdr' && (
-                    <>
-                      {cdrLoading && <CdrLoader />}
-                      {!cdrLoading && cdrJson && (
-                        <CdrReport
-                          ref={dataTableRef}
-                          jsonData={cdrJson}
-                          editMode={cdrEditMode}
-                          projectId={projectID}
-                          onBookmarkClick={handleBookmarkFromChild}
-                          reportType="cdr"
-                        />
+                   {reportClick === 'cdr' && (
+                              <>
+                                {cdrLoading && <CdrLoader />}
+                  
+                                {!cdrLoading && cdrJson && (
+                                  <CdrReport
+                                    ref={dataTableRef}
+                                    jsonData={cdrJson}
+                                    editMode={cdrEditMode}
+                                    projectId={localStorage.getItem('projectId')}
+                                    onBookmarkClick={handleBookmarkFromChild}
+                                    reportType="cdr"
+                                    cdrFinalised={cdrFinalised}
+                                    onConfidenceChange={() => {
+                                      setConfidenceTick((v) => v + 1);
+                                    }}
+                                  />
+                            )}
+                        </>
                       )}
-                    </>
-                  )}
-        </CardContent>
+
+   </CardContent>
       </Card>
     );
   };
@@ -745,6 +773,14 @@ const handleBookmarkFromChild = (data) => {
                     text: 'Missing Field Re..',
                     icon: '/images/file_icon.png',
                     bg: '#5191a0ff',
+                    action: () =>
+                      handleMissingField(
+                        reportClick === 'cdr'
+                          ? (cdrJson ?? localCdrJson)
+                          : (trfJson ?? localJson),
+                        projectID,
+                        reportClick
+                      ),
                   },
                   {
                     text: 'Regenerate',
@@ -835,14 +871,19 @@ const handleBookmarkFromChild = (data) => {
             <ConfidenceScore
               data={reportClick === 'trf' ? mergedTrfJson : cdrJson}
               reportType={reportClick}
+              confidenceTick={confidenceTick}
+              projectId={projectId}
             />
           )}
 
+          {/* local rendering of cdr report */}
           {/* {((reportClick === 'trf' && localJson) ||
             (reportClick === 'cdr' && localCdrJson)) && (
             <ConfidenceScore
               data={reportClick === 'trf' ? localJson : localCdrJson}
               reportType={reportClick}
+              confidenceTick={confidenceTick}
+              projectId={projectId}
             />
           )} */}
         </Box>

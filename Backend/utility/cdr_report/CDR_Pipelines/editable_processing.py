@@ -19,8 +19,8 @@ from openai import OpenAI
 #from dotenv import load_dotenv
 import os
 import importlib
-from utility.cdr_report.CDR_Pipelines import configs
-# importlib.reload(utility.cdr_report.CDR_Pipelines.configs)
+import utility.cdr_report.CDR_Pipelines.configs as configs
+# importlib.reload(configs)
 from openai import AzureOpenAI
 
 from utility.cdr_report.CDR_Pipelines.configs import (
@@ -49,9 +49,42 @@ def _resolve_indirect(obj):
     if isinstance(obj, IndirectObject):
         return obj.get_object()
     return obj
+
+
+def _has_freetext_annotations(reader: PdfReader, max_pages: int = 3) -> bool:
+    """Return True if any of the first `max_pages` pages contain /FreeText annotations.
+
+    Many "editable"-looking PDFs (Fill & Sign / typewriter tools) store user-entered
+    text as /FreeText annotations under each page's /Annots array. These are NOT
+    AcroForm/XFA fields, so they won't appear under /Root -> /AcroForm.
+    """
+
+    try:
+        pages = reader.pages
+        n = min(len(pages), max_pages)
+
+        for i in range(n):
+            page = pages[i]
+            annots = page.get("/Annots")
+            annots = _resolve_indirect(annots) or []
+
+            for a in annots:
+                aobj = _resolve_indirect(a)
+                subtype = aobj.get("/Subtype")
+                # subtype is usually a NameObject like '/FreeText'
+                if subtype and str(subtype) == "/FreeText":
+                    return True
+        return False
+    except Exception:
+        return False
 def is_editable_form_pdf(path: Path) -> bool:
     """
-    Return True if the PDF appears to contain form fields (AcroForm / XFA).
+    Return True if the PDF appears to contain *editable* content:
+      - AcroForm fields (/Root -> /AcroForm -> /Fields)
+      - XFA forms (/Root -> /AcroForm -> /XFA)
+      - FreeText annotations (/Annots -> /Subtype /FreeText)
+
+    Note: FreeText annotations are NOT form fields; they are an annotation layer.
     Ensures the file handle is closed (important on Windows) by using a 'with' block.
     """
     try:
@@ -64,8 +97,9 @@ def is_editable_form_pdf(path: Path) -> bool:
                 return False
 
             acroform = root.get("/AcroForm")
+            # If there's no AcroForm, it still may be "editable" via FreeText annotations.
             if not acroform:
-                return False
+                return _has_freetext_annotations(reader)
 
             acroform = _resolve_indirect(acroform)
 
@@ -85,7 +119,8 @@ def is_editable_form_pdf(path: Path) -> bool:
             if xfa:
                 return True
 
-            return False
+            # No fields/XFA found. Fall back to FreeText annotations.
+            return _has_freetext_annotations(reader)
     except Exception:
         return False
 

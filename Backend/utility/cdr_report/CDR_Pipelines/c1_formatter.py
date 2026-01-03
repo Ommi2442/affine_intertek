@@ -87,10 +87,13 @@ def run_formatter():
             "task_type": "extraction",
             "user_editable": True,
             "ai_fillable": True,
-            "accuracy_level": False,
+            "accuracy_level": True,
             "image_support": row.get("image_url"),
-            "text_support": [{"source": c1_utils.clean_value(row.get("source_doc")),
-                             "sheet_name": c1_utils.clean_value(row.get("sheet_name"))}],
+            "text_support": [{"filename": c1_utils.clean_value(row.get("source_doc")),
+                             "page": c1_utils.clean_value(row.get("sheet_name")),
+                             "similarity_score": None,
+                             "text": None,
+                             "page": c1_utils.clean_value(row.get("url"))}],
             "confidence": c1_utils.clean_value(row.get("confidence_score"))
         }
 

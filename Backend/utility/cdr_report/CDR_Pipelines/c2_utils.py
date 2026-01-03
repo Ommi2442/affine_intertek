@@ -65,22 +65,28 @@ def get_image_urls_from_container_sas():
     print("Image URLs constructed:", len(image_urls))
     return image_urls
 
+
+# from azure.storage.blob import BlobServiceClient
+from urllib.parse import quote
+
 def find_user_guide_blob():
-    blob_service = BlobServiceClient.from_connection_string(configs.AZURE_BLOB_CONNECTION_STRING)
-    container_client = blob_service.get_container_client(configs.BLOB_CONTAINER_NAME)
+    blob_service = BlobServiceClient.from_connection_string(
+        configs.AZURE_BLOB_CONNECTION_STRING
+    )
+
+    container_client = blob_service.get_container_client(
+        configs.BLOB_CONTAINER_NAME
+    )
+
     all_blobs = [blob.name for blob in container_client.list_blobs()]
-    
-    print("\n===== BLOBS IN CONTAINER =====")
-    for b in all_blobs:
-        print(" -", b)
-    print("===== END LIST =====\n")
 
     if not all_blobs:
         print("❌ Container is empty.")
-        return
+        return None, None
 
     guide_keywords = ["user", "guide", "manual", "operation", "instruction"]
     candidates = []
+
     for name in all_blobs:
         name_l = name.lower()
         if not name_l.endswith((".pdf", ".docx")):
@@ -90,12 +96,29 @@ def find_user_guide_blob():
 
     if not candidates:
         print("❌ No guide/manual detected.")
-        return
+        return None, None
 
     candidates.sort(key=len)
-    selected = candidates[0]
-    print("✔ Selected user guide:", selected)
-    return selected
+    blob_name = candidates[0]
+
+    # ✅ extract account name safely from SDK
+    account_name = blob_service.account_name
+
+    # ✅ normalize SAS
+    sas = configs.AZURE_BLOB_CONTAINER_SAS_URL
+    if sas and not sas.startswith("?"):
+        sas = "?" + sas
+
+    blob_url = (
+        f"https://{account_name}.blob.core.windows.net/"
+        f"{configs.BLOB_CONTAINER_NAME}/"
+        f"{quote(blob_name)}"
+    )
+
+    print("✔ Selected user guide:", blob_name)
+    return blob_name, blob_url
+
+ 
 
 def build_blob_sas_url(blob_name: str) -> str:
     base, sas = configs.AZURE_BLOB_CONTAINER_SAS_URL.split("?", 1)

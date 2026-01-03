@@ -33,6 +33,7 @@ def build_ref(trf_filled: dict) -> dict:
         "Report Number": get_field_value(trf_filled, "report number"),
         "Date of issue": get_field_value(trf_filled, "date of issue"),
         "Standard": get_field_value(trf_filled, "standard"),
+        "Applicant": get_field_value(trf_filled, "Applicant’s name"),
         "Test item description": get_field_value(trf_filled, "test item description"),
         "Ratings": get_field_value(trf_filled, "ratings"),
         # works for your Table 8 entry, no hard-coding of table index:

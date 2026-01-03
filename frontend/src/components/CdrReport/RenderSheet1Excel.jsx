@@ -128,7 +128,7 @@ const RenderSheet1Excel = ({
 
           {item.ai_fillable &&
             item.accuracy_level &&
-            renderConfidenceColor(item.confidence)}
+            renderConfidenceColor(item.confidence, item.is_user_edited)}
         </div>
       </TableCell>
     );
