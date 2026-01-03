@@ -44,6 +44,7 @@ import { loadPdfWithCache } from '../../components/loadPdfWithCache';
 
 const TOTAL_PARTS = 5;
 import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
+import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -95,6 +96,8 @@ const ReportPage = () => {
 
   const isEditMode = reportClick === 'cdr' ? cdrEditMode : trfEditMode;
   const isFinalised = reportClick === 'cdr' ? cdrFinalised : trfFinalised;
+
+  const [isFinalise, setIsFinalise] = useState(false);
 
   const [partPopupOpen, setPartPopupOpen] = useState(false);
   const [partPopupMessage, setPartPopupMessage] = useState('');
@@ -249,10 +252,37 @@ const ReportPage = () => {
   };
 
   const handleFinalise = () => {
-    if (!dataTableRef.current) return;
+    if (!dataTableRef.current) {
+      console.warn('DataTable ref not ready');
+      return;
+    }
+
     const updatedPayload = dataTableRef.current.getUpdatedJson();
-    dispatch(finaliseReportRequest(updatedPayload));
+
+    if (!updatedPayload?.Tables?.length) {
+      console.warn('Nothing to finalise');
+      return;
+    }
+
+    // 🔹 UI STATE (dot color)
     setIsFinalise(true);
+
+    if (reportClick === 'cdr') {
+      setCdrFinalised(true);
+      setCdrEditMode(false);
+    } else {
+      setTrfFinalised(true);
+      setTrfEditMode(false);
+    }
+
+    // 🔹 API CALL
+    dispatch(
+      finaliseReportRequest({
+        projectId,
+        reportType: reportClick,
+        data: updatedPayload,
+      })
+    );
   };
 
   const handleRegenerate = () => {
@@ -717,6 +747,7 @@ const ReportPage = () => {
                     icon: '/images/edit_icon.svg',
                     bg: '#2C2C2C',
                     action: () => {
+                      setIsFinalise(false);
                       if (reportClick === 'cdr') {
                         setCdrEditMode(true);
                         setCdrFinalised(false);
@@ -756,7 +787,7 @@ const ReportPage = () => {
                       handleMissingField(
                         reportClick === 'cdr'
                           ? (cdrJson ?? localCdrJson)
-                          : (trfJson ?? localJson),
+                          : (mergedTrfJson ?? localJson),
                         projectID,
                         reportClick
                       ),
