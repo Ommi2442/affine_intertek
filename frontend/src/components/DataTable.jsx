@@ -62,7 +62,7 @@ const DataTable = forwardRef(
     const [commentHistory, setCommentHistory] = useState([]);
 
     // Track whether this page load is a browser refresh
-    const isRefreshRef = useRef(false);
+    //const isRefreshRef = useRef(false);
 
     // --------------------
     // helper: checks
@@ -72,6 +72,15 @@ const DataTable = forwardRef(
     //  - item.user_editable === true
     //  - editMode === true (user clicked Edit/Refine)
     //  - item.is_textbox !== false (textbox allowed)
+
+    useEffect(() => {
+      idb_get('tables').then((saved) => {
+        if (saved && Array.isArray(saved)) {
+          setTables(saved);
+        }
+      });
+    }, []);
+
     const isEditable = (item) => {
       if (!item) return false;
       if (item.user_editable !== true) return false; // must be explicitly editable
@@ -107,40 +116,40 @@ const DataTable = forwardRef(
     }));
 
     // LOAD JSON
-    useEffect(() => {
-      // When API gives new data (Generate TRF clicked)
-      if (isRefreshRef.current) return; // on refresh we keep localStorage data
-      if (jsonData?.Tables) {
-        setTables(jsonData.Tables);
-        setVisiblePages(1);
-        setCurrentPageIndex(0);
-      }
-    }, [jsonData]);
+    // useEffect(() => {
+    //   // When API gives new data (Generate TRF clicked)
+    //   if (isRefreshRef.current) return; // on refresh we keep localStorage data
+    //   if (jsonData?.Tables) {
+    //     setTables(jsonData.Tables);
+    //     setVisiblePages(1);
+    //     setCurrentPageIndex(0);
+    //   }
+    // }, [jsonData]);
 
     // Load from IndexedDB ONLY on hard refresh (mount)
-    useEffect(() => {
-      const navEntry =
-        performance.getEntriesByType &&
-        performance.getEntriesByType('navigation') &&
-        performance.getEntriesByType('navigation')[0];
+    // useEffect(() => {
+    //   const navEntry =
+    //     performance.getEntriesByType &&
+    //     performance.getEntriesByType('navigation') &&
+    //     performance.getEntriesByType('navigation')[0];
 
-      const isRefresh =
-        (performance.navigation && performance.navigation.type === 1) ||
-        navEntry?.type === 'reload' ||
-        false;
+    //   const isRefresh =
+    //     (performance.navigation && performance.navigation.type === 1) ||
+    //     navEntry?.type === 'reload' ||
+    //     false;
 
-      isRefreshRef.current = !!isRefresh;
+    //   isRefreshRef.current = !!isRefresh;
 
-      if (isRefreshRef.current) {
-        idb_get('tables').then((saved) => {
-          if (saved) {
-            setTables(saved);
-            setVisiblePages(1);
-            setCurrentPageIndex(0);
-          }
-        });
-      }
-    }, []);
+    //   if (isRefreshRef.current) {
+    //     idb_get('tables').then((saved) => {
+    //       if (saved) {
+    //         setTables(saved);
+    //         setVisiblePages(1);
+    //         setCurrentPageIndex(0);
+    //       }
+    //     });
+    //   }
+    // }, []);
 
     // Save to IndexedDB whenever tables change
     useEffect(() => {
@@ -148,6 +157,21 @@ const DataTable = forwardRef(
         idb_set('tables', tables);
       }
     }, [tables]);
+
+    useEffect(() => {
+      if (!jsonData?.Tables) return;
+
+      setTables((prev) => {
+        // Avoid unnecessary reset if data is identical
+        if (JSON.stringify(prev) === JSON.stringify(jsonData.Tables)) {
+          return prev;
+        }
+        return jsonData.Tables;
+      });
+
+      setVisiblePages(1);
+      setCurrentPageIndex(0);
+    }, [jsonData]);
 
     // FLATTEN ITEMS (hide disable_text: true in UI)
     const allItems = useMemo(() => {

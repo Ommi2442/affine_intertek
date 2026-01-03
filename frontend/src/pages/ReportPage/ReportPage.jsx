@@ -18,7 +18,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import { useDispatch, useSelector } from 'react-redux';
 
-
 import './ReportPage.css';
 
 import DataTable from '../../components/DataTable';
@@ -44,7 +43,6 @@ import { triggerGenerateCdrApi } from '../../redux/api/generateCdrApi';
 import { loadPdfWithCache } from '../../components/loadPdfWithCache';
 
 const TOTAL_PARTS = 5;
-import CdrLoader from '../../components/CdrReport/CdrLoader';
 import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 
 const ReportPage = () => {
@@ -86,17 +84,14 @@ const ReportPage = () => {
   const [cdrEditMode, setCdrEditMode] = useState(false);
   const [cdrFinalised, setCdrFinalised] = useState(false);
 
-
   const [activePdfUrl, setActivePdfUrl] = useState(null);
   const [confidenceTick, setConfidenceTick] = useState(0);
 
   const [activeDocUrl, setActiveDocUrl] = useState(null);
   const [viewerType, setViewerType] = useState(null); // 'pdf' | 'docx'
 
-
   const myData = useSelector((state) => state?.trf);
   const cdrReportData = useSelector((state) => state?.cdr);
-
 
   const isEditMode = reportClick === 'cdr' ? cdrEditMode : trfEditMode;
   const isFinalised = reportClick === 'cdr' ? cdrFinalised : trfFinalised;
@@ -105,7 +100,6 @@ const ReportPage = () => {
   const [partPopupMessage, setPartPopupMessage] = useState('');
 
   const trfTriggeredRef = useRef(false);
-
 
   const projectMeta = {
     standard: state?.standard || '',
@@ -122,59 +116,54 @@ const ReportPage = () => {
   const showTrfLoader = reportClick === 'trf' && progress < 30;
 
   const showPartStatusPopup = (message) => {
-  setPartPopupMessage(message);
-  setPartPopupOpen(true);
+    setPartPopupMessage(message);
+    setPartPopupOpen(true);
 
-  setTimeout(() => {
+    setTimeout(() => {
       setPartPopupOpen(false);
     }, 1800);
   };
 
-
   // --------------------------------------------------
   // STATUS POLLING
   // --------------------------------------------------
-const checkStatus = async () => {
-  if (!projectID) return;
+  const checkStatus = async () => {
+    if (!projectID) return;
 
-  // ✅ STOP polling once completed
-  if (progress === 100) return;
+    // STOP polling once completed
+    if (progress === 100) return;
 
-  try {
-    setRefreshing(true);
+    try {
+      setRefreshing(true);
 
-    const res = await getProjectReportStatusApi(projectID);
+      const res = await getProjectReportStatusApi(projectID);
 
-    setStatus(res?.trf_status || 'Pending');
-    setProgress(
-      typeof res?.trf_percentage === 'number'
-        ? res.trf_percentage
-        : 0
-    );
-  } catch (err) {
-    console.error('STATUS CHECK FAILED:', err);
-  } finally {
-    setRefreshing(false);
-  }
-};
+      setStatus(res?.trf_status || 'Pending');
+      setProgress(
+        typeof res?.trf_percentage === 'number' ? res.trf_percentage : 0
+      );
+    } catch (err) {
+      console.error('STATUS CHECK FAILED:', err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
+  useEffect(() => {
+    if (!projectID) return;
 
-useEffect(() => {
-  if (!projectID) return;
-
-  // First check
-  checkStatus();
-
-  // ✅ Do not start polling if already complete
-  if (progress === 100) return;
-
-  const id = setInterval(() => {
+    // First check
     checkStatus();
-  }, 15000);
 
-  return () => clearInterval(id);
-}, [projectID, progress]);
+    // ✅ Do not start polling if already complete
+    if (progress === 100) return;
 
+    const id = setInterval(() => {
+      checkStatus();
+    }, 15000);
+
+    return () => clearInterval(id);
+  }, [projectID, progress]);
 
   // --------------------------------------------------
   // SPLIT JSON LOADER
@@ -191,11 +180,11 @@ useEffect(() => {
         if (cancelled) return;
 
         if (res.status === 'completed' && res.json_data) {
-          setTrfJsonParts(prev => [...prev, res.json_data]);  
+          setTrfJsonParts((prev) => [...prev, res.json_data]);
           showPartStatusPopup(`Section ${currentPart} loaded`);
-          setCurrentPart(p => p + 1);
+          setCurrentPart((p) => p + 1);
         } else {
-          setTimeout(() => !cancelled && load(), 2000);
+          setTimeout(() => !cancelled && load(), 10000);
         }
       } catch (err) {
         console.error('Failed to load TRF part', err);
@@ -208,37 +197,29 @@ useEffect(() => {
     };
   }, [currentPart, projectID]);
 
+  // ---------------- BOOKMARK HANDLING ----------------
+  const handleBookmarkFromChild = (data) => {
+    if (!data) return;
 
+    // Extract supporting text safely
+    const textSupportTexts =
+      data.ai_fillable === true && Array.isArray(data.text_support)
+        ? data.text_support.map((item) => item.preview_text || '')
+        : [];
 
+    setBookmarkData({
+      ...data,
 
-// ---------------- BOOKMARK HANDLING ----------------
-const handleBookmarkFromChild = (data) => {
-  if (!data) return;
+      // flattened texts (used for display/search if needed)
+      textSupportTexts,
 
-  // Extract supporting text safely
-  const textSupportTexts =
-    data.ai_fillable === true && Array.isArray(data.text_support)
-      ? data.text_support.map((item) => item.preview_text || '')
-      : [];
+      // raw support objects (used for citations, images, links)
+      textSupportRaw: Array.isArray(data.text_support) ? data.text_support : [],
+    });
 
+    setBookmarkOpen(true);
+  };
 
-
-  setBookmarkData({
-    ...data,
-
-    // flattened texts (used for display/search if needed)
-    textSupportTexts,
-
-    // raw support objects (used for citations, images, links)
-    textSupportRaw: Array.isArray(data.text_support)
-      ? data.text_support
-      : [],
-  });
-
-  setBookmarkOpen(true);
-};
-
-  
   const handleCitationLinkClick = (filename, page, text, blob_url) => {
     // ---- XLSX → DOWNLOAD ----
     if (filename?.toLowerCase().endsWith('.xlsx')) {
@@ -266,55 +247,55 @@ const handleBookmarkFromChild = (data) => {
       }, 1200);
     }, 200);
   };
-  
-    const handleFinalise = () => {
-      if (!dataTableRef.current) return;
-      const updatedPayload = dataTableRef.current.getUpdatedJson();
-      dispatch(finaliseReportRequest(updatedPayload));
-      setIsFinalise(true);
-    };
-  
-    const handleRegenerate = () => {
-      navigate('/create-project', {
-        state: {
-          standard,
-          projectId,
-          clientName,
-          product,
-        },
-      });
-    };
-  
-    const BASE_URL = import.meta.env.VITE_BACKEND_URL;
-  
-    const handleDownload = (projectId) => {
-      window.open(`${BASE_URL}/projects/download-file?project_id=${projectId}`);
-      //dispatch(downloadReportRequest(projectId));
-    };
-  
-    const getCitationDialogText = () => {
-      if (!selectedCitation) return '';
-  
-      /* -------- TRF -------- */
-      if (reportClick === 'trf') {
-        return normalizeNewLines(selectedCitation.text || '');
+
+  const handleFinalise = () => {
+    if (!dataTableRef.current) return;
+    const updatedPayload = dataTableRef.current.getUpdatedJson();
+    dispatch(finaliseReportRequest(updatedPayload));
+    setIsFinalise(true);
+  };
+
+  const handleRegenerate = () => {
+    navigate('/create-project', {
+      state: {
+        standard,
+        projectId,
+        clientName,
+        product,
+      },
+    });
+  };
+
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+  const handleDownload = (projectId) => {
+    window.open(`${BASE_URL}/projects/download-file?project_id=${projectId}`);
+    //dispatch(downloadReportRequest(projectId));
+  };
+
+  const getCitationDialogText = () => {
+    if (!selectedCitation) return '';
+
+    /* -------- TRF -------- */
+    if (reportClick === 'trf') {
+      return normalizeNewLines(selectedCitation.preview_text || '');
+    }
+
+    /* -------- CDR -------- */
+    if (reportClick === 'cdr') {
+      // case 1: string
+      if (typeof selectedCitation === 'string') {
+        return normalizeNewLines(selectedCitation);
       }
-  
-      /* -------- CDR -------- */
-      if (reportClick === 'cdr') {
-        // case 1: string
-        if (typeof selectedCitation === 'string') {
-          return normalizeNewLines(selectedCitation);
-        }
-  
-        // case 2: object with content
-        if (typeof selectedCitation.content === 'string') {
-          return normalizeNewLines(selectedCitation.content);
-        }
+
+      // case 2: object with content
+      if (typeof selectedCitation.content === 'string') {
+        return normalizeNewLines(selectedCitation.content);
       }
-  
-      return '';
-    };
+    }
+
+    return '';
+  };
 
   // --------------------------------------------------
   // MERGE TRF JSON PARTS
@@ -324,16 +305,14 @@ const handleBookmarkFromChild = (data) => {
 
     const map = new Map();
 
-    trfJsonParts.forEach(part => {
+    trfJsonParts.forEach((part) => {
       if (!Array.isArray(part.Tables)) return;
 
-      part.Tables.forEach(table => {
+      part.Tables.forEach((table) => {
         if (!map.has(table.Table)) {
           map.set(table.Table, {
             ...table,
-            Items: Array.isArray(table.Items)
-              ? [...table.Items]
-              : [],
+            Items: Array.isArray(table.Items) ? [...table.Items] : [],
           });
         } else if (table.Table === 9 && Array.isArray(table.Items)) {
           map.get(table.Table).Items.push(...table.Items);
@@ -343,7 +322,6 @@ const handleBookmarkFromChild = (data) => {
 
     return { Tables: Array.from(map.values()) };
   }, [trfJsonParts]);
-
 
   const handleMissingField = (data, projectID, reportClick) => {
     DownloadMissingFieldsExcel(data, projectID, reportClick);
@@ -365,13 +343,9 @@ const handleBookmarkFromChild = (data) => {
   //   generateTrfApi(projectID);
   // }, [projectID, progress]);
 
-
   useEffect(() => {
-  trfTriggeredRef.current = false;
+    trfTriggeredRef.current = false;
   }, [projectID]);
-
-
-
 
   // --------------------------------------------------
   // LEFT PANEL
@@ -395,9 +369,7 @@ const handleBookmarkFromChild = (data) => {
             </Box>
           </Box>
 
-          <Typography className="progress-advanced-status">
-            {status}
-          </Typography>
+          <Typography className="progress-advanced-status">{status}</Typography>
 
           <Button
             disabled={refreshing}
@@ -418,10 +390,18 @@ const handleBookmarkFromChild = (data) => {
             placement="bottom-start"
             title={
               <Box sx={{ fontSize: 13 }}>
-                <div><b>Standard:</b> {standard}</div>
-                <div><b>Project ID:</b> {projectId}</div>
-                <div><b>Client Name:</b> {clientName}</div>
-                <div><b>Product:</b> {product}</div>
+                <div>
+                  <b>Standard:</b> {standard}
+                </div>
+                <div>
+                  <b>Project ID:</b> {projectId}
+                </div>
+                <div>
+                  <b>Client Name:</b> {clientName}
+                </div>
+                <div>
+                  <b>Product:</b> {product}
+                </div>
               </Box>
             }
           >
@@ -432,102 +412,101 @@ const handleBookmarkFromChild = (data) => {
         </Box>
 
         <CardContent className="left-content">
-                    <Box className="report-header">
-                      <img
-                        src="/images/trf_image1.jpg"
-                        className="header-image"
-                        alt="header"
-                      />
-                      {reportClick == 'trf' && (
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '16px',
-                            marginRight: '5%',
-                          }}
-                        >
-                          <Typography className="header-text">
-                            Test Report issued under the responsibility of:
-                          </Typography>
+          <Box className="report-header">
+            <img
+              src="/images/trf_image1.jpg"
+              className="header-image"
+              alt="header"
+            />
+            {reportClick == 'trf' && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '16px',
+                  marginRight: '5%',
+                }}
+              >
+                <Typography className="header-text">
+                  Test Report issued under the responsibility of:
+                </Typography>
 
-                        <img
-                          src="/images/intertek_logo.svg"
-                          alt="logo"
-                          style={{
-                            maxWidth: '80%',
-                            height: 'auto',
-                          }}
-                        />
-                        </div>
-                      )}
-                    </Box>
-          
-                    {reportClick == 'trf' && (
-                      <Box className="report-title-container">
-                        {/* <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+                <img
+                  src="/images/intertek_logo.svg"
+                  alt="logo"
+                  style={{
+                    maxWidth: '80%',
+                    height: 'auto',
+                  }}
+                />
+              </div>
+            )}
+          </Box>
+
+          {reportClick == 'trf' && (
+            <Box className="report-title-container">
+              {/* <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
                           TEST REPORT
                         </Typography> */}
-                        <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
-                          IEC 61010-1
-                        </Typography>
-                        <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
-                          Safety requirements for electrical equipment for measurement,
-                          control, and laboratory use
-                        </Typography>
-                        <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
-                          Part 1: General requirements
-                        </Typography>
-                      </Box>
-                    )}
-          
-                    {reportClick == 'cdr' && (
-                      <Box className="report-title-container">
-                        <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
-                          CDR REPORT
-                        </Typography>
-                      </Box>
-                    )}
-                  {reportClick === 'trf' && progress >= 30 && mergedTrfJson && (
-                    <DataTable
-                      ref={dataTableRef}
-                      jsonData={mergedTrfJson}
-                      editMode={trfEditMode}
-                      onBookmarkClick={handleBookmarkFromChild}
-                      reportType="trf"
-                      onConfidenceChange={() => {
-                        setConfidenceTick((v) => v + 1);
-                      }}
-                    />
-                  )}
+              <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+                IEC 61010-1
+              </Typography>
+              <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+                Safety requirements for electrical equipment for measurement,
+                control, and laboratory use
+              </Typography>
+              <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+                Part 1: General requirements
+              </Typography>
+            </Box>
+          )}
 
-                   {reportClick === 'cdr' && (
-                              <>
-                                {cdrLoading && <CdrLoader />}
-                  
-                                {!cdrLoading && cdrJson && (
-                                  <CdrReport
-                                    ref={dataTableRef}
-                                    jsonData={cdrJson}
-                                    editMode={cdrEditMode}
-                                    projectId={localStorage.getItem('projectId')}
-                                    onBookmarkClick={handleBookmarkFromChild}
-                                    reportType="cdr"
-                                    cdrFinalised={cdrFinalised}
-                                    onConfidenceChange={() => {
-                                      setConfidenceTick((v) => v + 1);
-                                    }}
-                                  />
-                            )}
-                        </>
-                      )}
+          {reportClick == 'cdr' && (
+            <Box className="report-title-container">
+              <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+                CDR REPORT
+              </Typography>
+            </Box>
+          )}
+          {reportClick === 'trf' && progress >= 30 && mergedTrfJson && (
+            <DataTable
+              ref={dataTableRef}
+              jsonData={mergedTrfJson}
+              editMode={trfEditMode}
+              onBookmarkClick={handleBookmarkFromChild}
+              reportType="trf"
+              onConfidenceChange={() => {
+                setConfidenceTick((v) => v + 1);
+              }}
+            />
+          )}
 
-   </CardContent>
+          {reportClick === 'cdr' && (
+            <>
+              {cdrLoading && <CdrLoader />}
+
+              {!cdrLoading && cdrJson && (
+                <CdrReport
+                  ref={dataTableRef}
+                  jsonData={cdrJson}
+                  editMode={cdrEditMode}
+                  projectId={localStorage.getItem('projectId')}
+                  onBookmarkClick={handleBookmarkFromChild}
+                  reportType="cdr"
+                  cdrFinalised={cdrFinalised}
+                  onConfidenceChange={() => {
+                    setConfidenceTick((v) => v + 1);
+                  }}
+                />
+              )}
+            </>
+          )}
+        </CardContent>
       </Card>
     );
   };
 
- // ---------------- FINAL PAGE LAYOUT ----------------
+  // ---------------- FINAL PAGE LAYOUT ----------------
   return (
     <Box className="report-container">
       <Box className="left-panel">{renderLeftPanel()}</Box>
@@ -905,14 +884,14 @@ const handleBookmarkFromChild = (data) => {
           },
         }}
       >
-      <DialogContent sx={{ py: 1.5, px: 2 }}>
-        <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
-          {partPopupMessage}
-        </Typography>
-      </DialogContent>
-    </Dialog>
+        <DialogContent sx={{ py: 1.5, px: 2 }}>
+          <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
+            {partPopupMessage}
+          </Typography>
+        </DialogContent>
+      </Dialog>
 
- <Dialog
+      <Dialog
         open={openCitationDialog}
         onClose={() => setOpenCitationDialog(false)}
         maxWidth="md"
