@@ -43,3 +43,22 @@ export const triggerGenerateTrfApi = async (projectId) => {
 
   return response.data;
 };
+
+
+export const fetchTrfJsonPartApi = async (projectId, partIndex) => {
+  const token = localStorage.getItem('token');
+
+  const res = await api.get('/projects/trf-json-part', {
+    params: {
+      project_id: projectId,
+      part_index: partIndex,
+    },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    // 🔴 show loader ONLY for first part
+    showLoader: partIndex === 1,
+  });
+
+  return res.data;
+};

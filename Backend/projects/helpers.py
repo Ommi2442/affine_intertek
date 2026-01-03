@@ -4,7 +4,15 @@ import pythoncom
 from docx2pdf import convert
 
 def convert_docx_to_pdf(docx_path: str, pdf_path: str):
+    print('*************** 3.1 ******************************', docx_path)
+
+    print('*************** 3.2 ******************************', pdf_path)
+
+
     system = platform.system().lower()
+
+    print('*************** 3.3 ******************************', system)
+    
 
     # ---------- WINDOWS (MS WORD via COM) ----------
     if system == "windows":
