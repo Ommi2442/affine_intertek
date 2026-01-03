@@ -74,7 +74,7 @@ const Dashboard = () => {
     const handleClick = () => {
       localStorage.setItem('projectId', row?.Project_Id);
 
-      preloadProjectPdfs(row?.Project_Id)
+      // preloadProjectPdfs(row?.Project_Id)
 
       if (val == false) {
         navigate('/create-project', {

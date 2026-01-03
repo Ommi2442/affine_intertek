@@ -24,7 +24,7 @@ from azure.cosmos import CosmosClient, PartitionKey, exceptions
 import json, os
 from azure.cosmos import CosmosClient, ConsistencyLevel
 from typing import List, Dict, Any, Tuple
-from docx import Document
+from docx import Document as WordDocument
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
@@ -62,7 +62,7 @@ pd.set_option('display.max_columns', None)
 IMAGE_EXTS = {"jpg", "jpeg", "png", "gif", "bmp", "tiff", "tif", "webp", "svg"}
 
 def set_checkbox_checked(docx_path, out_path, checkbox_index=0):
-    doc = Document(docx_path)
+    doc = WordDocument(docx_path)
 
     count = 0
     for field in doc._element.body.iter():
@@ -104,7 +104,6 @@ def _extract_from_msg(path):
     except Exception as e:
         # fallback to empty string on failure
         return ""
-    
 
 
 ### If chunks ingested don't run
@@ -198,123 +197,60 @@ def _extract_from_txt(path):
         except Exception:
             return ""
 
+
 def convert_doc_to_pdf(input_path, output_path=None):
     """
-    Universal DOC/DOCX to PDF converter.
-    Supports both styles of call:
-        pdf_convert("file.docx")
-        pdf_convert("file.docx", "file.pdf")
-    - Windows: tries Microsoft Word automation first
-    - Fallback: LibreOffice
-    - Linux/Mac: LibreOffice only
-    Returns: output PDF path
+    Convert .doc or .docx to PDF using LibreOffice.
+    Works on Windows + Linux.
     """
 
-    import os, platform, shutil, subprocess
-
-    if not os.path.exists(input_path):
-        raise FileNotFoundError(f"File not found: {input_path}")
+    if not os.path.isfile(input_path):
+        raise FileNotFoundError(f"Input file not found: {input_path}")
 
     # Determine output path
     if output_path is None:
-        output_path = os.path.splitext(input_path)[0] + ".pdf"
+        base, _ = os.path.splitext(input_path)
+        output_path = base + ".pdf"
 
+    out_dir = os.path.dirname(os.path.abspath(output_path))
+
+    # Detect libreoffice binary
     system = platform.system().lower()
 
-    # Try MS Word automation on Windows
     if system == "windows":
-        try:
-            import comtypes.client
-            word = comtypes.client.CreateObject("Word.Application")
-            word.Visible = False
-
-            doc = word.Documents.Open(input_path)
-            doc.SaveAs(output_path, FileFormat=17)  # 17 = PDF
-            doc.Close()
-            word.Quit()
-            return output_path
-
-        except Exception as e:
-            print(f"[WARN] MS Word conversion failed, switching to LibreOffice → {e}")
-
-    # Otherwise fallback to LibreOffice
-    soffice = None
-
-    if system == "windows":
+        # Try typical install locations
         possible_paths = [
             r"C:\Program Files\LibreOffice\program\soffice.exe",
             r"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
         ]
-        soffice = next((p for p in possible_paths if os.path.exists(p)), None) or shutil.which("soffice")
+        soffice = next((p for p in possible_paths if os.path.isfile(p)), None)
+
+        if soffice is None:
+            soffice = shutil.which("soffice")  # last fallback
+
+        if soffice is None:
+            raise RuntimeError("LibreOffice not found. Install from https://www.libreoffice.org/")
     else:
+        # Linux/macOS
         soffice = shutil.which("libreoffice") or shutil.which("soffice")
 
-    if not soffice:
-        raise RuntimeError("No conversion method found (Word or LibreOffice required).")
+        if soffice is None:
+            raise RuntimeError("LibreOffice not installed. Install using your package manager.")
 
-    # Run conversion via LibreOffice
-    subprocess.run(
-        [soffice, "--headless", "--convert-to", "pdf", "--outdir", os.path.dirname(output_path), input_path],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True
-    )
+    cmd = [
+        soffice,
+        "--headless",
+        "--convert-to", "pdf",
+        "--outdir", out_dir,
+        input_path
+    ]
+
+    try:
+        subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"PDF conversion failed: {e.stderr.decode()}")
 
     return output_path
-
-
-
-# def convert_doc_to_pdf(input_path, output_path=None):
-#     """
-#     Convert .doc or .docx to PDF using LibreOffice.
-#     Works on Windows + Linux.
-#     """
-
-#     if not os.path.isfile(input_path):
-#         raise FileNotFoundError(f"Input file not found: {input_path}")
-
-#     # Determine output path
-#     if output_path is None:
-#         base, _ = os.path.splitext(input_path)
-#         output_path = base + ".pdf"
-
-#     out_dir = os.path.dirname(os.path.abspath(output_path))
-
-#     # Detect libreoffice binary
-#     system = platform.system().lower()
-
-#     if system == "windows":
-#         # Try typical install locations
-#         possible_paths = [
-#             r"C:\Program Files\LibreOffice\program\soffice.exe",
-#             r"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
-#         ]
-#         soffice = next((p for p in possible_paths if os.path.isfile(p)), None)
-
-#         if soffice is None:
-#             soffice = shutil.which("soffice")  # last fallback
-
-#         if soffice is None:
-#             raise RuntimeError("LibreOffice not found. Install from https://www.libreoffice.org/")
-#     else:
-#         # Linux/macOS
-#         soffice = shutil.which("libreoffice") or shutil.which("soffice")
-
-#         if soffice is None:
-#             raise RuntimeError("LibreOffice not installed. Install using your package manager.")
-
-#     cmd = [
-#         soffice,
-#         "--headless",
-#         "--convert-to", "pdf",
-#         "--outdir", out_dir,
-#         input_path
-#     ]
-
-#     try:
-#         subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-#     except subprocess.CalledProcessError as e:
-#         raise RuntimeError(f"PDF conversion failed: {e.stderr.decode()}")
-
-#     return output_path
 
 def pdf_convert(file1,file2):
     """file1 is docx and file2 is pdf""" 
@@ -419,45 +355,6 @@ def create_db_and_container(client,DB_NAME,VECTOR_PATH,EMBED_DIM,CONT_NAME):
         print("Message:", getattr(e, "message", str(e)))
         raise
 
-def build_vectorstore(embeddings,client,DB_NAME,CONT_NAME):
-    # COSMOS_URL    = "https://rag-intertek.documents.azure.com:443/"
-    # COSMOS_KEY    = "AbhkomWJLtf8TR7odpABPqx1OrjlmCcpTXlKr9Vvp3RulZmFGollxQflIp3LLUAFt4XcMh70RbRxACDbuxyZLg=="
-    # DB_NAME     = "ragdatabase_new"
-    # CONT_NAME   = "vectorstorecontainer_new"
-    # DB_NAME     = "ragdatabase_new2"
-    # CONT_NAME   = "vectorstorecontainer_new2"
-    
-    # COSMOS_URL    = "https://csdb-intertek-esus-dev.documents.azure.com:443/"
-    # COSMOS_KEY    = "azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00MFDbK88ApotACDbODLFXA=="
-    # cosmos_client = CosmosClient(
-    #     url=COSMOS_URL,
-    #     credential=COSMOS_KEY,
-    #     consistency_level=ConsistencyLevel.Eventual
-    # )
-    cosmos_client=client
-
-    # keep your existing policy helpers if your constructor requires them
-    return AzureCosmosDBNoSqlVectorSearch(
-        cosmos_client=cosmos_client,
-        embedding=embeddings,
-        database_name=DB_NAME,
-        container_name=CONT_NAME,
-
-        # if your version requires explicit policies, keep these as you already had:
-        vector_embedding_policy={"vectorEmbeddings":[{"path":"/vector","dataType":"float32","dimensions":1536,"distanceFunction":"cosine"}]},
-        indexing_policy={"includedPaths":[{"path":"/*"}],
-                         "excludedPaths":[{"path":"/\"_etag\"/?"},{"path":"/vector/*"}],
-                         "vectorIndexes":[{"path":"/vector","type":"quantizedFlat"}]},
-        cosmos_container_properties={"partition_key":"/id"},
-        cosmos_database_properties={}, # _db_props()
-
-        # IMPORTANT: pass a dict, not a list
-        vector_search_fields={
-            "text_field": "text",
-            "embedding_field": "vector",
-            "metadata_field": "metadata"
-        }
-    )
 
 # Builders
 # -----------------------
@@ -468,10 +365,6 @@ def build_embeddings(AOAI_ENDPOINT,AOAI_KEY,API_VERSION,EMBED_DEPLOY):
         openai_api_version=API_VERSION,
         azure_deployment=EMBED_DEPLOY,
     )
-
-### If chunks ingested don't run
-
-
 
 
 def add_ids_to_chunks(chunks):
@@ -558,7 +451,7 @@ def process_blob_urls_2(blob_urls, conn_str, container,
 
                 ext = (ext or "").lower()
 
-                #DOCX -> convert to pdf then record pdf path (do NOT extract text)
+                # DOCX -> convert to pdf then record pdf path (do NOT extract text)
                 if ext == "docx":
                     pdf_path = os.path.splitext(local_path)[0] + ".pdf"
                     try:
@@ -584,18 +477,6 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                         if verbose:
                             print(f"[WARN] .doc conversion failed for {base_name}: {e}")
                     continue
-
-                # if ext in ("doc", "docx"):
-                #     try:
-                #         pdf_path = pdf_convert(local_path,pdf_path)  # now works with 1 arg
-                #         converted_pdf_paths.append(pdf_path)
-                #         if verbose:
-                #             print(f"[INFO] Converted {ext.upper()} → PDF: {local_path} -> {pdf_path}")
-                #     except Exception as e:
-                #         print(f"[WARN] File conversion failed for {base_name}: {e}")
-                #     continue
-
-
 
 
                 # PDF -> record downloaded path (do NOT extract text)

@@ -1,6 +1,6 @@
 /* eslint quotes: "off" */
 /* eslint-disable */
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -8,77 +8,84 @@ import {
   CardContent,
   Typography,
   Button,
-  Divider,
-  TextField,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Tooltip,
 } from '@mui/material';
-import './ReportPage.css';
-import { useDispatch, useSelector } from 'react-redux';
-import DataTable from '../../components/DataTable';
-import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
-import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { generateTrfApi } from '../../redux/api/generateTrfApi';
-//import localCdrJson from '../../utils/cdr_payload_3.json';
-import localCdrJson from '../../utils/cdr_payload_v5_updated.json';
-import CdrReport from '../../components/CdrReport/CdrReport';
-//import localJson from '../../utils/pta_final_6.json';
+
+import './ReportPage.css';
+
+import DataTable from '../../components/DataTable';
 import PdfViewer from '../../components/PdfViewer';
+import CdrReport from '../../components/CdrReport/CdrReport';
+import CdrLoader from '../../components/CdrReport/CdrLoader';
 //import localJson from '../../utils/iec_output_1.json';
 import localJson from '../../utils/iec_61010_output_v12.json';
 // import localJson2 from '../../utils/iec_output.json';
 
 import ConfidenceScore from './ConfidenceScore';
+
 import { truncateWords } from '../../Helpers/truncateWords';
 import { normalizeNewLines } from '../../Helpers/normalizeNewLines';
 import { RenderImageThumbnails } from '../../Helpers/renderImageThumbnails';
-import { generateCdrRequest } from '../../redux/features/generateCdr/generateCdrSlice';
+
+import {
+  generateTrfApi,
+  fetchTrfJsonPartApi,
+} from '../../redux/api/generateTrfApi';
+import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
 import { triggerGenerateCdrApi } from '../../redux/api/generateCdrApi';
-//import { downloadReportRequest } from '../../redux/features/downloadReport/downloadReportSlice';
 import { loadPdfWithCache } from '../../components/loadPdfWithCache';
+
+const TOTAL_PARTS = 5;
 import CdrLoader from '../../components/CdrReport/CdrLoader';
 import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
   const dataTableRef = useRef(null);
-
   const pdfViewerRef = useRef(null);
+
+  const navigate = useNavigate();
+  const { state } = useLocation();
 
   const projectID = localStorage.getItem('projectId');
 
-  const [bookmarkOpen, setBookmarkOpen] = useState(false);
-  const [bookmarkData, setBookmarkData] = useState(null);
-  const [trfJson, setTrfJson] = useState(null);
+  // --------------------------------------------------
+  // STATE
+  // --------------------------------------------------
+  const [reportClick, setReportClick] = useState('trf');
+
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState('Pending');
+  const [refreshing, setRefreshing] = useState(false);
+
+  const [trfJsonParts, setTrfJsonParts] = useState([]);
+  const [currentPart, setCurrentPart] = useState(1);
+
   const [cdrJson, setCdrJson] = useState(null);
   const [cdrLoading, setCdrLoading] = useState(false);
 
   const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
 
-  // const [issuedBy, setIssuedBy] = useState('');
+  const [bookmarkOpen, setBookmarkOpen] = useState(false);
+  const [bookmarkData, setBookmarkData] = useState(null);
 
-  const [status, setStatus] = useState('Pending'); // "Pending" for the trf api json , "Completed" for the local json"
-  const [cdrStatus, setCdrStatus] = useState('Pending'); // Pending for the Cdr Json status
-  const [progress, setProgress] = useState(0);
-  const [refreshing, setRefreshing] = useState(false);
-  const [editMode, setEditMode] = useState(false);
-  const [isFinalise, setIsFinalise] = useState(false);
+  const [openCitationDialog, setOpenCitationDialog] = useState(false);
+  const [selectedCitation, setSelectedCitation] = useState(null);
 
-  // 🔹 TRF states
   const [trfEditMode, setTrfEditMode] = useState(false);
   const [trfFinalised, setTrfFinalised] = useState(false);
 
-  // 🔹 CDR states
   const [cdrEditMode, setCdrEditMode] = useState(false);
   const [cdrFinalised, setCdrFinalised] = useState(false);
 
-  const [reportClick, setReportClick] = useState('trf');
 
   const [activePdfUrl, setActivePdfUrl] = useState(null);
   const [confidenceTick, setConfidenceTick] = useState(0);
@@ -86,235 +93,152 @@ const ReportPage = () => {
   const [activeDocUrl, setActiveDocUrl] = useState(null);
   const [viewerType, setViewerType] = useState(null); // 'pdf' | 'docx'
 
-  const [openCitationDialog, setOpenCitationDialog] = React.useState(false);
-  const [selectedCitation, setSelectedCitation] = React.useState(null);
 
   const myData = useSelector((state) => state?.trf);
   const cdrReportData = useSelector((state) => state?.cdr);
 
-  const { state } = useLocation();
 
   const isEditMode = reportClick === 'cdr' ? cdrEditMode : trfEditMode;
   const isFinalised = reportClick === 'cdr' ? cdrFinalised : trfFinalised;
 
-  // 🔹 Single source of truth for header info
-  const [projectMeta, setProjectMeta] = useState({
+  const [partPopupOpen, setPartPopupOpen] = useState(false);
+  const [partPopupMessage, setPartPopupMessage] = useState('');
+
+  const trfTriggeredRef = useRef(false);
+
+
+  const projectMeta = {
     standard: state?.standard || '',
-    projectId: state?.projectId || localStorage.getItem('projectId') || '',
+    projectId: state?.projectId || projectID,
     clientName: state?.clientName || '',
     product: state?.product || '',
-  });
+  };
 
   const { standard, projectId, clientName, product } = projectMeta;
 
-  const STAGES = [
-    { label: 'Indexing', threshold: 10 },
-    { label: 'Generating TRF', threshold: 75 },
-    { label: 'TRF Generated', threshold: 100 },
-  ];
+  // --------------------------------------------------
+  // FIX: loader controlled ONLY by backend progress
+  // --------------------------------------------------
+  const showTrfLoader = reportClick === 'trf' && progress < 30;
 
-  const navigate = useNavigate();
+  const showPartStatusPopup = (message) => {
+  setPartPopupMessage(message);
+  setPartPopupOpen(true);
 
-  // Get TRF report JSON
-  const fetchTrfJson = async () => {
-    try {
-      const res = await generateTrfApi(projectID); // your API call
-      if (res?.reports?.length > 0) {
-        const jsonData = res.reports[0].json;
-        setTrfJson(jsonData);
-      }
-    } catch (err) {
-      console.error('Error fetching TRF JSON:', err);
-    }
+  setTimeout(() => {
+      setPartPopupOpen(false);
+    }, 1800);
   };
 
-  // Get CDR report JSON
-  const fetchCdrJson = async () => {
-    try {
-      setCdrLoading(true);
 
-      const res = await triggerGenerateCdrApi(projectID);
-      console.log('CDR API RESPONSE:', res);
+  // --------------------------------------------------
+  // STATUS POLLING
+  // --------------------------------------------------
+const checkStatus = async () => {
+  if (!projectID) return;
 
-      if (res?.message === 'CDR Report generated successfully' && res?.data) {
-        setCdrJson(res.data); // STORE JSON
-        setCdrLoading(false);
-      } else {
-        console.log('CDR still processing...');
-      }
-    } catch (err) {
-      console.error('CDR generation failed:', err);
-    }
-  };
+  // ✅ STOP polling once completed
+  if (progress === 100) return;
 
-  useEffect(() => {
-    setTrfJson(myData?.trfData?.data);
-    console.log('trfData', myData?.trfData?.data);
-  }, [myData]);
+  try {
+    setRefreshing(true);
 
-  // useEffect(() => {
-  //   if (dataTableRef.current && reportClick == 'trf') {
-  //     const value = dataTableRef.current.getFieldValue(
-  //       'Test Report issued under the responsibility of:'
-  //     );
-  //     setIssuedBy(value);
-  //   }
-  // }, [localJson]);
+    const res = await getProjectReportStatusApi(projectID);
 
-  // useEffect(() => {
-  //   if (reportClick !== 'cdr' || !projectID) return;
+    setStatus(res?.trf_status || 'Pending');
+    setProgress(
+      typeof res?.trf_percentage === 'number'
+        ? res.trf_percentage
+        : 0
+    );
+  } catch (err) {
+    console.error('STATUS CHECK FAILED:', err);
+  } finally {
+    setRefreshing(false);
+  }
+};
 
-  //   let intervalId = null;
 
-  //   const checkCdrStatus = async () => {
-  //     try {
-  //       const res = await getProjectReportStatusApi(projectID);
-  //       const message = res?.message || 'Pending';
-  //       //const status = res?.cdr_status || 'Pending';
-  //       //setCdrStatus(status);
+useEffect(() => {
+  if (!projectID) return;
 
-  //       console.log('CDR Message:', message);
+  // First check
+  checkStatus();
 
-  //       if (message === 'CDR Report generated successfully') {
-  //         clearInterval(intervalId);
-  //         intervalId = null;
-  //         await fetchCdrJson();
-  //         return;
-  //       }
-  //     } catch (err) {
-  //       console.error('CDR status polling failed', err);
-  //     }
-  //   };
-  //   setCdrLoading(true);
-  //   // FIRST HIT (immediate)
-  //   checkCdrStatus();
+  // ✅ Do not start polling if already complete
+  if (progress === 100) return;
 
-  //   // POLLING
-  //   //intervalId = setInterval(checkCdrStatus, 10000);
+  const id = setInterval(() => {
+    checkStatus();
+  }, 15000);
 
-  //   // return () => {
-  //   //   if (intervalId) clearInterval(intervalId);
-  //   // };
-  // }, [reportClick, projectID]);
+  return () => clearInterval(id);
+}, [projectID, progress]);
 
-  // const handleIssuedByChange = (e) => {
-  //   const newValue = e.target.value;
-  //   setIssuedBy(newValue);
 
-  //   if (dataTableRef.current) {
-  //     dataTableRef.current.setFieldValue(
-  //       'Test Report issued under the responsibility of:',
-  //       newValue
-  //     );
-  //   }
-  // };
-
-  const handleGenerateCDR = () => {
-    if (!projectId) {
-      setErrorToast({
-        open: true,
-        message: 'Project ID not found. Cannot generate CDR.',
-      });
-      return;
-    }
-
-    setReportClick('cdr');
-    //setCdrStatus('Pending');
-    setCdrJson(null);
-    setCdrLoading(true);
-    fetchCdrJson();
-    //dispatch(generateCdrRequest(projectId));
-  };
-
-  const handleGenerateLetter = () => {
-    setReportClick('letter');
-  };
-
-  // useEffect(() => {
-  //   const load = async () => {
-  //     const response = await triggerGenerateTrfApi(projectID);
-  //     setTrfJson(response.data); // TRF JSON loaded
-  //     console.log('trfJson', trfJson);
-  //   };
-
-  // ----------------------------------------------------------
-  //  STATUS CHECK (FIXED TO MATCH API RESPONSE)
-  // ----------------------------------------------------------
-  const checkStatus = async () => {
-    if (!projectID) {
-      console.warn('Missing projectID, skipping status check');
-      return;
-    }
-
-    try {
-      setRefreshing(true);
-
-      const res = await getProjectReportStatusApi(projectID);
-
-      setStatus(res?.trf_status || 'Pending');
-      setProgress(
-        typeof res?.trf_percentage === 'number' ? res.trf_percentage : 0
-      );
-    } catch (err) {
-      console.error('STATUS CHECK FAILED:', err);
-    } finally {
-      setRefreshing(false);
-    }
-  };
-
-  // ----------------------------------------------------------
-  //  FIXED POLLING (FIRST LOAD + EVERY 15s) 'comment below useEffect for the local json testing'
-  // ----------------------------------------------------------
+  // --------------------------------------------------
+  // SPLIT JSON LOADER
+  // --------------------------------------------------
   useEffect(() => {
     if (!projectID) return;
+    if (currentPart > TOTAL_PARTS) return;
 
-    let intervalId = null;
+    let cancelled = false;
 
-    const startPolling = async () => {
-      await checkStatus();
+    const load = async () => {
+      try {
+        const res = await fetchTrfJsonPartApi(projectID, currentPart);
+        if (cancelled) return;
 
-      // FIRST CHECK — IF ALREADY COMPLETE → FETCH JSON
-      if (status === 'Completed') {
-        await fetchTrfJson();
-        return;
-      }
-
-      intervalId = setInterval(async () => {
-        await checkStatus();
-
-        if (status === 'Completed' || progress === 100) {
-          clearInterval(intervalId);
-          intervalId = null;
-          await fetchTrfJson(); // << fetch JSON immediately
-          return;
+        if (res.status === 'completed' && res.json_data) {
+          setTrfJsonParts(prev => [...prev, res.json_data]);  
+          showPartStatusPopup(`Section ${currentPart} loaded`);
+          setCurrentPart(p => p + 1);
+        } else {
+          setTimeout(() => !cancelled && load(), 2000);
         }
-      }, 15000);
+      } catch (err) {
+        console.error('Failed to load TRF part', err);
+      }
     };
 
-    startPolling();
-
+    load();
     return () => {
-      if (intervalId) clearInterval(intervalId);
+      cancelled = true;
     };
-  }, [projectID, progress, status]);
+  }, [currentPart, projectID]);
 
-  // ---------------- BOOKMARK HANDLING ----------------
-  const handleBookmarkFromChild = (data) => {
-    //console.log('bookmark clicked', data);
-    const textSupportTexts =
-      data?.ai_fillable === true && Array.isArray(data?.text_support)
-        ? data.text_support.map((item) => item.text)
-        : [];
-    //console.log('textsuptext', textSupportTexts);
-    setBookmarkData({
-      ...data,
-      textSupportTexts,
-      textSupportRaw: data?.text_support || [],
-    });
 
-    setBookmarkOpen(true);
-  };
 
+
+// ---------------- BOOKMARK HANDLING ----------------
+const handleBookmarkFromChild = (data) => {
+  if (!data) return;
+
+  // Extract supporting text safely
+  const textSupportTexts =
+    data.ai_fillable === true && Array.isArray(data.text_support)
+      ? data.text_support.map((item) => item.preview_text || '')
+      : [];
+
+
+
+  setBookmarkData({
+    ...data,
+
+    // flattened texts (used for display/search if needed)
+    textSupportTexts,
+
+    // raw support objects (used for citations, images, links)
+    textSupportRaw: Array.isArray(data.text_support)
+      ? data.text_support
+      : [],
+  });
+
+  setBookmarkOpen(true);
+};
+
+  
   const handleCitationLinkClick = (filename, page, text, blob_url) => {
     // ---- XLSX → DOWNLOAD ----
     if (filename?.toLowerCase().endsWith('.xlsx')) {
@@ -342,103 +266,128 @@ const ReportPage = () => {
       }, 1200);
     }, 200);
   };
+  
+    const handleFinalise = () => {
+      if (!dataTableRef.current) return;
+      const updatedPayload = dataTableRef.current.getUpdatedJson();
+      dispatch(finaliseReportRequest(updatedPayload));
+      setIsFinalise(true);
+    };
+  
+    const handleRegenerate = () => {
+      navigate('/create-project', {
+        state: {
+          standard,
+          projectId,
+          clientName,
+          product,
+        },
+      });
+    };
+  
+    const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  
+    const handleDownload = (projectId) => {
+      window.open(`${BASE_URL}/projects/download-file?project_id=${projectId}`);
+      //dispatch(downloadReportRequest(projectId));
+    };
+  
+    const getCitationDialogText = () => {
+      if (!selectedCitation) return '';
+  
+      /* -------- TRF -------- */
+      if (reportClick === 'trf') {
+        return normalizeNewLines(selectedCitation.text || '');
+      }
+  
+      /* -------- CDR -------- */
+      if (reportClick === 'cdr') {
+        // case 1: string
+        if (typeof selectedCitation === 'string') {
+          return normalizeNewLines(selectedCitation);
+        }
+  
+        // case 2: object with content
+        if (typeof selectedCitation.content === 'string') {
+          return normalizeNewLines(selectedCitation.content);
+        }
+      }
+  
+      return '';
+    };
 
-  const handleFinalise = () => {
-    if (!dataTableRef.current) return;
-    const updatedPayload = dataTableRef.current.getUpdatedJson();
-    dispatch(finaliseReportRequest(updatedPayload));
-    setIsFinalise(true);
-  };
+  // --------------------------------------------------
+  // MERGE TRF JSON PARTS
+  // --------------------------------------------------
+  const mergedTrfJson = useMemo(() => {
+    if (!trfJsonParts.length) return null;
 
-  const handleRegenerate = () => {
-    navigate('/create-project', {
-      state: {
-        standard,
-        projectId,
-        clientName,
-        product,
-      },
+    const map = new Map();
+
+    trfJsonParts.forEach(part => {
+      if (!Array.isArray(part.Tables)) return;
+
+      part.Tables.forEach(table => {
+        if (!map.has(table.Table)) {
+          map.set(table.Table, {
+            ...table,
+            Items: Array.isArray(table.Items)
+              ? [...table.Items]
+              : [],
+          });
+        } else if (table.Table === 9 && Array.isArray(table.Items)) {
+          map.get(table.Table).Items.push(...table.Items);
+        }
+      });
     });
-  };
 
-  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+    return { Tables: Array.from(map.values()) };
+  }, [trfJsonParts]);
 
-  const handleDownload = (projectId) => {
-    window.open(`${BASE_URL}/projects/download-file?project_id=${projectId}`);
-    //dispatch(downloadReportRequest(projectId));
-  };
 
   const handleMissingField = (data, projectID, reportClick) => {
     DownloadMissingFieldsExcel(data, projectID, reportClick);
   };
 
-  const getCitationDialogText = () => {
-    if (!selectedCitation) return '';
+  // const getCitationDialogText = () => {
+  //   if (!selectedCitation) return '';
 
-    /* -------- TRF -------- */
-    if (reportClick === 'trf') {
-      return normalizeNewLines(selectedCitation.text || '');
-    }
+  //   // Wait until backend status is known
+  //   if (progress === null) return;
 
-    /* -------- CDR -------- */
-    if (reportClick === 'cdr') {
-      // case 1: string
-      if (typeof selectedCitation === 'string') {
-        return normalizeNewLines(selectedCitation);
-      }
+  //   // Already completed → do nothing
+  //   if (progress === 100) return;
 
-      // case 2: object with content
-      if (typeof selectedCitation.content === 'string') {
-        return normalizeNewLines(selectedCitation.content);
-      }
-    }
+  //   // Prevent multiple triggers
+  //   if (trfTriggeredRef.current) return;
 
-    return '';
-  };
+  //   trfTriggeredRef.current = true;
+  //   generateTrfApi(projectID);
+  // }, [projectID, progress]);
 
-  // ---------------- LEFT PANEL ----------------
-  // progress < 100 || !trfJson ---  for to load the trf report from api
-  // ! true ---- for to load local json
+
+  useEffect(() => {
+  trfTriggeredRef.current = false;
+  }, [projectID]);
+
+
+
+
+  // --------------------------------------------------
+  // LEFT PANEL
+  // --------------------------------------------------
   const renderLeftPanel = () => {
-    //if (reportClick === 'cdr') return null;
-    if (progress < 100 || !trfJson) {
+    if (showTrfLoader) {
       return (
         <Card className="progress-advanced-card left-card">
           <Typography className="progress-advanced-title">
             Processing TRF Report
           </Typography>
 
-          {/* STAGE STEPS */}
-          <Box className="steps-container">
-            {STAGES.map((stage, index) => {
-              const reached = progress >= stage.threshold;
-              return (
-                <Box key={index} className="step-item">
-                  <Box className={`step-circle ${reached ? 'active' : ''}`}>
-                    {reached ? '✔' : index + 1}
-                  </Box>
-
-                  <Typography className="step-label">{stage.label}</Typography>
-
-                  {index !== STAGES.length - 1 && (
-                    <Box className={`step-line ${reached ? 'active' : ''}`} />
-                  )}
-                </Box>
-              );
-            })}
-          </Box>
-
-          {/* ANIMATED PROGRESS BAR */}
           <Box className="animated-progress-wrapper">
             <Box
               className="animated-progress-fill"
-              style={{
-                width: `${progress}%`,
-                background:
-                  progress === 100
-                    ? 'linear-gradient(90deg, #4caf50, #81c784)'
-                    : 'linear-gradient(90deg, #2196f3, #64b5f6)',
-              }}
+              style={{ width: `${progress}%` }}
             >
               <Typography className="animated-progress-text">
                 {progress}%
@@ -446,168 +395,139 @@ const ReportPage = () => {
             </Box>
           </Box>
 
-          <Typography className="progress-advanced-status">{status}</Typography>
+          <Typography className="progress-advanced-status">
+            {status}
+          </Typography>
 
           <Button
             disabled={refreshing}
             className="refresh-advanced-btn"
             onClick={checkStatus}
           >
-            {refreshing ? 'Refreshing...' : 'Refresh Status'}
+            {refreshing ? 'Refreshing…' : 'Refresh Status'}
           </Button>
         </Card>
       );
     }
+
     return (
       <Card className="left-card">
-        <Box
-          sx={{ mt: 2, ml: 1, display: 'flex', alignItems: 'center', gap: 1 }}
-        >
+        <Box sx={{ mt: 2, ml: 1 }}>
           <Tooltip
             arrow
             placement="bottom-start"
             title={
-              <Box sx={{ fontSize: '13px !important', lineHeight: 1.6 }}>
-                <div>
-                  <b>Standard:</b> {standard}
-                </div>
-                <div>
-                  <b>Project ID:</b> {projectId}
-                </div>
-                <div>
-                  <b>Client Name:</b> {clientName}
-                </div>
-                <div>
-                  <b>Product:</b> {product}
-                </div>
+              <Box sx={{ fontSize: 13 }}>
+                <div><b>Standard:</b> {standard}</div>
+                <div><b>Project ID:</b> {projectId}</div>
+                <div><b>Client Name:</b> {clientName}</div>
+                <div><b>Product:</b> {product}</div>
               </Box>
             }
           >
-            <Typography
-              sx={{
-                fontSize: '15px',
-                color: 'text.secondary',
-                cursor: 'help',
-              }}
-            >
+            <Typography sx={{ fontSize: 15, color: 'text.secondary' }}>
               ({standard} / {projectId} / {clientName} / {product})
             </Typography>
           </Tooltip>
         </Box>
+
         <CardContent className="left-content">
-          <Box className="report-header">
-            <img
-              src="/images/trf_image1.jpg"
-              className="header-image"
-              alt="header"
-            />
-            {reportClick == 'trf' && (
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '16px',
-                  marginRight: '5%',
-                }}
-              >
-                <Typography className="header-text">
-                  Test Report issued under the responsibility of:
-                </Typography>
+                    <Box className="report-header">
+                      <img
+                        src="/images/trf_image1.jpg"
+                        className="header-image"
+                        alt="header"
+                      />
+                      {reportClick == 'trf' && (
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '16px',
+                            marginRight: '5%',
+                          }}
+                        >
+                          <Typography className="header-text">
+                            Test Report issued under the responsibility of:
+                          </Typography>
 
-                <img
-                  src="/images/intertek_logo.svg"
-                  alt="logo"
-                  style={{
-                    maxWidth: '80%',
-                    height: 'auto',
-                  }}
-                />
-              </div>
-            )}
-          </Box>
+                        <img
+                          src="/images/intertek_logo.svg"
+                          alt="logo"
+                          style={{
+                            maxWidth: '80%',
+                            height: 'auto',
+                          }}
+                        />
+                        </div>
+                      )}
+                    </Box>
+          
+                    {reportClick == 'trf' && (
+                      <Box className="report-title-container">
+                        {/* <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+                          TEST REPORT
+                        </Typography> */}
+                        <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+                          IEC 61010-1
+                        </Typography>
+                        <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+                          Safety requirements for electrical equipment for measurement,
+                          control, and laboratory use
+                        </Typography>
+                        <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+                          Part 1: General requirements
+                        </Typography>
+                      </Box>
+                    )}
+          
+                    {reportClick == 'cdr' && (
+                      <Box className="report-title-container">
+                        <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
+                          CDR REPORT
+                        </Typography>
+                      </Box>
+                    )}
+                  {reportClick === 'trf' && progress >= 30 && mergedTrfJson && (
+                    <DataTable
+                      ref={dataTableRef}
+                      jsonData={mergedTrfJson}
+                      editMode={trfEditMode}
+                      onBookmarkClick={handleBookmarkFromChild}
+                      reportType="trf"
+                      onConfidenceChange={() => {
+                        setConfidenceTick((v) => v + 1);
+                      }}
+                    />
+                  )}
 
-          {reportClick == 'trf' && (
-            <Box className="report-title-container">
-              {/* <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
-                TEST REPORT
-              </Typography> */}
-              <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
-                IEC 61010-1
-              </Typography>
-              <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
-                Safety requirements for electrical equipment for measurement,
-                control, and laboratory use
-              </Typography>
-              <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
-                Part 1: General requirements
-              </Typography>
-            </Box>
-          )}
+                   {reportClick === 'cdr' && (
+                              <>
+                                {cdrLoading && <CdrLoader />}
+                  
+                                {!cdrLoading && cdrJson && (
+                                  <CdrReport
+                                    ref={dataTableRef}
+                                    jsonData={cdrJson}
+                                    editMode={cdrEditMode}
+                                    projectId={localStorage.getItem('projectId')}
+                                    onBookmarkClick={handleBookmarkFromChild}
+                                    reportType="cdr"
+                                    cdrFinalised={cdrFinalised}
+                                    onConfidenceChange={() => {
+                                      setConfidenceTick((v) => v + 1);
+                                    }}
+                                  />
+                            )}
+                        </>
+                      )}
 
-          {reportClick == 'cdr' && (
-            <Box className="report-title-container">
-              <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
-                CDR REPORT
-              </Typography>
-            </Box>
-          )}
-
-          {reportClick == 'trf' && (
-            <DataTable
-              ref={dataTableRef}
-              jsonData={trfJson} // api json load
-              //jsonData={localJson} //localJson load
-              editMode={trfEditMode}
-              onBookmarkClick={handleBookmarkFromChild}
-              reportType="trf"
-              onConfidenceChange={() => {
-                setConfidenceTick((v) => v + 1);
-              }}
-            />
-          )}
-
-          {reportClick === 'cdr' && (
-            <>
-              {cdrLoading && <CdrLoader />}
-
-              {!cdrLoading && cdrJson && (
-                <CdrReport
-                  ref={dataTableRef}
-                  jsonData={cdrJson}
-                  editMode={cdrEditMode}
-                  projectId={localStorage.getItem('projectId')}
-                  onBookmarkClick={handleBookmarkFromChild}
-                  reportType="cdr"
-                  cdrFinalised={cdrFinalised}
-                  onConfidenceChange={() => {
-                    setConfidenceTick((v) => v + 1);
-                  }}
-                />
-              )}
-            </>
-          )}
-
-          {/* local rendering of cdr report */}
-          {/* {reportClick === 'cdr' && (
-            <CdrReport
-              ref={dataTableRef}
-              jsonData={localCdrJson}
-              editMode={cdrEditMode}
-              projectId={localStorage.getItem('projectId')}
-              onBookmarkClick={handleBookmarkFromChild}
-              reportType="cdr"
-              cdrFinalised={cdrFinalised}
-              onConfidenceChange={() => {
-                setConfidenceTick((v) => v + 1);
-              }}
-            />
-          )} */}
-        </CardContent>
+   </CardContent>
       </Card>
     );
   };
 
-  // ---------------- FINAL PAGE LAYOUT ----------------
+ // ---------------- FINAL PAGE LAYOUT ----------------
   return (
     <Box className="report-container">
       <Box className="left-panel">{renderLeftPanel()}</Box>
@@ -703,7 +623,7 @@ const ReportPage = () => {
 
                 /* -------- TRF & CDR -------- */
 
-                rawText = item?.text || '';
+                rawText = item?.preview_text || '';
                 isTruncated = rawText.split(/\s+/).length > 20;
 
                 // /* -------- CDR -------- */
@@ -946,10 +866,10 @@ const ReportPage = () => {
           </Card>
 
           {/* CONFIDENCE CARD */}
-          {((reportClick === 'trf' && trfJson) ||
+          {((reportClick === 'trf' && mergedTrfJson) ||
             (reportClick === 'cdr' && cdrJson)) && (
             <ConfidenceScore
-              data={reportClick === 'trf' ? trfJson : cdrJson}
+              data={reportClick === 'trf' ? mergedTrfJson : cdrJson}
               reportType={reportClick}
               confidenceTick={confidenceTick}
               projectId={projectId}
@@ -968,7 +888,31 @@ const ReportPage = () => {
           )} */}
         </Box>
       )}
+
       <Dialog
+        open={partPopupOpen}
+        hideBackdrop
+        PaperProps={{
+          sx: {
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            m: 0,
+            borderRadius: 2,
+            minWidth: 260,
+            background: '#2e7d32',
+            color: '#fff',
+          },
+        }}
+      >
+      <DialogContent sx={{ py: 1.5, px: 2 }}>
+        <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
+          {partPopupMessage}
+        </Typography>
+      </DialogContent>
+    </Dialog>
+
+ <Dialog
         open={openCitationDialog}
         onClose={() => setOpenCitationDialog(false)}
         maxWidth="md"
@@ -1029,7 +973,7 @@ const ReportPage = () => {
                     handleCitationLinkClick(
                       item?.filename,
                       selectedCitation.page + 1,
-                      selectedCitation.text,
+                      selectedCitation.preview_text,
                       selectedCitation.url
                     )
                   }

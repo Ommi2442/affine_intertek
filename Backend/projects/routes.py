@@ -1,5 +1,6 @@
+
+from fastapi import APIRouter, HTTPException, Depends, Body, Form, UploadFile, File, Query, logger, BackgroundTasks, status
 import traceback
-from fastapi import APIRouter, HTTPException, Depends, Body, Form, UploadFile, File, Query, logger, status
 from azure.storage.blob import ContainerClient
 from typing import List
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
@@ -34,6 +35,9 @@ from utility.cdr_report.CDR_Pipelines.configs import OUTPUT_EXCEL_AI_FINAL_PATH
 
 from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_cdr_local_json_to_blob_and_cosmos_cdr,save_local_json_to_blob_and_cosmos,save_local_xlsx_to_blob_and_cosmos_cdr
 import logging
+from pathlib import Path
+import asyncio
+import threading
 import traceback
 
 
@@ -464,16 +468,116 @@ async def fetch_trf_reports(
 
 
 
+
+def process_citation_documents(
+    project_id: str,
+    blob_service: BlobServiceClient,
+    container_name: str,
+):
+    """
+    SOURCE:
+      Documents/{project_id}/source_documents/
+
+    TARGET:
+      Documents/{project_id}/Citation_docs/
+
+    - Copies PDFs as-is
+    - Converts DOC/DOCX to PDF
+    """
+
+    SOURCE_PREFIX = f"Documents/{project_id}/source_documents/"
+    TARGET_PREFIX = f"Documents/{project_id}/Citation_docs/"
+
+    print("▶ Citation processing started:", project_id)
+
+    container_client = blob_service.get_container_client(container_name)
+
+    try:
+        blobs = list(container_client.list_blobs(name_starts_with=SOURCE_PREFIX))
+    except Exception as e:
+        print("❌ Failed to list source documents:", str(e))
+        return
+
+    if not blobs:
+        print("ℹ No source documents found")
+        return
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        for blob in blobs:
+            blob_name = blob.name
+            filename = os.path.basename(blob_name)
+
+            # ---------- SKIP FOLDER MARKERS ----------
+            if not filename:
+                continue
+
+            filename_lower = filename.lower()
+
+            try:
+                blob_client = container_client.get_blob_client(blob_name)
+
+                # =========================================================
+                # CASE 1: PDF → COPY AS-IS
+                # =========================================================
+                if filename_lower.endswith(".pdf"):
+                    target_blob_path = TARGET_PREFIX + filename
+                    target_blob_client = container_client.get_blob_client(target_blob_path)
+
+                    print("📄 Copying PDF:", filename)
+
+                    # Server-side copy (NO download)
+                    target_blob_client.start_copy_from_url(blob_client.url)
+                    continue
+
+                # =========================================================
+                # CASE 2: DOC / DOCX → CONVERT TO PDF
+                # =========================================================
+                if filename_lower.endswith(".doc") or filename_lower.endswith(".docx"):
+                    local_docx = os.path.join(tmpdir, filename)
+                    pdf_name = os.path.splitext(filename)[0] + ".pdf"
+                    local_pdf = os.path.join(tmpdir, pdf_name)
+
+                    print("⬇ Downloading:", filename)
+                    with open(local_docx, "wb") as f:
+                        f.write(blob_client.download_blob().readall())
+
+                    print("⚙ Converting:", filename)
+                    convert_docx_to_pdf(local_docx, local_pdf)
+
+                    target_blob_path = TARGET_PREFIX + pdf_name
+                    target_blob_client = container_client.get_blob_client(target_blob_path)
+
+                    with open(local_pdf, "rb") as f:
+                        target_blob_client.upload_blob(f, overwrite=True)
+
+                    print("✅ Uploaded converted PDF:", pdf_name)
+                    continue
+
+                # =========================================================
+                # OTHER FILE TYPES → IGNORE
+                # =========================================================
+                print("⏭ Skipping unsupported file:", filename)
+
+            except Exception as e:
+                print("❌ Failed processing", filename, "→", str(e))
+
+    print("✔ Citation processing completed:", project_id)
+
+
+
+
+
 @router.post("/upload")
 async def upload_files(
+    background_tasks: BackgroundTasks,
     projectId: str = Form(...),
     key: str = Form(...),
-    files: List[UploadFile] = File(...)
+    files: list[UploadFile] = File(...),
 ):
     results = []
     uploaded_urls = []
 
-    # ---------- 1) Upload all files to Blob ----------
+    # ---------- 1) Upload files ----------
     for file in files:
         original_name = os.path.basename(file.filename)
         blob_path = f"{BLOB_PREFIX}/{projectId}/{key}/{original_name}"
@@ -481,20 +585,19 @@ async def upload_files(
 
         data = await file.read()
         blob_client.upload_blob(data, overwrite=True)
-        blob_url = blob_client.url
 
         uploaded_urls.append({
             "filename": original_name,
-            "blob_url": blob_url
+            "blob_url": blob_client.url
         })
 
         results.append({
             "filename": original_name,
-            "blob_url": blob_url,
-            "queued": False   # Now queue is not file-level
+            "blob_url": blob_client.url,
+            "queued": False
         })
 
-    # ---------- 2) Fetch Project Doc from Cosmos ----------
+    # ---------- 2) Cosmos Update ----------
     query = f"SELECT * FROM c WHERE c.Project_Id = '{projectId}'"
     docs = list(COSMOS_DB_project_Container.query_items(
         query=query,
@@ -505,10 +608,7 @@ async def upload_files(
         raise HTTPException(status_code=404, detail="Project not found")
 
     project_doc = docs[0]
-
-    # ---------- 3) Update Source_Doc ----------
-    if "Source_Doc" not in project_doc:
-        project_doc["Source_Doc"] = []
+    project_doc.setdefault("Source_Doc", [])
 
     for item in uploaded_urls:
         project_doc["Source_Doc"].append({
@@ -519,15 +619,20 @@ async def upload_files(
 
     COSMOS_DB_project_Container.upsert_item(project_doc)
 
+    # ---------- 3) FIRE CONVERSION THREAD (NO WAIT) ----------
+    threading.Thread(
+        target=process_citation_documents,
+        args=(projectId, blob_service, CONTAINER_NAME),
+        daemon=True
+    ).start()
 
     return {
-        "status": "success",
-        "message": "Files uploaded. Embedding triggered for project.",
-        "uploaded": results,
-        "cosmos_updated": True,
-        "queue_triggered_for_project": projectId,
-        "source_docs_count": len(project_doc["Source_Doc"])
-    }
+            "status": "success",
+            "message": "Files uploaded successfully",
+            "files": results,
+            "conversion": "citation docs conversion started",
+            "cosmos_updated": True,
+        }
 
 
 
@@ -686,8 +791,57 @@ def get_project_report_status(id: str):
 
 
 
-@router.post("/generate-trf")
+# @router.post("/generate-trf")
+# def generate_trf(projectId: str):
+#     try:
+#         queue_client.send_message(json.dumps({
+#             "projectId": projectId,
+#             "action": "embed_generatetrf",
+#             "timestamp": datetime.utcnow().isoformat()
+#         }))
+
+#         MAX_WAIT_SECONDS = 6000
+#         POLL_INTERVAL = 2
+#         elapsed = 0
+
+#         while elapsed < MAX_WAIT_SECONDS:
+#             query = "SELECT * FROM c WHERE c.Project_Id = @pid"
+#             params = [{"name": "@pid", "value": projectId}]
+
+#             docs = list(projects_container.query_items(
+#                 query=query,
+#                 parameters=params,
+#                 enable_cross_partition_query=True,
+#             ))
+
+#             if docs:
+#                 progress = docs[0].get("Project_Progress") or {}
+#                 percentage = progress.get("trf_percentage")
+
+#                 if percentage == 100:
+#                     break
+
+#             time.sleep(POLL_INTERVAL)
+#             elapsed += POLL_INTERVAL
+
+#         if elapsed >= MAX_WAIT_SECONDS:
+#             raise HTTPException(status_code=408, detail="TRF generation timed out")
+
+#         response = load_trf_json_from_blob(projectId)
+#         return response
+
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+@router.post("/generate-trf", status_code=202)
 def generate_trf(projectId: str):
+    """
+    Triggers TRF generation asynchronously.
+    Frontend must poll /trf-json-part for parts.
+    """
     try:
         queue_client.send_message(json.dumps({
             "projectId": projectId,
@@ -695,38 +849,16 @@ def generate_trf(projectId: str):
             "timestamp": datetime.utcnow().isoformat()
         }))
 
-        MAX_WAIT_SECONDS = 6000
-        POLL_INTERVAL = 2
-        elapsed = 0
-
-        while elapsed < MAX_WAIT_SECONDS:
-            query = "SELECT * FROM c WHERE c.Project_Id = @pid"
-            params = [{"name": "@pid", "value": projectId}]
-
-            docs = list(projects_container.query_items(
-                query=query,
-                parameters=params,
-                enable_cross_partition_query=True,
-            ))
-
-            if docs:
-                progress = docs[0].get("Project_Progress") or {}
-                percentage = progress.get("trf_percentage")
-
-                if percentage == 100:
-                    break
-
-            time.sleep(POLL_INTERVAL)
-            elapsed += POLL_INTERVAL
-
-        if elapsed >= MAX_WAIT_SECONDS:
-            raise HTTPException(status_code=408, detail="TRF generation timed out")
-
-        response = load_trf_json_from_blob(projectId)
-        return response
+        return {
+            "projectId": projectId,
+            "status": "started",
+            "message": "TRF generation triggered. Fetch parts progressively."
+        }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
 
 
 
@@ -1089,6 +1221,46 @@ def get_project_pdfs(project_id: str = Query(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = BASE_DIR / "data"
+
+TOTAL_PARTS = 5
+FILE_PREFIX = "pta_final_6_2_part"
+
+
+@router.get("/trf-json-part")
+def get_trf_json_part(
+    project_id: str = Query(...),
+    part_index: int = Query(..., ge=1, le=TOTAL_PARTS),
+):
+    file_path = (
+        DATA_DIR
+        / project_id
+        / f"{FILE_PREFIX}{part_index}_output.json"
+    )
+
+    if not file_path.exists():
+        return {
+            "project_id": project_id,
+            "part_index": part_index,
+            "status": "processing",
+            "json_data": None,
+            "is_last": False,
+        }
+
+    with open(file_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    return {
+        "project_id": project_id,
+        "part_index": part_index,
+        "status": "completed",
+        "json_data": data,
+        "is_last": part_index == TOTAL_PARTS,
+    }
 
 @router.post("/finalize_report")
 async def finalize_reports(payload: FinalizeReportPayload):
