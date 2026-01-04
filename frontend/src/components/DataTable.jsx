@@ -158,19 +158,55 @@ const DataTable = forwardRef(
       }
     }, [tables]);
 
+    // useEffect(() => {
+    //   if (!jsonData?.Tables) return;
+
+    //   setTables((prev) => {
+    //     // Avoid unnecessary reset if data is identical
+    //     if (JSON.stringify(prev) === JSON.stringify(jsonData.Tables)) {
+    //       return prev;
+    //     }
+    //     return jsonData.Tables;
+    //   });
+
+    //   setVisiblePages(1);
+    //   setCurrentPageIndex(0);
+    // }, [jsonData]);
+
     useEffect(() => {
       if (!jsonData?.Tables) return;
 
       setTables((prev) => {
-        // Avoid unnecessary reset if data is identical
-        if (JSON.stringify(prev) === JSON.stringify(jsonData.Tables)) {
-          return prev;
+        // If no previous data → first load
+        if (!prev || prev.length === 0) {
+          return jsonData.Tables;
         }
-        return jsonData.Tables;
-      });
 
-      setVisiblePages(1);
-      setCurrentPageIndex(0);
+        // Merge incoming tables WITHOUT overwriting user edits
+        return jsonData.Tables.map((newTable) => {
+          const oldTable = prev.find((t) => t.Table === newTable.Table);
+          if (!oldTable) return newTable;
+
+          return {
+            ...newTable,
+            Items: newTable.Items.map((newItem) => {
+              const oldItem = oldTable.Items.find(
+                (i) =>
+                  i.field === newItem.field &&
+                  i.question_row === newItem.question_row &&
+                  i.answer_row === newItem.answer_row
+              );
+
+              //  Preserve user edits
+              if (oldItem?.is_user_modified) {
+                return oldItem;
+              }
+
+              return oldItem ? { ...newItem, ...oldItem } : newItem;
+            }),
+          };
+        });
+      });
     }, [jsonData]);
 
     // FLATTEN ITEMS (hide disable_text: true in UI)

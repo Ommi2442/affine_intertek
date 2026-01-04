@@ -18,6 +18,7 @@ import {
   Alert,
   Skeleton,
   Tooltip,
+  CircularProgress,
 } from '@mui/material';
 
 import SearchIcon from '@mui/icons-material/Search';
@@ -27,9 +28,8 @@ import { useNavigate } from 'react-router-dom';
 import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
 import { deleteProjectsRequest } from '../../redux/features/deleteProject/deleteProjectSlice';
 import { archieveProjectsRequest } from '../../redux/features/archieveProject/archieveProjectSlice';
-import { fetchProjectPdfsApi } from "../../redux/api/fetchPdfApi";
-import { savePdfToDb } from "../../components/pdfIndexedDb";
-
+import { fetchProjectPdfsApi } from '../../redux/api/fetchPdfApi';
+import { savePdfToDb } from '../../components/pdfIndexedDb';
 
 /* 👇 USE EXISTING API FILE */
 // import {
@@ -49,68 +49,102 @@ const Dashboard = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(7);
+  //const [status, setStatus] = useState();
+  const [loadingCell, setLoadingCell] = useState(null);
+
+  const checkStatus = async (projectId) => {
+    try {
+      const res = await getProjectReportStatusApi(projectId);
+
+      const progress =
+        typeof res?.trf_percentage === 'number' ? res.trf_percentage : 0;
+
+      //setStatus(progress); // keep UI in sync
+      return progress; //  return value
+    } catch (err) {
+      console.error('STATUS CHECK FAILED:', err);
+      return 0;
+    }
+  };
 
   useEffect(() => {
     dispatch(fetchProjectsRequest());
   }, [dispatch]);
 
   const preloadProjectPdfs = async (projectId) => {
-  const res = await fetchProjectPdfsApi(projectId);
+    const res = await fetchProjectPdfsApi(projectId);
 
-  for (const pdf of res.pdfs) {
-    const buffer = Uint8Array.from(
-      atob(pdf.data),
-      (c) => c.charCodeAt(0)
-    ).buffer;
+    for (const pdf of res.pdfs) {
+      const buffer = Uint8Array.from(atob(pdf.data), (c) =>
+        c.charCodeAt(0)
+      ).buffer;
 
-    await savePdfToDb(projectId, pdf.filename, buffer);
-  }
-};
+      await savePdfToDb(projectId, pdf.filename, buffer);
+    }
+  };
 
   /*  FIX: Pass row details to create-project */
   const renderYesNo = (row, value, type) => {
     const val = value === true || value === 'true';
+    const cellKey = `${row?.Project_Id}-${type}`;
+    const isLoading = loadingCell === cellKey;
 
-    const handleClick = () => {
-      localStorage.setItem('projectId', row?.Project_Id);
+    const handleClick = async () => {
+      const projectId = row?.Project_Id;
+      if (!projectId) return;
 
-      preloadProjectPdfs(row?.Project_Id)
+      setLoadingCell(cellKey); //  start loader ONLY for this cell
 
-      if (val == false) {
-        navigate('/create-project', {
-          state: {
-            standard: row?.Standard,
-            projectId: row?.Project_Id,
-            clientName: row?.Client_Name,
-            product: row?.Product,
-            source: type,
-          },
-        });
-      } else {
-        navigate('/report-page', {
-          state: {
-            standard: row?.Standard,
-            projectId: row?.Project_Id,
-            clientName: row?.Client_Name,
-            product: row?.Product,
-            source: type, // TRF | CDR | LETTER
-          },
-        });
+      try {
+        localStorage.setItem('projectId', projectId);
+
+        const progress = await checkStatus(projectId);
+        await preloadProjectPdfs(projectId);
+
+        if (val === false && progress < 30) {
+          navigate('/create-project', {
+            state: {
+              standard: row?.Standard,
+              projectId,
+              clientName: row?.Client_Name,
+              product: row?.Product,
+              source: type,
+            },
+          });
+        } else {
+          navigate('/report-page', {
+            state: {
+              standard: row?.Standard,
+              projectId,
+              clientName: row?.Client_Name,
+              product: row?.Product,
+              source: type,
+            },
+          });
+        }
+      } finally {
+        setLoadingCell(null); // ✅ stop loader
       }
     };
 
     return (
       <Box
-        onClick={handleClick}
+        onClick={!isLoading ? handleClick : undefined}
         sx={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 1,
           color: val ? 'green' : 'red',
-          cursor: 'pointer',
-          textAlign: 'center',
+          cursor: isLoading ? 'default' : 'pointer',
           fontWeight: 600,
-          '&:hover': { textDecoration: 'underline' },
+          justifyContent: 'center',
         }}
       >
-        {val ? 'Yes' : 'No'}
+        <span>{val ? 'Yes' : 'No'}</span>
+
+        {isLoading && (
+          <CircularProgress size={16} thickness={5} sx={{ color: 'inherit' }} />
+        )}
       </Box>
     );
   };
