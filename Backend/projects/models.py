@@ -70,8 +70,7 @@ class ProjectFilter(BaseModel):
     user_email: str | None = None
 
 
-
 class FinalizeReportPayload(BaseModel):
     projectId: str
-    report: str
-    # updated_data: dict
+    reportType: str  # "TRF" or "CDR"
+    data: dict       # FULL FINAL JSON

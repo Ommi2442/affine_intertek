@@ -71,17 +71,37 @@ const Dashboard = () => {
     dispatch(fetchProjectsRequest());
   }, [dispatch]);
 
+  const base64ToArrayBuffer = (base64) => {
+  const binary = window.atob(base64);
+  const len = binary.length;
+  const bytes = new Uint8Array(len);
+
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return bytes.buffer;
+  };
+
+
   const preloadProjectPdfs = async (projectId) => {
     const res = await fetchProjectPdfsApi(projectId);
 
-    for (const pdf of res.pdfs) {
-      const buffer = Uint8Array.from(atob(pdf.data), (c) =>
-        c.charCodeAt(0)
-      ).buffer;
+    console.log("PDFs received:", res.pdfs.length);
 
-      await savePdfToDb(projectId, pdf.filename, buffer);
+    for (const pdf of res.pdfs) {
+      try {
+        const buffer = base64ToArrayBuffer(pdf.data);
+
+        await savePdfToDb(projectId, pdf.filename, buffer);
+
+        console.log("Saved to IndexedDB:", pdf.filename);
+      } catch (err) {
+        console.error("Failed saving PDF:", pdf.filename, err);
+      }
     }
   };
+
 
   /*  FIX: Pass row details to create-project */
   const renderYesNo = (row, value, type) => {
@@ -99,7 +119,6 @@ const Dashboard = () => {
         localStorage.setItem('projectId', projectId);
 
         const progress = await checkStatus(projectId);
-        await preloadProjectPdfs(projectId);
 
         if (val === false && progress < 30) {
           navigate('/create-project', {
@@ -112,6 +131,7 @@ const Dashboard = () => {
             },
           });
         } else {
+          await preloadProjectPdfs(projectId);
           navigate('/report-page', {
             state: {
               standard: row?.Standard,

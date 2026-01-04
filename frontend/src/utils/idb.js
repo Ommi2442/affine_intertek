@@ -214,19 +214,30 @@ export async function idb_delete(key, storeName = DEFAULT_STORE) {
 
 // Export store constants for use in React components
 
-export const idb_clear_all = async () => {
-  if (!window.indexedDB) return;
+// export const idb_clear_all = async () => {
+//   if (!window.indexedDB) return;
 
-  const databases = await indexedDB.databases();
+//   const databases = await indexedDB.databases();
 
-  for (const db of databases) {
-    if (db.name) {
-      indexedDB.deleteDatabase(db.name);
-    }
-  }
+//   for (const db of databases) {
+//     if (db.name) {
+//       indexedDB.deleteDatabase(db.name);
+//     }
+//   }
 
-  console.log('IndexedDB cleared');
-};
+//   console.log('IndexedDB cleared');
+// };
+
+export const idb_clear_all = () =>
+  new Promise((resolve, reject) => {
+    const req = indexedDB.deleteDatabase('TRF_DB');
+    // const req2 = indexedDB.deleteDatabase('pdf-cache-db');
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+    // req2.onsuccess = () => resolve(true);
+    // req2.onerror = () => reject(req2.error);
+  });
+
 
 export const STORES = {
   TRF: DEFAULT_STORE,
