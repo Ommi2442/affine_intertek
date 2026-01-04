@@ -41,6 +41,7 @@ import threading
 import traceback
 
 
+
 router = APIRouter()
 
 # Setup logging
@@ -79,6 +80,9 @@ queue_client_cdr = QueueClient.from_connection_string(
 BASE_DIR = Path(__file__).resolve().parent
 
 LOCAL_TRF_FOLDER = BASE_DIR / "data"
+
+TOTAL_PARTS = 5
+FILE_PREFIX = "pta_final_6_2_part"
 
 
 @router.post("/create")
@@ -336,7 +340,7 @@ async def update_project(project_id: str, update_data: dict):
 
 
 
-def delete_folder(folder_path: str):
+def delete_blob_folder(folder_path: str):
     if not folder_path.endswith("/"):
         folder_path += "/"
     blobs = container_client.list_blobs(name_starts_with=folder_path)
@@ -345,6 +349,29 @@ def delete_folder(folder_path: str):
         container_client.delete_blob(blob.name)
         deleted = True
     return deleted
+
+
+
+
+def delete_local_project_folder(project_id: str) -> bool:
+    """
+    Deletes local project folder:
+    <BASE_DIR>/data/<project_id>
+    """
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    TRF_DATA_DIR = BASE_DIR / "data" / project_id
+
+    if not TRF_DATA_DIR.exists():
+        return False
+
+    if not TRF_DATA_DIR.is_dir():
+        raise RuntimeError(f"Expected directory but found file: {TRF_DATA_DIR}")
+
+    shutil.rmtree(TRF_DATA_DIR)
+    return True
+
+
+
 
 
 @router.delete("/{project_id}")
@@ -371,7 +398,12 @@ async def delete_project(project_id: str):
             partition_key=item[pk_name])
 
         base_path = f"Documents/{project_id}"
-        delete_folder(base_path)
+        delete_blob_folder(base_path)
+
+        # -------------------------------
+        # Local filesystem delete
+        # -------------------------------
+        local_deleted = delete_local_project_folder(project_id)
 
         return {
             "status": "success",
@@ -423,7 +455,7 @@ async def fetch_trf_reports(
             filename = item.get("filename")
             blob_url = item.get("blob_url")
 
-            local_path = LOCAL_TRF_FOLDER / filename
+            local_path = LOCAL_TRF_FOLDER / project_id / filename
             json_data = None
 
             # ---------------------------------------------------
@@ -1224,23 +1256,55 @@ def get_project_pdfs(project_id: str = Query(...)):
 
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "data"
-
-TOTAL_PARTS = 5
-FILE_PREFIX = "pta_final_6_2_part"
-
-
 @router.get("/trf-json-part")
 def get_trf_json_part(
     project_id: str = Query(...),
-    part_index: int = Query(..., ge=1, le=TOTAL_PARTS),
+    part_index: int = Query(..., ge=1),
 ):
-    file_path = (
-        DATA_DIR
-        / project_id
-        / f"{FILE_PREFIX}{part_index}_output.json"
-    )
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    DATA_DIR = BASE_DIR / "data" / project_id
+
+    # --------------------------------------------------
+    # FINAL MERGED JSON (requested AFTER last part)
+    # --------------------------------------------------
+    if part_index == TOTAL_PARTS + 1:
+        final_path = DATA_DIR / "final_output.json"
+
+        if not final_path.exists():
+            return {
+                "project_id": project_id,
+                "part_index": part_index,
+                "status": "processing",
+                "json_data": None,
+                "is_last": True,
+                "is_final": True,
+            }
+
+        with open(final_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        return {
+            "project_id": project_id,
+            "part_index": part_index,
+            "status": "completed",
+            "json_data": data,
+            "is_last": True,
+            "is_final": True,
+        }
+
+    # --------------------------------------------------
+    # SPLIT PART JSONS (1..5)
+    # --------------------------------------------------
+    if part_index > TOTAL_PARTS:
+        return {
+            "project_id": project_id,
+            "part_index": part_index,
+            "status": "invalid",
+            "json_data": None,
+            "is_last": True,
+        }
+
+    file_path = DATA_DIR / f"{FILE_PREFIX}{part_index}_output.json"
 
     if not file_path.exists():
         return {
@@ -1262,27 +1326,30 @@ def get_trf_json_part(
         "is_last": part_index == TOTAL_PARTS,
     }
 
+
+
+
 @router.post("/finalize_report")
 async def finalize_reports(payload: FinalizeReportPayload):
     try:
         projectId = payload.projectId
         report = payload.report
-        # updated_data = payload.updated_data
+        updated_data = payload.updated_data
 
         if not projectId:
             raise HTTPException(status_code=400, detail="projectId is required")
 
-        if report not in ("TRF", "CDR"):
+        if report not in ("trf", "cdr"):
             raise HTTPException(status_code=400, detail="Invalid report type")
         
         BASE_DIR = Path(__file__).resolve().parents[1]
-        DATA_DIR = BASE_DIR / "data"
+        DATA_DIR = BASE_DIR / "data" / "input_files"
         DATA_DIR.mkdir(parents=True, exist_ok=True)
 
         if report == "CDR":
             # path,blob_url=finalize_cdr_report_to_blob_and_cosmos_cdr(projectId, updated_data)
 
-            print(" Json File ove blob has been updated for CDR report")
+            print(" Json File over blob has been updated for CDR report")
             query = "SELECT c.blob_url FROM c WHERE c.project_id = @pid"
             params = [{"name": "@pid", "value": projectId}]
 

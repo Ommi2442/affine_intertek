@@ -41,8 +41,6 @@ import {
 import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
 import { triggerGenerateCdrApi } from '../../redux/api/generateCdrApi';
 import { loadPdfWithCache } from '../../components/loadPdfWithCache';
-
-const TOTAL_PARTS = 5;
 import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 
@@ -64,9 +62,6 @@ const ReportPage = () => {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState('Pending');
   const [refreshing, setRefreshing] = useState(false);
-
-  const [trfJsonParts, setTrfJsonParts] = useState([]);
-  const [currentPart, setCurrentPart] = useState(1);
 
   const [cdrJson, setCdrJson] = useState(null);
   const [cdrLoading, setCdrLoading] = useState(false);
@@ -101,6 +96,14 @@ const ReportPage = () => {
 
   const [partPopupOpen, setPartPopupOpen] = useState(false);
   const [partPopupMessage, setPartPopupMessage] = useState('');
+
+  const TOTAL_PARTS = 5;
+  const FINAL_PART_INDEX = TOTAL_PARTS + 1;
+
+  const [currentPart, setCurrentPart] = useState(1);
+  const [trfJsonParts, setTrfJsonParts] = useState([]);
+  const [finalTrfJson, setFinalTrfJson] = useState(null);
+
 
   const trfTriggeredRef = useRef(false);
 
@@ -172,33 +175,46 @@ const ReportPage = () => {
   // SPLIT JSON LOADER
   // --------------------------------------------------
   useEffect(() => {
-    if (!projectID) return;
-    if (currentPart > TOTAL_PARTS) return;
+  if (!projectID) return;
+  if (currentPart > FINAL_PART_INDEX) return;
 
-    let cancelled = false;
+  let cancelled = false;
 
-    const load = async () => {
-      try {
-        const res = await fetchTrfJsonPartApi(projectID, currentPart);
-        if (cancelled) return;
+  const load = async () => {
+    try {
+      const res = await fetchTrfJsonPartApi(projectID, currentPart);
+      if (cancelled) return;
 
-        if (res.status === 'completed' && res.json_data) {
-          setTrfJsonParts((prev) => [...prev, res.json_data]);
-          showPartStatusPopup(`Section ${currentPart} loaded`);
+      if (res.status === 'completed' && res.json_data) {
+        // ----------------------------------
+        // FINAL JSON
+        // ----------------------------------
+        if (res.is_final) {
+          setFinalTrfJson(res.json_data);
+          showPartStatusPopup('Final TRF loaded');
           setCurrentPart((p) => p + 1);
-        } else {
-          setTimeout(() => !cancelled && load(), 10000);
+          return;
         }
-      } catch (err) {
-        console.error('Failed to load TRF part', err);
-      }
-    };
 
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [currentPart, projectID]);
+        // ----------------------------------
+        // PART JSON
+        // ----------------------------------
+        setTrfJsonParts((prev) => [...prev, res.json_data]);
+        showPartStatusPopup(`Section ${currentPart} loaded`);
+        setCurrentPart((p) => p + 1);
+      } else {
+        setTimeout(() => !cancelled && load(), 10000);
+      }
+    } catch (err) {
+      console.error('Failed to load TRF JSON', err);
+    }
+  };
+
+  load();
+  return () => {
+    cancelled = true;
+  };
+}, [currentPart, projectID]);
 
   // ---------------- BOOKMARK HANDLING ----------------
   const handleBookmarkFromChild = (data) => {
@@ -352,6 +368,7 @@ const ReportPage = () => {
 
     return { Tables: Array.from(map.values()) };
   }, [trfJsonParts]);
+
 
   const handleMissingField = (data, projectID, reportClick) => {
     DownloadMissingFieldsExcel(data, projectID, reportClick);

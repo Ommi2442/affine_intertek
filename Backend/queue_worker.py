@@ -86,22 +86,20 @@ print("Rag CONT NAME:+++++++++++++++",RAG_CONT_NAME)
 
 BASE_DIR = Path(__file__).resolve().parent
 
-BASE_PTA_JSON_PATH = BASE_DIR / "data" / "pta_final_6_2.json"
-INPUT_JSON_PATH = ["pta_final_6_2_part1.json","pta_final_6_2_part2.json","pta_final_6_2_part3.json","pta_final_6_2_part4.json", "pta_final_6_2_part5.json"]
-INPUT_DOCX_PATH = BASE_DIR / "data" / "input.docx"
+BASE_PTA_JSON_PATH = BASE_DIR / "data" / "input_files" / "pta_final_6_2.json"
+INPUT_JSON_FILENAMES = ["pta_final_6_2_part1.json","pta_final_6_2_part2.json","pta_final_6_2_part3.json","pta_final_6_2_part4.json", "pta_final_6_2_part5.json"]
+INPUT_DOCX_PATH = BASE_DIR / "data" / "input_files" / "input.docx"
 
 DOWNLOAD_DIR = BASE_DIR  / "src_files"
-
-
 
 OUTPUT_JSON = BASE_DIR / "data" / "iec_output.json"
 OUTPUT_DOCX = BASE_DIR / "data" / "iec_output.docx"
 OUTPUT_EXCEL = BASE_DIR / "data" / "iec_output.xlsx"
 
-# IMAGE_URLS_PATH = BASE_DIR / "image_urls.json"  # adjust if needed old
+DATA_DIR = BASE_DIR / "data" 
+
 
 IMAGE_URLS_PATH = BASE_DIR / "utility" / "image_urls.json"  # adjust if needed
-
 
 
 app = FastAPI(title="Queue Worker Service")
@@ -269,16 +267,26 @@ async def process_message(message) -> bool:
         #     )
 
         project_data_dir = BASE_DIR / "data" / project_id
-        
+
+        OUTPUT_JSON_PATH = DATA_DIR / project_id / "final_output.json"
+        OUTPUT_DOCX_PATH = DATA_DIR / project_id / "final_output.docx"
+
+        INPUT_FILES = DATA_DIR / "input_files"
+
+        INPUT_JSON_PATHS = [
+            INPUT_FILES / filename
+            for filename in INPUT_JSON_FILENAMES
+        ]
+
         run_trf_generation(
             blob_urls,
             input_docx_path=INPUT_DOCX_PATH,
-            output_docx_path=OUTPUT_DOCX,
+            output_docx_path=OUTPUT_DOCX_PATH,
             base_pta_path=BASE_PTA_JSON_PATH,
-            input_json_paths=INPUT_JSON_PATH,
+            input_json_paths=INPUT_JSON_PATHS,
             project_data_dir=project_data_dir,
             batch_size=150,
-            final_output_path=OUTPUT_JSON,
+            final_output_path=OUTPUT_JSON_PATH,
             cooldown_sec=15,
             max_workers=10,
             on_first_json_generated=on_first_json_ready,
@@ -294,8 +302,9 @@ async def process_message(message) -> bool:
         #     trf_completed=False
         # )
 
+        print(f" TRF generation completed for project {project_id}")
         
-        save_local_json_to_blob_and_cosmos(str(OUTPUT_JSON),str(OUTPUT_DOCX),project_id=project_id,)
+        save_local_json_to_blob_and_cosmos(str(OUTPUT_JSON_PATH),str(OUTPUT_DOCX_PATH),project_id=project_id,)
 
         # 100% completed
         update_project_progress(
@@ -305,9 +314,6 @@ async def process_message(message) -> bool:
             trf_step="TRF generated and stored",
             trf_completed=True
         )
-
-
-        print(f" TRF generation completed for project {project_id}")
 
         print(f" Saving TRF Report to the Blob")
         return True
