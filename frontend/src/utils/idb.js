@@ -165,7 +165,69 @@ export async function idb_delete(key, storeName = DEFAULT_STORE) {
   });
 }
 
+// export async function idb_clear_all() {
+//   console.log('aaaaaa');
+//   const db = await new Promise((resolve, reject) => {
+//     const req = indexedDB.open(DB_NAME, DB_VERSION);
+
+//     req.onsuccess = () => resolve(req.result);
+//     req.onerror = () => reject(req.error);
+//   });
+
+//   return new Promise((resolve, reject) => {
+//     try {
+//       const storeNames = Array.from(db.objectStoreNames);
+
+//       if (storeNames.length === 0) {
+//         db.close();
+//         resolve(true);
+//         return;
+//       }
+
+//       const tx = db.transaction(storeNames, 'readwrite');
+
+//       storeNames.forEach((store) => {
+//         tx.objectStore(store).clear();
+//       });
+
+//       tx.oncomplete = () => {
+//         try {
+//           db.close();
+//         } catch {}
+//         resolve(true);
+//       };
+
+//       tx.onerror = () => {
+//         try {
+//           db.close();
+//         } catch {}
+//         reject(tx.error);
+//       };
+//     } catch (err) {
+//       try {
+//         db.close();
+//       } catch {}
+//       reject(err);
+//     }
+//   });
+// }
+
 // Export store constants for use in React components
+
+export const idb_clear_all = async () => {
+  if (!window.indexedDB) return;
+
+  const databases = await indexedDB.databases();
+
+  for (const db of databases) {
+    if (db.name) {
+      indexedDB.deleteDatabase(db.name);
+    }
+  }
+
+  console.log('IndexedDB cleared');
+};
+
 export const STORES = {
   TRF: DEFAULT_STORE,
   CDR: CDR_STORE,

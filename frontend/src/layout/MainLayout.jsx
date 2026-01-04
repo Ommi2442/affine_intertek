@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import BasicModal from '../components/Modal';
 import AppBreadcrumbs from '../components/AppBreadCrumbs';
 import { Box } from '@mui/material';
+import RouteDbGuard from '../components/RouteDbGaurd';
 
 const MainLayout = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -25,6 +26,7 @@ const MainLayout = () => {
           <AppBreadcrumbs />
         </Box>
         <Box sx={{ pl: '2%', pr: '2%' }}>
+          <RouteDbGuard />
           <Outlet />
         </Box>
       </Box>
