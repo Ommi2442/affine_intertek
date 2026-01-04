@@ -1,7 +1,7 @@
 /* eslint quotes: "off" */
 /* eslint-disable */
 import React, { useRef, useState, useEffect, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogActions,
   Tooltip,
+  CircularProgress,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
@@ -43,6 +44,7 @@ import { triggerGenerateCdrApi } from '../../redux/api/generateCdrApi';
 import { loadPdfWithCache } from '../../components/loadPdfWithCache';
 import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
+import { idb_clear_all } from '../../utils/idb';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -104,7 +106,6 @@ const ReportPage = () => {
   const [trfJsonParts, setTrfJsonParts] = useState([]);
   const [finalTrfJson, setFinalTrfJson] = useState(null);
 
-
   const trfTriggeredRef = useRef(false);
 
   const projectMeta = {
@@ -154,6 +155,25 @@ const ReportPage = () => {
       setRefreshing(false);
     }
   };
+  const location = useLocation();
+  const navigationType = useNavigationType();
+
+  useEffect(() => {
+    const isReportPage = location.pathname.includes('report-page');
+
+    console.log({
+      path: location.pathname,
+      navigationType,
+      isReportPage,
+    });
+
+    // 🔥 Clear IndexedDB when user navigates BACK or FORWARD
+    // and is NOT explicitly staying on report-page
+    if (navigationType === 'POP' && !isReportPage) {
+      console.log('Back navigation → clearing IndexedDB');
+      idb_clear_all();
+    }
+  }, [location.pathname, navigationType]);
 
   useEffect(() => {
     if (!projectID) return;
@@ -175,46 +195,46 @@ const ReportPage = () => {
   // SPLIT JSON LOADER
   // --------------------------------------------------
   useEffect(() => {
-  if (!projectID) return;
-  if (currentPart > FINAL_PART_INDEX) return;
+    if (!projectID) return;
+    if (currentPart > FINAL_PART_INDEX) return;
 
-  let cancelled = false;
+    let cancelled = false;
 
-  const load = async () => {
-    try {
-      const res = await fetchTrfJsonPartApi(projectID, currentPart);
-      if (cancelled) return;
+    const load = async () => {
+      try {
+        const res = await fetchTrfJsonPartApi(projectID, currentPart);
+        if (cancelled) return;
 
-      if (res.status === 'completed' && res.json_data) {
-        // ----------------------------------
-        // FINAL JSON
-        // ----------------------------------
-        if (res.is_final) {
-          setFinalTrfJson(res.json_data);
-          showPartStatusPopup('Final TRF loaded');
+        if (res.status === 'completed' && res.json_data) {
+          // ----------------------------------
+          // FINAL JSON
+          // ----------------------------------
+          if (res.is_final) {
+            setFinalTrfJson(res.json_data);
+            showPartStatusPopup('Final TRF loaded');
+            setCurrentPart((p) => p + 1);
+            return;
+          }
+
+          // ----------------------------------
+          // PART JSON
+          // ----------------------------------
+          setTrfJsonParts((prev) => [...prev, res.json_data]);
+          showPartStatusPopup(`Section ${currentPart} loaded`);
           setCurrentPart((p) => p + 1);
-          return;
+        } else {
+          setTimeout(() => !cancelled && load(), 10000);
         }
-
-        // ----------------------------------
-        // PART JSON
-        // ----------------------------------
-        setTrfJsonParts((prev) => [...prev, res.json_data]);
-        showPartStatusPopup(`Section ${currentPart} loaded`);
-        setCurrentPart((p) => p + 1);
-      } else {
-        setTimeout(() => !cancelled && load(), 10000);
+      } catch (err) {
+        console.error('Failed to load TRF JSON', err);
       }
-    } catch (err) {
-      console.error('Failed to load TRF JSON', err);
-    }
-  };
+    };
 
-  load();
-  return () => {
-    cancelled = true;
-  };
-}, [currentPart, projectID]);
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [currentPart, projectID]);
 
   // ---------------- BOOKMARK HANDLING ----------------
   const handleBookmarkFromChild = (data) => {
@@ -369,7 +389,6 @@ const ReportPage = () => {
     return { Tables: Array.from(map.values()) };
   }, [trfJsonParts]);
 
-
   const handleMissingField = (data, projectID, reportClick) => {
     DownloadMissingFieldsExcel(data, projectID, reportClick);
   };
@@ -399,33 +418,58 @@ const ReportPage = () => {
   // --------------------------------------------------
   const renderLeftPanel = () => {
     if (showTrfLoader) {
+      // return (
+      //   <Card className="progress-advanced-card left-card">
+      //     <Typography className="progress-advanced-title">
+      //       Processing TRF Report
+      //     </Typography>
+
+      //     <Box className="animated-progress-wrapper">
+      //       <Box
+      //         className="animated-progress-fill"
+      //         style={{ width: `${progress}%` }}
+      //       >
+      //         <Typography className="animated-progress-text">
+      //           {progress}%
+      //         </Typography>
+      //       </Box>
+      //     </Box>
+
+      //     <Typography className="progress-advanced-status">{status}</Typography>
+
+      //     <Button
+      //       disabled={refreshing}
+      //       className="refresh-advanced-btn"
+      //       onClick={checkStatus}
+      //     >
+      //       {refreshing ? 'Refreshing…' : 'Refresh Status'}
+      //     </Button>
+      //   </Card>
+      // );
       return (
-        <Card className="progress-advanced-card left-card">
-          <Typography className="progress-advanced-title">
-            Processing TRF Report
+        <Box
+          sx={{
+            minHeight: '300px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 2,
+            background: '#f9fafb',
+            borderRadius: 2,
+            border: '1px dashed #d0d7de',
+          }}
+        >
+          <CircularProgress size={48} thickness={4} />
+
+          <Typography sx={{ fontWeight: 600, fontSize: 16 }}>
+            Generating TRF Report
           </Typography>
 
-          <Box className="animated-progress-wrapper">
-            <Box
-              className="animated-progress-fill"
-              style={{ width: `${progress}%` }}
-            >
-              <Typography className="animated-progress-text">
-                {progress}%
-              </Typography>
-            </Box>
-          </Box>
-
-          <Typography className="progress-advanced-status">{status}</Typography>
-
-          <Button
-            disabled={refreshing}
-            className="refresh-advanced-btn"
-            onClick={checkStatus}
-          >
-            {refreshing ? 'Refreshing…' : 'Refresh Status'}
-          </Button>
-        </Card>
+          <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
+            This may take a few moments.
+          </Typography>
+        </Box>
       );
     }
 
