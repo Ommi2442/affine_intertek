@@ -10,7 +10,7 @@ import uuid, os
 from fastapi import Depends
 from api.auth.jwt_auth.utils import get_current_user
 from db.database import *
-from db.database import COSMOS_DB_project_Container, COSMOS_DB_URI,COSMOS_DB_KEY,COSMOS_DB_DATABASE,COSMOS_DB_project_TRF_Container
+from db.database import COSMOS_DB_project_Container, COSMOS_DB_URI,COSMOS_DB_KEY,COSMOS_DB_DATABASE,COSMOS_DB_project_TRF_Container,COSMOS_DB_project_CDR_Container
 from projects.models import Project,ProjectCreate,ProjectFilter,FinalizeReportPayload
 from azure.cosmos import exceptions
 from azure.storage.blob import BlobServiceClient
@@ -26,7 +26,7 @@ import os
 import base64
 from docx2pdf import convert
 from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_local_json_to_blob_and_cosmos
-from projects.helpers import convert_docx_to_pdf
+from projects.helpers import *
 from utility.cdr_report.CDR_Pipelines.main import main2
 from utility.cdr_report.CDR_Pipelines.compiler import fill_excel_from_json
 
@@ -1327,98 +1327,60 @@ def get_trf_json_part(
     }
 
 
-
-
 @router.post("/finalize_report")
 async def finalize_reports(payload: FinalizeReportPayload):
     try:
-        projectId = payload.projectId
-        report = payload.report
-        updated_data = payload.updated_data
+        project_id = payload.projectId
+        report_type = payload.reportType.upper()
+        updated_data = payload.data
 
-        if not projectId:
-            raise HTTPException(status_code=400, detail="projectId is required")
+        if not project_id:
+            raise HTTPException(400, "projectId is required")
 
-        if report not in ("trf", "cdr"):
-            raise HTTPException(status_code=400, detail="Invalid report type")
-        
-        BASE_DIR = Path(__file__).resolve().parents[1]
-        DATA_DIR = BASE_DIR / "data" / "input_files"
-        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        if report_type not in ("TRF", "CDR"):
+            raise HTTPException(400, "Invalid reportType")
 
-        if report == "CDR":
-            # path,blob_url=finalize_cdr_report_to_blob_and_cosmos_cdr(projectId, updated_data)
+        if not isinstance(updated_data, dict):
+            raise HTTPException(400, "data must be a valid JSON object")
 
-            print(" Json File over blob has been updated for CDR report")
-            query = "SELECT c.blob_url FROM c WHERE c.project_id = @pid"
-            params = [{"name": "@pid", "value": projectId}]
+        # --------------------------------------------------
+        # Choose Cosmos container
+        # --------------------------------------------------
+        container = (
+            COSMOS_DB_project_TRF_Container
+            if report_type == "TRF"
+            else COSMOS_DB_project_CDR_Container
+        )
 
-            try:
-                items = list(
-                    cdr_container.query_items(
-                        query=query,
-                        parameters=params,
-                        enable_cross_partition_query=True
-                    )
-                )
-            except Exception:
-                raise HTTPException(
-                    status_code=500,
-                    detail="Failed to query Cosmos DB for CDR"
-                )
+        # --------------------------------------------------
+        # Fetch Cosmos record
+        # --------------------------------------------------
+        record = fetch_final_json_record(container, project_id)
 
-            if not items:
-                raise HTTPException(status_code=404, detail="Project not found")
+        blob_path = record["blob_path"]
+        blob_url = record["blob_url"]
 
-            blob_url = items[0].get("blob_url")
-            if not blob_url or not isinstance(blob_url, str):
-                raise HTTPException(status_code=404, detail="Invalid blob URL")
+        # --------------------------------------------------
+        # Replace JSON in Blob
+        # --------------------------------------------------
+        replace_json_blob(
+            blob_service=blob_service,
+            container_name=CONTAINER_NAME,
+            blob_path=blob_path,
+            json_data=updated_data
+        )
 
-            json_data = fetch_json_from_blob(blob_url)
-            if not isinstance(json_data, dict):
-                raise HTTPException(
-                    status_code=500,
-                    detail="Invalid CDR JSON format in blob"
-                )
-            with open("cdr_output_input.json", "w", encoding="utf-8") as f:
-                json.dump(json_data, f, indent=2, ensure_ascii=False)
-            print("data save from the blob")
-            output_excel_path = DATA_DIR / f"Final_iec_output_sheet_{projectId}.xlsx"
+        # --------------------------------------------------
+        # Replace local final_output.json
+        # --------------------------------------------------
+        replace_local_final_json(project_id, updated_data)
 
-            try:
-                fill_excel_from_json(json_data, str(output_excel_path))
-            except Exception as e:
-                raise HTTPException(
-                    status_code=500,
-                    detail=f"CDR Excel generation failed: {str(e)}"
-                )
-
-            cosmos_items = save_local_xlsx_to_blob_and_cosmos_cdr(
-                str(output_excel_path),
-                projectId
-            )
-
-            if not cosmos_items:
-                raise HTTPException(
-                    status_code=500,
-                    detail="CDR Excel upload failed"
-                )
-
-            return {
-                "status": "success",
-                "report": "CDR",
-                "projectId": projectId,
-                "blob_url": cosmos_items[0].get("blob_url")
-            }
-
-        if report == "TRF":
-            print("🟡 TRF finalize requested (logic to be added)")
-            return {
-                "status": "pending",
-                "report": "TRF",
-                "projectId": projectId,
-                "message": "TRF finalize logic not implemented yet"
-            }
+        return {
+            "status": "success",
+            "reportType": report_type,
+            "projectId": project_id,
+            "blob_url": blob_url
+        }
 
     except HTTPException:
         raise
