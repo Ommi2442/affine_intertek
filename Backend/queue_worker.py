@@ -237,9 +237,9 @@ async def process_message(message) -> bool:
             trf_completed=False
         )
                 
-        # ingest_files_from_blob_urls_create_embeddings(DOWNLOAD_DIR, blob_urls, project_id)
+        ingest_files_from_blob_urls_create_embeddings(DOWNLOAD_DIR, blob_urls, project_id)
 
-        # print(f" Embeddings completed for project {project_id}")
+        print(f" Embeddings completed for project {project_id}")
 
         # Embedding Complete → 20%
         # update_project_progress(
