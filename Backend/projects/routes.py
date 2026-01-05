@@ -1057,13 +1057,12 @@ def generate_cdr(projectId: str):
 @router.get("/download-file")
 def download_file(project_id: str):
     
-    local_file_path,json_file_path,docx_file_path = download_json_from_blob(project_id)
-    data={"message":"File downloaded successfully","project_id":project_id,"docx_file_path":docx_file_path,
-          "json_path":json_file_path
-          }
+    local_file_path,docx_file_path = download_json_from_blob(project_id)
+    data={"message":"File downloaded successfully","project_id":project_id,"docx_file_path":docx_file_path
+        }
     return FileResponse(
         path=local_file_path,
-        filename=f"iec_output_{project_id}.docx",
+        filename=f"final_output_{project_id}.docx",
         media_type="application/docx"
     )
 
