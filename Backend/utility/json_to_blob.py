@@ -366,8 +366,7 @@ blob_container = 'stintertekesusdev-blob'
 
 def download_json_from_blob(project_id: str, local_folder: str = "./downloads") -> str:
 
-    docx_file_path = f"Documents/{project_id}/Generated_trf_Report/iec_output_{project_id}.docx"
-    json_file_path = f"Documents/{project_id}/Generated_trf_Report/iec_output_{project_id}.json"
+    docx_file_path = f"Documents/{project_id}/Generated_trf_Report/final_output_{project_id}.docx"
 
     Path(local_folder).mkdir(parents=True, exist_ok=True)
 
@@ -380,7 +379,7 @@ def download_json_from_blob(project_id: str, local_folder: str = "./downloads") 
         f.write(download_stream.readall())
 
     print(f"File downloaded to: {local_file_path}")
-    return local_file_path,json_file_path,docx_file_path
+    return local_file_path,docx_file_path
 
 # def save_cdr_local_json_to_blob_and_cosmos(json_file_path,project_id) -> list:
 #     """
