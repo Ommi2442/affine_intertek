@@ -2057,8 +2057,8 @@ def run_trf_generator(
     image_retriever_agent = vs2.as_retriever(search_kwargs={"k": 5})
     tasks = update_tasks_with_top5_images(tasks, image_retriever_agent)
 
-    tasks=tasks[:30]
-    item_refs=item_refs[:30]
+    # tasks=tasks[:30]
+    # item_refs=item_refs[:30]
 
     # ---------------------------------------------------------
     # Batch processing with LLM / Grey mode
@@ -2352,8 +2352,8 @@ def trf_gen_partwise(
     image_retriever_agent = vs2.as_retriever(search_kwargs={"k": 5})
     tasks = update_tasks_with_top5_images(tasks, image_retriever_agent)
 
-    tasks=tasks[:30]
-    item_refs=item_refs[:30]
+    # tasks=tasks[:30]
+    # item_refs=item_refs[:30]
 
     # ---------------------------------------------------------
     # Batch processing with LLM / Grey mode
