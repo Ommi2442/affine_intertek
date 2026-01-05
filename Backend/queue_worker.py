@@ -83,7 +83,6 @@ print("Rag CONT NAME:+++++++++++++++",RAG_CONT_NAME)
 
 ##################################################################
 
-
 BASE_DIR = Path(__file__).resolve().parent
 
 BASE_PTA_JSON_PATH = BASE_DIR / "data" / "input_files" / "pta_final_6_2.json"
@@ -92,12 +91,7 @@ INPUT_DOCX_PATH = BASE_DIR / "data" / "input_files" / "input.docx"
 
 DOWNLOAD_DIR = BASE_DIR  / "src_files"
 
-OUTPUT_JSON = BASE_DIR / "data" / "iec_output.json"
-OUTPUT_DOCX = BASE_DIR / "data" / "iec_output.docx"
-OUTPUT_EXCEL = BASE_DIR / "data" / "iec_output.xlsx"
-
 DATA_DIR = BASE_DIR / "data" 
-
 
 IMAGE_URLS_PATH = BASE_DIR / "utility" / "image_urls.json"  # adjust if needed
 
