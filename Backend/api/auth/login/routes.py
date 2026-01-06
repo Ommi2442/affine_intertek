@@ -236,3 +236,4 @@ async def sso_login(data: EmailRequest):
     except Exception as e:
         logging.error(f"Error in sso_login: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
