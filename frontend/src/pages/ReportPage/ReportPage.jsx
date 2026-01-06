@@ -99,13 +99,22 @@ const ReportPage = () => {
   const [partPopupOpen, setPartPopupOpen] = useState(false);
   const [partPopupMessage, setPartPopupMessage] = useState('');
 
+  const [liveTrfData, setLiveTrfData] = useState(null);
+
+  useEffect(() => {
+    if (!dataTableRef.current) return;
+
+    const updated = dataTableRef.current.getUpdatedJson();
+    setLiveTrfData(updated);
+  }, [confidenceTick]);
+
   const TOTAL_PARTS = 5;
   const FINAL_PART_INDEX = TOTAL_PARTS + 1;
 
   const [currentPart, setCurrentPart] = useState(1);
   const [trfJsonParts, setTrfJsonParts] = useState([]);
   const [finalTrfJson, setFinalTrfJson] = useState(null);
-
+  const [isFinalJsonLoaded, setIsFinalJsonLoaded] = useState(false);
   const trfTriggeredRef = useRef(false);
 
   const projectMeta = {
@@ -209,8 +218,14 @@ const ReportPage = () => {
           // ----------------------------------
           // FINAL JSON
           // ----------------------------------
+          setIsFinalJsonLoaded(res.is_final);
+
           if (res.is_final) {
             setFinalTrfJson(res.json_data);
+
+            // SAVE FINAL TRF FOR CONFIDENCE
+            //await idb_set(`trf_final_${projectID}`, res.json_data, STORES.TRF);
+            //window.dispatchEvent(new Event('idb-updated'));
             showPartStatusPopup('Final TRF loaded');
             setCurrentPart((p) => p + 1);
             return;
@@ -235,6 +250,8 @@ const ReportPage = () => {
       cancelled = true;
     };
   }, [currentPart, projectID]);
+
+  console.log('isFinalJsonLoaded', isFinalJsonLoaded);
 
   // ---------------- BOOKMARK HANDLING ----------------
   const handleBookmarkFromChild = (data) => {
@@ -559,18 +576,20 @@ const ReportPage = () => {
               </Typography>
             </Box>
           )}
-          {reportClick === 'trf' && progress >= 30 && mergedTrfJson && (
-            <DataTable
-              ref={dataTableRef}
-              jsonData={mergedTrfJson}
-              editMode={trfEditMode}
-              onBookmarkClick={handleBookmarkFromChild}
-              reportType="trf"
-              onConfidenceChange={() => {
-                setConfidenceTick((v) => v + 1);
-              }}
-            />
-          )}
+          {reportClick === 'trf' &&
+            progress >= 30 &&
+            (finalTrfJson ? finalTrfJson : mergedTrfJson) && (
+              <DataTable
+                ref={dataTableRef}
+                jsonData={finalTrfJson ? finalTrfJson : mergedTrfJson}
+                editMode={trfEditMode}
+                onBookmarkClick={handleBookmarkFromChild}
+                reportType="trf"
+                onConfidenceChange={() => {
+                  setConfidenceTick((v) => v + 1);
+                }}
+              />
+            )}
 
           {reportClick === 'cdr' && (
             <>
@@ -807,6 +826,7 @@ const ReportPage = () => {
                     text: 'Edit / Refine',
                     icon: '/images/edit_icon.svg',
                     bg: '#2C2C2C',
+
                     action: () => {
                       setIsFinalise(false);
                       if (reportClick === 'cdr') {
@@ -866,10 +886,14 @@ const ReportPage = () => {
                     variant="contained"
                     className="action-button"
                     onClick={btn.action}
-                    style={{ background: btn.bg }}
+                    style={{
+                      background: !isFinalJsonLoaded ? '#A9A9A9' : btn.bg, // grey out
+                      cursor: !isFinalJsonLoaded ? 'not-allowed' : 'pointer',
+                      opacity: !isFinalJsonLoaded ? 0.7 : 1,
+                    }}
                   >
                     {/* STATUS DOT (only for Finalize) */}
-                    {btn.text === 'Finalize' && (
+                    {btn.text === 'Finalize' && isFinalJsonLoaded && (
                       <span
                         className={`finalize-status-dot ${
                           isEditMode && !isFinalised ? 'red' : 'green'
@@ -937,10 +961,12 @@ const ReportPage = () => {
           </Card>
 
           {/* CONFIDENCE CARD */}
-          {((reportClick === 'trf' && mergedTrfJson) ||
+          {((reportClick === 'trf' && finalTrfJson) ||
             (reportClick === 'cdr' && cdrJson)) && (
             <ConfidenceScore
-              data={reportClick === 'trf' ? mergedTrfJson : cdrJson}
+              data={
+                reportClick === 'trf' ? (liveTrfData ?? finalTrfJson) : cdrJson
+              }
               reportType={reportClick}
               confidenceTick={confidenceTick}
               projectId={projectId}

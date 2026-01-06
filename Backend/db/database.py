@@ -31,3 +31,4 @@ try:
 
 except Exception as e:
     raise Exception(f" Error connecting to Cosmos DB: {e}")
+

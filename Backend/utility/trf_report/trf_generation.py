@@ -91,6 +91,17 @@ from typing import Callable, Optional
 
 from pathlib import Path
 
+from utility.trf_report.prompts import (
+    GUIDELINE_REFERENCE,
+    EVIDENCE_BLOCK_TEMPLATE,
+    get_grey_mode_prompt,
+    get_base_system_prompt,
+    get_remark_instruction,
+    get_verdict_instruction,
+    get_description_instruction,
+    get_default_instruction
+)
+
 
 # Local helper module
 
@@ -417,6 +428,8 @@ llm = AzureChatOpenAI(
 
 ### updated v5-- use this
 
+
+
 def build_vision_message_grey(inputs, grey=False):
     """
     NEW VERSION — includes correct normalized image filenames so the LLM
@@ -444,202 +457,95 @@ def build_vision_message_grey(inputs, grey=False):
     # ----------------------------------------------------
     # NORMALIZE IMAGE FILENAMES SO LLM CAN RETURN THEM
     # ----------------------------------------------------
+    # def compute_image_file(img):
+    #     """Convert a URL into a normalized image filename:
+    #        e.g. Manual.pdf/page_6.png → Manual.pdf_page_6.png
+    #     """
+    #     if isinstance(img, dict) and "url" in img:
+    #         url = img["url"]
+    #     else:
+    #         url = img  # plain string URL
+
+    #     parts = url.split("/")
+    #     pdf_file = parts[-2]                       # e.g. "Manual.pdf"
+    #     png_name = parts[-1].split("?")[0]         # e.g. "page_6.png"
+
+    #     # Combine → Manual.pdf_page_6.png
+    #     return f"{pdf_file}_{png_name}"
+
     def compute_image_file(img):
-        """Convert a URL into a normalized image filename:
-           e.g. Manual.pdf/page_6.png → Manual.pdf_page_6.png
         """
+        Convert URL to canonical image filename.
+        - PDF-derived images: Manual.pdf/page_6.png → Manual.pdf_page_6.png
+        - Plain images: marking_label.JPG → marking_label.JPG
+        """
+
         if isinstance(img, dict) and "url" in img:
             url = img["url"]
         else:
-            url = img  # plain string URL
+            url = img
 
-        parts = url.split("/")
-        pdf_file = parts[-2]                       # e.g. "Manual.pdf"
-        png_name = parts[-1].split("?")[0]         # e.g. "page_6.png"
+        clean_url = url.split("?")[0]
+        parts = clean_url.strip("/").split("/")
 
-        # Combine → Manual.pdf_page_6.png
-        return f"{pdf_file}_{png_name}"
+        filename = parts[-1]  # always real filename
+
+        # ✅ PDF-derived image
+        if len(parts) >= 2 and parts[-2].lower().endswith(".pdf"):
+            pdf_file = parts[-2]
+            return f"{pdf_file}_{filename}"
+
+        # ✅ Plain image
+        return filename
 
     image_files = list({compute_image_file(img) for img in image_urls})
-
-    # ----------------------------------------------------
-    # IEC reference block
-    # ----------------------------------------------------
-    guideline_reference = """
-    You must obey these grounding rules at all times.
-    1. No guessing - If the requirement of a clause is not explicitly available in the TRF Text and the provided images, you must NOT infer it.
-    2. However you can use your judgement and expertse as an electrical safety compliance engineer to give the responses. 
-    3. IEC 61010-1 should guide interpretation only.
-    Do not copy text from the IEC standard.
-    Do not restate entire requirement wording.
-    Only verify compliance based on input facts.
-    4. Every remark must be evidence-based as applicable
-"""
 
     # Determine ACTIVE PROMPT
     active_prompt = custom_prompt.strip() if custom_prompt and str(custom_prompt).strip() else question
 
     # ----------------------------------------------------
-    # STRICT evidence_source RULE BLOCK
+    # Build evidence block with file lists
     # ----------------------------------------------------
-    evidence_block = f"""
-EVIDENCE SOURCE RULES (follow EXACTLY):
-
-1. Classify files ONLY by filename extension:
-   - If filename ends with ".pdf" → MUST go into text_files.
-   - If filename ends with ".jpg" / ".jpeg" / ".png" → MUST go into image_files.
-   - PDF-derived images like "xxx_page_7.png" ARE IMAGES → MUST go into image_files.
-
-2. NEVER place an image filename into text_files.
-3. NEVER place a PDF filename into image_files.
-4. Include ONLY the files that actually provided evidence.
-5. Do NOT copy placeholder lists.
-
-6. You may choose ANY from:
-   TEXT FILES: {text_files}
-   IMAGE FILES: {image_files}
-
-Your JSON output MUST follow this schema:
-
-"evidence_source": {{
-     "type": "text" | "image" | "both",
-     "files": {{
-          "text_files": [],
-          "image_files": []
-     }}
-}}
-"""
+    evidence_block = EVIDENCE_BLOCK_TEMPLATE.format(
+        text_files=text_files,
+        image_files=image_files
+    )
 
     # ----------------------------------------------------
     # GREY MODE
     # ----------------------------------------------------
     if grey and not accuracy_level:
-        system_prompt = f"""
-You are assisting with determining whether relevant information exists in the TRF content.
-
-Respond ONLY in this JSON:
-{{
-  "response": "TBD - Info available" | "TBD - No info available",
-  "confidence": <0-100>,
-  "evidence_source": {{
-      "type": "text" | "image" | "both",
-      "files": {{
-          "text_files": [],
-          "image_files": []
-      }}
-  }}
-}}
-
-{evidence_block}
-
-TRF TEXT CONTEXT:
-{context_text}
-
-QUESTION:
-{active_prompt}
-""".strip()
+        system_prompt = get_grey_mode_prompt(
+            evidence_block=evidence_block,
+            context_text=context_text,
+            active_prompt=active_prompt
+        ).strip()
 
     else:
         # -----------------------------
         # TASK TYPE PROMPTING
         # -----------------------------
         if task_type == "remark":
-            instruction_block = f"""
-Provide ONLY the following JSON keys:
-1. "response": A concise evidence-driven remark (Max 10 words) based on the information obtained from input files in accordance to the clause provided in the IEC Standard 61010-1
-2. "confidence": Generate a confidence score with Integer values ranging from 1 - 100 by comparing the LLM response with the 
-retrieved evidence from TRF text & input images and the requirement of the clause provided in the IEC Standard 61010-1
-3. "evidence_source": {{
-      "type": "text" | "image" | "both",
-      "files": {{
-          "text_files": [],
-          "image_files": []
-      }}
-}}
-{evidence_block}
-
-Remark Rules:
- 
-Follow this decision framework for generating responses for remark:
-If TRF Text and Input images provide relevant information with respect to the task, then give a concise evidence-driven remark (Max 10 words) in accordance to the clause provided in the IEC Standard 61010-1
-If the component or feature or clause is not present in the equipment or if not applicable to the equipment, then provide a remark confirming the same
-If any information is missing in the input files, then give a remark highlighting that the information is not available in the documentation
-If no decision can still be made based on the framework (mentioned above), then keep remark as blank. 
-
-"""
+            instruction_block = get_remark_instruction(evidence_block)
 
         elif task_type == "verdict":
-            instruction_block = f"""
-Provide ONLY the following JSON keys:
-1. "response": "P" | "N/A" | " "
-2. "confidence": Generate a confidence score with Integer values ranging from 1 - 100 by comparing the LLM response with the retrieved evidence from TRF text & input images and the requirement of the clause provided in the IEC Standard 61010-1
-3. "evidence_source": {{
-      "type": "text" | "image" | "both",
-      "files": {{
-          "text_files": [],
-          "image_files": []
-      }}
-}}
-{evidence_block}
+            instruction_block = get_verdict_instruction(evidence_block)
 
-Verdict Rules:
- 
-Follow this decision framework for generating responses for Verdict:
-P = Pass only when evidence in the TRF text and Input images is in accordance to the clause mentioned in IEC Standard 61010-1
-N/A =  If the equipment does not include the feature, component, setting or the clause is not applicable to the equipment in the TRF text and input images
-as referenced in the IEC Standard 61010-1
-" " = if evidence provided in the TRF text and Input images contradicts the requirement as specified in the IEC Standard 61010-1
-"""
         elif task_type == "description":
-            instruction_block = f"""
-Provide ONLY the following JSON keys:
-1. "response": extracted response based on the task instructions
-2. "confidence": Generate a confidence score with Integer values ranging from 1 - 100 by comparing the LLM response with the retrieved evidence from TRF text & input images and the requirement of the clause provided in the IEC Standard 61010-1
-3. "evidence_source": {{
-      "type": "text" | "image" | "both",
-      "files": {{
-          "text_files": [],
-          "image_files": []
-      }}
-}}
-{evidence_block}
-"""
+            instruction_block = get_description_instruction(evidence_block)
 
         else:
-            instruction_block = f"""
-Provide ONLY the following JSON keys:
-1. "response": concise extracted answer (max 10 words)
-2. "confidence": generate a confidence score with Integer values ranging from 1 - 100 by comparing the LLM response with the retrieved evidence from TRF text & input images and the requirement of the clause provided in the IEC Standard 61010-1
-3. "evidence_source": {{
-      "type": "text" | "image" | "both",
-      "files": {{
-          "text_files": [],
-          "image_files": []
-      }}
-}}
-{evidence_block}
-"""
+            instruction_block = get_default_instruction(evidence_block)
 
         # -----------------------------
         # NORMAL MODE SYSTEM PROMPT
         # -----------------------------
-        system_prompt = f"""
-You are an expert electrical safety compliance engineer specializing in IEC 61010-1:2010 & IEC 61010-1:2010/AMD1:2016. 
-You can generate the responses using the TRF text and the provided images which includes the images of the equipment and the marking label. 
-You shall NOT invent values or assume characteristics not found in the input files, however you can use your judgement and expertse as an electrical safety compliance engineer to give the responses. 
-IEC 61010-1 can only be used as a guideline to understand the requirement of the clauses, NOT as a content source.
-
-{guideline_reference}
-
-TASK:
-{active_prompt}
-
-OUTPUT FORMAT:
-{instruction_block}
-
-TRF TEXT CONTEXT:
-{context_text}
-""".strip()
+        system_prompt = get_base_system_prompt(
+            guideline_reference=GUIDELINE_REFERENCE,
+            active_prompt=active_prompt,
+            instruction_block=instruction_block,
+            context_text=context_text
+        ).strip()
 
     # ----------------------------------------------------
     # BUILD VISION MESSAGE
@@ -1332,7 +1238,7 @@ def process_tasks_with_batches_parallel_grey(
             for doc, score in scored_results
         ]
 
-        has_text_info = any(score >= 0.76 for _, score in scored_results)
+        has_text_info = any(score >= 0.79 for _, score in scored_results)
 
         question_l = question.lower()
         image_keywords = ["label", "marking", "diagram", "schematic", "figure", "block", "display"]
@@ -1749,6 +1655,118 @@ def export_results_to_json(data, json_output_path):
     print(f"✅ JSON saved → {json_output_path}")
 
 
+
+def insert_marking_images_from_json_into_docx_new(
+    docx_path,
+    output_path,
+    image_paths,
+    table_index,
+    row,
+    col,
+    width_inches=5
+):
+    """
+    Inserts the EXACT images downloaded from JSON
+    into the DOCX, one after another.
+    """
+
+    doc = Document(docx_path)
+    cell = doc.tables[table_index].cell(row, col)
+
+    # Preserve existing text
+    if cell.paragraphs and cell.paragraphs[-1].text.strip():
+        cell.add_paragraph("")
+        cell.add_paragraph("")
+
+    for img_path in image_paths:
+        p = cell.add_paragraph()
+        run = p.add_run()
+        run.add_picture(str(img_path), width=Inches(width_inches))
+
+    doc.save(output_path)
+
+
+
+def extract_checkbox_indices_from_json(json_data, max_table=7):
+    """
+    Returns a sorted list of checkbox indices (int)
+    that need to be ticked.
+    """
+
+    indices_to_tick = []
+
+    for table in json_data.get("Tables", []):
+        table_no = table.get("Table")
+
+        # Stop after table 7
+        if table_no is None or table_no > max_table:
+            continue
+
+        for item in table.get("Items", []):
+
+            if not item.get("checkbox_value"):
+                continue
+
+            checkbox_index = item.get("checkbox_index")
+            if checkbox_index is None:
+                continue
+
+            # Normalize checkbox_index → list[int]
+            if isinstance(checkbox_index, list):
+                index_list = checkbox_index
+
+            elif isinstance(checkbox_index, str):
+                # "[6,7]" → [6,7]
+                index_list = [
+                    int(x.strip())
+                    for x in checkbox_index.strip("[]").split(",")
+                    if x.strip().isdigit()
+                ]
+
+            else:
+                # 3 or 3.0
+                index_list = [int(checkbox_index)]
+
+            # Evaluate each checkbox_value_<n>
+            for idx in index_list:
+                key = f"checkbox_value_{idx}"
+                if item.get(key) is True:
+                    indices_to_tick.append(idx)
+
+    return sorted(set(indices_to_tick))
+
+
+
+def apply_checkboxes_from_json(
+    docx_path,
+    output_path,
+    json_data
+):
+    """
+    Applies checkbox ticks based on JSON using
+    set_checkbox_checked() exactly as-is.
+    """
+
+    checkbox_indices = extract_checkbox_indices_from_json(json_data)
+
+    print(f"✔ Checkbox indices to tick: {checkbox_indices}")
+
+    current_doc = docx_path
+
+    for idx in checkbox_indices:
+        set_checkbox_checked(
+            docx_path=current_doc,
+            out_path=output_path,
+            checkbox_index=int(idx)
+        )
+        # Next checkbox should apply on updated file
+        current_doc = output_path
+
+    print("✅ All checkboxes applied.")
+
+
+
+
 # =============================================================================
 #   DOCX UPDATE (Arial 10 + Value Injection)
 # =============================================================================
@@ -1945,62 +1963,93 @@ def fetch_marking_plate_via_vs2(
     return str(output_path.resolve())
 
 
+
+
+import requests
+from pathlib import Path
+
+def download_marking_images_from_json_new(json_data: dict):
+    """
+    Downloads ONLY the URLs present in JSON.marking_urls.
+    Returns local image paths IN THE SAME ORDER.
+    """
+
+    image_paths = []
+
+    for table in json_data.get("Tables", []):
+        for item in table.get("Items", []):
+            marking_urls = item.get("marking_urls")
+            if not marking_urls:
+                continue
+
+            for entry in marking_urls:
+                url = entry.get("url")
+                img_id = entry.get("id")
+
+                if not url:
+                    continue
+
+                filename = f"marking_{img_id}.png"
+                path = Path(filename)
+
+                try:
+                    resp = requests.get(url, timeout=30)
+                    resp.raise_for_status()
+                    path.write_bytes(resp.content)
+                    image_paths.append(path)
+                except Exception as e:
+                    print(f"[ERROR] Failed to download {url}: {e}")
+
+    return image_paths
+
+
+
+
 from docx import Document
 from docx.shared import Inches
 
-def insert_marking_plate_via_vs2(
+def fetch_marking_plate_urls_and_update_json_new(
     retriever,
-    docx_path,
-    output_path,
-    table_index=8,
-    row=0,
-    col=0,
-    width_inches=2,
-    filename="marking_plate.png"
+    json_data: dict,
+    table_no: int,
+    question_row: int,
+    question_column: int,
+    top_k: int = 1
 ):
     """
-    1. Retrieves marking plate image using vs2 (vectorstore).
-    2. Downloads it.
-    3. Inserts into DOCX cell at specified table position.
+    Fetches marking plate URLs from retriever and stores them
+    in JSON as the ONLY source of truth.
     """
 
-    # STEP 1 — Retrieve + download
-    downloaded_path = fetch_marking_plate_via_vs2(
-        retriever=retriever,
-        output_filename=filename
-    )
+    # Fetch from retriever
+    docs = retriever.invoke("marking plate")[:top_k]
 
-    if not downloaded_path:
-        print("❌ Marking plate insertion skipped — no image found.")
-        return None
+    marking_urls = []
+    for idx, d in enumerate(docs, start=1):
+        url = d.metadata.get("blob_url")
+        if url:
+            marking_urls.append({
+                "id": idx,
+                "url": url
+            })
 
-    # STEP 2 — Insert into DOCX
-    doc = Document(docx_path)
+    if not marking_urls:
+        return json_data
 
-    if table_index >= len(doc.tables):
-        raise IndexError(
-            f"Table index {table_index} does not exist. Total tables: {len(doc.tables)}"
-        )
+    # Update JSON at exact location
+    for table in json_data.get("Tables", []):
+        if table.get("Table") != table_no:
+            continue
 
-    cell = doc.tables[table_index].cell(row, col)
+        for item in table.get("Items", []):
+            if (
+                item.get("question_row") == question_row and
+                item.get("question_column") == question_column
+            ):
+                item["marking_urls"] = marking_urls
+                return json_data
 
-    # Add blank lines before image
-    cell.add_paragraph("")
-    cell.add_paragraph("")
-
-    # Insert image
-    paragraph = cell.add_paragraph()
-    run = paragraph.add_run()
-    run.add_picture(downloaded_path, width=Inches(width_inches))
-
-    doc.save(output_path)
-
-    print(
-        f"✅ Marking plate image inserted → Table {table_index}, Row {row}, Col {col}\n"
-        f"📄 Updated DOCX saved → {output_path}"
-    )
-
-    return output_path
+    return json_data
 
 
 
@@ -2149,7 +2198,7 @@ def run_trf_generator(
     print("       STEP 9 — UPDATING MARKING PLATE")
     print("===============================================")
 
-    insert_marking_plate_via_vs2(
+    fetch_marking_plate_urls_and_update_json_new(
         retriever=image_retriever_agent,
         docx_path=output_docx_path,
         output_path=output_docx_path,
@@ -2464,9 +2513,6 @@ def run_trf_generation(
         final_output_path=final_output_path,
     )
 
-    # ---------------------------------------------------------
-    # STEP 8 — APPLY POST-PROCESSING
-    # ---------------------------------------------------------
     print("\n===============================================")
     print("       STEP 8 — APPLY POST-PROCESSING")
     print("===============================================")
@@ -2476,27 +2522,24 @@ def run_trf_generation(
     targets = [
         "General product information and other remarks:\nDescription of unit:\n",
         "Description of model differences:\n",
-        "Description of special features:\n(HV circuits, high pressure systems etc.)\n",
+        "Description of special features:\n(HV circuits, high pressure systems etc.)\n"
     ]
-
     data = apply_prefixes_to_items(data, targets)
     data = prefix_summary_of_compliance(data)
 
+    # Attach blob URLs for evidence support
     data = attach_blob_urls_to_text_support(data, blob_urls)
     data = attach_blob_urls_to_image_support(data, blob_urls)
 
-    # ---------------------------------------------------------
-    # STEP 9 — SAVE FINAL JSON
-    # ---------------------------------------------------------
     print("\n===============================================")
     print("       STEP 9 — SAVE FINAL JSON")
     print("===============================================")
 
     export_results_to_json(data, final_output_path)
 
-    # ---------------------------------------------------------
-    # STEP 10 — UPDATE DOCX (VALUES + Arial 10)
-    # ---------------------------------------------------------
+    # # ---------------------------------------------------------
+    # # Update Word DOCX with JSON values
+    # # ---------------------------------------------------------
     print("\n===============================================")
     print("       STEP 10 — UPDATE DOCX (VALUES + Arial 10)")
     print("===============================================")
@@ -2504,46 +2547,70 @@ def run_trf_generation(
     update_docx_tables_from_json_arial(
         docx_path=input_docx_path,
         json_path=final_output_path,
-        output_path=output_docx_path,
+        output_path=output_docx_path
     )
 
     # ---------------------------------------------------------
-    # STEP 11 — FINAL DOCX CHECKBOX UPDATE
+    # Insert checkbox at designated position
     # ---------------------------------------------------------
     print("\n===============================================")
     print("       STEP 11 — FINAL DOCX CHECKBOX UPDATE")
     print("===============================================")
 
     insert_legacy_checkbox_with_text(
-        docx_path=output_docx_path,
-        output_path=output_docx_path,
-        sentence=(
-            "The product fulfils the requirements of IEC 61010-1:2010, "
-            "IEC 61010-1:2010/AMD1:2016"
-        ),
+        docx_path=output_docx_path,     # update in-place
+        output_path=output_docx_path,   # overwrite same file
+        sentence='The product fulfils the requirements of IEC 61010-1:2010, IEC 61010-1:2010/AMD1:2016',
         table_index=5,
         row=12,
         col=0,
-        new_lines=5,
+        new_lines=5
     )
 
-    # ---------------------------------------------------------
-    # STEP 12 — UPDATING MARKING PLATE
-    # ---------------------------------------------------------
     print("\n===============================================")
-    print("       STEP 12 — UPDATING MARKING PLATE")
+    print("       STEP 12 — UPDATING MARKING PLATE And INTERTEK LOGO")
     print("===============================================")
 
-    insert_marking_plate_via_vs2(
+    # insert_marking_plate_via_vs2(
+    #     retriever=image_retriever_agent,
+    #     docx_path=output_docx_path,
+    #     output_path=output_docx_path,
+    #     table_index=6,
+    #     row=0,
+    #     col=0,
+    #     width_inches=5,
+    #     filename="identified_marking_plate.png"
+    # )
+
+    data = fetch_marking_plate_urls_and_update_json_new(
         retriever=image_retriever_agent,
+        json_data=data,
+        table_no=6,
+        question_row=0,
+        question_column=0,
+        top_k=1
+    )
+
+    image_paths = download_marking_images_from_json_new(data)
+
+    export_results_to_json(data, final_output_path)
+
+    insert_marking_images_from_json_into_docx_new(
         docx_path=output_docx_path,
         output_path=output_docx_path,
+        image_paths=image_paths,
         table_index=6,
         row=0,
         col=0,
-        width_inches=5,
-        filename="identified_marking_plate.png",
+        width_inches=2
     )
+
+    apply_checkboxes_from_json(
+        docx_path=output_docx_path,
+        output_path=output_docx_path,
+        json_data=data
+    )
+
 
     print("\n✅ TRF GENERATION COMPLETED SUCCESSFULLY")
 

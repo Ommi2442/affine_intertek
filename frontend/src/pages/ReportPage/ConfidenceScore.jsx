@@ -16,14 +16,25 @@ const ConfidenceScore = ({ data, confidenceTick, projectId, reportType }) => {
     let isMounted = true;
 
     const loadAndCalculate = async () => {
+      // 🔒 ONLY run when final data exists
+      if (!data) return;
+      console.log(
+        'live edited clauses',
+        data?.Tables?.flatMap((t) => t.Items).filter(
+          (i) => i.task_type == null && i.is_user_edited
+        ).length
+      );
+
       let sourceData = data;
 
       /* ---------- TRF ---------- */
       if (reportType === 'trf') {
-        const idbTables = await idb_get('tables');
-        if (Array.isArray(idbTables) && idbTables.length > 0) {
-          sourceData = { Tables: idbTables };
-        }
+        //console.log('data', data);
+        // const idbTables = await idb_get('tables');
+        // if (Array.isArray(idbTables) && idbTables.length > 0) {
+        //   sourceData = { Tables: idbTables };
+        // }
+        sourceData = data;
       }
 
       /* ---------- CDR ---------- */
@@ -36,20 +47,18 @@ const ConfidenceScore = ({ data, confidenceTick, projectId, reportType }) => {
       }
 
       if (!sourceData) return;
-
       const result = calculateConfidenceScore(sourceData);
-
+      //console.log('result', result);
       if (result && isMounted) {
         dispatch(setConfidenceScore(result));
       }
     };
 
     loadAndCalculate();
-
     return () => {
       isMounted = false;
     };
-  }, [data, confidenceTick, projectId, dispatch]);
+  }, [data, confidenceTick, projectId, reportType, dispatch]);
 
   if (!summary || summary.totalAiFields === 0) {
     return (
