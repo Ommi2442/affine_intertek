@@ -21,7 +21,7 @@ from pathlib import Path
 # QUEUE_CONN_STR = os.getenv("AZURE_QUEUE_CONNECTION_STRING")
 QUEUE_CONN_STR = "DefaultEndpointsProtocol=https;AccountName=stintertekesusstage;AccountKey=X3xxXc+G6VT3GNShGEIO+boKEbI2jLbh0U9wg5/U2UME328bFHPVdeJDgp9fyKfs7IW/MoJnpi5Q+ASti9+IlA==;EndpointSuffix=core.windows.net"
 # BLOB_CONTAINER = os.getenv("AZURE_CONTAINER_NAME")
-BLOB_CONTAINER = "stintertekesusstage"
+BLOB_CONTAINER = "stintertekesusstage-blob"
 # QUEUE_NAME = os.getenv("AZURE_QUEUE_NAME")
 QUEUE_NAME = "stintertekesus-stage-queue"
 CDR_QUEUE_NAME = "stintertekesus-stage-queue-cdr"
