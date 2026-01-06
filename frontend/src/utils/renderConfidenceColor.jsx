@@ -1,12 +1,22 @@
 import React from 'react';
+
 const normalizeConfidence = (value) => {
   const num = Number(value);
   if (Number.isNaN(num)) return null;
   return num <= 1 ? Math.round(num * 100) : Math.round(num);
 };
 
-const getConfidenceColor = (confidence, isUserEdited) => {
-  if (isUserEdited) return 'grey';
+const getConfidenceColor = (
+  confidence,
+  isUserEdited,
+  aiFillable,
+  accuracyLevel
+) => {
+  // ⛔ Not an AI confidence field → no color
+  if (aiFillable !== true || accuracyLevel !== true) return null;
+
+  // 🧑‍💻 User override → neutral
+  if (isUserEdited === true) return 'grey';
 
   const c = normalizeConfidence(confidence);
   if (c === null) return null;
@@ -16,10 +26,20 @@ const getConfidenceColor = (confidence, isUserEdited) => {
   return 'red';
 };
 
-export const renderConfidenceColor = (confidenceScore, isUserEdited) => {
-  if (confidenceScore === null || confidenceScore === undefined) return null;
+export const renderConfidenceColor = (
+  confidenceScore,
+  isUserEdited,
+  aiFillable,
+  accuracyLevel
+) => {
+  const color = getConfidenceColor(
+    confidenceScore,
+    isUserEdited,
+    aiFillable,
+    accuracyLevel
+  );
 
-  const color = getConfidenceColor(confidenceScore, isUserEdited);
+  if (!color) return null;
 
   return (
     <div>
