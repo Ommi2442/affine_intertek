@@ -60,6 +60,7 @@ pd.set_option('display.max_columns', None)
 from dotenv import load_dotenv
 from pathlib import Path
 from openai import AzureOpenAI
+from pypdf import PdfReader
 
 
 load_dotenv()

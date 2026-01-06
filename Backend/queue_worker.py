@@ -49,14 +49,11 @@ AOAI_ENDPOINT      = os.getenv("AOAI_ENDPOINT")
 AOAI_KEY           = os.getenv("AOAI_KEY")
 API_VERSION        = os.getenv("API_VERSION")
 EMBED_DEPLOY       = os.getenv("EMBED_DEPLOY")
-RAG_DB_NAME        = os.getenv("DB_NAME")
-RAG_CONT_NAME      = os.getenv("CONT_NAME")
 RAG_AZURE_CONN_STRING  = os.getenv("AZURE_CONN_STRING")
 RAG_COSMOS_URL         = os.getenv("COSMOS_URL")
 RAG_COSMOS_KEY         = os.getenv("COSMOS_KEY")
 
-print("Rag DB NAME---------------:",RAG_DB_NAME)
-print("Rag CONT NAME:+++++++++++++++",RAG_CONT_NAME)
+
 
 
 
