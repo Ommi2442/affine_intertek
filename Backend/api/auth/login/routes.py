@@ -2,7 +2,8 @@ from fastapi import APIRouter, HTTPException
 from datetime import datetime, timedelta, timezone
 from .models import EmailRequest, OTPVerifyRequest
 from .utils import generate_otp, encrypt_otp, decrypt_otp, send_email
-from db.database import COSMOS_DB_users_Container
+from db.database import COSMOS_DB_users_Container,COSMOS_DB_users_registration
+
 from api.auth.jwt_auth.utils import create_access_token 
 import hmac
 import logging
@@ -147,44 +148,78 @@ def verify_otp(data: OTPVerifyRequest):
         logging.error(f"Error verifying OTP: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+def validate_user():
+    reviewers = []
+    engineers = []
+    query = "SELECT u.email, u.user_role FROM users u"
+    users = list(
+        COSMOS_DB_users_registration.query_items(
+            query=query,
+            enable_cross_partition_query=True
+        )
+    )
+    for user in users:
+        if user.get("user_role") == 1:
+            reviewers.append(user.get("email"))
+        elif user.get("user_role") == 2:
+            engineers.append(user.get("email"))
+
+    return reviewers, engineers
+
 
 @router.post("/sso-login")
 async def sso_login(data: EmailRequest):
     try:
-        # Check if user exists
         query = "SELECT * FROM users u WHERE u.email = @email"
-        existing_user = list(COSMOS_DB_users_Container.query_items(
-            query=query,
-            parameters=[{"name": "@email", "value": data.email}],
-            enable_cross_partition_query=True
-        ))
+        existing_user = list(
+            COSMOS_DB_users_Container.query_items(
+                query=query,
+                parameters=[{"name": "@email", "value": data.email}],
+                enable_cross_partition_query=True
+            )
+        )
 
-        # If user does NOT exist -> create user first time
+        reviewers, engineers = validate_user()
+
         if not existing_user:
+            if len(reviewers) >= 2 :
+                return {
+                    "status": "Error",
+                    "message": "Maximum Reviewers limit reached"
+                }
+
+            if len(engineers) >= 3:
+                return {
+                    "status": "Error",
+                    "message": "Maximum Engineers limit reached"
+                }
+
+        
             new_user = {
                 "id": data.email,
                 "email": data.email,
                 "name": data.name,
                 "user_role": 2,
                 "accessToken": data.accessToken,
-                "created_at": datetime.now(timezone.utc).isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat()
             }
+
             COSMOS_DB_users_Container.create_item(body=new_user)
+            COSMOS_DB_users_registration.create_item(body=new_user)
+            
             user_role = new_user["user_role"]
 
         else:
-            # If user exists, do NOT register again
+            
             user_role = existing_user[0].get("user_role", 2)
 
-        # ALWAYS CREATE ACCESS TOKEN FOR LOGIN
-        expiry = timedelta(minutes=5)
-
+        
         access_token = create_access_token(
             data={
                 "sub": data.email,
-                "role": user_role,
+                "role": user_role
             },
-            expires_delta=expiry
+            expires_delta=timedelta(minutes=5)
         )
 
         return {
@@ -199,4 +234,3 @@ async def sso_login(data: EmailRequest):
     except Exception as e:
         logging.error(f"Error in sso_login: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
-
