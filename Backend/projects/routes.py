@@ -18,14 +18,13 @@ from azure.storage.queue import QueueClient
 import json
 import time
 from utility.json_to_blob import *
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 import shutil
 import requests
 import tempfile          
 import os
 import base64
 from docx2pdf import convert
-from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_local_json_to_blob_and_cosmos
 from projects.helpers import *
 from utility.cdr_report.CDR_Pipelines.main import main2
 from utility.cdr_report.CDR_Pipelines.compiler import fill_excel_from_json
@@ -33,7 +32,7 @@ from utility.cdr_report.CDR_Pipelines.compiler import fill_excel_from_json
 from utility.cdr_report.CDR_Pipelines.configs import OUTPUT_EXCEL_AI_FINAL_PATH
 
 
-from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_cdr_local_json_to_blob_and_cosmos_cdr,save_local_json_to_blob_and_cosmos,save_local_xlsx_to_blob_and_cosmos_cdr
+from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_cdr_local_json_to_blob_and_cosmos_cdr,save_local_xlsx_to_blob_and_cosmos_cdr
 import logging
 from pathlib import Path
 import asyncio
@@ -82,7 +81,7 @@ BASE_DIR = Path(__file__).resolve().parent
 LOCAL_TRF_FOLDER = BASE_DIR / "data"
 
 TOTAL_PARTS = 5
-FILE_PREFIX = "pta_final_6_2_part"
+FILE_PREFIX = "pta_final_6_3_1_part"
 
 
 @router.post("/create")
@@ -1054,16 +1053,20 @@ def generate_cdr(projectId: str):
             detail=str(e)
         )
 
+
 @router.get("/download-file")
 def download_file(project_id: str):
-    
-    local_file_path,docx_file_path = download_json_from_blob(project_id)
-    data={"message":"File downloaded successfully","project_id":project_id,"docx_file_path":docx_file_path
+    docx_path = download_docx_from_local(project_id)
+
+    file_like = open(docx_path, "rb")
+
+    return StreamingResponse(
+        file_like,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={
+            "Content-Disposition": f'attachment; filename="final_output_{project_id}.docx"',
+            "Content-Length": str(docx_path.stat().st_size)
         }
-    return FileResponse(
-        path=local_file_path,
-        filename=f"final_output_{project_id}.docx",
-        media_type="application/docx"
     )
 
 
@@ -1105,6 +1108,97 @@ def pdf_proxy(
         raise HTTPException(status_code=502, detail=str(e))
 
 
+# def save_pdfs_to_root_for_testing(
+#     project_id: str,
+#     pdf_outputs: list
+# ):
+#     """
+#     Save all PDFs directly in the backend root directory
+#     (for testing only).
+#     """
+#     for pdf in pdf_outputs:
+#         filename = pdf["filename"]
+#         pdf_bytes = base64.b64decode(pdf["data"])
+
+#         # Prefix with project_id to avoid name collisions
+#         # safe_name = f"{project_id}_{filename}"
+#         file_path = os.path.join(os.getcwd(), file_name)
+
+#         with open(file_path, "wb") as f:
+#             f.write(pdf_bytes)
+
+
+
+# @router.get("/project-pdfs-load")
+# def get_project_pdfs(project_id: str = Query(...)):
+#     try:
+#         query = "SELECT * FROM c WHERE c.Project_Id = @pid"
+#         items = list(
+#             COSMOS_DB_project_Container.query_items(
+#                 query=query,
+#                 parameters=[{"name": "@pid", "value": project_id}],
+#                 enable_cross_partition_query=True
+#             )
+#         )
+
+#         if not items:
+#             raise HTTPException(status_code=404, detail="Project not found")
+
+#         project = items[0]
+#         documents = project.get("Source_Doc", [])
+#         pdf_outputs = []
+
+#         for doc in documents:
+#             filename = doc["filename"]
+#             url = doc["url"]
+#             lower = filename.lower()
+
+#             # ---------- PDF ----------
+#             if lower.endswith(".pdf"):
+#                 resp = requests.get(url, timeout=30)
+#                 resp.raise_for_status()
+
+#                 pdf_outputs.append({
+#                     "filename": filename,
+#                     "data": base64.b64encode(resp.content).decode()
+#                 })
+
+#             # ---------- DOCX → PDF (WINDOWS + LINUX) ----------
+#             elif lower.endswith(".docx"):
+#                 with tempfile.TemporaryDirectory() as tmp:
+#                     docx_path = os.path.join(tmp, filename)
+#                     pdf_path = os.path.join(
+#                         tmp, filename.replace(".docx", ".pdf")
+#                     )
+
+#                     resp = requests.get(url, timeout=30)
+#                     resp.raise_for_status()
+
+#                     with open(docx_path, "wb") as f:
+#                         f.write(resp.content)
+
+#                     # 🔥 OS-AWARE CONVERSION
+#                     convert_docx_to_pdf(docx_path, pdf_path)
+
+#                     if not os.path.exists(pdf_path):
+#                         raise RuntimeError("DOCX to PDF conversion failed")
+
+#                     with open(pdf_path, "rb") as f:
+#                         pdf_bytes = f.read()
+
+#                 pdf_outputs.append({
+#                     "filename": filename.replace(".docx", ".pdf"),
+#                     "data": base64.b64encode(pdf_bytes).decode()
+#                 })
+#         save_pdfs_to_root_for_testing(project_id, pdf_outputs)
+
+#         return JSONResponse({
+#             "project_id": project_id,
+#             "pdfs": pdf_outputs
+#         })
+
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
 
 
 
@@ -1283,10 +1377,20 @@ async def finalize_reports(payload: FinalizeReportPayload):
         # --------------------------------------------------
         replace_local_final_json(project_id, updated_data)
 
+        BASE_DIR = Path(__file__).resolve().parent.parent
+        DATA_DIR = BASE_DIR / "data" 
         OUTPUT_JSON_PATH = DATA_DIR / project_id / "final_output.json"
         OUTPUT_DOCX_PATH = DATA_DIR / project_id / "final_output.docx"
 
-        update_docx_tables_from_json_arial(OUTPUT_DOCX_PATH,OUTPUT_JSON_PATH)
+        save_local_json_to_blob_and_cosmos(str(OUTPUT_JSON_PATH),str(OUTPUT_DOCX_PATH),project_id=project_id,
+        update_only=True)
+
+
+        update_docx_from_existing_json(
+            input_docx_path=OUTPUT_DOCX_PATH,
+            input_json_path=OUTPUT_JSON_PATH,
+            output_docx_path=OUTPUT_DOCX_PATH,
+        )
 
         return {
             "status": "success",

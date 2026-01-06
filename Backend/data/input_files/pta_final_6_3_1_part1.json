@@ -14,7 +14,8 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "page_no": 1
+          "page_no": 1,
+          "disable_text": true
         },
         {
           "question_row": 1,
@@ -129,7 +130,7 @@
           "answer_column": 1,
           "value": "IEC 61010-1:2010, IEC 61010-1:2010/AMD1:2016",
           "task_type": null,
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 1
@@ -142,7 +143,7 @@
           "answer_column": 1,
           "value": "CB Scheme",
           "task_type": null,
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 1
@@ -155,7 +156,7 @@
           "answer_column": 1,
           "value": "N/A",
           "task_type": null,
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 1
@@ -168,7 +169,7 @@
           "answer_column": 1,
           "value": "IECEE OD-2020-F1:2020, Ed.1.3",
           "task_type": null,
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 1
@@ -181,7 +182,7 @@
           "answer_column": 1,
           "value": "IEC61010_1P",
           "task_type": null,
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 1
@@ -194,7 +195,7 @@
           "answer_column": 1,
           "value": "VDE Prüf- und Zertifizierungsinstitut GmbH",
           "task_type": null,
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 1
@@ -207,7 +208,7 @@
           "answer_column": 1,
           "value": "2021-04-12",
           "task_type": null,
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 1
@@ -228,15 +229,15 @@
         {
           "question_row": 19,
           "question_column": 0,
-          "field": "General disclaimer:",
+          "field": "General disclaimer:\nThe test results presented in this report relate only to the object tested.\nThis report shall not be reproduced, except in full, without the written approval of the Issuing  NCB. The authenticity of this Test Report and its contents can be verified by contacting the NCB, responsible for this Test Report.",
           "answer_row": 20,
           "answer_column": 0,
-          "value": "The test results presented in this report relate only to the object tested.\nThis report shall not be reproduced, except in full, without the written approval of the Issuing  NCB. The authenticity of this Test Report and its contents can be verified by contacting the NCB, responsible for this Test Report.",
           "task_type": null,
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "page_no": 1
+          "page_no": 1,
+          "single_row": true
         }
       ]
     },
@@ -339,6 +340,7 @@
           "accuracy_level": false,
           "checkbox_value": true,
           "checkbox_index": 0.0,
+          "checkbox_value_0": false,
           "page_no": 2
         },
         {
@@ -393,6 +395,7 @@
           "accuracy_level": false,
           "checkbox_value": true,
           "checkbox_index": 1.0,
+          "checkbox_value_1": false,
           "page_no": 2
         },
         {
@@ -447,6 +450,7 @@
           "accuracy_level": false,
           "checkbox_value": true,
           "checkbox_index": 2.0,
+          "checkbox_value_2": false,
           "page_no": 2
         },
         {
@@ -514,6 +518,7 @@
           "accuracy_level": false,
           "checkbox_value": true,
           "checkbox_index": 3.0,
+          "checkbox_value_3": false,
           "page_no": 2
         },
         {
@@ -529,6 +534,7 @@
           "accuracy_level": false,
           "checkbox_value": true,
           "checkbox_index": 4.0,
+          "checkbox_value_4": false,
           "page_no": 2
         },
         {
@@ -862,7 +868,7 @@
         {
           "question_row": 12,
           "question_column": 0,
-          "field": "Summary of compliance with National Differences (List of countries addressed):\n\n\n\n The product fulfils the requirements of _________ (insert standard number and edition and delete the text in parenthesis or delete the whole sentence if not applicable)",
+          "field": "Summary of compliance with National Differences (List of countries addressed):\n\n\n\n[*]The product fulfils the requirements of IEC 61010-1:2010, IEC 61010-1:2010/AMD1:2016",
           "answer_row": 12,
           "answer_column": 0,
           "value": null,
@@ -872,16 +878,16 @@
           "accuracy_level": true,
           "checkbox_value": true,
           "checkbox_index": 5,
+          "checkbox_value_5": false,
           "page_no": 5,
           "custom_prompt": "List the countries names addressed in summary of compliance with National Differences without '[]'. Provide me only the the country names in ISO 3166 codes as output.",
-          "is_table": true,
           "single_row": true,
           "rendering_column": 1
         },
         {
           "question_row": 13,
           "question_column": 0,
-          "field": "Statement concerning the uncertainty of the measurement systems used for the tests \n(may be required by the product standard or client)\n\n Internal procedure used for type testing through which traceability of the measuring uncertainty has been established:\nProcedure number, issue date and title:\n\nCalculations leading to the reported values are on file with the NCB and testing laboratory that conducted the testing.\n\n Statement not required by the standard used for type testing \n(Note: When IEC or ISO standard requires a statement concerning the uncertainty of the measurement systems used for tests, this should be reported above. The informative text in parenthesis should be delete in both cases after selecting the applicable option)",
+          "field": "Statement concerning the uncertainty of the measurement systems used for the tests \n(may be required by the product standard or client)\n\n[*]Internal procedure used for type testing through which traceability of the measuring uncertainty has been established:\nProcedure number, issue date and title:\n\nCalculations leading to the reported values are on file with the NCB and testing laboratory that conducted the testing.\n\n[*]Statement not required by the standard used for type testing \n(Note: When IEC or ISO standard requires a statement concerning the uncertainty of the measurement systems used for tests, this should be reported above. The informative text in parenthesis should be delete in both cases after selecting the applicable option)",
           "answer_row": 13,
           "answer_column": 0,
           "value": null,
@@ -891,8 +897,9 @@
           "accuracy_level": false,
           "checkbox_value": true,
           "checkbox_index": "[6,7]",
+          "checkbox_value_6": false,
+          "checkbox_value_7": false,
           "page_no": 5,
-          "is_table": true,
           "single_row": true,
           "rendering_column": 1
         }
@@ -1213,7 +1220,7 @@
           "field": "General remarks:",
           "answer_row": 22,
           "answer_column": 0,
-          "value": "The test results presented in this report relate only to the object tested.\nThis report shall not be reproduced, except in full, without the written approval of the issuing testing laboratory.\n\"(see Enclosure #)\" refers to additional information appended to the report.\n\"(see Form A.xx)\" refers to a Table appended to the report.\nBottom lines for measurement Tables Forms A.xx are optional if used as record.\n\nThroughout this report a  comma /  point is used as the decimal separator.",
+          "value": "The test results presented in this report relate only to the object tested.\nThis report shall not be reproduced, except in full, without the written approval of the issuing testing laboratory.\n\"(see Enclosure #)\" refers to additional information appended to the report.\n\"(see Form A.xx)\" refers to a Table appended to the report.\nBottom lines for measurement Tables Forms A.xx are optional if used as record.\n\nThroughout this report a[*]comma /[*]point is used as the decimal separator.",
           "task_type": null,
           "user_editable": true,
           "ai_fillable": false,
@@ -1221,9 +1228,11 @@
           "checkbox_value": true,
           "checkbox_index": "[8,9]",
           "page_no": 7,
+          "checkbox_value_8": false,
+          "checkbox_value_9": false,
+          "take_value_UI": true,
           "single_row": true,
-          "UI_answer_column": 2,
-          "is_textbox": false
+          "new_logic_1": true
         },
         {
           "question_row": 23,
@@ -1245,15 +1254,18 @@
           "field": "The application for obtaining a CB Test Certificate includes more than one factory location and a declaration from the manufacturer stating that the sample(s) submitted for evaluation is (are) representative of the products from each factory has been provided\t:",
           "answer_row": 24,
           "answer_column": 2,
-          "value": "Yes\n Not applicable",
+          "value": "[*]Yes\n[*]Not applicable",
           "task_type": "extraction",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
           "checkbox_value": true,
           "checkbox_index": "[10,11]",
+          "checkbox_value_10": false,
+          "checkbox_value_11": false,
           "page_no": 7,
-          "checkbox_answer_UI": true
+          "take_value_UI": true,
+          "single_row": true
         },
         {
           "question_row": 25,
@@ -1300,7 +1312,6 @@
           "accuracy_level": true,
           "page_no": 8,
           "custom_prompt": "Provide a General description of the product. The response should be in 100-200 words.",
-          "is_table": true,
           "single_row": true,
           "rendering_column": 1,
           "rendering_row": 4,
@@ -1337,7 +1348,6 @@
           "accuracy_level": true,
           "page_no": 8,
           "custom_prompt": "If the equipment doesn't have any special features like laser, X-Ray, ultraviolet, UV, ultrasound, radio frequency, cathode tube, microwave radiation, accelerated electron, Ionizing radiation, battery, ozone mentioned in the documentation, mention exactly \"N/A - No Special Features\"  else describe the special features if present in 100-200 words",
-          "is_table": true,
           "single_row": true,
           "rendering_column": 1,
           "rendering_row": 4,
@@ -6098,7 +6108,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Verify that the documentation includes instructions for lifting and carrying the equipment."
+          "custom_prompt": "Verify that the instructions for lifting and carrying is provided in the documentation only if the equipment is portable. Mention 'Not Applicable' if the equipment is not portable."
         },
         {
           "clause_row": 136,
@@ -6116,7 +6126,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Verify that the documentation includes instructions for lifting and carrying the equipment."
+          "custom_prompt": "Verify that the instructions for lifting and carrying is provided in the documentation only if the equipment is portable."
         },
         {
           "clause_row": 137,
@@ -6130,11 +6140,10 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 13,
-          "custom_prompt": "Verify that the documentation includes warning statements and clear explanations of all warning symbols."
+          "page_no": 13
         },
         {
           "clause_row": 137,
@@ -6169,7 +6178,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Verify that the documentation includes warning statements and clear explanations of warning symbols."
+          "custom_prompt": "Verify that warning statements and a clear explanation of warning symbols is provided in the documentation."
         },
         {
           "clause_row": 138,
@@ -6187,7 +6196,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Verify that the documentation includes warning statements and clear explanations of warning symbols."
+          "custom_prompt": "Verify that warning statements and a clear explanation of warning symbols is provided in the documentation."
         },
         {
           "clause_row": 139,
@@ -6205,7 +6214,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Verify that the documentation includes warning statements and clear explanations of warning symbols, and that corresponding information is marked on the equipment."
+          "custom_prompt": "Verify that warning statements and a clear explanation of warning symbols is marked on the equipment"
         },
         {
           "clause_row": 139,
@@ -6223,7 +6232,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Verify that the documentation includes warning statements and clear explanations of warning symbols, and that corresponding information is marked on the equipment."
+          "custom_prompt": "Verify that warning statements and a clear explanation of warning symbols is marked on the equipment"
         },
         {
           "clause_row": 140,
@@ -6315,7 +6324,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the Supply voltage or Voltage range of the equipment"
+          "custom_prompt": "Verify and mention the supply voltage or voltage range of the equipment as provided in the documentation"
         },
         {
           "clause_row": 142,
@@ -6350,7 +6359,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the Frequency or Frequency range of the equipment"
+          "custom_prompt": "Verify and mention the frequency or frequency range of the equipment as provided in the documentation"
         },
         {
           "clause_row": 143,
@@ -6385,7 +6394,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the power or current rating of the equipment"
+          "custom_prompt": "Verify and mention the power or current rating of the equipment as provided in the documentation"
         },
         {
           "clause_row": 144,
@@ -6484,11 +6493,10 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 13,
-          "custom_prompt": "Verify that the documentation includes a statement of the range of environmental conditions as required (refer to section 1.4)."
+          "page_no": 13
         },
         {
           "clause_row": 147,
@@ -6523,7 +6531,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention if the equipment is intended for indoor or outdoor use"
+          "custom_prompt": "Verify and mention if the intended use of the equipment is indoor or outdoor or both"
         },
         {
           "clause_row": 148,
@@ -6541,7 +6549,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention if the equipment is intended for indoor or outdoor use"
+          "custom_prompt": "Verify and mention if the intended use of the equipment is indoor or outdoor or both"
         },
         {
           "clause_row": 149,
@@ -6559,7 +6567,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the range of environmental conditions specified with respect to altitude"
+          "custom_prompt": "Verify and mention the altitude specifications of the equipment"
         },
         {
           "clause_row": 149,
@@ -6577,7 +6585,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the range of environmental conditions specified with respect to altitude"
+          "custom_prompt": "Verify and mention the altitude specifications of the equipment"
         },
         {
           "clause_row": 150,
@@ -6595,7 +6603,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the range of environmental conditions specified with respect to temperature"
+          "custom_prompt": "Verify and mention the temperature specifications of the equipment"
         },
         {
           "clause_row": 150,
@@ -6613,7 +6621,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the range of environmental conditions specified with respect to temperature"
+          "custom_prompt": "Verify and mention the temperature specifications of the equipment"
         },
         {
           "clause_row": 151,
@@ -6631,7 +6639,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the range of environmental conditions specified with respect to relative humidity"
+          "custom_prompt": "Verify and mention the relative humidity specifications of the equipment"
         },
         {
           "clause_row": 151,
@@ -6649,7 +6657,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the range of environmental conditions specified with respect to relative humidity"
+          "custom_prompt": "Verify and mention the relative humidity specifications of the equipment"
         },
         {
           "clause_row": 152,
@@ -6667,7 +6675,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the range of Mains supply voltage fluctuations as specified"
+          "custom_prompt": "Verify and mention the mains supply voltage fluctuations of the equipment"
         },
         {
           "clause_row": 152,
@@ -6685,7 +6693,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the range of Mains supply voltage fluctuations as specified"
+          "custom_prompt": "Verify and mention the mains supply voltage fluctuations of the equipment"
         },
         {
           "clause_row": 153,
@@ -6703,7 +6711,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the overvoltage category as specified"
+          "custom_prompt": "Verify and mention the overvoltage category of the equipment"
         },
         {
           "clause_row": 153,
@@ -6721,7 +6729,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the overvoltage category as specified"
+          "custom_prompt": "Verify and mention the overvoltage category of the equipment"
         },
         {
           "clause_row": 154,
@@ -6739,7 +6747,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the use of equipement in wet location if applicable"
+          "custom_prompt": "Verify if the equipment can be used in wet locations if applicable"
         },
         {
           "clause_row": 154,
@@ -6757,7 +6765,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the use of equipement in wet location if applicable"
+          "custom_prompt": "Verify if the equipment can be used in wet locations if applicable"
         },
         {
           "clause_row": 155,
@@ -6775,7 +6783,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the Pollution degree of the intended environment"
+          "custom_prompt": "Verify and mention the pollution degree of the intended environment of the equipment"
         },
         {
           "clause_row": 155,
@@ -6793,7 +6801,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the Pollution degree of the intended environment"
+          "custom_prompt": "Verify and mention the pollution degree of the intended environment of the equipment"
         }
       ]
     }

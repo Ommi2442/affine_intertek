@@ -14,7 +14,8 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "page_no": 1
+          "page_no": 1,
+          "disable_text": true
         },
         {
           "question_row": 1,
@@ -129,7 +130,7 @@
           "answer_column": 1,
           "value": "IEC 61010-1:2010, IEC 61010-1:2010/AMD1:2016",
           "task_type": null,
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 1
@@ -142,7 +143,7 @@
           "answer_column": 1,
           "value": "CB Scheme",
           "task_type": null,
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 1
@@ -155,7 +156,7 @@
           "answer_column": 1,
           "value": "N/A",
           "task_type": null,
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 1
@@ -168,7 +169,7 @@
           "answer_column": 1,
           "value": "IECEE OD-2020-F1:2020, Ed.1.3",
           "task_type": null,
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 1
@@ -181,7 +182,7 @@
           "answer_column": 1,
           "value": "IEC61010_1P",
           "task_type": null,
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 1
@@ -194,7 +195,7 @@
           "answer_column": 1,
           "value": "VDE Prüf- und Zertifizierungsinstitut GmbH",
           "task_type": null,
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 1
@@ -207,7 +208,7 @@
           "answer_column": 1,
           "value": "2021-04-12",
           "task_type": null,
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "page_no": 1
@@ -228,15 +229,15 @@
         {
           "question_row": 19,
           "question_column": 0,
-          "field": "General disclaimer:",
+          "field": "General disclaimer:\nThe test results presented in this report relate only to the object tested.\nThis report shall not be reproduced, except in full, without the written approval of the Issuing  NCB. The authenticity of this Test Report and its contents can be verified by contacting the NCB, responsible for this Test Report.",
           "answer_row": 20,
           "answer_column": 0,
-          "value": "The test results presented in this report relate only to the object tested.\nThis report shall not be reproduced, except in full, without the written approval of the Issuing  NCB. The authenticity of this Test Report and its contents can be verified by contacting the NCB, responsible for this Test Report.",
           "task_type": null,
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "page_no": 1
+          "page_no": 1,
+          "single_row": true
         }
       ]
     },
@@ -339,6 +340,7 @@
           "accuracy_level": false,
           "checkbox_value": true,
           "checkbox_index": 0.0,
+          "checkbox_value_0": false,
           "page_no": 2
         },
         {
@@ -393,6 +395,7 @@
           "accuracy_level": false,
           "checkbox_value": true,
           "checkbox_index": 1.0,
+          "checkbox_value_1": false,
           "page_no": 2
         },
         {
@@ -447,6 +450,7 @@
           "accuracy_level": false,
           "checkbox_value": true,
           "checkbox_index": 2.0,
+          "checkbox_value_2": false,
           "page_no": 2
         },
         {
@@ -514,6 +518,7 @@
           "accuracy_level": false,
           "checkbox_value": true,
           "checkbox_index": 3.0,
+          "checkbox_value_3": false,
           "page_no": 2
         },
         {
@@ -529,6 +534,7 @@
           "accuracy_level": false,
           "checkbox_value": true,
           "checkbox_index": 4.0,
+          "checkbox_value_4": false,
           "page_no": 2
         },
         {
@@ -862,7 +868,7 @@
         {
           "question_row": 12,
           "question_column": 0,
-          "field": "Summary of compliance with National Differences (List of countries addressed):\n\n\n\n The product fulfils the requirements of _________ (insert standard number and edition and delete the text in parenthesis or delete the whole sentence if not applicable)",
+          "field": "Summary of compliance with National Differences (List of countries addressed):\n\n\n\n[*]The product fulfils the requirements of IEC 61010-1:2010, IEC 61010-1:2010/AMD1:2016",
           "answer_row": 12,
           "answer_column": 0,
           "value": null,
@@ -872,16 +878,16 @@
           "accuracy_level": true,
           "checkbox_value": true,
           "checkbox_index": 5,
+          "checkbox_value_5": false,
           "page_no": 5,
           "custom_prompt": "List the countries names addressed in summary of compliance with National Differences without '[]'. Provide me only the the country names in ISO 3166 codes as output.",
-          "is_table": true,
           "single_row": true,
           "rendering_column": 1
         },
         {
           "question_row": 13,
           "question_column": 0,
-          "field": "Statement concerning the uncertainty of the measurement systems used for the tests \n(may be required by the product standard or client)\n\n Internal procedure used for type testing through which traceability of the measuring uncertainty has been established:\nProcedure number, issue date and title:\n\nCalculations leading to the reported values are on file with the NCB and testing laboratory that conducted the testing.\n\n Statement not required by the standard used for type testing \n(Note: When IEC or ISO standard requires a statement concerning the uncertainty of the measurement systems used for tests, this should be reported above. The informative text in parenthesis should be delete in both cases after selecting the applicable option)",
+          "field": "Statement concerning the uncertainty of the measurement systems used for the tests \n(may be required by the product standard or client)\n\n[*]Internal procedure used for type testing through which traceability of the measuring uncertainty has been established:\nProcedure number, issue date and title:\n\nCalculations leading to the reported values are on file with the NCB and testing laboratory that conducted the testing.\n\n[*]Statement not required by the standard used for type testing \n(Note: When IEC or ISO standard requires a statement concerning the uncertainty of the measurement systems used for tests, this should be reported above. The informative text in parenthesis should be delete in both cases after selecting the applicable option)",
           "answer_row": 13,
           "answer_column": 0,
           "value": null,
@@ -891,8 +897,9 @@
           "accuracy_level": false,
           "checkbox_value": true,
           "checkbox_index": "[6,7]",
+          "checkbox_value_6": false,
+          "checkbox_value_7": false,
           "page_no": 5,
-          "is_table": true,
           "single_row": true,
           "rendering_column": 1
         }
@@ -1213,7 +1220,7 @@
           "field": "General remarks:",
           "answer_row": 22,
           "answer_column": 0,
-          "value": "The test results presented in this report relate only to the object tested.\nThis report shall not be reproduced, except in full, without the written approval of the issuing testing laboratory.\n\"(see Enclosure #)\" refers to additional information appended to the report.\n\"(see Form A.xx)\" refers to a Table appended to the report.\nBottom lines for measurement Tables Forms A.xx are optional if used as record.\n\nThroughout this report a  comma /  point is used as the decimal separator.",
+          "value": "The test results presented in this report relate only to the object tested.\nThis report shall not be reproduced, except in full, without the written approval of the issuing testing laboratory.\n\"(see Enclosure #)\" refers to additional information appended to the report.\n\"(see Form A.xx)\" refers to a Table appended to the report.\nBottom lines for measurement Tables Forms A.xx are optional if used as record.\n\nThroughout this report a[*]comma /[*]point is used as the decimal separator.",
           "task_type": null,
           "user_editable": true,
           "ai_fillable": false,
@@ -1221,9 +1228,11 @@
           "checkbox_value": true,
           "checkbox_index": "[8,9]",
           "page_no": 7,
+          "checkbox_value_8": false,
+          "checkbox_value_9": false,
+          "take_value_UI": true,
           "single_row": true,
-          "UI_answer_column": 2,
-          "is_textbox": false
+          "new_logic_1": true
         },
         {
           "question_row": 23,
@@ -1245,15 +1254,18 @@
           "field": "The application for obtaining a CB Test Certificate includes more than one factory location and a declaration from the manufacturer stating that the sample(s) submitted for evaluation is (are) representative of the products from each factory has been provided\t:",
           "answer_row": 24,
           "answer_column": 2,
-          "value": "Yes\n Not applicable",
+          "value": "[*]Yes\n[*]Not applicable",
           "task_type": "extraction",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
           "checkbox_value": true,
           "checkbox_index": "[10,11]",
+          "checkbox_value_10": false,
+          "checkbox_value_11": false,
           "page_no": 7,
-          "checkbox_answer_UI": true
+          "take_value_UI": true,
+          "single_row": true
         },
         {
           "question_row": 25,
@@ -1300,7 +1312,6 @@
           "accuracy_level": true,
           "page_no": 8,
           "custom_prompt": "Provide a General description of the product. The response should be in 100-200 words.",
-          "is_table": true,
           "single_row": true,
           "rendering_column": 1,
           "rendering_row": 4,
@@ -1337,7 +1348,6 @@
           "accuracy_level": true,
           "page_no": 8,
           "custom_prompt": "If the equipment doesn't have any special features like laser, X-Ray, ultraviolet, UV, ultrasound, radio frequency, cathode tube, microwave radiation, accelerated electron, Ionizing radiation, battery, ozone mentioned in the documentation, mention exactly \"N/A - No Special Features\"  else describe the special features if present in 100-200 words",
-          "is_table": true,
           "single_row": true,
           "rendering_column": 1,
           "rendering_row": 4,
@@ -4941,7 +4951,7 @@
           "page_no": 12,
           "custom_prompt": "Verify if the equipment is protected by double insulation or reinforced insulation"
         },
-        
+
         {
           "clause_row": 104,
           "clause_column": 0,
@@ -5722,7 +5732,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 12,
-          "custom_prompt":"Verify that safety documentation for service personnel authorized by the manufacturer is provided"
+          "custom_prompt": "Verify that safety documentation for service personnel authorized by the manufacturer is provided"
         },
         {
           "clause_row": 126,
@@ -5954,7 +5964,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 12,
-          "custom_prompt":"Verify that the technical specification of the equipment is mentioned in the documentation"
+          "custom_prompt": "Verify that the technical specification of the equipment is mentioned in the documentation"
         },
         {
           "clause_row": 132,
@@ -5972,7 +5982,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 12,
-          "custom_prompt":"Verify that the technical specification of the equipment is mentioned in the documentation"
+          "custom_prompt": "Verify that the technical specification of the equipment is mentioned in the documentation"
         },
         {
           "clause_row": 133,
@@ -6098,7 +6108,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Verify that the documentation includes instructions for lifting and carrying the equipment."
+          "custom_prompt": "Verify that the instructions for lifting and carrying is provided in the documentation only if the equipment is portable. Mention 'Not Applicable' if the equipment is not portable."
         },
         {
           "clause_row": 136,
@@ -6116,7 +6126,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Verify that the documentation includes instructions for lifting and carrying the equipment."
+          "custom_prompt": "Verify that the instructions for lifting and carrying is provided in the documentation only if the equipment is portable."
         },
         {
           "clause_row": 137,
@@ -6130,11 +6140,10 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 13,
-          "custom_prompt": "Verify that the documentation includes warning statements and clear explanations of all warning symbols."
+          "page_no": 13
         },
         {
           "clause_row": 137,
@@ -6169,7 +6178,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Verify that the documentation includes warning statements and clear explanations of warning symbols."
+          "custom_prompt": "Verify that warning statements and a clear explanation of warning symbols is provided in the documentation."
         },
         {
           "clause_row": 138,
@@ -6187,7 +6196,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Verify that the documentation includes warning statements and clear explanations of warning symbols."
+          "custom_prompt": "Verify that warning statements and a clear explanation of warning symbols is provided in the documentation."
         },
         {
           "clause_row": 139,
@@ -6205,7 +6214,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Verify that the documentation includes warning statements and clear explanations of warning symbols, and that corresponding information is marked on the equipment."
+          "custom_prompt": "Verify that warning statements and a clear explanation of warning symbols is marked on the equipment"
         },
         {
           "clause_row": 139,
@@ -6223,7 +6232,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Verify that the documentation includes warning statements and clear explanations of warning symbols, and that corresponding information is marked on the equipment."
+          "custom_prompt": "Verify that warning statements and a clear explanation of warning symbols is marked on the equipment"
         },
         {
           "clause_row": 140,
@@ -6315,7 +6324,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the Supply voltage or Voltage range of the equipment"
+          "custom_prompt": "Verify and mention the supply voltage or voltage range of the equipment as provided in the documentation"
         },
         {
           "clause_row": 142,
@@ -6350,7 +6359,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the Frequency or Frequency range of the equipment"
+          "custom_prompt": "Verify and mention the frequency or frequency range of the equipment as provided in the documentation"
         },
         {
           "clause_row": 143,
@@ -6385,7 +6394,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the power or current rating of the equipment"
+          "custom_prompt": "Verify and mention the power or current rating of the equipment as provided in the documentation"
         },
         {
           "clause_row": 144,
@@ -6484,11 +6493,10 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 13,
-          "custom_prompt": "Verify that the documentation includes a statement of the range of environmental conditions as required (refer to section 1.4)."
+          "page_no": 13
         },
         {
           "clause_row": 147,
@@ -6523,7 +6531,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention if the equipment is intended for indoor or outdoor use"
+          "custom_prompt": "Verify and mention if the intended use of the equipment is indoor or outdoor or both"
         },
         {
           "clause_row": 148,
@@ -6541,7 +6549,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention if the equipment is intended for indoor or outdoor use"
+          "custom_prompt": "Verify and mention if the intended use of the equipment is indoor or outdoor or both"
         },
         {
           "clause_row": 149,
@@ -6559,7 +6567,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the range of environmental conditions specified with respect to altitude"
+          "custom_prompt": "Verify and mention the altitude specifications of the equipment"
         },
         {
           "clause_row": 149,
@@ -6577,7 +6585,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the range of environmental conditions specified with respect to altitude"
+          "custom_prompt": "Verify and mention the altitude specifications of the equipment"
         },
         {
           "clause_row": 150,
@@ -6595,7 +6603,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the range of environmental conditions specified with respect to temperature"
+          "custom_prompt": "Verify and mention the temperature specifications of the equipment"
         },
         {
           "clause_row": 150,
@@ -6613,7 +6621,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the range of environmental conditions specified with respect to temperature"
+          "custom_prompt": "Verify and mention the temperature specifications of the equipment"
         },
         {
           "clause_row": 151,
@@ -6631,7 +6639,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the range of environmental conditions specified with respect to relative humidity"
+          "custom_prompt": "Verify and mention the relative humidity specifications of the equipment"
         },
         {
           "clause_row": 151,
@@ -6649,7 +6657,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the range of environmental conditions specified with respect to relative humidity"
+          "custom_prompt": "Verify and mention the relative humidity specifications of the equipment"
         },
         {
           "clause_row": 152,
@@ -6667,7 +6675,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the range of Mains supply voltage fluctuations as specified"
+          "custom_prompt": "Verify and mention the mains supply voltage fluctuations of the equipment"
         },
         {
           "clause_row": 152,
@@ -6685,7 +6693,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the range of Mains supply voltage fluctuations as specified"
+          "custom_prompt": "Verify and mention the mains supply voltage fluctuations of the equipment"
         },
         {
           "clause_row": 153,
@@ -6703,7 +6711,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the overvoltage category as specified"
+          "custom_prompt": "Verify and mention the overvoltage category of the equipment"
         },
         {
           "clause_row": 153,
@@ -6721,7 +6729,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the overvoltage category as specified"
+          "custom_prompt": "Verify and mention the overvoltage category of the equipment"
         },
         {
           "clause_row": 154,
@@ -6739,7 +6747,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the use of equipement in wet location if applicable"
+          "custom_prompt": "Verify if the equipment can be used in wet locations if applicable"
         },
         {
           "clause_row": 154,
@@ -6757,7 +6765,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the use of equipement in wet location if applicable"
+          "custom_prompt": "Verify if the equipment can be used in wet locations if applicable"
         },
         {
           "clause_row": 155,
@@ -6775,7 +6783,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the Pollution degree of the intended environment"
+          "custom_prompt": "Verify and mention the pollution degree of the intended environment of the equipment"
         },
         {
           "clause_row": 155,
@@ -6793,7 +6801,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the Pollution degree of the intended environment"
+          "custom_prompt": "Verify and mention the pollution degree of the intended environment of the equipment"
         },
         {
           "clause_row": 156,
@@ -6878,7 +6886,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 13
+          "page_no": 13,
+          "custom_prompt": "Verify if the enclosure or a part of the equipment has an impact strength of less than 5 joules then mention the IK code in accordance to IEC 62262 marked. Mention 'Not Applicable'  if the enclosure or a part of the equipment does not have an impact strength of less than 5 joules"
         },
         {
           "clause_row": 158,
@@ -6895,7 +6904,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 13
+          "page_no": 13,
+          "custom_prompt": "Verify if the enclosure or a part of the equipment has an impact strength of less than 5 joules then mention the IK code in accordance to IEC 62262 marked."
         },
         {
           "clause_row": 159,
@@ -6913,7 +6923,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Check if impact rating less than 5J Symbol 14 of Table 1 is marked"
+          "custom_prompt": "Verify if the enclosure or a part of the equipment has an impact strength of less than 5 joules then symbol 14 of Table 1 is marked. Mention 'Not Applicable'  if the enclosure or a part of the equipment does not have an impact strength of less than 5 joules"
         },
         {
           "clause_row": 159,
@@ -6931,7 +6941,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Check if impact rating less than 5J Symbol 14 of Table 1 is marked"
+          "custom_prompt": "Verify if the enclosure or a part of the equipment has an impact strength of less than 5 joules then symbol 14 of Table 1 is marked."
         },
         {
           "clause_row": 160,
@@ -6949,7 +6959,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the rated energy level and test method stated is impact rating less than 5J"
+          "custom_prompt": "Verify if the enclosure or a part of the equipment has an impact strength of less than 5 joules then symbol 14 of Table 1 is marked with rated energy level and test method stated. Mention 'Not Applicable'  if the enclosure or a part of the equipment does not have an impact strength of less than 5 joules"
         },
         {
           "clause_row": 160,
@@ -6967,7 +6977,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 13,
-          "custom_prompt": "Mention the rated energy level and test method stated is impact rating less than 5J"
+          "custom_prompt": "Verify if the enclosure or a part of the equipment has an impact strength of less than 5 joules then symbol 14 of Table 1 is marked with rated energy level and test method stated."
         },
         {
           "clause_row": 161,
@@ -7053,7 +7063,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes instructions for equipment installation, including assembly, location, and mounting requirements."
+          "custom_prompt": "Verify and mention the instructions for Assembly, location and mounting requirements of the equipment"
         },
         {
           "clause_row": 163,
@@ -7071,7 +7081,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes instructions for equipment installation, including assembly, location, and mounting requirements."
+          "custom_prompt": "Verify and mention the instructions for Assembly, location and mounting requirements of the equipment"
         },
         {
           "clause_row": 164,
@@ -7089,7 +7099,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes installation instructions for protective earthing."
+          "custom_prompt": "Verify and mention the instructions for protective earthing of the equipment"
         },
         {
           "clause_row": 164,
@@ -7107,7 +7117,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes installation instructions for protective earthing."
+          "custom_prompt": "Verify and mention the instructions for protective earthing of the equipment"
         },
         {
           "clause_row": 165,
@@ -7125,7 +7135,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes instructions for connections to the supply."
+          "custom_prompt": "Verify and mention the instructions for connections to supply of the equipment"
         },
         {
           "clause_row": 165,
@@ -7143,7 +7153,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes instructions for connections to the supply."
+          "custom_prompt": "Verify and mention the instructions for connections to supply of the equipment"
         },
         {
           "clause_row": 166,
@@ -7157,8 +7167,8 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 14,
           "custom_prompt": "Verify that the documentation includes installation instructions for permanently connected equipment."
@@ -7196,7 +7206,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes installation instructions for permanently connected equipment, including supply wiring requirements."
+          "custom_prompt": "Verify if the equipment is intended to be permanently connected to the mains supply then supply wiring requirements is specified. Mention 'Not Permanently Connected equipment' incase the equipment is not intended to be permanently connected to the mains supply"
         },
         {
           "clause_row": 167,
@@ -7214,7 +7224,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes installation instructions for permanently connected equipment, including supply wiring requirements."
+          "custom_prompt": "Verify if the equipment is intended to be permanently connected to the mains supply then supply wiring requirements is specified."
         },
         {
           "clause_row": 168,
@@ -7232,7 +7242,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation for permanently connected equipment includes instructions regarding external switches or circuit-breakers, including required specifications and recommended installation location."
+          "custom_prompt": "Verify if the equipment is intended to be permanently connected to the mains supply and has external switch or circuit-breaker, requirements and location recommendation is specified. Mention 'Not Permanently Connected equipment' incase the equipment is not intended to be permanently connected to the mains supply."
         },
         {
           "clause_row": 168,
@@ -7250,7 +7260,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation for permanently connected equipment includes instructions regarding external switches or circuit-breakers, including required specifications and recommended installation location."
+          "custom_prompt": "Verify if the equipment is intended to be permanently connected to the mains supply and has external switch or circuit-breaker, requirements and location recommendation is specified."
         },
         {
           "clause_row": 169,
@@ -7268,7 +7278,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes instructions for ventilation requirements."
+          "custom_prompt": "Verify and mention the instructions for ventilation requirements of the equipment"
         },
         {
           "clause_row": 169,
@@ -7286,7 +7296,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes instructions for ventilation requirements."
+          "custom_prompt": "Verify and mention the instructions for ventilation requirements of the equipment"
         },
         {
           "clause_row": 170,
@@ -7304,7 +7314,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes installation instructions specifying safety characteristics for special external services, such as maximum and minimum temperature, pressure, airflow, or cooling liquid requirements."
+          "custom_prompt": "Verify and mention the Safety characteristics for special external services for e. g. maximum and minimum temperature, pressure, flow of air, cooling liquid"
         },
         {
           "clause_row": 170,
@@ -7322,7 +7332,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes installation instructions specifying safety characteristics for special external services, such as maximum and minimum temperature, pressure, airflow, or cooling liquid requirements."
+          "custom_prompt": "Verify and mention the Safety characteristics for special external services for e. g. maximum and minimum temperature, pressure, flow of air, cooling liquid"
         },
         {
           "clause_row": 171,
@@ -7340,7 +7350,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes installation instructions related to sound level."
+          "custom_prompt": "Verify and mention the instructions relating to sound level"
         },
         {
           "clause_row": 171,
@@ -7358,7 +7368,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes installation instructions related to sound level."
+          "custom_prompt": "Verify and mention the instructions relating to sound level"
         },
         {
           "clause_row": 172,
@@ -7448,7 +7458,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include identification and description of operating controls."
+          "custom_prompt": "Verify and mention the instructions for use include identification and description of operating controls"
         },
         {
           "clause_row": 174,
@@ -7466,7 +7476,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include identification and description of operating controls."
+          "custom_prompt": "Verify and mention the instructions for use include identification and description of operating controls"
         },
         {
           "clause_row": 175,
@@ -7484,7 +7494,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include information on positioning the equipment for disconnection."
+          "custom_prompt": "Verify and mention the instructions for use include Positioning for disconnection"
         },
         {
           "clause_row": 175,
@@ -7502,7 +7512,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include information on positioning the equipment for disconnection."
+          "custom_prompt": "Verify and mention the instructions for use include Positioning for disconnection"
         },
         {
           "clause_row": 176,
@@ -7520,7 +7530,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include guidance for interconnection to accessories or other equipment."
+          "custom_prompt": "Verify and mention the instructions for interconnection to accessories or other equipment"
         },
         {
           "clause_row": 176,
@@ -7538,7 +7548,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include guidance for interconnection to accessories or other equipment."
+          "custom_prompt": "Verify and mention the instructions for interconnection to accessories or other equipment"
         },
         {
           "clause_row": 177,
@@ -7556,7 +7566,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include the specification of intermittent operation limits."
+          "custom_prompt": "Verify and mention the instructions for Specification of intermittent operation limits of the equipment"
         },
         {
           "clause_row": 177,
@@ -7574,7 +7584,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include the specification of intermittent operation limits."
+          "custom_prompt": "Verify and mention the instructions for Specification of intermittent operation limits of the equipment"
         },
         {
           "clause_row": 178,
@@ -7592,7 +7602,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include an explanation of all symbols used on the equipment."
+          "custom_prompt": "Verify that the explanations of the symbols used for equipment operation is specified"
         },
         {
           "clause_row": 178,
@@ -7610,7 +7620,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include an explanation of all symbols used on the equipment."
+          "custom_prompt": "Verify that the explanations of the symbols used for equipment operation is specified"
         },
         {
           "clause_row": 179,
@@ -7628,7 +7638,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include information on the replacement of consumable materials."
+          "custom_prompt": "Verify and mention the instructions for replacement of consumable materials"
         },
         {
           "clause_row": 179,
@@ -7646,7 +7656,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include information on the replacement of consumable materials."
+          "custom_prompt": "Verify and mention the instructions for replacement of consumable materials"
         },
         {
           "clause_row": 180,
@@ -7664,7 +7674,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include information on cleaning and decontamination."
+          "custom_prompt": "Verify and mention the instructions for cleaning and decontamination of the equipment"
         },
         {
           "clause_row": 180,
@@ -7682,7 +7692,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include information on cleaning and decontamination."
+          "custom_prompt": "Verify and mention the instructions for cleaning and decontamination of the equipment"
         },
         {
           "clause_row": 181,
@@ -7700,7 +7710,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include a listing of any poisonous or injurious gases and their quantities."
+          "custom_prompt": "Verify the listing of any poisonous or injurious gases and quantities in the equipment. Mention 'No such gases' if there is no listing of any poisonous or injurious gases in the equipment."
         },
         {
           "clause_row": 181,
@@ -7718,7 +7728,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include a listing of any poisonous or injurious gases and their quantities."
+          "custom_prompt": "Verify the listing of any poisonous or injurious gases and quantities in the equipment."
         },
         {
           "clause_row": 182,
@@ -7736,7 +7746,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include risk-reduction procedures relating to flammable liquids as required by 9.5(c)."
+          "custom_prompt": "Verify the risk reduction procedures relating to flammable liquids in the equipment. Mention 'No flammable liquids' incase there are no flammable liquids present in the equipment"
         },
         {
           "clause_row": 182,
@@ -7754,7 +7764,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include risk-reduction procedures relating to flammable liquids as required by 9.5(c)."
+          "custom_prompt": "Verify the risk reduction procedures relating to flammable liquids in the equipment."
         },
         {
           "clause_row": 183,
@@ -7772,7 +7782,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include risk-reduction procedures related to burns from surfaces permitted to exceed the limits of clause 10.1."
+          "custom_prompt": "Verify the risk reduction procedures relating burn only if certain accessible surfaces in the equipment are permitted to exceed the temperature limits. Mention 'No surfaces permitted to exceed the temperature limits' incase no surfaces are permitted to exceed the temperature limits as per clause 10.1 in IEC 61010-1"
         },
         {
           "clause_row": 183,
@@ -7790,7 +7800,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for use include risk-reduction procedures related to burns from surfaces permitted to exceed the limits of clause 10.1."
+          "custom_prompt": "Verify the risk reduction procedures relating burn only if certain accessible surfaces in the equipment are permitted to exceed the temperature limits."
         },
         {
           "clause_row": 184,
@@ -7842,7 +7852,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes a statement indicating that protection may be impaired if the equipment is used in a manner not specified by the manufacturer."
+          "custom_prompt": "Verify that statement is provided about protection impairment if equipment is used in a manner not specified by the manufacturer."
         },
         {
           "clause_row": 185,
@@ -7860,7 +7870,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes a statement indicating that protection may be impaired if the equipment is used in a manner not specified by the manufacturer."
+          "custom_prompt": "Verify that statement is provided about protection impairment if equipment is used in a manner not specified by the manufacturer."
         },
         {
           "clause_row": 186,
@@ -7908,11 +7918,10 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes maintenance and service instructions intended for the responsible body."
+          "page_no": 14
         },
         {
           "clause_row": 187,
@@ -7943,11 +7952,10 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 14,
-          "custom_prompt": "Verify that the documentation for the responsible body includes detailed instructions sufficient to permit safe maintenance, inspection, and continued safety of the equipment."
+          "page_no": 14
         },
         {
           "clause_row": 188,
@@ -7982,7 +7990,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the maintenance and service instructions for the responsible body include a warning against using detachable mains supply cords with inadequate ratings."
+          "custom_prompt": "Verify and mention the Instructions against the use of detachable mains supply cord with inadequate rating of the equipment"
         },
         {
           "clause_row": 189,
@@ -8000,7 +8008,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the maintenance and service instructions for the responsible body include a warning against using detachable mains supply cords with inadequate ratings."
+          "custom_prompt": "Verify and mention the Instructions against the use of detachable mains supply cord with inadequate rating of the equipment"
         },
         {
           "clause_row": 190,
@@ -8018,7 +8026,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for the responsible body specify the exact battery type for user-replaceable batteries."
+          "custom_prompt": "Verify and mention the instructions for specific battery type of user replaceable batteries in the equipment. Mention 'No replaceable batteries' incase there are no replaceable batteries in the equipment."
         },
         {
           "clause_row": 190,
@@ -8036,7 +8044,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the instructions for the responsible body specify the exact battery type for user-replaceable batteries."
+          "custom_prompt": "Verify and mention the instructions for specific battery type of user replaceable batteries in the equipment."
         },
         {
           "clause_row": 191,
@@ -8054,7 +8062,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes instructions for the responsible body specifying any manufacturer-specified parts required for maintenance or service."
+          "custom_prompt": "Verify that the instructions for maintenance and inspection identify any parts that the manufacturer specifies must be used in order to maintain safety throughout the life of the equipment."
         },
         {
           "clause_row": 191,
@@ -8072,7 +8080,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 14,
-          "custom_prompt": "Verify that the documentation includes instructions for the responsible body specifying any manufacturer-specified parts required for maintenance or service."
+          "custom_prompt": "Verify that the instructions for maintenance and inspection identify any parts that the manufacturer specifies must be used in order to maintain safety throughout the life of the equipment."
         },
         {
           "clause_row": 192,
@@ -8090,7 +8098,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 15,
-          "custom_prompt": "Verify that the documentation for maintenance and service includes the rating and characteristics of fuses for the responsible body."
+          "custom_prompt": "Verify and mention the rating and characteristics of fuses as specified for the equipment"
         },
         {
           "clause_row": 192,
@@ -8108,7 +8116,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 15,
-          "custom_prompt": "Verify that the documentation for maintenance and service includes the rating and characteristics of fuses for the responsible body."
+          "custom_prompt": "Verify and mention the rating and characteristics of fuses as specified for the equipment"
         },
         {
           "clause_row": 193,
@@ -8122,11 +8130,10 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 15,
-          "custom_prompt": "Verify that the documentation includes instructions related to equipment maintenance and service, covering the subjects necessary to ensure safe servicing and continued safety."
+          "page_no": 15
         },
         {
           "clause_row": 193,
@@ -8161,7 +8168,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 15,
-          "custom_prompt": "Verify that the documentation includes maintenance and service instructions addressing product-specific risks that may affect service personnel."
+          "custom_prompt": "Verify that instructions identify Product specific risks that may affect service personnel."
         },
         {
           "clause_row": 194,
@@ -8179,7 +8186,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 15,
-          "custom_prompt": "Verify that the documentation includes maintenance and service instructions addressing product-specific risks that may affect service personnel."
+          "custom_prompt": "Verify that instructions identify Product specific risks that may affect service personnel."
         },
         {
           "clause_row": 195,
@@ -8197,7 +8204,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 15,
-          "custom_prompt": "Verify that the maintenance and service instructions include protective measures for identified risks to ensure safe servicing and continued safety."
+          "custom_prompt": "Verify that instructions include protective measures for the product specific risks that may affect service personnel."
         },
         {
           "clause_row": 195,
@@ -8215,7 +8222,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 15,
-          "custom_prompt": "Verify that the maintenance and service instructions include protective measures for identified risks to ensure safe servicing and continued safety."
+          "custom_prompt": "Verify that instructions include protective measures for the product specific risks that may affect service personnel."
         },
         {
           "clause_row": 196,
@@ -8233,7 +8240,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 15,
-          "custom_prompt": "Verify that the documentation includes instructions for equipment maintenance and service, including verification of the safe state after repair."
+          "custom_prompt": "Verify that instructions include verification of the safe state after repair or servicing"
         },
         {
           "clause_row": 196,
@@ -8251,7 +8258,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 15,
-          "custom_prompt": "Verify that the documentation includes instructions for equipment maintenance and service, including verification of the safe state after repair."
+          "custom_prompt": "Verify that instructions include verification of the safe state after repair or servicing"
         },
         {
           "clause_row": 197,
@@ -8265,10 +8272,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": [198],
-          "page_no": 15
+          "page_no": 15,
+          "custom_prompt": "Verify that instructions include integration of equipment into a larger system or operated under special or non-standard conditions if applicable. Mention 'No effects resulting from special conditions' if there are no effects resulting from special conditions"
         },
         {
           "clause_row": 197,
@@ -8303,7 +8311,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 15,
-          "custom_prompt": "Verify that the documentation includes information on equipment maintenance, servicing, integration into systems, and any effects resulting from special conditions."
+          "custom_prompt": "Verify that instructions include integration of equipment into a larger system or operated under special or non-standard conditions if applicable. Mention 'No effects resulting from special conditions' if there are no effects resulting from special conditions"
         },
         {
           "clause_row": 198,
@@ -8320,7 +8328,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 15
+          "page_no": 15,
+          "custom_prompt": "Verify that instructions include integration of equipment into a larger system or operated under special or non-standard conditions if applicable."
         },
         {
           "clause_row": 200,
@@ -8407,7 +8416,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": [203, 204, 205, 206, 207, 208],
           "page_no": 15
@@ -8512,7 +8521,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 15
@@ -8578,7 +8587,7 @@
           "field": "two accessible parts on same piece of the equipment within a distance of 1,8 m",
           "answer_row": 207,
           "answer_column": 2,
-          "custom_prompt": "Voltage, current, charge or energy must remain below the specified limits in normal condition and in single fault condition between accessible parts and earth, and between two accessible parts on the same piece of equipment within 1.8 m.",
+          "custom_prompt": "Voltage, current, charge or energy must remain below the specified limits in normal condition and in single fault condition between two accessible parts on the same piece of equipment within 1.8 m.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -8651,7 +8660,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": [210, 211, 212, 213, 214],
           "page_no": 15
@@ -8686,7 +8695,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 15
@@ -8717,7 +8726,7 @@
           "field": "parts of lamps and lamp sockets after lamp removal",
           "answer_row": 211,
           "answer_column": 2,
-          "custom_prompt": "Identify if parts of lamps or lamp sockets become hazardous live and accessible to an operator after lamp removal.",
+          "custom_prompt": "Verify if parts of lamps or lamp sockets become hazardous live and accessible to an operator after lamp removal.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -8752,7 +8761,7 @@
           "field": "parts to be replaced by operator only by the use of tool and warning marking",
           "answer_row": 212,
           "answer_column": 2,
-          "custom_prompt": "Identify if any hazardous live parts that require operator replacement using a tool and are marked with a warning are accessible to the operator.",
+          "custom_prompt": "Verify if parts to be replaced by OPERATOR only by the use of tool and warning marking",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -9095,7 +9104,7 @@
           "field": "–\ttest pin with length of 100 mm and 4 mm in \tdiameter applied",
           "answer_row": 222,
           "answer_column": 2,
-          "custom_prompt": "Check openings above hazardous live parts using a test pin 100 mm long and 4 mm in diameter.",
+          "custom_prompt": "Check openings above parts that are hazardous live using a test pin 100 mm long and 4 mm in diameter.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -9267,7 +9276,7 @@
           "field": "Voltage limits less than 30 V r.m.s. and 42,4 V\tpeak or 60 V d.c.",
           "answer_row": 227,
           "answer_column": 2,
-          "custom_prompt": "Verify that voltage levels in normal condition are below 30 V r.m.s., 42.4 V peak, or 60 V d.c.",
+          "custom_prompt": "Verify that levels in normal condition voltage levels are below 30 V r.m.s. and 42.4 V peak, or 60 V d.c.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -10099,10 +10108,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 17
+          "page_no": 17,
+          "custom_prompt": "Enclosures or protective barriers meet rigidity requirements of 8.1"
         },
         {
           "clause_row": 251,
@@ -10168,7 +10178,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 17
@@ -10236,7 +10246,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 17
@@ -10369,12 +10379,12 @@
           "field": "rated for maximum working voltage and the amount of power it will dissipate",
           "answer_row": 259,
           "answer_column": 2,
-          "custom_prompt": "Verify that impedance used as a primary means of protection is rated for the maximum working voltage and the power it will dissipate.",
+          "custom_prompt": "Verify if impedance is used as primary means of protection it is rated for maximum working voltage and the amount of power it will dissipate.Mention 'No Impedance' incase impedance is not used as primary means of protection",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 17
         },
@@ -10390,10 +10400,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 17
+          "page_no": 17,
+          "custom_prompt": "Verify if impedance is used as primary means of protection it is rated for maximum working voltage and the amount of power it will dissipate."
         },
         {
           "clause_row": 260,
@@ -10612,8 +10623,8 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 17
         },
@@ -10630,8 +10641,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 17
         },
@@ -10852,7 +10863,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 18
@@ -10883,7 +10894,7 @@
           "field": "Bonded to the protective conductor terminal; or",
           "answer_row": 274,
           "answer_column": 2,
-          "custom_prompt": "Verify that protective bonding is achieved by bonding accessible conductive parts to the protective conductor terminal.",
+          "custom_prompt": "Verify that accessible conductive parts are bonded to the protective conductor terminal.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -10918,7 +10929,7 @@
           "field": "Separated by conductive screen or barrier bonded to protective conductor terminal",
           "answer_row": 275,
           "answer_column": 2,
-          "custom_prompt": "Verify that protective bonding is achieved by separating accessible conductive parts with a conductive screen or barrier that is bonded to the protective conductor terminal.",
+          "custom_prompt": "Verify that accessible conductive parts are separated by conductive screen or barrier bonded to the protective conductor terminal.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -11032,7 +11043,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 18
@@ -11168,12 +11179,12 @@
           "field": "protective bonding not interrupted; or",
           "answer_row": 282,
           "answer_column": 2,
-          "custom_prompt": "Verify that protective bonding is not interrupted.",
+          "custom_prompt": "Verify that if protective bonding is used the protective bonding connection path is not interrupted.Mention 'No Protective Bonding' incase the equipment does not have protective bonding",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 18
         },
@@ -11189,10 +11200,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 18
+          "page_no": 18,
+          "custom_prompt": "Verify that if protective bonding is used the protective bonding connection path is not interrupted"
         },
         {
           "clause_row": 283,
@@ -11203,12 +11215,12 @@
           "field": "except as removable part that carries mains \tsupply input connection to the whole equipment",
           "answer_row": 283,
           "answer_column": 2,
-          "custom_prompt": "Verify that protective bonding is not interrupted, except where a removable part carries the mains supply input connection to the whole equipment.",
+          "custom_prompt": "Verify that protective bonding is interrupted only because a removable part that carries the MAINS supply input to the whole equipment has been removed. Mention 'No removable part that carries MAINS' incase there are no removable parts that carries mains supply.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 18
         },
@@ -11224,10 +11236,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 18
+          "page_no": 18,
+          "custom_prompt": "Verify that protective bonding is interrupted only because a removable part that carries the MAINS supply input to the whole equipment has been removed."
         },
         {
           "clause_row": 284,
@@ -11241,10 +11254,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 18
+          "page_no": 18,
+          "custom_prompt": "Verify if there is any movable protective bonding connection specifically designed for the equipment.Mention'No Movable protective bonding connection' incase there are no movable protective bonding connection"
         },
         {
           "clause_row": 284,
@@ -11258,10 +11272,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 18
+          "page_no": 18,
+          "custom_prompt": "Verify if there is any movable protective bonding connection specifically designed for the equipment."
         },
         {
           "clause_row": 285,
@@ -11272,12 +11287,12 @@
           "field": "No external metal braid of cables used\n(not regarded as protective bonding)",
           "answer_row": 285,
           "answer_column": 2,
-          "custom_prompt": "Verify that no external metal braid of cables is used as protective bonding, as it is not considered a protective bonding conductor.",
+          "custom_prompt": "Verify that no external metal braid of cables is used as protective bonding. Mention 'No metal braid' incase no external metal braid of cables is used as protective bonding.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 18
         },
@@ -11293,10 +11308,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 18
+          "page_no": 18,
+          "custom_prompt": "Verify that no external metal braid of cables is used as protective bonding."
         },
         {
           "clause_row": 286,
@@ -11311,7 +11327,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 18
@@ -11342,12 +11358,12 @@
           "field": "Means provided for passing protective conductor;",
           "answer_row": 287,
           "answer_column": 2,
-          "custom_prompt": "Verify that when the mains supply passes through, adequate means are provided for passing the protective conductor.",
+          "custom_prompt": "Verify that only if Mains supply is passed through the equipment then the protective conductor is also passed through the equipment.Mention 'No Power from Mains supply passed through equipment' if mains supply is not passed through the equipment",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 18
         },
@@ -11363,10 +11379,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 18
+          "page_no": 18,
+          "custom_prompt": "Verify that only if Mains supply is passed through the equipment then the protective conductor is also passed through the equipment."
         },
         {
           "clause_row": 288,
@@ -11414,10 +11431,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 18
+          "page_no": 18,
+          "custom_prompt": "Verify that the protective conductors are bare or insulated, if insulated either green or yellow."
         },
         {
           "clause_row": 289,
@@ -11428,7 +11446,7 @@
           "field": "Protective conductors bare or insulated, \nif insulated, green/yellow",
           "answer_row": 289,
           "answer_column": 3,
-          "custom_prompt": "Verify that protective conductors are bare or insulated, and if insulated, they are green/yellow.",
+          "custom_prompt": "Verify that the protective conductors are bare or insulated, if insulated either green or yellow.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -11480,7 +11498,7 @@
           "field": "1)\tearthing braids;",
           "answer_row": 291,
           "answer_column": 2,
-          "custom_prompt": "Verify that protective conductors are bare or insulated in green/yellow, except where earthing braids are used.",
+          "custom_prompt": "Verify if earthing braids are used as exception to protective conductors.Mention 'No earthing braids' incase earthing braids are not used",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -11498,7 +11516,7 @@
           "field": "1)\tearthing braids;",
           "answer_row": 291,
           "answer_column": 3,
-          "custom_prompt": "Verify that protective conductors are bare or insulated in green/yellow, except where earthing braids are used.",
+          "custom_prompt": "Verify if earthing braids are used as exception to protective conductors.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -11516,7 +11534,7 @@
           "field": "2)\tinternal protective conductors etc.;",
           "answer_row": 292,
           "answer_column": 2,
-          "custom_prompt": "Verify that protective conductors are bare or insulated in green/yellow, except for internal protective conductors and similar components.",
+          "custom_prompt": "Verify incase there are any internal protective conductors and used as exception to protective conductors.Mention 'No Internal Protective Conductor' incase there are no internal protective conductors",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -11534,7 +11552,7 @@
           "field": "2)\tinternal protective conductors etc.;",
           "answer_row": 292,
           "answer_column": 3,
-          "custom_prompt": "Verify that protective conductors are bare or insulated in green/yellow, except for internal protective conductors and similar components.",
+          "custom_prompt": "Verify incase there are any internal protective conductors and used as exception to protective conductors.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -11553,7 +11571,7 @@
           "answer_row": 293,
           "answer_column": 2,
           "value": null,
-          "custom_prompt": "Verify that green/yellow insulation is used only for protective conductors and not for any other purpose.",
+          "custom_prompt": "Verify that if green/yellow insulation is used only for protective conductors and not for any other purpose.",
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
@@ -11570,7 +11588,7 @@
           "field": "Green/yellow not used for other purposes",
           "answer_row": 293,
           "answer_column": 3,
-          "custom_prompt": "Verify that green/yellow insulation is used only for protective conductors and not for any other purpose.",
+          "custom_prompt": "Verify that if green/yellow insulation is used only for protective conductors and not for any other purpose.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -11591,10 +11609,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 18
+          "page_no": 18,
+          "custom_prompt": "Verify that the equipment has a protective conductor terminal suitable for connection of a protective conductor.Mention 'No Protective conductor terminal' incase there is no protective conductor terminal"
         },
         {
           "clause_row": 294,
@@ -11608,10 +11627,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 18
+          "page_no": 18,
+          "custom_prompt": "Verify that the equipment has a protective conductor terminal suitable for connection of a protective conductor."
         },
         {
           "clause_row": 295,
@@ -11662,12 +11682,12 @@
           "field": "Contact surfaces are metal",
           "answer_row": 296,
           "answer_column": 2,
-          "custom_prompt": "Verify that the contact surfaces of the protective conductor terminal are metal.",
+          "custom_prompt": "Verify that incase there is a protective conductor terminal the contact surfaces are metal",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 18
         },
@@ -11683,10 +11703,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 18
+          "page_no": 18,
+          "custom_prompt": "Verify that incase there is a protective conductor terminal the contact surfaces are metal"
         },
         {
           "clause_row": 297,
@@ -11697,12 +11718,12 @@
           "field": "Appliance inlet used",
           "answer_row": 297,
           "answer_column": 2,
-          "custom_prompt": "Verify that an appliance inlet is used for the protective conductor terminal when required for additional protection in single fault condition.",
+          "custom_prompt": "Verify that incase there is a protective conductor terminal an appliance inlet is used.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 18
         },
@@ -11718,10 +11739,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 18
+          "page_no": 18,
+          "custom_prompt": "Verify that incase there is a protective conductor terminal an appliance inlet is used."
         },
         {
           "clause_row": 298,
@@ -11732,12 +11754,12 @@
           "field": "For rewirable cords and permanently connected equipment, protective conductor terminal is close to mains supply terminals",
           "answer_row": 298,
           "answer_column": 2,
-          "custom_prompt": "Verify that for rewirable cords and permanently connected equipment, the protective conductor terminal is positioned close to the mains supply terminals.",
+          "custom_prompt": "Verify that for rewirable cords and permanently connected equipment, the protective conductor terminal is close to the mains supply terminals.Mention 'Not Permanently connected equipment' incase the equipment is not permanently connected.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 18
         },
@@ -11753,10 +11775,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 18
+          "page_no": 18,
+          "custom_prompt": "Verify that for rewirable cords and permanently connected equipment, the protective conductor terminal is close to the mains supply terminals."
         },
         {
           "clause_row": 299,
@@ -11771,7 +11794,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 18
@@ -11802,12 +11825,12 @@
           "field": "Is near terminals of circuit for which protective \n\tearthing is necessary",
           "answer_row": 300,
           "answer_column": 2,
-          "custom_prompt": "Verify that if no mains supply is required, any protective conductor terminal is located near the terminals of the circuit that requires protective earthing.",
+          "custom_prompt": "Verify that if no mains supply is required protective conductor terminal is near terminals of circuit for which protective earthing is necessary.Mention'Mains supply required' if mains suppply is required for the equipment",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 19
         },
@@ -11823,10 +11846,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 19
+          "page_no": 19,
+          "custom_prompt": "Verify that if no mains supply is required protective conductor terminal is near terminals of circuit for which protective earthing is necessary."
         },
         {
           "clause_row": 301,
@@ -11837,12 +11861,12 @@
           "field": "External if other terminals external",
           "answer_row": 301,
           "answer_column": 2,
-          "custom_prompt": "Verify that if no mains supply is required, any protective conductor terminal is external when other terminals are external.",
+          "custom_prompt": "Verify that if no mains supply is required protective conductor terminal is external if other terminals external.Mention'Mains supply required' if mains suppply is required for the equipment",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 19
         },
@@ -11858,10 +11882,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 19
+          "page_no": 19,
+          "custom_prompt": "Verify that if no mains supply is required protective conductor terminal is external if other terminals external."
         },
         {
           "clause_row": 302,
@@ -11907,7 +11932,6 @@
           "custom_prompt": "Verify that if the protective conductor terminal is plug-in type, it makes connection first and breaks connection last.",
           "answer_row": 303,
           "answer_column": 2,
-
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -11946,7 +11970,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 19
@@ -12086,7 +12110,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 19
@@ -12122,7 +12146,7 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 19
         },
@@ -12138,10 +12162,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 19
+          "page_no": 19,
+          "custom_prompt": "Verify that the protective conductor of the measuring circuit has a current rating equivalent to the measuring circuit terminal."
         },
         {
           "clause_row": 310,
@@ -12152,12 +12177,12 @@
           "field": "protective bonding: not interrupted by any\nswitch or interrupting device",
           "answer_row": 310,
           "answer_column": 2,
-          "custom_prompt": "Verify that the protective conductor of the measuring circuit ensures protective bonding is not interrupted by any switch or interrupting device.",
+          "custom_prompt": "Verify that the protective bonding of the protective conductor terminal is not interrupted by any switch or interrupting device.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 19
         },
@@ -12173,10 +12198,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 19
+          "page_no": 19,
+          "custom_prompt": "Verify that the protective bonding of the protective conductor terminal is not interrupted by any switch or interrupting device."
         },
         {
           "clause_row": 311,
@@ -12187,12 +12213,12 @@
           "field": "functional earth terminals allow independent connection",
           "answer_row": 311,
           "answer_column": 2,
-          "custom_prompt": "Verify that functional earth terminals allow independent connection.",
+          "custom_prompt": "Verify that functional earth terminals allow independent connection.Mention 'No functional earth terminals' incase of no functional earth terminals in the equipment",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 19
         },
@@ -12208,10 +12234,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 19
+          "page_no": 19,
+          "custom_prompt": "Verify that functional earth terminals allow independent connection."
         },
         {
           "clause_row": 312,
@@ -12226,7 +12253,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 19
@@ -12399,10 +12426,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 19
+          "page_no": 19,
+          "custom_prompt": "Verify that for protective conductor terminal contact pressure not capable being reduced by deformation of materials."
         },
         {
           "clause_row": 317,
@@ -12673,7 +12701,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 19
@@ -12845,10 +12873,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 20
+          "page_no": 20,
+          "custom_prompt": "Verify that supplementary and reinforced insultation meet clearance, creepage distance and solid insulation requirements of 6.7"
         },
         {
           "clause_row": 330,
@@ -13016,7 +13045,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 20
@@ -13051,9 +13080,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 20
+          "page_no": 20,
+          "custom_prompt": "Verify if the equipment has protective impedance it consists of appropriate single component suitable for safety and reliability for protection and rated twice the maximum working voltage. Mention 'No Protective Impedance' incase the equipment does not have protective impedance"
         },
         {
           "clause_row": 336,
@@ -13064,12 +13094,12 @@
           "field": "1)\trated twice the maximum working voltage",
           "answer_row": 336,
           "answer_column": 3,
-          "custom_prompt": "Verify that any single protective impedance component used is appropriate for safety and reliability and is rated at twice the maximum working voltage.",
+          "custom_prompt": "Verify if the equipment has protective impedance it consists of appropriate single component suitable for safety and reliability for protection and rated twice the maximum working voltage.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 20
         },
@@ -13086,9 +13116,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 20
+          "page_no": 20,
+          "custom_prompt": "Verify if the equipment has protective impedance it consists of appropriate single component suitable for safety and reliability for protection and resistor rated for twice the power dissipation for maximum working voltage. Mention 'No Protective Impedance' incase the equipment does not have protective impedance"
         },
         {
           "clause_row": 337,
@@ -13102,10 +13133,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 20
+          "page_no": 20,
+          "custom_prompt": "Verify if the equipment has protective impedance it consists of appropriate single component suitable for safety and reliability for protection and resistor rated for twice the power dissipation for maximum working voltage."
         },
         {
           "clause_row": 338,
@@ -13116,12 +13148,12 @@
           "field": "combination of components",
           "answer_row": 338,
           "answer_column": 2,
-          "custom_prompt": "Verify that the protective impedance may consist of a combination of components.",
+          "custom_prompt": "Verify if the equipment has protective impedance it consists of combination of components. Mention 'No Protective Impedance' incase the equipment does not have protective impedance",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 20
         },
@@ -13137,10 +13169,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 20
+          "page_no": 20,
+          "custom_prompt": "Verify if the equipment has protective impedance it consists of combination of components."
         },
         {
           "clause_row": 339,
@@ -13156,7 +13189,7 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 20
         },
@@ -13172,10 +13205,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 20
+          "page_no": 20,
+          "custom_prompt": "Verify that a single electronic device is not used as the protective impedance."
         },
         {
           "clause_row": 340,
@@ -13204,7 +13238,7 @@
           "answer_row": 340,
           "answer_column": 3,
           "value": null,
-          "task_type": "verdict_dependency",
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -13220,12 +13254,12 @@
           "field": "rated to disconnect the load within time specified in Figure 2",
           "answer_row": 341,
           "answer_column": 2,
-          "custom_prompt": "Verify that the automatic disconnection device is rated to disconnect the load within the time specified in Figure 2.",
+          "custom_prompt": "Verify that the automatic disconnection of the supply is rated to disconnect the load within the time specified in Figure 2.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 20
         },
@@ -13241,8 +13275,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 20
         },
@@ -13255,12 +13289,12 @@
           "field": "rated for the maximum load conditions of the equipment",
           "answer_row": 342,
           "answer_column": 2,
-          "custom_prompt": "Verify that the automatic disconnection device is rated for the maximum load conditions of the equipment.",
+          "custom_prompt": "Verify that the automatic disconnection of the supply is rated for the maximum load conditions of the equipment.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 20
         },
@@ -13276,8 +13310,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 20
         },
@@ -13392,7 +13426,7 @@
           "field": "rated for the maximum working voltage; and",
           "answer_row": 346,
           "answer_column": 2,
-          "custom_prompt": "Verify that current- or voltage-limiting devices are rated to limit current or voltage to the levels of 6.3.2 and are rated for the maximum working voltage.",
+          "custom_prompt": "Verify that current- or voltage-limiting devices are rated for the maximum working voltage.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -13427,7 +13461,7 @@
           "field": "rated for the maximum operational current if \tapplicable",
           "answer_row": 347,
           "answer_column": 2,
-          "custom_prompt": "Verify that the current- or voltage-limiting device is rated to limit current or voltage to the levels of 6.3.2, and is rated for the maximum working voltage and maximum operational current where applicable.",
+          "custom_prompt": "Verify that the current- or voltage-limiting device is rated for the maximum operational current if applicable.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -13568,7 +13602,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 20
@@ -13773,7 +13807,7 @@
           "field": "rated conditions for terminal",
           "answer_row": 357,
           "answer_column": 2,
-          "custom_prompt": "Verify that instructions or markings for each terminal include the rated conditions for the terminal.",
+          "custom_prompt": "Verify that instructions or markings for each terminal for connections to external circuits include the rated conditions for the terminal.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -13808,7 +13842,7 @@
           "field": "Required rating of external circuit insulation",
           "answer_row": 358,
           "answer_column": 2,
-          "custom_prompt": "Verify that instructions or markings for each terminal specify the required rating of external circuit insulation.",
+          "custom_prompt": "Verify that instructions or markings for each terminal for connection to external circuits specify the required rating of external circuit insulation.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -14049,7 +14083,7 @@
           "field": "No accessible conductive parts are hazardous live",
           "answer_row": 365,
           "answer_column": 2,
-          "custom_prompt": "Verify that circuits with hazardous live terminals do not make any accessible conductive parts hazardous live.",
+          "custom_prompt": "Verify that circuits with hazardous live terminals have no accessible conductive parts",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -14122,7 +14156,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 21
@@ -14532,12 +14566,12 @@
           "field": "Equipment rated for operating altitude greater than 2000 m correction factor of Table 3 of 61010-1 applied",
           "answer_row": 379,
           "answer_column": 2,
-          "custom_prompt": "Verify that for equipment rated for operating altitudes above 2000 m, the clearance correction factors from Table 3 of IEC 61010-1 are applied.",
+          "custom_prompt": "Verify that if equipment rated for operating altitudes above 2000 m, the clearance correction factors from Table 3 of IEC 61010-1 are applied.Mention 'Not rated for operating altitude greater than 2000m' if the equipment is not rated for operating altitude greater than 2000m",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 21
         },
@@ -14553,10 +14587,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 21
+          "page_no": 21,
+          "custom_prompt": "Verify that if equipment rated for operating altitudes above 2000 m, the clearance correction factors from Table 3 of IEC 61010-1 are applied."
         },
         {
           "clause_row": 380,
@@ -14635,7 +14670,7 @@
           "field": "CTI material group reflected by requirements",
           "answer_row": 382,
           "answer_column": 2,
-          "custom_prompt": "Verify that required creepage distances reflect the factors in 6.7.1.1(a) to (d), and that CTI material group requirements are correctly applied.",
+          "custom_prompt": "Verify that CTI material group is reflected by requirements.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -14670,7 +14705,7 @@
           "field": "CTI test performed",
           "answer_row": 383,
           "answer_column": 2,
-          "custom_prompt": "Verify that required creepage distances reflect the factors of 6.7.1.1(a) to (d), and confirm that the CTI test has been performed.",
+          "custom_prompt": "Verify that CTI test has been performed.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -14912,7 +14947,7 @@
           "field": "K.2 secondary circuits separated from circuits defined in c) by transformer",
           "answer_row": 390,
           "answer_column": 2,
-          "custom_prompt": "Verify insulation requirements for K.1 mains circuits of overvoltage category III and IV or category II above 300 V, and for K.2 secondary circuits separated from these circuits by a transformer.",
+          "custom_prompt": "Verify insulation requirements for K.2 secondary circuits separated from these circuits by a transformer.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -15051,7 +15086,7 @@
           "field": "3)\tWorking voltage is the sum of more than one \t\tcircuit or a mixed voltage",
           "answer_row": 394,
           "answer_column": 2,
-          "custom_prompt": "Verify insulation requirements for K.3 circuits where the working voltage is the sum of multiple circuits or a mixed voltage.",
+          "custom_prompt": "Verify insulation requirements for K.3 circuits where the working voltage is the sum of more than one circuit or a mixed voltage.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -15121,7 +15156,7 @@
           "field": "5)\tWorking voltage with a frequency above \n\t\t30 kHz",
           "answer_row": 396,
           "answer_column": 2,
-          "custom_prompt": "Verify insulation requirements for K.3 circuits, including those with working voltages at frequencies above 30 kHz.",
+          "custom_prompt": "Verify insulation requirements for K.3 circuits, with working voltages at frequencies above 30 kHz.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -15259,7 +15294,7 @@
           "field": "Coatings to achieve reduction to pollution degree 1 comply with requirements of Annex H",
           "answer_row": 400,
           "answer_column": 2,
-          "custom_prompt": "Verify that for mains circuits of overvoltage category II up to 300 V, clearances and creepage distances meet requirements, and any coatings used to reduce pollution degree to 1 comply with Annex H.",
+          "custom_prompt": "Verify that for mains circuits of overvoltage category II up to 300 V any coatings used to reduce pollution degree to 1 comply with Annex H.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -15465,7 +15500,7 @@
           "field": "enclosure or protective barrier of Clause 8",
           "answer_row": 406,
           "answer_column": 2,
-          "custom_prompt": "Verify that solid insulation for mains circuits of overvoltage category II up to 300 V meets the voltage test requirements of 6.8.3 and complies with enclosure or protective barrier requirements of Clause 8.",
+          "custom_prompt": "Verify that solid insulation for mains circuits of overvoltage category II up to 300 V complies with enclosure or protective barrier requirements of Clause 8.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -15744,7 +15779,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 23
@@ -15775,7 +15810,7 @@
           "field": "thickness of insulation is at least 0,4 mm",
           "answer_row": 415,
           "answer_column": 2,
-          "custom_prompt": "Verify that reinforced insulation for mains circuits of overvoltage category II up to 300 V, including inner insulating layers of printed wiring boards, provides adequate electric strength, with solid insulation thickness of at least 0.4 mm.",
+          "custom_prompt": "Verify that reinforced insulation for mains circuits of overvoltage category II up to 300 V, provides adequate electric strength, with solid insulation thickness of at least 0.4 mm.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -15810,7 +15845,7 @@
           "field": "insulation is assembled of minimum two separate layers, each rated for test voltage of Table 5 for basic insulation",
           "answer_row": 416,
           "answer_column": 2,
-          "custom_prompt": "Verify that reinforced insulation for mains circuits of overvoltage category II up to 300 V uses solid insulation with inner PCB layers, and that it consists of at least two separate layers, each rated for the basic insulation test voltage of Table 5.",
+          "custom_prompt": "Verify that reinforced insulation for mains circuits of overvoltage category II up to 300 V is assembled of minimum two separate layers each rated for test voltage of Table 5 for basic insulation",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -15845,7 +15880,7 @@
           "field": "insulation is assembled of minimum two separate layers, where the combination is rated for test voltage of Table 5 for reinforced insulation",
           "answer_row": 417,
           "answer_column": 2,
-          "custom_prompt": "Verify that for mains circuits of overvoltage category II up to 300 V, reinforced solid insulation in inner PCB insulating layers provides adequate electric strength, using at least two separate layers rated for the Table 5 test voltage for reinforced insulation.",
+          "custom_prompt": "Verify that for mains circuits of overvoltage category II up to 300 V, insulation is assembled of minimum two separate layers where the combination is rated for test voltage of table 5 for reinforced insulation",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -15917,10 +15952,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 23
+          "page_no": 23,
+          "custom_prompt": "Verify that for thin film insulation conductors between same two layers are separated by applicable clearances and creepage distance."
         },
         {
           "clause_row": 419,
@@ -15952,7 +15988,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 23
@@ -15983,7 +16019,7 @@
           "field": "thickness through the insulation at least 0,4 mm",
           "answer_row": 421,
           "answer_column": 2,
-          "custom_prompt": "Verify that thin-film reinforced insulation has adequate electric strength, including confirming that the insulation thickness is at least 0.4 mm.",
+          "custom_prompt": "Verify that thin-film reinforced insulation has adequate electric strength and the thickness through the insulation is at least 0.4 mm.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -16090,7 +16126,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": [425, 430, 438, 442],
           "page_no": 23
@@ -16159,7 +16195,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 23
@@ -16848,7 +16884,7 @@
           "field": "values for reinforced insulation are 1,6 times the values of basic insulation",
           "answer_row": 446,
           "answer_column": 2,
-          "custom_prompt": "Verify that solid insulation for secondary circuits derived from mains circuits of overvoltage category II up to 300 V passes the 6.8.3.1 voltage test for 5 seconds using Table 6 values for basic and supplementary insulation, and confirm that reinforced insulation withstands 1.6 times the basic insulation test values.",
+          "custom_prompt": "Verify that solid insulation for secondary circuits derived from mains circuits of overvoltage category II up to 300 V and reinforced insulation withstands 1.6 times the basic insulation test values.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -16986,7 +17022,7 @@
           "field": "1)\tenclosure or protective barrier of Clause 8",
           "answer_row": 450,
           "answer_column": 2,
-          "custom_prompt": "Verify that for secondary circuits derived from mains circuits of overvoltage category II up to 300 V, if the working voltage exceeds 300 V, the equipment passes the 6.8.3.1 voltage test for 1 minute at 1.5 times the working voltage for basic or supplementary insulation, and complies with enclosure or protective barrier requirements of Clause 8.",
+          "custom_prompt": "Verify that for secondary circuits derived from mains circuits of overvoltage category II up to 300 V, the solid insulation complies with enclosure or protective barrier requirements of Clause 8.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -17157,7 +17193,7 @@
           "field": "Conductors between same two layers are separated by applicable distances of Table 8",
           "answer_row": 455,
           "answer_column": 2,
-          "custom_prompt": "Verify that in moulded or potted solid insulation for secondary circuits derived from mains circuits of overvoltage category II up to 300 V, conductors between the same two layers are separated by the applicable distances of Table 8.",
+          "custom_prompt": "Verify that in moulded or potted parts of solid insulation for secondary circuits derived from mains circuits of overvoltage category II up to 300 V, conductors between the same two layers are separated by the applicable distances of Table 8.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -17226,7 +17262,7 @@
           "field": "Separated by at least the applicable distances of Table 8 between same two layers",
           "answer_row": 457,
           "answer_column": 2,
-          "custom_prompt": "Verify that solid insulation in inner PCB layers for secondary circuits derived from mains circuits of overvoltage category II up to 300 V is separated by at least the applicable distances of Table 8 between the same two layers.",
+          "custom_prompt": "Verify that solid insulation for secondary circuits derived from mains circuits of overvoltage category II up to 300 V is separated by at least the applicable distances of Table 8 between the same two layers.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -17265,7 +17301,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 25
@@ -17297,7 +17333,7 @@
           "field": "thickness at least applicable distance of Table 8",
           "answer_row": 459,
           "answer_column": 2,
-          "custom_prompt": "Verify that reinforced solid insulation in inner PCB layers for secondary circuits derived from mains circuits up to overvoltage category II, 300 V, has adequate electric strength, including confirming that insulation thickness meets the applicable distance of Table 8.",
+          "custom_prompt": "Verify that reinforced solid insulation for secondary circuits derived from mains circuits up to overvoltage category II, 300 V, has adequate electric strength, including confirming that insulation thickness meets the applicable distance of Table 8.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -17437,10 +17473,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 25
+          "page_no": 25,
+          "custom_prompt": "Verify that thin film insulation for secondary circuits derived from mains circuits up to overvoltage category II, 300 V conductors between same two layers are separated by applicable clearances and creepage distance."
         },
         {
           "clause_row": 463,
@@ -17471,7 +17508,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 25
@@ -17508,7 +17545,8 @@
           "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 25
+          "page_no": 25,
+          "custom_prompt": "Verify that reinforced insulation for secondary circuits derived from mains circuits up to overvoltage category II, 300 V have adequate electric strength and thickness atleast applicable distance of table 8."
         },
         {
           "clause_row": 465,
@@ -17607,10 +17645,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 25
+          "page_no": 25,
+          "custom_prompt": "Verify that reinforced insulation for secondary circuits derived from mains circuits up to overvoltage category II, 300 V is is assembled of min. three separate layers, where the combination of two layers passed voltage tests with 1.6 time values of Table 6 and a.c test of 6.8.3.1"
         },
         {
           "clause_row": 468,
@@ -17641,10 +17680,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 25
+          "page_no": 25,
+          "custom_prompt": "Verify that reinforced insulation for secondary circuits derived from mains circuits up to overvoltage category II, 300 V is is assembled of min. three separate layers, where the combination of two layers passed voltage tests with 1.6 time values of Table 6 and d.c. test of 6.8.3.2 for circuits stressed only by d.c. voltages"
         },
         {
           "clause_row": 469,
@@ -17778,7 +17818,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 25
@@ -17809,7 +17849,7 @@
           "field": "security of wiring connections",
           "answer_row": 474,
           "answer_column": 2,
-          "custom_prompt": "Verify the security of wiring connections if a failure could cause a hazard.",
+          "custom_prompt": "Verify the security of wiring connections and if a failure could cause a hazard.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -17879,7 +17919,7 @@
           "field": "accidental loosening",
           "answer_row": 476,
           "answer_column": 2,
-          "custom_prompt": "Verify that constructional measures prevent accidental loosening if such a failure could cause a hazard.",
+          "custom_prompt": "Verify the constructional requirements for protection against electric shock like accidental loosening.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -17914,7 +17954,7 @@
           "field": "clearances and creepage distances not reduced below the values of basic insulation by loosening of parts or wires",
           "answer_row": 477,
           "answer_column": 2,
-          "custom_prompt": "Verify that clearances and creepage distances cannot be reduced below basic insulation values due to loosening of parts or wires if such a failure could cause a hazard.",
+          "custom_prompt": "Verify that clearances and creepage distances are not reduced below basic insulation values by loosening of parts or wires and if such a failure could cause a hazard.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -18021,8 +18061,8 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": true,
+          "ai_fillable": true,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 26
         },
@@ -18155,7 +18195,7 @@
           "field": "protective earth conductors;",
           "answer_row": 484,
           "answer_column": 2,
-          "custom_prompt": "Verify that green-and-yellow insulation is used only for protective earth conductors.",
+          "custom_prompt": "Verify incase protective earth conductors are present in the equipment then green and yellow insulation is used. Mention 'No Protective earth conductors' incase protective earth conductors are not used.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -18173,7 +18213,7 @@
           "field": "protective earth conductors;",
           "answer_row": 484,
           "answer_column": 3,
-          "custom_prompt": "Verify that green-and-yellow insulation is used only for protective earth conductors.",
+          "custom_prompt": "Verify incase protective earth conductors are present in the equipment then green and yellow insulation is used.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -18191,7 +18231,7 @@
           "field": "protective bonding conductors;",
           "answer_row": 485,
           "answer_column": 2,
-          "custom_prompt": "Verify that green-and-yellow insulation is used only for protective bonding conductors.",
+          "custom_prompt": "Verify incase protective bonding conductors are present in the equipment then green and yellow insulation is used. Mention 'No Protective bonding conductors' incase protective bonding conductors are not used.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -18209,7 +18249,7 @@
           "field": "protective bonding conductors;",
           "answer_row": 485,
           "answer_column": 3,
-          "custom_prompt": "Verify that green-and-yellow insulation is used only for protective bonding conductors.",
+          "custom_prompt": "Verify incase protective bonding conductors are present in the equipment then green and yellow insulation is used.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -18227,7 +18267,7 @@
           "field": "potential equalization conductors;",
           "answer_row": 486,
           "answer_column": 2,
-          "custom_prompt": "Verify that green-and-yellow insulation is not used except for potential equalization conductors.",
+          "custom_prompt": "Verify incase potential equalization conductors are present in the equipment then green and yellow insulation is used.Mention 'No potential equalization conductors' incase potential equalization conductors are not used.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -18245,7 +18285,7 @@
           "field": "potential equalization conductors;",
           "answer_row": 486,
           "answer_column": 3,
-          "custom_prompt": "Verify that green-and-yellow insulation is not used except for potential equalization conductors.",
+          "custom_prompt": "Verify incase potential equalization conductors are present in the equipment then green and yellow insulation is used.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -18263,7 +18303,7 @@
           "field": "functional earth conductors",
           "answer_row": 487,
           "answer_column": 2,
-          "custom_prompt": "Verify that green-and-yellow insulation is not used except for functional earth conductors.",
+          "custom_prompt": "Verify incase functional earth conductors are present in the equipment then green and yellow insulation is used.Mention 'No functional earth conductors' incase functional earth conductors are not used.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -18281,7 +18321,7 @@
           "field": "functional earth conductors",
           "answer_row": 487,
           "answer_column": 3,
-          "custom_prompt": "Verify that green-and-yellow insulation is not used except for functional earth conductors.",
+          "custom_prompt": "Verify incase functional earth conductors are present in the equipment then green and yellow insulation is used.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,

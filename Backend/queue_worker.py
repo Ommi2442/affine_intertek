@@ -85,8 +85,8 @@ print("Rag CONT NAME:+++++++++++++++",RAG_CONT_NAME)
 
 BASE_DIR = Path(__file__).resolve().parent
 
-BASE_PTA_JSON_PATH = BASE_DIR / "data" / "input_files" / "pta_final_6_2.json"
-INPUT_JSON_FILENAMES = ["pta_final_6_2_part1.json","pta_final_6_2_part2.json","pta_final_6_2_part3.json","pta_final_6_2_part4.json", "pta_final_6_2_part5.json"]
+BASE_PTA_JSON_PATH = BASE_DIR / "data" / "input_files" / "pta_final_6_3_1.json"
+INPUT_JSON_FILENAMES = ["pta_final_6_3_1_part1.json","pta_final_6_3_1_part2.json","pta_final_6_3_1_part3.json","pta_final_6_3_1_part4.json", "pta_final_6_3_1_part5.json"]
 INPUT_DOCX_PATH = BASE_DIR / "data" / "input_files" / "input.docx"
 
 DOWNLOAD_DIR = BASE_DIR  / "src_files"
@@ -298,7 +298,7 @@ async def process_message(message) -> bool:
 
         print(f" TRF generation completed for project {project_id}")
         
-        save_local_json_to_blob_and_cosmos(str(OUTPUT_JSON_PATH),str(OUTPUT_DOCX_PATH),project_id=project_id,)
+        save_local_json_to_blob_and_cosmos(str(OUTPUT_JSON_PATH),str(OUTPUT_DOCX_PATH),project_id=project_id,update_only=False)
 
         # 100% completed
         update_project_progress(
