@@ -671,6 +671,53 @@ const DataTable = forwardRef(
                     const value = col.value ?? col.Value ?? '';
                     const label = col.field ?? col.Field ?? '';
                     const rows = col.rendering_row ? col.rendering_row : 1;
+                    //  PAGE 4 SPECIAL: Summary of testing → textbox
+                    if (
+                      pageNo === 4 &&
+                      col.single_row === true &&
+                      col.user_editable === true
+                    ) {
+                      return (
+                        <TableRow key={qr}>
+                          <TableCell
+                            colSpan={maxColumns}
+                            className="dt-single-row-cell"
+                          >
+                            <div className="dt-value-column dt-relative">
+                              {/* LABEL */}
+                              <Typography
+                                sx={{
+                                  fontSize: 14,
+                                  whiteSpace: 'pre-wrap',
+                                  fontWeight: col.is_bold === true ? 700 : 400,
+                                  mb: 1,
+                                }}
+                              >
+                                {label}
+                              </Typography>
+
+                              {/* TEXTBOX */}
+                              <textarea
+                                className="dt-textarea dt-textarea-with-actions"
+                                value={value ?? ''}
+                                rows={col.rendering_row || 2}
+                                disabled={!editMode}
+                                onChange={(e) =>
+                                  editMode &&
+                                  updateCell(tIdx, iIdx, e.target.value)
+                                }
+                              />
+
+                              {renderHoverActions(
+                                tIdx,
+                                iIdx,
+                                col.user_editable === true
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    }
 
                     return (
                       <TableRow key={qr}>
@@ -776,8 +823,14 @@ const DataTable = forwardRef(
                               </div>
                             ) : (
                               /* fallback for other pages */
+
                               <Typography
-                                sx={{ fontSize: 14, whiteSpace: 'pre-wrap' }}
+                                sx={{
+                                  fontSize: 14,
+                                  whiteSpace: 'pre-wrap',
+                                  fontWeight: col.is_bold === true ? 700 : 400,
+                                  marginBottom: 8,
+                                }}
                               >
                                 {label}
                               </Typography>
