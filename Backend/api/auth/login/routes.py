@@ -1,9 +1,15 @@
+from db.database import COSMOS_DB_users_regis
+
 from fastapi import APIRouter, HTTPException
 from datetime import datetime, timedelta, timezone
 from .models import EmailRequest, OTPVerifyRequest
 from .utils import generate_otp, encrypt_otp, decrypt_otp, send_email
+<<<<<<< HEAD
+from db.database import COSMOS_DB_users_Container,COSMOS_DB_users_regis
+=======
 from db.database import COSMOS_DB_users_Container,COSMOS_DB_users_registration
 
+>>>>>>> 6abd8f9a5873638c0c09a2bdcfaf8f74c87d1c4f
 from api.auth.jwt_auth.utils import create_access_token 
 import hmac
 import logging
@@ -170,6 +176,15 @@ def validate_user():
 @router.post("/sso-login")
 async def sso_login(data: EmailRequest):
     try:
+        
+        COSMOS_DB_user_registration_Container = COSMOS_DB_users_regis
+        registration_query = "SELECT u.email FROM user_registration u"
+        registered_emails = [item["email"] for item in COSMOS_DB_user_registration_Container.query_items(
+            query=registration_query,
+            enable_cross_partition_query=True
+        )]
+        print("All registered emails:\n", registered_emails)
+
         query = "SELECT * FROM users u WHERE u.email = @email"
         existing_user = list(
             COSMOS_DB_users_Container.query_items(
@@ -182,55 +197,70 @@ async def sso_login(data: EmailRequest):
         reviewers, engineers = validate_user()
 
         if not existing_user:
-            if len(reviewers) >= 2 :
-                return {
-                    "status": "Error",
-                    "message": "Maximum Reviewers limit reached"
+            if data.email in registered_emails:
+                user_role = 2
+                expiry = timedelta(minutes=5)
+                access_token = create_access_token(
+                    data={"sub": data.email, "role": user_role},
+                    expires_delta=expiry
+                )
+
+                new_user = {
+                    "id": data.email,
+                    "email": data.email,
+                    "name": data.name,
+                    "user_role": user_role,
+                    "accessToken": access_token,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
                 }
-
-            if len(engineers) >= 3:
+                COSMOS_DB_users_Container.create_item(body=new_user)
+                
                 return {
-                    "status": "Error",
-                    "message": "Maximum Engineers limit reached"
+                    "status": "success",
+                    "message": "Login successful",
+                    "access_token": access_token,
+                    "role": user_role,
+                    "email": data.email,
+                    "name": data.name
                 }
-
-        
-            new_user = {
-                "id": data.email,
-                "email": data.email,
-                "name": data.name,
-                "user_role": 2,
-                "accessToken": data.accessToken,
-                "created_at": datetime.now(timezone.utc).isoformat()
-            }
-
-            COSMOS_DB_users_Container.create_item(body=new_user)
-            COSMOS_DB_users_registration.create_item(body=new_user)
-            
-            user_role = new_user["user_role"]
-
+            else:
+                return {
+                    "status": "Failed",
+                    "message": "Login Failed",
+                    "access_token": "NA",
+                    "role": None,
+                    "email": data.email,
+                    "name": data.name
+                }
         else:
-            
             user_role = existing_user[0].get("user_role", 2)
+            if data.email in registered_emails:
+                expiry = timedelta(minutes=5)
+                access_token = create_access_token(
+                    data={"sub": data.email, "role": user_role},
+                    expires_delta=expiry
+                )
+                return {
+                    "status": "success",
+                    "message": "Login successful",
+                    "access_token": access_token,
+                    "role": user_role,
+                    "email": data.email,
+                    "name": data.name
+                }
+            else:
+                return {
+                    "status": "Failed",
+                    "message": "Login Failed",
+                    "access_token": "NA",
+                    "role": user_role,
+                    "email": data.email,
+                    "name": data.name
+                }
 
-        
-        access_token = create_access_token(
-            data={
-                "sub": data.email,
-                "role": user_role
-            },
-            expires_delta=timedelta(minutes=5)
-        )
-
-        return {
-            "status": "success",
-            "message": "Login successful",
-            "access_token": access_token,
-            "role": user_role,
-            "email": data.email,
-            "name": data.name
-        }
-
+    except HTTPException:
+        raise
     except Exception as e:
         logging.error(f"Error in sso_login: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
