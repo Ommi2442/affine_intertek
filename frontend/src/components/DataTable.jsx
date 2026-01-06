@@ -37,6 +37,7 @@ import { renderConfidenceColor } from '../utils/renderConfidenceColor';
 import { renderFieldWithNewLines } from '../Helpers/renderFieldWithNewLines';
 import { renderFieldWithCheckboxAndNewLines } from '../Helpers/renderFieldWithCheckboxAndNewLine';
 import { RenderPage6Images } from '../Helpers/RenderPage6Images';
+import { RenderPage5DynamicGroups } from './PageRenderers/RenderPage5DynamicGroups';
 
 const DataTable = forwardRef(
   (
@@ -73,6 +74,29 @@ const DataTable = forwardRef(
     //  - editMode === true (user clicked Edit/Refine)
     //  - item.is_textbox !== false (textbox allowed)
 
+    const splitLines = (v) =>
+      typeof v === 'string' && v.length > 0 ? v.split('\n') : [''];
+
+    const addPage3Row = (tableIdx) => {
+      setTables((prev) => {
+        const next = prev.map((t) => ({ ...t, Items: [...t.Items] }));
+        const table = next[tableIdx];
+
+        table.Items = table.Items.map((item) => {
+          if (item.page_no !== 3 || item.is_table !== true) return item;
+
+          const lines = splitLines(item.value);
+          return {
+            ...item,
+            value: [...lines, ''].join('\n'), // append empty row
+            is_user_modified: true,
+          };
+        });
+
+        return next;
+      });
+    };
+
     useEffect(() => {
       idb_get('tables').then((saved) => {
         if (saved && Array.isArray(saved)) {
@@ -83,9 +107,16 @@ const DataTable = forwardRef(
 
     const isEditable = (item) => {
       if (!item) return false;
-      if (item.user_editable !== true) return false; // must be explicitly editable
-      if (!editMode) return false; // only editable when edit mode is ON
-      if (item.is_textbox === false) return false; // textbox not allowed
+      if (item.user_editable !== true) return false;
+
+      // Remark / Verdict → editable only in edit mode
+      if (item.task_type === 'remark' || item.task_type === 'verdict') {
+        return editMode;
+      }
+
+      if (!editMode) return false;
+      if (item.is_textbox === false) return false;
+
       return true;
     };
 
@@ -194,15 +225,28 @@ const DataTable = forwardRef(
                 (i) =>
                   i.field === newItem.field &&
                   i.question_row === newItem.question_row &&
-                  i.answer_row === newItem.answer_row
+                  i.answer_row === newItem.answer_row &&
+                  i.task_type === newItem.task_type
               );
 
               //  Preserve user edits
-              if (oldItem?.is_user_modified) {
+              if (
+                oldItem?.is_user_modified &&
+                oldItem.task_type === newItem.task_type
+              ) {
                 return oldItem;
               }
 
-              return oldItem ? { ...newItem, ...oldItem } : newItem;
+              return oldItem
+                ? {
+                    ...newItem,
+                    value: oldItem.value,
+                    is_user_modified: oldItem.is_user_modified,
+                    is_user_edited: oldItem.is_user_edited,
+                    user_comments: oldItem.user_comments,
+                    confidence: oldItem.confidence,
+                  }
+                : newItem;
             }),
           };
         });
@@ -322,17 +366,21 @@ const DataTable = forwardRef(
         const next = prev.map((tbl) => ({ ...tbl, Items: [...tbl.Items] }));
         const item = next[t].Items[i];
 
-        // 🔹 only mark modified if value ACTUALLY changed
         const isModified = item.value !== val;
+        if (!isModified) return prev;
 
         next[t].Items[i] = {
           ...item,
           value: val,
-          ...(isModified ? { is_user_modified: true } : {}),
+          is_user_modified: true,
+          is_user_edited: true,
         };
 
         return next;
       });
+
+      // trigger realtime confidence update
+      onConfidenceChange?.();
     };
 
     // COMMENT HANDLING
@@ -354,42 +402,96 @@ const DataTable = forwardRef(
       setIsCommentOpen(true);
     };
 
+    // const handleApprove = (tIdx, iIdx) => {
+    //   setTables((prev) => {
+    //     const next = prev.map((tbl) => ({ ...tbl, Items: [...tbl.Items] }));
+    //     const item = next[tIdx].Items[iIdx];
+    //     console.log('tem', item);
+
+    //     // Prevent double approve
+    //     if (item.is_user_approved) return prev;
+
+    //     const c = Number(item.confidence);
+
+    //     // User edited + approve → User Edited
+    //     if (item.is_user_modified === true) {
+    //       next[tIdx].Items[iIdx] = {
+    //         ...item,
+    //         is_user_approved: true,
+    //         is_user_edited: true,
+    //         confidence: 100, // safe
+    //       };
+    //       return next;
+    //     }
+
+    //     // Medium / Low + approve → Promote to HIGH
+    //     if (!Number.isNaN(c) && c < 75) {
+    //       next[tIdx].Items[iIdx] = {
+    //         ...item,
+    //         is_user_approved: true,
+    //         confidence: 100,
+    //       };
+    //       return next;
+    //     }
+
+    //     // Already high + approve → no change
+    //     return prev;
+    //   });
+    //   console.log('entered');
+
+    //   // trigger realtime confidence recalculation
+
+    //   //window.dispatchEvent(new Event('idb-updated'));
+    //   setTimeout(() => {
+    //     onConfidenceChange?.();
+    //   }, 0);
+    // };
+
     const handleApprove = (tIdx, iIdx) => {
       setTables((prev) => {
         const next = prev.map((tbl) => ({ ...tbl, Items: [...tbl.Items] }));
         const item = next[tIdx].Items[iIdx];
 
-        // Prevent double approve
-        if (item.is_user_approved) return prev;
+        if (!item || item.is_user_approved) return prev;
 
-        const c = Number(item.confidence);
+        // 1️⃣ Mark clicked remark / verdict
+        next[tIdx].Items[iIdx] = {
+          ...item,
+          is_user_approved: true,
+          is_user_edited: true,
+          is_user_modified: true,
+          confidence: 100,
+        };
 
-        // User edited + approve → User Edited
-        if (item.is_user_modified === true) {
-          next[tIdx].Items[iIdx] = {
-            ...item,
-            is_user_approved: true,
-            is_user_edited: true,
-            confidence: 100, // safe
-          };
-          return next;
+        // 2️⃣ PAGE 9+ → mark clause row (task_type === null)
+        if (item.task_type === 'remark' || item.task_type === 'verdict') {
+          const clauseRow = item.clause_row;
+          const questionRow = item.question_row;
+
+          let clauseMatched = false;
+
+          next[tIdx].Items = next[tIdx].Items.map((row) => {
+            if (
+              row.task_type == null &&
+              row.clause_row === clauseRow &&
+              row.question_row === questionRow
+            ) {
+              clauseMatched = true;
+              return {
+                ...row,
+                is_user_edited: true,
+                is_user_modified: true,
+                confidence: 100,
+              };
+            }
+            return row;
+          });
         }
 
-        // Medium / Low + approve → Promote to HIGH
-        if (!Number.isNaN(c) && c < 75) {
-          next[tIdx].Items[iIdx] = {
-            ...item,
-            is_user_approved: true,
-            confidence: 100,
-          };
-          return next;
-        }
-
-        // Already high + approve → no change
-        return prev;
+        return next;
       });
 
-      // trigger realtime confidence recalculation
+      //  realtime confidence
       onConfidenceChange?.();
     };
 
@@ -714,105 +816,153 @@ const DataTable = forwardRef(
                       </TableRow>
 
                       {/* Value row */}
-                      <TableRow>
-                        {rowItems.map((col, idx) => {
-                          const tIdx = col.__t;
-                          const iIdx = col.__i;
-                          const editable = isEditable(col);
-                          const isPage7 = pageNo === 7;
-                          const isCheckboxUI =
-                            isPage7 && col.checkbox_answer_UI === true;
-                          const value = col.value ?? col.Value ?? '';
-                          const rows = col.rendering_row
-                            ? col.rendering_row
-                            : 1;
+                      {pageNo === 3 ? (
+                        (() => {
+                          const splitLines = (v) =>
+                            typeof v === 'string' && v.length > 0
+                              ? v.split('\n')
+                              : [''];
 
-                          return (
-                            <TableCell key={idx}>
-                              <div
-                                className="dt-value-column dt-relative"
-                                onMouseEnter={() =>
-                                  setHovered({ t: tIdx, i: iIdx })
-                                }
-                                onMouseLeave={() =>
-                                  setHovered({ t: null, i: null })
-                                }
-                              >
-                                {isCheckboxUI ? (
-                                  <div>
-                                    {(value || '')
-                                      .split('\n')
-                                      .map((opt) => opt.trim())
-                                      .filter(Boolean)
-                                      .map((opt, idxOpt) => (
-                                        <div
-                                          key={idxOpt}
-                                          style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: 4,
-                                          }}
-                                        >
-                                          <Checkbox size="small" />
-                                          <Typography
-                                            variant="body2"
-                                            sx={{
-                                              fontWeight:
-                                                col.is_bold === true
-                                                  ? 700
-                                                  : 400,
-                                            }}
-                                          >
-                                            {opt}
-                                          </Typography>
-                                        </div>
-                                      ))}
-                                  </div>
-                                ) : col.user_editable !== true ? (
-                                  <Typography>{value}</Typography>
-                                ) : (
-                                  <div style={{ display: 'flex' }}>
-                                    <textarea
-                                      className="dt-textarea dt-textarea-with-actions"
-                                      value={value}
-                                      rows={rows}
-                                      disabled={!editable}
-                                      onChange={(e) =>
-                                        editable &&
-                                        updateCell(tIdx, iIdx, e.target.value)
-                                      }
-                                    />
-                                    {renderConfidenceColor(
-                                      col.confidence,
-                                      col.is_user_edited
-                                    )}
-                                  </div>
-                                )}
-
-                                {renderHoverActions(
-                                  tIdx,
-                                  iIdx,
-                                  col.user_editable === true
-                                )}
-
-                                {col._comment && (
-                                  <Typography
-                                    variant="caption"
-                                    className="dt-comment-caption"
-                                  >
-                                    💬 {col._comment}
-                                  </Typography>
-                                )}
-                              </div>
-                            </TableCell>
+                          const rowCount = Math.max(
+                            ...rowItems.map((c) => splitLines(c.value).length)
                           );
-                        })}
-                      </TableRow>
+
+                          return Array.from({ length: rowCount }).map(
+                            (_, rowIdx) => (
+                              <TableRow key={`p3-row-${rowIdx}`}>
+                                {rowItems.map((col, idx) => {
+                                  const tIdx = col.__t;
+                                  const iIdx = col.__i;
+                                  const editable = isEditable(col);
+
+                                  const lines = splitLines(col.value);
+                                  const cellValue = lines[rowIdx] ?? '';
+
+                                  return (
+                                    <TableCell key={idx}>
+                                      <div className="dt-value-column dt-relative">
+                                        {!editable ? (
+                                          <Typography>{cellValue}</Typography>
+                                        ) : (
+                                          <textarea
+                                            className="dt-textarea dt-textarea-with-actions"
+                                            value={cellValue}
+                                            rows={1}
+                                            onChange={(e) => {
+                                              const updated = [...lines];
+                                              updated[rowIdx] = e.target.value;
+
+                                              setTables((prev) => {
+                                                const next = prev.map((t) => ({
+                                                  ...t,
+                                                  Items: [...t.Items],
+                                                }));
+
+                                                next[tIdx].Items[iIdx] = {
+                                                  ...next[tIdx].Items[iIdx],
+                                                  value: updated.join('\n'),
+                                                  is_user_modified: true,
+                                                };
+
+                                                return next;
+                                              });
+                                            }}
+                                          />
+                                        )}
+                                      </div>
+                                    </TableCell>
+                                  );
+                                })}
+                              </TableRow>
+                            )
+                          );
+                        })()
+                      ) : (
+                        /* ALL OTHER PAGES — ORIGINAL BEHAVIOUR (UNCHANGED) */
+                        <TableRow>
+                          {rowItems.map((col, idx) => {
+                            const tIdx = col.__t;
+                            const iIdx = col.__i;
+                            const editable = isEditable(col);
+                            const isPage7 = pageNo === 7;
+                            const isCheckboxUI =
+                              isPage7 && col.checkbox_answer_UI === true;
+                            const value = col.value ?? col.Value ?? '';
+                            const rows = col.rendering_row
+                              ? col.rendering_row
+                              : 1;
+
+                            return (
+                              <TableCell key={idx}>
+                                <div
+                                  className="dt-value-column dt-relative"
+                                  onMouseEnter={() =>
+                                    setHovered({ t: tIdx, i: iIdx })
+                                  }
+                                  onMouseLeave={() =>
+                                    setHovered({ t: null, i: null })
+                                  }
+                                >
+                                  {isCheckboxUI ? (
+                                    <Typography>{value}</Typography>
+                                  ) : col.user_editable !== true ? (
+                                    <Typography>{value}</Typography>
+                                  ) : (
+                                    <div style={{ display: 'flex' }}>
+                                      <textarea
+                                        className="dt-textarea dt-textarea-with-actions"
+                                        value={value}
+                                        rows={rows}
+                                        disabled={!editable}
+                                        onChange={(e) =>
+                                          editable &&
+                                          updateCell(tIdx, iIdx, e.target.value)
+                                        }
+                                      />
+                                      {renderConfidenceColor(
+                                        col.confidence,
+                                        col.is_user_edited,
+                                        col.ai_fillable,
+                                        col.accuracy_level
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {renderHoverActions(
+                                    tIdx,
+                                    iIdx,
+                                    col.user_editable === true
+                                  )}
+
+                                  {col._comment && (
+                                    <Typography
+                                      variant="caption"
+                                      className="dt-comment-caption"
+                                    >
+                                      💬 {col._comment}
+                                    </Typography>
+                                  )}
+                                </div>
+                              </TableCell>
+                            );
+                          })}
+                        </TableRow>
+                      )}
                     </React.Fragment>
                   );
                 })}
               </TableBody>
             </Table>
+            {pageNo === 3 && (
+              <Box sx={{ textAlign: 'right', p: 1 }}>
+                <button
+                  className="dt-add-row-btn"
+                  onClick={() => addPage3Row(group[0].__t)}
+                >
+                  ➕ Add Row
+                </button>
+              </Box>
+            )}
 
             <Divider className="dt-divider" />
           </TableContainer>
@@ -824,6 +974,18 @@ const DataTable = forwardRef(
       if (normalItems.length === 0) return null;
 
       let groupedNormal = {};
+
+      if (pageNo === 5) {
+        return (
+          <RenderPage5DynamicGroups
+            items={normalItems}
+            setTables={setTables}
+            isEditable={isEditable}
+            updateCell={updateCell}
+            editMode={editMode}
+          />
+        );
+      }
 
       if (pageNo === 6) {
         return normalItems.map((item, idx) => {
@@ -1229,7 +1391,9 @@ const DataTable = forwardRef(
                                     />
                                     {renderConfidenceColor(
                                       first.confidence,
-                                      first.is_user_edited
+                                      first.is_user_edited,
+                                      first.ai_fillable,
+                                      first.accuracy_level
                                     )}
                                   </div>
                                 )}
@@ -1253,7 +1417,9 @@ const DataTable = forwardRef(
                                 />
                                 {renderConfidenceColor(
                                   first.confidence,
-                                  first.is_user_edited
+                                  first.is_user_edited,
+                                  first.ai_fillable,
+                                  first.accuracy_level
                                 )}
                               </div>
                             )}
@@ -1395,7 +1561,9 @@ const DataTable = forwardRef(
 
                                     {renderConfidenceColor(
                                       r.confidence,
-                                      r.is_user_edited
+                                      r.is_user_edited,
+                                      r.ai_fillable,
+                                      r.accuracy_level
                                     )}
                                   </div>
                                 )}
@@ -1469,9 +1637,15 @@ const DataTable = forwardRef(
         }
 
         if (item.task_type === 'remark') {
-          groupsByRow[key].remarkItem = item;
+          groupsByRow[key].remarkRef = {
+            __t: item.__t,
+            __i: item.__i,
+          };
         } else if (item.task_type === 'verdict') {
-          groupsByRow[key].verdictItem = item;
+          groupsByRow[key].verdictRef = {
+            __t: item.__t,
+            __i: item.__i,
+          };
         }
       });
 
@@ -1521,18 +1695,17 @@ const DataTable = forwardRef(
 
         const tIdx = item.__t;
         const iIdx = item.__i;
-
-        const editable = isEditable(item);
+        if (iIdx === -1) return null;
 
         const value = item.value ?? item.Value ?? '';
         const rows = item.rendering_row || 1;
         const comment = item._comment;
 
-        // if item is not user_editable -> render plain text
-        if (item.user_editable !== true) {
+        // Not user editable → plain text always
+        if (item.task_type !== 'remark' && item.task_type !== 'verdict') {
           return (
             <div className="dt-value-column dt-relative">
-              <Typography>{value}</Typography>
+              <Typography sx={{ whiteSpace: 'pre-wrap' }}>{value}</Typography>
               {comment && (
                 <Typography variant="caption" className="dt-comment-caption">
                   💬 {comment}
@@ -1542,7 +1715,8 @@ const DataTable = forwardRef(
           );
         }
 
-        // else user_editable === true -> show textarea (disabled until editMode and other checks)
+        //  user_editable === true → ALWAYS show textarea
+        //  disabled until editMode is ON
         return (
           <div
             className={`dt-value-column dt-relative ${
@@ -1551,16 +1725,70 @@ const DataTable = forwardRef(
             onMouseEnter={() => setHovered({ t: tIdx, i: iIdx })}
             onMouseLeave={() => setHovered({ t: null, i: null })}
           >
-            <textarea
-              className="dt-textarea dt-textarea-with-actions"
-              value={value}
-              rows={rows}
-              disabled={!editable}
-              onChange={(e) =>
-                editable && updateCell(tIdx, iIdx, e.target.value)
-              }
-            />
-            {renderHoverActions(tIdx, iIdx, item.user_editable === true)}
+            <div style={{ display: 'flex' }}>
+              <textarea
+                className="dt-textarea dt-textarea-with-actions"
+                value={value}
+                rows={rows}
+                disabled={!editMode} // KEY LINE
+                style={{ marginRight: '10px' }}
+                onChange={(e) => {
+                  if (!editMode) return;
+
+                  const newVal = e.target.value;
+
+                  setTables((prevTables) => {
+                    const next = prevTables.map((tbl) => ({
+                      ...tbl,
+                      Items: [...tbl.Items],
+                    }));
+
+                    const clauseRow = item.clause_row;
+                    const clauseField = item.field ?? item.Field ?? '';
+
+                    // 1update verdict / remark
+                    next[tIdx].Items[iIdx] = {
+                      ...next[tIdx].Items[iIdx],
+                      value: newVal,
+                      is_user_modified: true,
+                      is_user_edited: true,
+                    };
+
+                    // 2bubble to clause row (page 9+)
+                    next[tIdx].Items = next[tIdx].Items.map((row) => {
+                      const rowField = row.field ?? row.Field ?? '';
+                      if (
+                        row.task_type == null &&
+                        row.clause_row === clauseRow &&
+                        rowField === clauseField
+                      ) {
+                        return {
+                          ...row,
+                          is_user_modified: true,
+                          is_user_edited: true,
+                          confidence: 100,
+                        };
+                      }
+                      return row;
+                    });
+
+                    return next;
+                  });
+
+                  onConfidenceChange?.();
+                }}
+              />
+
+              {renderConfidenceColor(
+                item.confidence,
+                item.is_user_edited,
+                item.ai_fillable,
+                item.accuracy_level
+              )}
+            </div>
+
+            {renderHoverActions(tIdx, iIdx, true)}
+
             {comment && (
               <Typography variant="caption" className="dt-comment-caption">
                 💬 {comment}
@@ -1619,11 +1847,17 @@ const DataTable = forwardRef(
                   </TableCell>
 
                   <TableCell sx={bodyCellSx}>
-                    {renderRemarkOrVerdictCell(row.remarkItem)}
+                    {renderRemarkOrVerdictCell(
+                      tables?.[row.remarkRef?.__t]?.Items?.[row.remarkRef?.__i]
+                    )}
                   </TableCell>
 
                   <TableCell sx={bodyCellSx}>
-                    {renderRemarkOrVerdictCell(row.verdictItem)}
+                    {renderRemarkOrVerdictCell(
+                      tables?.[row.verdictRef?.__t]?.Items?.[
+                        row.verdictRef?.__i
+                      ]
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
