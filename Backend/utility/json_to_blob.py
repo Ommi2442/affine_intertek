@@ -31,7 +31,7 @@ import mimetypes
 from fastapi import HTTPException
 
 
-AZURE_STORAGE_CONNECTION_STRING = 'BlobEndpoint=https://stintertekesusstage.blob.core.windows.net/;QueueEndpoint=https://stintertekesusstage.queue.core.windows.net/;FileEndpoint=https://stintertekesusstage.file.core.windows.net/;TableEndpoint=https://stintertekesusstage.table.core.windows.net/;SharedAccessSignature=sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-07-29T21:31:45Z&st=2026-01-06T13:16:45Z&spr=https&sig=9XogmhBXaMJXv3OL6PHYjJ3GMu1r0LNFCACuKhcejQ0%3D'
+AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=stintertekesusstage;AccountKey=X3xxXc+G6VT3GNShGEIO+boKEbI2jLbh0U9wg5/U2UME328bFHPVdeJDgp9fyKfs7IW/MoJnpi5Q+ASti9+IlA==;EndpointSuffix=core.windows.net'
 blob_service = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
 blob_container = 'stintertekesusstage-blob'
 
@@ -390,9 +390,9 @@ from azure.storage.blob import BlobServiceClient
 from pathlib import Path
 
 # ---------- Global configuration ----------
-AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net'
+AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=stintertekesusstage;AccountKey=X3xxXc+G6VT3GNShGEIO+boKEbI2jLbh0U9wg5/U2UME328bFHPVdeJDgp9fyKfs7IW/MoJnpi5Q+ASti9+IlA==;EndpointSuffix=core.windows.net'
 blob_service = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
-blob_container = 'stintertekesusdev-blob'
+blob_container = 'stintertekesusstage-blob'
 
 
 # def download_docx_from_blob(project_id: str, local_folder: str = "./downloads") -> str:

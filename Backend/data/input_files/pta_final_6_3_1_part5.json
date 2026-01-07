@@ -67,7 +67,7 @@
           "answer_row": 765,
           "answer_column": 2,
           "value": "(see Form A.30)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -101,7 +101,7 @@
           "answer_row": 766,
           "answer_column": 2,
           "value": "(see Form A.30)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -135,7 +135,7 @@
           "answer_row": 767,
           "answer_column": 2,
           "value": "(see Form A.30)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -174,7 +174,9 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [769],
+          "dependency_rows": [
+            769
+          ],
           "page_no": 35
         },
         {
@@ -187,11 +189,13 @@
           "answer_row": 768,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [769],
+          "dependency_rows": [
+            769
+          ],
           "page_no": 35
         },
         {
@@ -239,11 +243,16 @@
           "answer_row": 770,
           "answer_column": 2,
           "value": "(see Form A.30)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [771, 774, 784, 789],
+          "dependency_rows": [
+            771,
+            774,
+            784,
+            789
+          ],
           "page_no": 35
         },
         {
@@ -256,11 +265,16 @@
           "answer_row": 770,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [771, 774, 784, 789],
+          "dependency_rows": [
+            771,
+            774,
+            784,
+            789
+          ],
           "page_no": 35
         },
         {
@@ -277,7 +291,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [772, 773],
+          "dependency_rows": [
+            772,
+            773
+          ],
           "page_no": 36
         },
         {
@@ -290,11 +307,14 @@
           "answer_row": 771,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [772, 773],
+          "dependency_rows": [
+            772,
+            773
+          ],
           "page_no": 36
         },
         {
@@ -325,7 +345,7 @@
           "answer_row": 772,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -382,7 +402,17 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [775, 776, 777, 778, 779, 780, 781, 782, 783],
+          "dependency_rows": [
+            775,
+            776,
+            777,
+            778,
+            779,
+            780,
+            781,
+            782,
+            783
+          ],
           "page_no": 36
         },
         {
@@ -395,11 +425,21 @@
           "answer_row": 774,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [775, 776, 777, 778, 779, 780, 781, 782, 783],
+          "dependency_rows": [
+            775,
+            776,
+            777,
+            778,
+            779,
+            780,
+            781,
+            782,
+            783
+          ],
           "page_no": 36
         },
         {
@@ -640,7 +680,7 @@
           "answer_row": 781,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -731,7 +771,12 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [785, 786, 787, 788],
+          "dependency_rows": [
+            785,
+            786,
+            787,
+            788
+          ],
           "page_no": 36
         },
         {
@@ -744,11 +789,16 @@
           "answer_row": 784,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [785, 786, 787, 788],
+          "dependency_rows": [
+            785,
+            786,
+            787,
+            788
+          ],
           "page_no": 36
         },
         {
@@ -812,7 +862,7 @@
           "answer_row": 786,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -901,7 +951,14 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [790, 791, 792, 793, 794, 795],
+          "dependency_rows": [
+            790,
+            791,
+            792,
+            793,
+            794,
+            795
+          ],
           "page_no": 36
         },
         {
@@ -914,11 +971,18 @@
           "answer_row": 789,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [790, 791, 792, 793, 794, 795],
+          "dependency_rows": [
+            790,
+            791,
+            792,
+            793,
+            794,
+            795
+          ],
           "page_no": 36
         },
         {
@@ -982,7 +1046,7 @@
           "answer_row": 791,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -1139,7 +1203,12 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [797, 799, 805, 806],
+          "dependency_rows": [
+            797,
+            799,
+            805,
+            806
+          ],
           "page_no": 37
         },
         {
@@ -1152,11 +1221,16 @@
           "answer_row": 796,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [797, 799, 805, 806],
+          "dependency_rows": [
+            797,
+            799,
+            805,
+            806
+          ],
           "page_no": 37
         },
         {
@@ -1242,7 +1316,13 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [800, 801, 802, 803, 804],
+          "dependency_rows": [
+            800,
+            801,
+            802,
+            803,
+            804
+          ],
           "page_no": 37
         },
         {
@@ -1255,11 +1335,17 @@
           "answer_row": 799,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [800, 801, 802, 803, 804],
+          "dependency_rows": [
+            800,
+            801,
+            802,
+            803,
+            804
+          ],
           "page_no": 37
         },
         {
@@ -1272,7 +1358,7 @@
           "answer_row": 800,
           "answer_column": 2,
           "value": "(see Form A.31)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -1289,7 +1375,7 @@
           "answer_row": 800,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -1445,7 +1531,7 @@
           "answer_row": 805,
           "answer_column": 2,
           "value": "(see Form A.32)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -1484,7 +1570,16 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [807, 808, 809, 810, 811, 812, 813, 814],
+          "dependency_rows": [
+            807,
+            808,
+            809,
+            810,
+            811,
+            812,
+            813,
+            814
+          ],
           "page_no": 37
         },
         {
@@ -1497,11 +1592,20 @@
           "answer_row": 806,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [807, 808, 809, 810, 811, 812, 813, 814],
+          "dependency_rows": [
+            807,
+            808,
+            809,
+            810,
+            811,
+            812,
+            813,
+            814
+          ],
           "page_no": 37
         },
         {
@@ -1794,11 +1898,18 @@
           "answer_row": 816,
           "answer_column": 2,
           "value": "Protection against radiation, including laser sources, and against sonic and ultrasonic pressure",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [817, 819, 837, 844, 846, 861],
+          "dependency_rows": [
+            817,
+            819,
+            837,
+            844,
+            846,
+            861
+          ],
           "page_no": 37
         },
         {
@@ -1811,11 +1922,18 @@
           "answer_row": 816,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [817, 819, 837, 844, 846, 861],
+          "dependency_rows": [
+            817,
+            819,
+            837,
+            844,
+            846,
+            861
+          ],
           "page_no": 37
         },
         {
@@ -1832,7 +1950,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [818],
+          "dependency_rows": [
+            818
+          ],
           "page_no": 37
         },
         {
@@ -1845,11 +1965,13 @@
           "answer_row": 817,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [818],
+          "dependency_rows": [
+            818
+          ],
           "page_no": 37
         },
         {
@@ -1901,7 +2023,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [820, 835],
+          "dependency_rows": [
+            820,
+            835
+          ],
           "page_no": 37
         },
         {
@@ -1914,11 +2039,14 @@
           "answer_row": 819,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [820, 835],
+          "dependency_rows": [
+            820,
+            835
+          ],
           "page_no": 37
         },
         {
@@ -1931,11 +2059,15 @@
           "answer_row": 820,
           "answer_column": 2,
           "value": "(see Form A.33)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [821, 826, 833],
+          "dependency_rows": [
+            821,
+            826,
+            833
+          ],
           "page_no": 37
         },
         {
@@ -1948,11 +2080,15 @@
           "answer_row": 820,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [821, 826, 833],
+          "dependency_rows": [
+            821,
+            826,
+            833
+          ],
           "page_no": 37
         },
         {
@@ -1969,7 +2105,12 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [822, 823, 824, 825],
+          "dependency_rows": [
+            822,
+            823,
+            824,
+            825
+          ],
           "page_no": 37
         },
         {
@@ -1982,11 +2123,16 @@
           "answer_row": 821,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [822, 823, 824, 825],
+          "dependency_rows": [
+            822,
+            823,
+            824,
+            825
+          ],
           "page_no": 37
         },
         {
@@ -2016,7 +2162,7 @@
           "answer_row": 822,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2141,7 +2287,14 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [827, 828, 829, 830, 831, 832],
+          "dependency_rows": [
+            827,
+            828,
+            829,
+            830,
+            831,
+            832
+          ],
           "page_no": 38
         },
         {
@@ -2154,11 +2307,18 @@
           "answer_row": 826,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [827, 828, 829, 830, 831, 832],
+          "dependency_rows": [
+            827,
+            828,
+            829,
+            830,
+            831,
+            832
+          ],
           "page_no": 38
         },
         {
@@ -2189,7 +2349,7 @@
           "answer_row": 827,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2224,7 +2384,7 @@
           "answer_row": 828,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2294,7 +2454,7 @@
           "answer_row": 830,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2329,7 +2489,7 @@
           "answer_row": 831,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2364,7 +2524,7 @@
           "answer_row": 832,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2381,7 +2541,7 @@
           "answer_row": 833,
           "answer_column": 2,
           "value": "(see Form A.34)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2454,7 +2614,9 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [836],
+          "dependency_rows": [
+            836
+          ],
           "page_no": 38,
           "custom_prompt": "Verify protection measures for equipment producing ionizing radiation, including systems using accelerated electrons."
         },
@@ -2468,11 +2630,13 @@
           "answer_row": 835,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [836],
+          "dependency_rows": [
+            836
+          ],
           "page_no": 38
         },
         {
@@ -2524,7 +2688,14 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [838, 839, 840, 841, 842, 843],
+          "dependency_rows": [
+            838,
+            839,
+            840,
+            841,
+            842,
+            843
+          ],
           "page_no": 38
         },
         {
@@ -2537,11 +2708,18 @@
           "answer_row": 837,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [838, 839, 840, 841, 842, 843],
+          "dependency_rows": [
+            838,
+            839,
+            840,
+            841,
+            842,
+            843
+          ],
           "page_no": 38
         },
         {
@@ -2571,7 +2749,7 @@
           "answer_row": 838,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2766,7 +2944,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [845],
+          "dependency_rows": [
+            845
+          ],
           "page_no": 38
         },
         {
@@ -2779,11 +2959,13 @@
           "answer_row": 844,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [845],
+          "dependency_rows": [
+            845
+          ],
           "page_no": 38
         },
         {
@@ -2835,7 +3017,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [847, 851],
+          "dependency_rows": [
+            847,
+            851
+          ],
           "page_no": 38
         },
         {
@@ -2848,11 +3033,14 @@
           "answer_row": 846,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [847, 851],
+          "dependency_rows": [
+            847,
+            851
+          ],
           "page_no": 38
         },
         {
@@ -2865,11 +3053,15 @@
           "answer_row": 847,
           "answer_column": 2,
           "value": "(see Form A.35)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [848, 849, 850],
+          "dependency_rows": [
+            848,
+            849,
+            850
+          ],
           "page_no": 38
         },
         {
@@ -2882,11 +3074,15 @@
           "answer_row": 847,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [848, 849, 850],
+          "dependency_rows": [
+            848,
+            849,
+            850
+          ],
           "page_no": 38
         },
         {
@@ -3003,11 +3199,21 @@
           "answer_row": 851,
           "answer_column": 2,
           "value": "(see Form A.36)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [852, 853, 854, 855, 856, 857, 858, 859, 860],
+          "dependency_rows": [
+            852,
+            853,
+            854,
+            855,
+            856,
+            857,
+            858,
+            859,
+            860
+          ],
           "page_no": 39
         },
         {
@@ -3020,11 +3226,21 @@
           "answer_row": 851,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [852, 853, 854, 855, 856, 857, 858, 859, 860],
+          "dependency_rows": [
+            852,
+            853,
+            854,
+            855,
+            856,
+            857,
+            858,
+            859,
+            860
+          ],
           "page_no": 39
         },
         {
@@ -3160,7 +3376,7 @@
           "answer_row": 855,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3230,7 +3446,7 @@
           "answer_row": 857,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3356,7 +3572,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [862],
+          "dependency_rows": [
+            862
+          ],
           "page_no": 39
         },
         {
@@ -3369,11 +3587,13 @@
           "answer_row": 861,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [862],
+          "dependency_rows": [
+            862
+          ],
           "page_no": 39
         },
         {
@@ -3420,11 +3640,14 @@
           "answer_row": 864,
           "answer_column": 2,
           "value": "PROTECTION AGAINST LIBERATED GASES AND SUBSTANCES, EXPLOSION AND IMPLOSION",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [865, 871],
+          "dependency_rows": [
+            865,
+            871
+          ],
           "page_no": 39
         },
         {
@@ -3437,11 +3660,14 @@
           "answer_row": 864,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [865, 871],
+          "dependency_rows": [
+            865,
+            871
+          ],
           "page_no": 39
         },
         {
@@ -3458,7 +3684,13 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [866, 867, 868, 869, 870],
+          "dependency_rows": [
+            866,
+            867,
+            868,
+            869,
+            870
+          ],
           "page_no": 39
         },
         {
@@ -3471,11 +3703,17 @@
           "answer_row": 865,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [866, 867, 868, 869, 870],
+          "dependency_rows": [
+            866,
+            867,
+            868,
+            869,
+            870
+          ],
           "page_no": 39
         },
         {
@@ -3541,7 +3779,7 @@
           "answer_row": 867,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3664,7 +3902,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [872, 879, 893],
+          "dependency_rows": [
+            872,
+            879,
+            893
+          ],
           "page_no": 39
         },
         {
@@ -3677,11 +3919,15 @@
           "answer_row": 871,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [872, 879, 893],
+          "dependency_rows": [
+            872,
+            879,
+            893
+          ],
           "page_no": 39
         },
         {
@@ -3698,7 +3944,14 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [873, 874, 875, 876, 877, 878],
+          "dependency_rows": [
+            873,
+            874,
+            875,
+            876,
+            877,
+            878
+          ],
           "page_no": 39
         },
         {
@@ -3715,7 +3968,14 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [873, 874, 875, 876, 877, 878],
+          "dependency_rows": [
+            873,
+            874,
+            875,
+            876,
+            877,
+            878
+          ],
           "page_no": 39
         },
         {
@@ -3745,7 +4005,7 @@
           "answer_row": 873,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3851,7 +4111,7 @@
           "answer_row": 876,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3940,12 +4200,24 @@
           "answer_row": 879,
           "answer_column": 2,
           "value": "(see Form A.37)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": [
-            880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892
+            880,
+            881,
+            882,
+            883,
+            884,
+            885,
+            886,
+            887,
+            888,
+            889,
+            890,
+            891,
+            892
           ],
           "page_no": 39
         },
@@ -3959,12 +4231,24 @@
           "answer_row": 879,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": [
-            880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892
+            880,
+            881,
+            882,
+            883,
+            884,
+            885,
+            886,
+            887,
+            888,
+            889,
+            890,
+            891,
+            892
           ],
           "page_no": 39
         },
@@ -3995,7 +4279,7 @@
           "answer_row": 880,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4100,7 +4384,7 @@
           "answer_row": 883,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4205,7 +4489,7 @@
           "answer_row": 886,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4436,7 +4720,14 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [894, 895, 896, 897, 898, 899],
+          "dependency_rows": [
+            894,
+            895,
+            896,
+            897,
+            898,
+            899
+          ],
           "page_no": 40
         },
         {
@@ -4453,7 +4744,14 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [894, 895, 896, 897, 898, 899],
+          "dependency_rows": [
+            894,
+            895,
+            896,
+            897,
+            898,
+            899
+          ],
           "page_no": 40
         },
         {
@@ -4483,7 +4781,7 @@
           "answer_row": 894,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4585,7 +4883,7 @@
           "answer_row": 897,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4670,11 +4968,20 @@
           "answer_row": 901,
           "answer_column": 2,
           "value": "COMPONENTS AND SUBASSEMBLIES",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [902, 904, 910, 916, 918, 920, 921, 925],
+          "dependency_rows": [
+            902,
+            904,
+            910,
+            916,
+            918,
+            920,
+            921,
+            925
+          ],
           "page_no": 40
         },
         {
@@ -4687,11 +4994,20 @@
           "answer_row": 901,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [902, 904, 910, 916, 918, 920, 921, 925],
+          "dependency_rows": [
+            902,
+            904,
+            910,
+            916,
+            918,
+            920,
+            921,
+            925
+          ],
           "page_no": 40
         },
         {
@@ -4708,7 +5024,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [903],
+          "dependency_rows": [
+            903
+          ],
           "page_no": 40
         },
         {
@@ -4721,11 +5039,13 @@
           "answer_row": 902,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [903],
+          "dependency_rows": [
+            903
+          ],
           "page_no": 40
         },
         {
@@ -4738,7 +5058,7 @@
           "answer_row": 903,
           "answer_column": 2,
           "value": "(see TABLE 1.A)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4776,7 +5096,10 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [905, 908],
+          "dependency_rows": [
+            905,
+            908
+          ],
           "page_no": 40
         },
         {
@@ -4789,11 +5112,14 @@
           "answer_row": 904,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [905, 908],
+          "dependency_rows": [
+            905,
+            908
+          ],
           "page_no": 40
         },
         {
@@ -4810,7 +5136,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [906, 907],
+          "dependency_rows": [
+            906,
+            907
+          ],
           "page_no": 40
         },
         {
@@ -4823,11 +5152,14 @@
           "answer_row": 905,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [906, 907],
+          "dependency_rows": [
+            906,
+            907
+          ],
           "page_no": 40
         },
         {
@@ -4840,7 +5172,7 @@
           "answer_row": 906,
           "answer_column": 2,
           "value": "(see Forms A.1 and A.26B)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4912,7 +5244,9 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": true,
-          "dependency_rows": [909],
+          "dependency_rows": [
+            909
+          ],
           "page_no": 40
         },
         {
@@ -4929,7 +5263,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [909],
+          "dependency_rows": [
+            909
+          ],
           "page_no": 40
         },
         {
@@ -4980,7 +5316,13 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [911, 912, 913, 914, 915],
+          "dependency_rows": [
+            911,
+            912,
+            913,
+            914,
+            915
+          ],
           "page_no": 40
         },
         {
@@ -4993,11 +5335,17 @@
           "answer_row": 910,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [911, 912, 913, 914, 915],
+          "dependency_rows": [
+            911,
+            912,
+            913,
+            914,
+            915
+          ],
           "page_no": 40
         },
         {
@@ -5010,7 +5358,7 @@
           "answer_row": 911,
           "answer_column": 2,
           "value": "(see Form A.38)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5184,7 +5532,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [917],
+          "dependency_rows": [
+            917
+          ],
           "page_no": 41
         },
         {
@@ -5201,7 +5551,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [917],
+          "dependency_rows": [
+            917
+          ],
           "page_no": 41
         },
         {
@@ -5252,7 +5604,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [919],
+          "dependency_rows": [
+            919
+          ],
           "page_no": 41
         },
         {
@@ -5269,7 +5623,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [919],
+          "dependency_rows": [
+            919
+          ],
           "page_no": 41
         },
         {
@@ -5316,7 +5672,7 @@
           "answer_row": 920,
           "answer_column": 2,
           "value": "(see Forms A.39 and A.40)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5354,7 +5710,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [922, 923, 924],
+          "dependency_rows": [
+            922,
+            923,
+            924
+          ],
           "page_no": 41
         },
         {
@@ -5367,11 +5727,15 @@
           "answer_row": 921,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [922, 923, 924],
+          "dependency_rows": [
+            922,
+            923,
+            924
+          ],
           "page_no": 41
         },
         {
@@ -5418,7 +5782,7 @@
           "answer_row": 923,
           "answer_column": 2,
           "value": "(see Form A.23)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5490,7 +5854,13 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [926, 927, 928, 929, 930],
+          "dependency_rows": [
+            926,
+            927,
+            928,
+            929,
+            930
+          ],
           "page_no": 41
         },
         {
@@ -5503,11 +5873,17 @@
           "answer_row": 925,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [926, 927, 928, 929, 930],
+          "dependency_rows": [
+            926,
+            927,
+            928,
+            929,
+            930
+          ],
           "page_no": 41
         },
         {
@@ -5520,7 +5896,7 @@
           "answer_row": 926,
           "answer_column": 2,
           "value": "(see Form A.41)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5571,7 +5947,7 @@
           "answer_row": 927,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5690,11 +6066,15 @@
           "answer_row": 932,
           "answer_column": 2,
           "value": "PROTECTION BY INTERLOCKS",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [933, 935, 936],
+          "dependency_rows": [
+            933,
+            935,
+            936
+          ],
           "page_no": 41
         },
         {
@@ -5707,11 +6087,15 @@
           "answer_row": 932,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [933, 935, 936],
+          "dependency_rows": [
+            933,
+            935,
+            936
+          ],
           "page_no": 41
         },
         {
@@ -5728,7 +6112,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [934],
+          "dependency_rows": [
+            934
+          ],
           "page_no": 41
         },
         {
@@ -5741,11 +6127,13 @@
           "answer_row": 933,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [934],
+          "dependency_rows": [
+            934
+          ],
           "page_no": 41
         },
         {
@@ -5830,7 +6218,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [937, 938],
+          "dependency_rows": [
+            937,
+            938
+          ],
           "page_no": 41
         },
         {
@@ -5843,11 +6234,14 @@
           "answer_row": 936,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [937, 938],
+          "dependency_rows": [
+            937,
+            938
+          ],
           "page_no": 41
         },
         {
@@ -5928,11 +6322,14 @@
           "answer_row": 940,
           "answer_column": 2,
           "value": "HAZARDS RESULTING FROM APPLICATION",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [941, 944],
+          "dependency_rows": [
+            941,
+            944
+          ],
           "page_no": 41
         },
         {
@@ -5949,7 +6346,10 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [941, 944],
+          "dependency_rows": [
+            941,
+            944
+          ],
           "page_no": 41
         },
         {
@@ -5966,7 +6366,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [942, 943],
+          "dependency_rows": [
+            942,
+            943
+          ],
           "page_no": 41
         },
         {
@@ -5983,7 +6386,10 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [942, 943],
+          "dependency_rows": [
+            942,
+            943
+          ],
           "page_no": 41
         },
         {
@@ -6068,7 +6474,13 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [945, 946, 947, 948, 949],
+          "dependency_rows": [
+            945,
+            946,
+            947,
+            948,
+            949
+          ],
           "page_no": 41
         },
         {
@@ -6085,7 +6497,13 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [945, 946, 947, 948, 949],
+          "dependency_rows": [
+            945,
+            946,
+            947,
+            948,
+            949
+          ],
           "page_no": 41
         },
         {
@@ -6115,7 +6533,7 @@
           "answer_row": 945,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6268,13 +6686,29 @@
           "answer_row": 951,
           "answer_column": 2,
           "value": "RISK ASSESSMENT",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": [
-            952, 953, 954, 955, 956, 957, 958, 959, 960, 961, 962, 963, 964,
-            965, 966, 967, 968, 969
+            952,
+            953,
+            954,
+            955,
+            956,
+            957,
+            958,
+            959,
+            960,
+            961,
+            962,
+            963,
+            964,
+            965,
+            966,
+            967,
+            968,
+            969
           ],
           "page_no": 42
         },
@@ -6288,13 +6722,29 @@
           "answer_row": 951,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": [
-            952, 953, 954, 955, 956, 957, 958, 959, 960, 961, 962, 963, 964,
-            965, 966, 967, 968, 969
+            952,
+            953,
+            954,
+            955,
+            956,
+            957,
+            958,
+            959,
+            960,
+            961,
+            962,
+            963,
+            964,
+            965,
+            966,
+            967,
+            968,
+            969
           ],
           "page_no": 42
         },
@@ -6359,7 +6809,7 @@
           "answer_row": 953,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6631,7 +7081,7 @@
           "answer_row": 961,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6699,7 +7149,7 @@
           "answer_row": 963,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
