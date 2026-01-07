@@ -31,7 +31,7 @@ import mimetypes
 from fastapi import HTTPException
 
 
-AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=stintertekesusstage;AccountKey=X3xxXc+G6VT3GNShGEIO+boKEbI2jLbh0U9wg5/U2UME328bFHPVdeJDgp9fyKfs7IW/MoJnpi5Q+ASti9+IlA==;EndpointSuffix=core.windows.net'
+AZURE_STORAGE_CONNECTION_STRING = 'BlobEndpoint=https://stintertekesusstage.blob.core.windows.net/;QueueEndpoint=https://stintertekesusstage.queue.core.windows.net/;FileEndpoint=https://stintertekesusstage.file.core.windows.net/;TableEndpoint=https://stintertekesusstage.table.core.windows.net/;SharedAccessSignature=sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-07-29T21:31:45Z&st=2026-01-06T13:16:45Z&spr=https&sig=9XogmhBXaMJXv3OL6PHYjJ3GMu1r0LNFCACuKhcejQ0%3D'
 blob_service = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
 blob_container = 'stintertekesusstage-blob'
 
