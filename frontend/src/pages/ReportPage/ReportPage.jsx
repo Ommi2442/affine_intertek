@@ -54,6 +54,11 @@ const ReportPage = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
 
+  const navigationType = useNavigationType();
+
+  // true only on hard refresh (F5 / reload)
+  const isHardRefresh = navigationType === 'POP';
+
   const projectID = localStorage.getItem('projectId');
 
   // --------------------------------------------------
@@ -165,7 +170,6 @@ const ReportPage = () => {
     }
   };
   const location = useLocation();
-  const navigationType = useNavigationType();
 
   useEffect(() => {
     const isReportPage = location.pathname.includes('report-page');
@@ -583,6 +587,7 @@ const ReportPage = () => {
                 onConfidenceChange={() => {
                   setConfidenceTick((v) => v + 1);
                 }}
+                isHardRefresh={isHardRefresh}
               />
             )}
 

@@ -41,7 +41,13 @@ import { RenderPage5DynamicGroups } from './PageRenderers/RenderPage5DynamicGrou
 
 const DataTable = forwardRef(
   (
-    { jsonData, onBookmarkClick, onConfidenceChange, editMode = false },
+    {
+      jsonData,
+      onBookmarkClick,
+      onConfidenceChange,
+      editMode = false,
+      isHardRefresh,
+    },
     ref
   ) => {
     const containerRef = useRef(null);
@@ -134,36 +140,38 @@ const DataTable = forwardRef(
       onConfidenceChange?.();
     };
 
-    useEffect(() => {
-      idb_get('tables').then((saved) => {
-        if (saved && Array.isArray(saved)) {
-          setTables(saved);
-        }
-      });
-    }, []);
     // useEffect(() => {
-    //   let cancelled = false;
-
-    //   const load = async () => {
-    //     // CASE 1️⃣ — Backend data (new visit / route change)
-    //     if (jsonData?.Tables?.length) {
-    //       setTables(jsonData.Tables);
-    //       await idb_set('tables', jsonData.Tables); // ✅ sync backend → IDB
-    //       return;
-    //     }
-
-    //     // CASE 2️⃣ — Refresh (same route)
-    //     const saved = await idb_get('tables');
-    //     if (!cancelled && saved && Array.isArray(saved)) {
+    //   idb_get('tables').then((saved) => {
+    //     if (saved && Array.isArray(saved)) {
     //       setTables(saved);
     //     }
-    //   };
+    //   });
+    // }, []);
+    useEffect(() => {
+      let cancelled = false;
 
-    //   load();
-    //   return () => {
-    //     cancelled = true;
-    //   };
-    // }, [jsonData]);
+      const load = async () => {
+        // 1️⃣ HARD REFRESH → LOAD FROM INDEXEDDB ONLY
+        if (isHardRefresh) {
+          const saved = await idb_get('tables');
+          if (!cancelled && saved?.length) {
+            setTables(saved);
+            return;
+          }
+        }
+
+        // 2️⃣ NAVIGATION / FRESH LOAD → BACKEND IS KING
+        if (jsonData?.Tables?.length) {
+          setTables(jsonData.Tables);
+          await idb_set('tables', jsonData.Tables);
+        }
+      };
+
+      load();
+      return () => {
+        cancelled = true;
+      };
+    }, [jsonData, isHardRefresh]);
 
     const isEditable = (item) => {
       if (!item) return false;
