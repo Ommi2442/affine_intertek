@@ -4,12 +4,7 @@ from fastapi import APIRouter, HTTPException
 from datetime import datetime, timedelta, timezone
 from .models import EmailRequest, OTPVerifyRequest
 from .utils import generate_otp, encrypt_otp, decrypt_otp, send_email
-<<<<<<< HEAD
 from db.database import COSMOS_DB_users_Container,COSMOS_DB_users_regis
-=======
-from db.database import COSMOS_DB_users_Container,COSMOS_DB_users_registration
-
->>>>>>> 6abd8f9a5873638c0c09a2bdcfaf8f74c87d1c4f
 from api.auth.jwt_auth.utils import create_access_token 
 import hmac
 import logging
@@ -154,24 +149,6 @@ def verify_otp(data: OTPVerifyRequest):
         logging.error(f"Error verifying OTP: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-def validate_user():
-    reviewers = []
-    engineers = []
-    query = "SELECT u.email, u.user_role FROM users u"
-    users = list(
-        COSMOS_DB_users_registration.query_items(
-            query=query,
-            enable_cross_partition_query=True
-        )
-    )
-    for user in users:
-        if user.get("user_role") == 1:
-            reviewers.append(user.get("email"))
-        elif user.get("user_role") == 2:
-            engineers.append(user.get("email"))
-
-    return reviewers, engineers
-
 
 @router.post("/sso-login")
 async def sso_login(data: EmailRequest):
@@ -186,15 +163,11 @@ async def sso_login(data: EmailRequest):
         print("All registered emails:\n", registered_emails)
 
         query = "SELECT * FROM users u WHERE u.email = @email"
-        existing_user = list(
-            COSMOS_DB_users_Container.query_items(
-                query=query,
-                parameters=[{"name": "@email", "value": data.email}],
-                enable_cross_partition_query=True
-            )
-        )
-
-        reviewers, engineers = validate_user()
+        existing_user = list(COSMOS_DB_users_Container.query_items(
+            query=query,
+            parameters=[{"name": "@email", "value": data.email}],
+            enable_cross_partition_query=True
+        ))
 
         if not existing_user:
             if data.email in registered_emails:
