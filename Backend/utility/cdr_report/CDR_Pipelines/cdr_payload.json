@@ -3,7 +3,7 @@
         [
             {
                 "sheet_no": 1,
-                "sheet_name": "1.0 Report Information",
+                "sheet_name": "1.0 References",
                 "Items": [
                     {
                         "question_cell": "A1",
@@ -48,7 +48,8 @@
                         "task_type": "extraction",
                         "user_editable": true,
                         "ai_fillable": true,
-                        "accuracy_level": true
+                        "accuracy_level": true,
+                        "confidence" : 100
                     },
                     {
                         "question_cell": "C3",
@@ -60,10 +61,11 @@
                         "fm_range": null,
                         "value_merged": false,
                         "vm_range": null,
-                        "task_type": null,
+                        "task_type": "extraction",
                         "user_editable": true,
-                        "ai_fillable": false,
-                        "accuracy_level": false
+                        "ai_fillable": true,
+                        "accuracy_level": true,
+                        "confidence" : 100
                     },
                     {
                         "question_cell": "E3",
@@ -93,7 +95,8 @@
                         "task_type": "extraction",
                         "user_editable": true,
                         "ai_fillable": true,
-                        "accuracy_level": true
+                        "accuracy_level": true,
+                        "confidence" : 100
                     },
                     {
                         "question_cell": "A5",
@@ -339,7 +342,7 @@
             },
             {
                 "sheet_no": 2,
-                "sheet_name": "2.0 Product Information",
+                "sheet_name": "2.0 Description",
                 "Items": [
                     {
                         "question_cell": "A1",
@@ -775,7 +778,7 @@
                         "task_type": "extraction",
                         "user_editable": true,
                         "ai_fillable": true,
-                        "accuracy_level": false
+                        "accuracy_level": true
                     },
                     {
                         "question_cell": "A21",
@@ -795,7 +798,7 @@
                         "task_type": "extraction",
                         "user_editable": true,
                         "ai_fillable": true,
-                        "accuracy_level": false
+                        "accuracy_level": true
                     },
                     {
                         "question_cell": "A22",
@@ -815,7 +818,7 @@
                         "task_type": "extraction",
                         "user_editable": true,
                         "ai_fillable": true,
-                        "accuracy_level": false
+                        "accuracy_level": true
                     },
                     {
                         "question_cell": "A23",
@@ -835,7 +838,7 @@
                         "task_type": "extraction",
                         "user_editable": true,
                         "ai_fillable": true,
-                        "accuracy_level": false
+                        "accuracy_level": true
                     },
                     {
                         "question_cell": "A24",
@@ -856,7 +859,7 @@
                         "task_type": "extraction",
                         "user_editable": true,
                         "ai_fillable": true,
-                        "accuracy_level": false
+                        "accuracy_level": true
                     },
                     {
                         "question_cell": "A25",
@@ -876,7 +879,7 @@
                         "task_type": "extraction",
                         "user_editable": true,
                         "ai_fillable": true,
-                        "accuracy_level": false
+                        "accuracy_level": true
                     },
                     {
                         "question_cell": "A26",
@@ -899,7 +902,7 @@
                         "task_type": "extraction",
                         "user_editable": true,
                         "ai_fillable": true,
-                        "accuracy_level": false
+                        "accuracy_level": true
                     },
                     {
                         "question_cell": "A27",
@@ -941,7 +944,7 @@
                         "task_type": "extraction",
                         "user_editable": true,
                         "ai_fillable": true,
-                        "accuracy_level": false
+                        "accuracy_level": true
                     },
                     {
                         "question_cell": "A29",
@@ -982,7 +985,7 @@
                         "task_type": "extraction",
                         "user_editable": true,
                         "ai_fillable": true,
-                        "accuracy_level": false
+                        "accuracy_level": true
                     }
                 ]
             }

@@ -635,5 +635,5 @@ def save_local_xlsx_to_blob_and_cosmos_cdr(xlsx_file_path: str, project_id: str)
 
     cdr_container.create_item(cosmos_item)
     cosmos_items.append(cosmos_item)
-
     return cosmos_items
+

@@ -1,0 +1,573 @@
+{
+  "sheet_no": 6,
+  "sheet_name": "6.0 Features",
+  "Items": [
+    {
+      "question_cell": "A1",
+      "prefix": null,
+      "field": "6.0 Features",
+      "answer_cell": null,
+      "value": null,
+      "st1": "grounding applicable",
+      "resp1": null,
+      "st2": "grounding not applicable",
+      "resp2": null,
+      "checkbox": true,
+      "field_merged": true,
+      "fm_range": "J1",
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": "title",
+      "user_editable": false,
+      "ai_fillable": false,
+      "accuracy_level": false
+    },
+    {
+      "question_cell": "A2",
+      "prefix": null,
+      "field": "Recognized Component - A component part, which has been previously evaluated by an accredited certification body with restrictions and must be evaluated as part of the basic product considering the restrictions as specified by the Conditions of Acceptability.",
+      "answer_cell": null,
+      "value": null,
+      "field_merged": true,
+      "fm_range": "B4",
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": null,
+      "user_editable": false,
+      "ai_fillable": false,
+      "accuracy_level": false
+    },
+    {
+      "question_cell": "A5",
+      "prefix": null,
+      "field": null,
+      "answer_cell": null,
+      "value": null,
+      "field_merged": true,
+      "fm_range": "B5",
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": "blank",
+      "user_editable": false,
+      "ai_fillable": false,
+      "accuracy_level": false
+    },
+    {
+      "question_cell": "A6",
+      "prefix": null,
+      "field": "Listed Component - A component part, which has been previously Listed or Certified by an accredited Certification Organization with no restrictions and is used in the intended application within its ratings.",
+      "answer_cell": null,
+      "value": null,
+      "field_merged": true,
+      "fm_range": "B7",
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": null,
+      "user_editable": false,
+      "ai_fillable": false,
+      "accuracy_level": false
+    },
+    {
+      "question_cell": "A8",
+      "prefix": null,
+      "field": null,
+      "answer_cell": null,
+      "value": null,
+      "field_merged": true,
+      "fm_range": "B8",
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": "blank",
+      "user_editable": false,
+      "ai_fillable": false,
+      "accuracy_level": false
+    },
+    {
+      "question_cell": "A9",
+      "prefix": null,
+      "field": "Unlisted Component - A part that has not been previously evaluated to the appropriate designated component standard.  It may also be a Listed or Recognized component that is being used outside of its evaluated Listing or component recognition.",
+      "answer_cell": null,
+      "value": null,
+      "field_merged": true,
+      "fm_range": "B11",
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": null,
+      "user_editable": false,
+      "ai_fillable": false,
+      "accuracy_level": false
+    },
+    {
+      "question_cell": "A12",
+      "prefix": null,
+      "field": null,
+      "answer_cell": null,
+      "value": null,
+      "field_merged": true,
+      "fm_range": "B12",
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": "blank",
+      "user_editable": false,
+      "ai_fillable": false,
+      "accuracy_level": false
+    },
+    {
+      "question_cell": "A13",
+      "prefix": null,
+      "field": "Critical Features/Components - An essential part, material, subassembly, system, software, or accessory of a product that has a direct bearing on the product’s conformance to applicable requirements of the product standard.",
+      "answer_cell": null,
+      "value": null,
+      "field_merged": true,
+      "fm_range": "B15",
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": null,
+      "user_editable": false,
+      "ai_fillable": false,
+      "accuracy_level": false
+    },
+    {
+      "question_cell": "A16",
+      "prefix": null,
+      "field": "Construction Details - For specific construction details, reference should be made to the photographs and descriptions.  All dimensions are approximate unless specified as exact or within a tolerance.  In addition to the specific construction details described in this Report, the following general requirements also apply.",
+      "answer_cell": null,
+      "field_merged": true,
+      "fm_range": "B18",
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": null,
+      "user_editable": false,
+      "ai_fillable": false,
+      "accuracy_level": false
+    },
+    {
+      "question_cell": "A19",
+      "prefix": "Spacing",
+      "field": "1.",
+      "answer_cell": "B19",
+      "value": "Spacing - In primary circuits, __ mm minimum spacing are maintained through air and over surfaces of insulating material between current-carrying parts of opposite polarity and __ mm minimum between such current-carrying parts and dead-metal parts or low voltage isolated circuits. Refer to Illustration __ for areas to verify.",
+      "val1": null,
+      "val2": null,
+      "val3": null,
+      "st1": "Spacing - In primary circuits, ___ mm minimum spacing are maintained through air and over surfaces of insulating material between current-carrying parts of opposite polarity and ___ mm minimum between such current-carrying parts and dead-metal parts or low voltage isolated circuits.  Refer to Illustration __ for areas to verify.",
+      "resp1": null,
+      "st2": null,
+      "resp2": null,
+      "checkbox": true,
+      "field_merged": true,
+      "fm_range": "A20",
+      "value_merged": true,
+      "vm_range": "B20",
+      "task_type": "extraction",
+      "user_editable": true,
+      "ai_fillable": true,
+      "accuracy_level": true,
+      "text_support": [
+        {
+          "filename": "RB-200 Criticial Components List - UPDATED by C.W..xlsx",
+          "page": 1,
+          "text": "4.0 Critical Components\nPhoto # Item no.1   Name Manufacturer/ trademark2 Type / model2 Technical data and securement means Mark(s) of conformity3\nEnclosure SABIC (E45329) Xenoy 5220U Material: Polybutylene Terephthalate/Polycarbonate (PBT/PC), 2mm thick, UL94HB @ 1.5 mm, RTI: 75°C UR\nPCB ISOLA (E41625) 185HR 94V-0, thickness: 1.593mm, RTI: 130°C @ 0.38 mm Min. UR\nAdhesive Material for Marking Label 3M (MH16411) 7871 Polyester label, service temperature: -40 to 150°C UR\nVibe Motor Jameco Reliapro Vibrating Shaftless Motor 3Vdc, 80mA, 9000 RPM @ 3V, Operating Temp Range: -20°C to 60°C NR\nCamera Module SHENZHEN V‐VISION TECHNOLOGY CO. LTD OV5640 5MP, 1080P, 4.5V, 130mA, Operating Temp Range: -20 to 70°C NR\nTFT Display Okaya RJ240320T‐2x0BN‐F Modifed Display TFT 2.0 Inch 240 X 320, Suppy voltage: 2.8V, Operating Temp Range: -20°C to 70°C NR\nRechargeable Li-ion Battery Fedco Batteries L18650-1AMS 3.6V, 3450mAHr, 12.4Wh, Max temp: 60°C SGSus\nSpeaker CUI CMS‐160916‐30‐3 2.2V, Max Power: 1 W, Freq Range: 480 Hz to 20 kHz, Max Impedance: 6.9 Ω @ 2 kHz, 91 dB Max, Operating Temp Range: -20°C to 75°C NR",
+          "similarity_score": 0.7412830740726644
+        },
+        {
+          "filename": "Boron_StAT_Critical_Parts.xlsx",
+          "page": 1,
+          "text": "Boron 2 StAT Critical Parts\nMfg Mfg P/N Description Qty\nTE Connectivity PS0S0DM6E Power entry module with snap-in mounting, IEC connector, dual fuses, DPST switch, dual stage EMI filter & complete shield; and 6A current rating 1\nAllen Bradley 1606-XLP95E Power Supply, Compact, 95 Watt, 24 - 28 Volt DC Output, 1-Phase 1\nWalker Component Group ACH 70513-01 Assembly, Cable, AC Ground 1\nWalker Component Group ACH 70514-01 Assembly, Cable, AC Line 1\nWalker Component Group ACH 70515-01 Assembly, Cable, AC Neutral 1\nLittlefuse\nEaton 218005XP\nS506-5-R Fuse, Glass, 5A, 250VAC, 5X20mm 2",
+          "similarity_score": 0.739021924527746
+        },
+        {
+          "filename": "Product2 BOM and PCA Component Map_Rev A.xlsx",
+          "page": 1,
+          "text": "J1 CONN HEADER 2POS .100 VERT TIN Thru Hole Molex 22-23-2021 WM4200-ND RTD\nJ2 CONN 3POS .100 VERT 2 conns\nfor 6 pos Thru Hole AMP 382437 A26245-ND PGM\nTwo 3 pin connectors instead of One 6 pin\nJ3 Jack, DB9, Female, Vertical PC Mount Thru Hole Norcomp 171-009-213R011 5209FE-ND RS232\nJ4 CONN HEADER 2POS .100 VERT TIN Thru Hole Molex 22-23-2021 WM4200-ND FAN\nJ5 Jack, DC Power Thru Hole CUI PJ-011A CP-011A-ND PWR\nJ6 conn_spade Thru Hole Keystone 1287 1287K-ND Peltier\nJ7 conn_spade Thru Hole Keystone 1287 1287K-ND Peltier\nD1 DIODE 75V 150MA SOD-323F Fairchild 1N4148WS IN4148WSFSCT-ND 1N4148WS\nLED1 LED Thru Hole Mouser 604-WP 7113GT Buffer\nQ1 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\nQ4 Mosfet, N-Ch, PWR TO220 IRFZ44N Same as TS130\nQ5 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\nR2 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR3 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR4 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR5 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR6 Resistor, Thick Film, 1/10W, 1% 200 0805 Generic\nR7 Resistor, Thick Film, 1/10W, 1% 158 0805 Generic\nR8 Resistor, Thick Film, 1/10W, 1% 10k 0805 Generic",
+          "similarity_score": 0.7366196005887433
+        }
+      ],
+      "image_support": [],
+      "confidence": "30.0"
+    },
+    {
+      "question_cell": "A21",
+      "prefix": "Mechanical Assembly",
+      "field": "2.",
+      "answer_cell": "B21",
+      "value": "Mechanical Assembly - Components such as switches, fuseholders, connectors, wiring terminals and display lamps are mounted and prevented from shifting or rotating by the use of lockwashers, starwashers, or other mounting format that prevents turning of the component.",
+      "st1": "Mechanical Assembly - Components such as switches, fuseholders, connectors, wiring terminals and display lamps are mounted and prevented from shifting or rotating by the use of lockwashers, starwashers, or other mounting format that prevents turning of the component.",
+      "resp1": null,
+      "st2": null,
+      "resp2": null,
+      "checkbox": true,
+      "field_merged": false,
+      "fm_range": null,
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": "extraction",
+      "user_editable": true,
+      "ai_fillable": true,
+      "accuracy_level": true,
+      "text_support": [
+        {
+          "filename": "RB-200 Criticial Components List - UPDATED by C.W..xlsx",
+          "page": 1,
+          "text": "4.0 Critical Components\nPhoto # Item no.1   Name Manufacturer/ trademark2 Type / model2 Technical data and securement means Mark(s) of conformity3\nEnclosure SABIC (E45329) Xenoy 5220U Material: Polybutylene Terephthalate/Polycarbonate (PBT/PC), 2mm thick, UL94HB @ 1.5 mm, RTI: 75°C UR\nPCB ISOLA (E41625) 185HR 94V-0, thickness: 1.593mm, RTI: 130°C @ 0.38 mm Min. UR\nAdhesive Material for Marking Label 3M (MH16411) 7871 Polyester label, service temperature: -40 to 150°C UR\nVibe Motor Jameco Reliapro Vibrating Shaftless Motor 3Vdc, 80mA, 9000 RPM @ 3V, Operating Temp Range: -20°C to 60°C NR\nCamera Module SHENZHEN V‐VISION TECHNOLOGY CO. LTD OV5640 5MP, 1080P, 4.5V, 130mA, Operating Temp Range: -20 to 70°C NR\nTFT Display Okaya RJ240320T‐2x0BN‐F Modifed Display TFT 2.0 Inch 240 X 320, Suppy voltage: 2.8V, Operating Temp Range: -20°C to 70°C NR\nRechargeable Li-ion Battery Fedco Batteries L18650-1AMS 3.6V, 3450mAHr, 12.4Wh, Max temp: 60°C SGSus\nSpeaker CUI CMS‐160916‐30‐3 2.2V, Max Power: 1 W, Freq Range: 480 Hz to 20 kHz, Max Impedance: 6.9 Ω @ 2 kHz, 91 dB Max, Operating Temp Range: -20°C to 75°C NR",
+          "similarity_score": 0.7781526496159771
+        },
+        {
+          "filename": "Boron_StAT_Critical_Parts.xlsx",
+          "page": 1,
+          "text": "Boron 2 StAT Critical Parts\nMfg Mfg P/N Description Qty\nTE Connectivity PS0S0DM6E Power entry module with snap-in mounting, IEC connector, dual fuses, DPST switch, dual stage EMI filter & complete shield; and 6A current rating 1\nAllen Bradley 1606-XLP95E Power Supply, Compact, 95 Watt, 24 - 28 Volt DC Output, 1-Phase 1\nWalker Component Group ACH 70513-01 Assembly, Cable, AC Ground 1\nWalker Component Group ACH 70514-01 Assembly, Cable, AC Line 1\nWalker Component Group ACH 70515-01 Assembly, Cable, AC Neutral 1\nLittlefuse\nEaton 218005XP\nS506-5-R Fuse, Glass, 5A, 250VAC, 5X20mm 2",
+          "similarity_score": 0.7633363737729496
+        },
+        {
+          "filename": "Product2 BOM and PCA Component Map_Rev A.xlsx",
+          "page": 1,
+          "text": "J1 CONN HEADER 2POS .100 VERT TIN Thru Hole Molex 22-23-2021 WM4200-ND RTD\nJ2 CONN 3POS .100 VERT 2 conns\nfor 6 pos Thru Hole AMP 382437 A26245-ND PGM\nTwo 3 pin connectors instead of One 6 pin\nJ3 Jack, DB9, Female, Vertical PC Mount Thru Hole Norcomp 171-009-213R011 5209FE-ND RS232\nJ4 CONN HEADER 2POS .100 VERT TIN Thru Hole Molex 22-23-2021 WM4200-ND FAN\nJ5 Jack, DC Power Thru Hole CUI PJ-011A CP-011A-ND PWR\nJ6 conn_spade Thru Hole Keystone 1287 1287K-ND Peltier\nJ7 conn_spade Thru Hole Keystone 1287 1287K-ND Peltier\nD1 DIODE 75V 150MA SOD-323F Fairchild 1N4148WS IN4148WSFSCT-ND 1N4148WS\nLED1 LED Thru Hole Mouser 604-WP 7113GT Buffer\nQ1 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\nQ4 Mosfet, N-Ch, PWR TO220 IRFZ44N Same as TS130\nQ5 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\nR2 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR3 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR4 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR5 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR6 Resistor, Thick Film, 1/10W, 1% 200 0805 Generic\nR7 Resistor, Thick Film, 1/10W, 1% 158 0805 Generic\nR8 Resistor, Thick Film, 1/10W, 1% 10k 0805 Generic",
+          "similarity_score": 0.7401468514194829
+        }
+      ],
+      "image_support": [],
+      "confidence": 85.0
+    },
+    {
+      "question_cell": "A22",
+      "prefix": "Corrosion Protection",
+      "field": "3.",
+      "answer_cell": "B22",
+      "value": "Corrosion Protection - N/A",
+      "st1": "Corrosion Protection - All ferrous metal parts are protected against corrosion by painting, plating or the equivalent.",
+      "resp1": null,
+      "st2": null,
+      "resp2": null,
+      "checkbox": true,
+      "field_merged": false,
+      "fm_range": null,
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": "extraction",
+      "user_editable": true,
+      "ai_fillable": true,
+      "accuracy_level": true,
+      "text_support": [
+        {
+          "filename": "Boron_StAT_Critical_Parts.xlsx",
+          "page": 1,
+          "text": "Boron 2 StAT Critical Parts\nMfg Mfg P/N Description Qty\nTE Connectivity PS0S0DM6E Power entry module with snap-in mounting, IEC connector, dual fuses, DPST switch, dual stage EMI filter & complete shield; and 6A current rating 1\nAllen Bradley 1606-XLP95E Power Supply, Compact, 95 Watt, 24 - 28 Volt DC Output, 1-Phase 1\nWalker Component Group ACH 70513-01 Assembly, Cable, AC Ground 1\nWalker Component Group ACH 70514-01 Assembly, Cable, AC Line 1\nWalker Component Group ACH 70515-01 Assembly, Cable, AC Neutral 1\nLittlefuse\nEaton 218005XP\nS506-5-R Fuse, Glass, 5A, 250VAC, 5X20mm 2",
+          "similarity_score": 0.7741067739992631
+        },
+        {
+          "filename": "RB-200 Criticial Components List - UPDATED by C.W..xlsx",
+          "page": 1,
+          "text": "4.0 Critical Components\nPhoto # Item no.1   Name Manufacturer/ trademark2 Type / model2 Technical data and securement means Mark(s) of conformity3\nEnclosure SABIC (E45329) Xenoy 5220U Material: Polybutylene Terephthalate/Polycarbonate (PBT/PC), 2mm thick, UL94HB @ 1.5 mm, RTI: 75°C UR\nPCB ISOLA (E41625) 185HR 94V-0, thickness: 1.593mm, RTI: 130°C @ 0.38 mm Min. UR\nAdhesive Material for Marking Label 3M (MH16411) 7871 Polyester label, service temperature: -40 to 150°C UR\nVibe Motor Jameco Reliapro Vibrating Shaftless Motor 3Vdc, 80mA, 9000 RPM @ 3V, Operating Temp Range: -20°C to 60°C NR\nCamera Module SHENZHEN V‐VISION TECHNOLOGY CO. LTD OV5640 5MP, 1080P, 4.5V, 130mA, Operating Temp Range: -20 to 70°C NR\nTFT Display Okaya RJ240320T‐2x0BN‐F Modifed Display TFT 2.0 Inch 240 X 320, Suppy voltage: 2.8V, Operating Temp Range: -20°C to 70°C NR\nRechargeable Li-ion Battery Fedco Batteries L18650-1AMS 3.6V, 3450mAHr, 12.4Wh, Max temp: 60°C SGSus\nSpeaker CUI CMS‐160916‐30‐3 2.2V, Max Power: 1 W, Freq Range: 480 Hz to 20 kHz, Max Impedance: 6.9 Ω @ 2 kHz, 91 dB Max, Operating Temp Range: -20°C to 75°C NR",
+          "similarity_score": 0.7733830285377972
+        },
+        {
+          "filename": "Product2 BOM and PCA Component Map_Rev A.xlsx",
+          "page": 1,
+          "text": "J1 CONN HEADER 2POS .100 VERT TIN Thru Hole Molex 22-23-2021 WM4200-ND RTD\nJ2 CONN 3POS .100 VERT 2 conns\nfor 6 pos Thru Hole AMP 382437 A26245-ND PGM\nTwo 3 pin connectors instead of One 6 pin\nJ3 Jack, DB9, Female, Vertical PC Mount Thru Hole Norcomp 171-009-213R011 5209FE-ND RS232\nJ4 CONN HEADER 2POS .100 VERT TIN Thru Hole Molex 22-23-2021 WM4200-ND FAN\nJ5 Jack, DC Power Thru Hole CUI PJ-011A CP-011A-ND PWR\nJ6 conn_spade Thru Hole Keystone 1287 1287K-ND Peltier\nJ7 conn_spade Thru Hole Keystone 1287 1287K-ND Peltier\nD1 DIODE 75V 150MA SOD-323F Fairchild 1N4148WS IN4148WSFSCT-ND 1N4148WS\nLED1 LED Thru Hole Mouser 604-WP 7113GT Buffer\nQ1 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\nQ4 Mosfet, N-Ch, PWR TO220 IRFZ44N Same as TS130\nQ5 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\nR2 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR3 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR4 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR5 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR6 Resistor, Thick Film, 1/10W, 1% 200 0805 Generic\nR7 Resistor, Thick Film, 1/10W, 1% 158 0805 Generic\nR8 Resistor, Thick Film, 1/10W, 1% 10k 0805 Generic",
+          "similarity_score": 0.7462085259202897
+        }
+      ],
+      "image_support": [],
+      "confidence": 95
+    },
+    {
+      "question_cell": "A23",
+      "prefix": "Accessibility of Live Parts",
+      "field": "4.",
+      "answer_cell": "B23",
+      "value": "Accessibility of Live Parts - All uninsulated live parts in primary circuitry are housed within a non-metallic enclosure constructed with no openings other than those specifically described in Sections 4 and 5.",
+      "st1": "Accessibility of Live Parts - All uninsulated live parts in primary circuitry are housed within a <metal or non-metallic> enclosure constructed with no openings other than those specifically described in Sections 4 and 5.",
+      "resp1": null,
+      "st2": null,
+      "resp2": null,
+      "checkbox": true,
+      "field_merged": false,
+      "fm_range": null,
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": "extraction",
+      "user_editable": true,
+      "ai_fillable": true,
+      "accuracy_level": true,
+      "text_support": [
+        {
+          "filename": "Boron_StAT_Critical_Parts.xlsx",
+          "page": 1,
+          "text": "Boron 2 StAT Critical Parts\nMfg Mfg P/N Description Qty\nTE Connectivity PS0S0DM6E Power entry module with snap-in mounting, IEC connector, dual fuses, DPST switch, dual stage EMI filter & complete shield; and 6A current rating 1\nAllen Bradley 1606-XLP95E Power Supply, Compact, 95 Watt, 24 - 28 Volt DC Output, 1-Phase 1\nWalker Component Group ACH 70513-01 Assembly, Cable, AC Ground 1\nWalker Component Group ACH 70514-01 Assembly, Cable, AC Line 1\nWalker Component Group ACH 70515-01 Assembly, Cable, AC Neutral 1\nLittlefuse\nEaton 218005XP\nS506-5-R Fuse, Glass, 5A, 250VAC, 5X20mm 2",
+          "similarity_score": 0.7479137759863704
+        },
+        {
+          "filename": "RB-200 Criticial Components List - UPDATED by C.W..xlsx",
+          "page": 1,
+          "text": "4.0 Critical Components\nPhoto # Item no.1   Name Manufacturer/ trademark2 Type / model2 Technical data and securement means Mark(s) of conformity3\nEnclosure SABIC (E45329) Xenoy 5220U Material: Polybutylene Terephthalate/Polycarbonate (PBT/PC), 2mm thick, UL94HB @ 1.5 mm, RTI: 75°C UR\nPCB ISOLA (E41625) 185HR 94V-0, thickness: 1.593mm, RTI: 130°C @ 0.38 mm Min. UR\nAdhesive Material for Marking Label 3M (MH16411) 7871 Polyester label, service temperature: -40 to 150°C UR\nVibe Motor Jameco Reliapro Vibrating Shaftless Motor 3Vdc, 80mA, 9000 RPM @ 3V, Operating Temp Range: -20°C to 60°C NR\nCamera Module SHENZHEN V‐VISION TECHNOLOGY CO. LTD OV5640 5MP, 1080P, 4.5V, 130mA, Operating Temp Range: -20 to 70°C NR\nTFT Display Okaya RJ240320T‐2x0BN‐F Modifed Display TFT 2.0 Inch 240 X 320, Suppy voltage: 2.8V, Operating Temp Range: -20°C to 70°C NR\nRechargeable Li-ion Battery Fedco Batteries L18650-1AMS 3.6V, 3450mAHr, 12.4Wh, Max temp: 60°C SGSus\nSpeaker CUI CMS‐160916‐30‐3 2.2V, Max Power: 1 W, Freq Range: 480 Hz to 20 kHz, Max Impedance: 6.9 Ω @ 2 kHz, 91 dB Max, Operating Temp Range: -20°C to 75°C NR",
+          "similarity_score": 0.7426133745294929
+        },
+        {
+          "filename": "Product2 BOM and PCA Component Map_Rev A.xlsx",
+          "page": 1,
+          "text": "J1 CONN HEADER 2POS .100 VERT TIN Thru Hole Molex 22-23-2021 WM4200-ND RTD\nJ2 CONN 3POS .100 VERT 2 conns\nfor 6 pos Thru Hole AMP 382437 A26245-ND PGM\nTwo 3 pin connectors instead of One 6 pin\nJ3 Jack, DB9, Female, Vertical PC Mount Thru Hole Norcomp 171-009-213R011 5209FE-ND RS232\nJ4 CONN HEADER 2POS .100 VERT TIN Thru Hole Molex 22-23-2021 WM4200-ND FAN\nJ5 Jack, DC Power Thru Hole CUI PJ-011A CP-011A-ND PWR\nJ6 conn_spade Thru Hole Keystone 1287 1287K-ND Peltier\nJ7 conn_spade Thru Hole Keystone 1287 1287K-ND Peltier\nD1 DIODE 75V 150MA SOD-323F Fairchild 1N4148WS IN4148WSFSCT-ND 1N4148WS\nLED1 LED Thru Hole Mouser 604-WP 7113GT Buffer\nQ1 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\nQ4 Mosfet, N-Ch, PWR TO220 IRFZ44N Same as TS130\nQ5 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\nR2 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR3 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR4 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR5 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR6 Resistor, Thick Film, 1/10W, 1% 200 0805 Generic\nR7 Resistor, Thick Film, 1/10W, 1% 158 0805 Generic\nR8 Resistor, Thick Film, 1/10W, 1% 10k 0805 Generic",
+          "similarity_score": 0.7174586815621634
+        }
+      ],
+      "image_support": [],
+      "confidence": 90.0
+    },
+    {
+      "question_cell": "A24",
+      "prefix": "Grounding",
+      "field": "5.",
+      "answer_cell": "B24",
+      "value": "Grounding – All exposed dead-metal parts and all dead-metal parts within the enclosure that are exposed are connected to the grounding lead of the power supply cord",
+      "val1": null,
+      "st1": "This product is not provided with a means of grounding as it is <double insulated or not required to be grounded since _____>",
+      "resp1": null,
+      "st2": "All exposed dead-metal parts and all dead-metal parts within the enclosure that are exposed are connected to the <grounding lead of the power supply cord or the equipment grounding terminal>",
+      "resp2": null,
+      "checkbox": true,
+      "field_merged": false,
+      "fm_range": null,
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": "extraction",
+      "user_editable": true,
+      "ai_fillable": true,
+      "accuracy_level": true,
+      "text_support": [
+        {
+          "filename": "Boron_StAT_Critical_Parts.xlsx",
+          "page": 1,
+          "text": "Boron 2 StAT Critical Parts\nMfg Mfg P/N Description Qty\nTE Connectivity PS0S0DM6E Power entry module with snap-in mounting, IEC connector, dual fuses, DPST switch, dual stage EMI filter & complete shield; and 6A current rating 1\nAllen Bradley 1606-XLP95E Power Supply, Compact, 95 Watt, 24 - 28 Volt DC Output, 1-Phase 1\nWalker Component Group ACH 70513-01 Assembly, Cable, AC Ground 1\nWalker Component Group ACH 70514-01 Assembly, Cable, AC Line 1\nWalker Component Group ACH 70515-01 Assembly, Cable, AC Neutral 1\nLittlefuse\nEaton 218005XP\nS506-5-R Fuse, Glass, 5A, 250VAC, 5X20mm 2",
+          "similarity_score": 0.7633067250932826
+        },
+        {
+          "filename": "Product2 BOM and PCA Component Map_Rev A.xlsx",
+          "page": 1,
+          "text": "J1 CONN HEADER 2POS .100 VERT TIN Thru Hole Molex 22-23-2021 WM4200-ND RTD\nJ2 CONN 3POS .100 VERT 2 conns\nfor 6 pos Thru Hole AMP 382437 A26245-ND PGM\nTwo 3 pin connectors instead of One 6 pin\nJ3 Jack, DB9, Female, Vertical PC Mount Thru Hole Norcomp 171-009-213R011 5209FE-ND RS232\nJ4 CONN HEADER 2POS .100 VERT TIN Thru Hole Molex 22-23-2021 WM4200-ND FAN\nJ5 Jack, DC Power Thru Hole CUI PJ-011A CP-011A-ND PWR\nJ6 conn_spade Thru Hole Keystone 1287 1287K-ND Peltier\nJ7 conn_spade Thru Hole Keystone 1287 1287K-ND Peltier\nD1 DIODE 75V 150MA SOD-323F Fairchild 1N4148WS IN4148WSFSCT-ND 1N4148WS\nLED1 LED Thru Hole Mouser 604-WP 7113GT Buffer\nQ1 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\nQ4 Mosfet, N-Ch, PWR TO220 IRFZ44N Same as TS130\nQ5 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\nR2 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR3 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR4 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR5 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR6 Resistor, Thick Film, 1/10W, 1% 200 0805 Generic\nR7 Resistor, Thick Film, 1/10W, 1% 158 0805 Generic\nR8 Resistor, Thick Film, 1/10W, 1% 10k 0805 Generic",
+          "similarity_score": 0.7429200531920963
+        },
+        {
+          "filename": "RB-200 Criticial Components List - UPDATED by C.W..xlsx",
+          "page": 1,
+          "text": "4.0 Critical Components\nPhoto # Item no.1   Name Manufacturer/ trademark2 Type / model2 Technical data and securement means Mark(s) of conformity3\nEnclosure SABIC (E45329) Xenoy 5220U Material: Polybutylene Terephthalate/Polycarbonate (PBT/PC), 2mm thick, UL94HB @ 1.5 mm, RTI: 75°C UR\nPCB ISOLA (E41625) 185HR 94V-0, thickness: 1.593mm, RTI: 130°C @ 0.38 mm Min. UR\nAdhesive Material for Marking Label 3M (MH16411) 7871 Polyester label, service temperature: -40 to 150°C UR\nVibe Motor Jameco Reliapro Vibrating Shaftless Motor 3Vdc, 80mA, 9000 RPM @ 3V, Operating Temp Range: -20°C to 60°C NR\nCamera Module SHENZHEN V‐VISION TECHNOLOGY CO. LTD OV5640 5MP, 1080P, 4.5V, 130mA, Operating Temp Range: -20 to 70°C NR\nTFT Display Okaya RJ240320T‐2x0BN‐F Modifed Display TFT 2.0 Inch 240 X 320, Suppy voltage: 2.8V, Operating Temp Range: -20°C to 70°C NR\nRechargeable Li-ion Battery Fedco Batteries L18650-1AMS 3.6V, 3450mAHr, 12.4Wh, Max temp: 60°C SGSus\nSpeaker CUI CMS‐160916‐30‐3 2.2V, Max Power: 1 W, Freq Range: 480 Hz to 20 kHz, Max Impedance: 6.9 Ω @ 2 kHz, 91 dB Max, Operating Temp Range: -20°C to 75°C NR",
+          "similarity_score": 0.7296791678334975
+        }
+      ],
+      "image_support": [],
+      "confidence": 95
+    },
+    {
+      "question_cell": "A25",
+      "prefix": "Polarized Connection",
+      "field": "6.",
+      "answer_cell": "B25",
+      "value": "Polarized Connection - This product is provided with a polarized power supply connection. All single pole switches and fuses are connected only to the ungrounded supply circuit conductor. The power entry module is an IEC connector with dual fuses and a DPST switch, which ensures correct polarity by construction.",
+      "st1": "Polarized Connection - This product is provided with a polarized power supply connection. All single pole switches and fuses are connected only to the ungrounded supply circuit conductor.",
+      "resp1": null,
+      "st2": null,
+      "resp2": null,
+      "checkbox": true,
+      "field_merged": false,
+      "fm_range": null,
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": "extraction",
+      "user_editable": true,
+      "ai_fillable": true,
+      "accuracy_level": true,
+      "text_support": [
+        {
+          "filename": "Boron_StAT_Critical_Parts.xlsx",
+          "page": 1,
+          "text": "Boron 2 StAT Critical Parts\nMfg Mfg P/N Description Qty\nTE Connectivity PS0S0DM6E Power entry module with snap-in mounting, IEC connector, dual fuses, DPST switch, dual stage EMI filter & complete shield; and 6A current rating 1\nAllen Bradley 1606-XLP95E Power Supply, Compact, 95 Watt, 24 - 28 Volt DC Output, 1-Phase 1\nWalker Component Group ACH 70513-01 Assembly, Cable, AC Ground 1\nWalker Component Group ACH 70514-01 Assembly, Cable, AC Line 1\nWalker Component Group ACH 70515-01 Assembly, Cable, AC Neutral 1\nLittlefuse\nEaton 218005XP\nS506-5-R Fuse, Glass, 5A, 250VAC, 5X20mm 2",
+          "similarity_score": 0.7782881080636642
+        },
+        {
+          "filename": "Product2 BOM and PCA Component Map_Rev A.xlsx",
+          "page": 1,
+          "text": "J1 CONN HEADER 2POS .100 VERT TIN Thru Hole Molex 22-23-2021 WM4200-ND RTD\nJ2 CONN 3POS .100 VERT 2 conns\nfor 6 pos Thru Hole AMP 382437 A26245-ND PGM\nTwo 3 pin connectors instead of One 6 pin\nJ3 Jack, DB9, Female, Vertical PC Mount Thru Hole Norcomp 171-009-213R011 5209FE-ND RS232\nJ4 CONN HEADER 2POS .100 VERT TIN Thru Hole Molex 22-23-2021 WM4200-ND FAN\nJ5 Jack, DC Power Thru Hole CUI PJ-011A CP-011A-ND PWR\nJ6 conn_spade Thru Hole Keystone 1287 1287K-ND Peltier\nJ7 conn_spade Thru Hole Keystone 1287 1287K-ND Peltier\nD1 DIODE 75V 150MA SOD-323F Fairchild 1N4148WS IN4148WSFSCT-ND 1N4148WS\nLED1 LED Thru Hole Mouser 604-WP 7113GT Buffer\nQ1 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\nQ4 Mosfet, N-Ch, PWR TO220 IRFZ44N Same as TS130\nQ5 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\nR2 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR3 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR4 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR5 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR6 Resistor, Thick Film, 1/10W, 1% 200 0805 Generic\nR7 Resistor, Thick Film, 1/10W, 1% 158 0805 Generic\nR8 Resistor, Thick Film, 1/10W, 1% 10k 0805 Generic",
+          "similarity_score": 0.7755072032804401
+        },
+        {
+          "filename": "RB-200 Criticial Components List - UPDATED by C.W..xlsx",
+          "page": 1,
+          "text": "4.0 Critical Components\nPhoto # Item no.1   Name Manufacturer/ trademark2 Type / model2 Technical data and securement means Mark(s) of conformity3\nEnclosure SABIC (E45329) Xenoy 5220U Material: Polybutylene Terephthalate/Polycarbonate (PBT/PC), 2mm thick, UL94HB @ 1.5 mm, RTI: 75°C UR\nPCB ISOLA (E41625) 185HR 94V-0, thickness: 1.593mm, RTI: 130°C @ 0.38 mm Min. UR\nAdhesive Material for Marking Label 3M (MH16411) 7871 Polyester label, service temperature: -40 to 150°C UR\nVibe Motor Jameco Reliapro Vibrating Shaftless Motor 3Vdc, 80mA, 9000 RPM @ 3V, Operating Temp Range: -20°C to 60°C NR\nCamera Module SHENZHEN V‐VISION TECHNOLOGY CO. LTD OV5640 5MP, 1080P, 4.5V, 130mA, Operating Temp Range: -20 to 70°C NR\nTFT Display Okaya RJ240320T‐2x0BN‐F Modifed Display TFT 2.0 Inch 240 X 320, Suppy voltage: 2.8V, Operating Temp Range: -20°C to 70°C NR\nRechargeable Li-ion Battery Fedco Batteries L18650-1AMS 3.6V, 3450mAHr, 12.4Wh, Max temp: 60°C SGSus\nSpeaker CUI CMS‐160916‐30‐3 2.2V, Max Power: 1 W, Freq Range: 480 Hz to 20 kHz, Max Impedance: 6.9 Ω @ 2 kHz, 91 dB Max, Operating Temp Range: -20°C to 75°C NR",
+          "similarity_score": 0.7504264098281946
+        }
+      ],
+      "image_support": [],
+      "confidence": 90
+    },
+    {
+      "question_cell": "A26",
+      "prefix": "Internal Wiring",
+      "field": "7.",
+      "answer_cell": "B26",
+      "value": "Internal Wiring - Internal wiring is routed away from sharp or moving parts. Internal wiring leads terminating in soldered connections are made mechanically secure prior to soldering. Recognized Component separable connectors are acceptable. Wiring passing through metal walls is protected by bushings or grommets. All wiring is minimum ++ AWG, with a minimum rating of ++V, ++°C.",
+      "val1": null,
+      "val2": null,
+      "val3": null,
+      "st1": "Internal Wiring - Internal wiring is routed away from sharp or moving parts. Internal wiring leads terminating in soldered connections are made mechanically secure prior to soldering. Recognized Component separable (quick disconnect) connectors of the positive detent type, closed loop connectors, or other types specifically described in the text of this report are also acceptable as internal wiring terminals. At points where internal wiring passes through metal walls or partitions, the wiring insulation is protected against abrasion or damage by plastic bushings or grommets. All wiring is minimum ++ AWG, with a minimum rating of ++V, ++°C.",
+      "resp1": null,
+      "st2": null,
+      "resp2": null,
+      "checkbox": true,
+      "field_merged": false,
+      "fm_range": null,
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": "extraction",
+      "user_editable": true,
+      "ai_fillable": true,
+      "accuracy_level": true,
+      "text_support": [
+        {
+          "filename": "Product2 BOM and PCA Component Map_Rev A.xlsx",
+          "page": 1,
+          "text": "J1 CONN HEADER 2POS .100 VERT TIN Thru Hole Molex 22-23-2021 WM4200-ND RTD\nJ2 CONN 3POS .100 VERT 2 conns\nfor 6 pos Thru Hole AMP 382437 A26245-ND PGM\nTwo 3 pin connectors instead of One 6 pin\nJ3 Jack, DB9, Female, Vertical PC Mount Thru Hole Norcomp 171-009-213R011 5209FE-ND RS232\nJ4 CONN HEADER 2POS .100 VERT TIN Thru Hole Molex 22-23-2021 WM4200-ND FAN\nJ5 Jack, DC Power Thru Hole CUI PJ-011A CP-011A-ND PWR\nJ6 conn_spade Thru Hole Keystone 1287 1287K-ND Peltier\nJ7 conn_spade Thru Hole Keystone 1287 1287K-ND Peltier\nD1 DIODE 75V 150MA SOD-323F Fairchild 1N4148WS IN4148WSFSCT-ND 1N4148WS\nLED1 LED Thru Hole Mouser 604-WP 7113GT Buffer\nQ1 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\nQ4 Mosfet, N-Ch, PWR TO220 IRFZ44N Same as TS130\nQ5 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\nR2 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR3 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR4 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR5 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR6 Resistor, Thick Film, 1/10W, 1% 200 0805 Generic\nR7 Resistor, Thick Film, 1/10W, 1% 158 0805 Generic\nR8 Resistor, Thick Film, 1/10W, 1% 10k 0805 Generic",
+          "similarity_score": 0.7866232713554793
+        },
+        {
+          "filename": "Boron_StAT_Critical_Parts.xlsx",
+          "page": 1,
+          "text": "Boron 2 StAT Critical Parts\nMfg Mfg P/N Description Qty\nTE Connectivity PS0S0DM6E Power entry module with snap-in mounting, IEC connector, dual fuses, DPST switch, dual stage EMI filter & complete shield; and 6A current rating 1\nAllen Bradley 1606-XLP95E Power Supply, Compact, 95 Watt, 24 - 28 Volt DC Output, 1-Phase 1\nWalker Component Group ACH 70513-01 Assembly, Cable, AC Ground 1\nWalker Component Group ACH 70514-01 Assembly, Cable, AC Line 1\nWalker Component Group ACH 70515-01 Assembly, Cable, AC Neutral 1\nLittlefuse\nEaton 218005XP\nS506-5-R Fuse, Glass, 5A, 250VAC, 5X20mm 2",
+          "similarity_score": 0.7769216592222326
+        },
+        {
+          "filename": "RB-200 Criticial Components List - UPDATED by C.W..xlsx",
+          "page": 1,
+          "text": "4.0 Critical Components\nPhoto # Item no.1   Name Manufacturer/ trademark2 Type / model2 Technical data and securement means Mark(s) of conformity3\nEnclosure SABIC (E45329) Xenoy 5220U Material: Polybutylene Terephthalate/Polycarbonate (PBT/PC), 2mm thick, UL94HB @ 1.5 mm, RTI: 75°C UR\nPCB ISOLA (E41625) 185HR 94V-0, thickness: 1.593mm, RTI: 130°C @ 0.38 mm Min. UR\nAdhesive Material for Marking Label 3M (MH16411) 7871 Polyester label, service temperature: -40 to 150°C UR\nVibe Motor Jameco Reliapro Vibrating Shaftless Motor 3Vdc, 80mA, 9000 RPM @ 3V, Operating Temp Range: -20°C to 60°C NR\nCamera Module SHENZHEN V‐VISION TECHNOLOGY CO. LTD OV5640 5MP, 1080P, 4.5V, 130mA, Operating Temp Range: -20 to 70°C NR\nTFT Display Okaya RJ240320T‐2x0BN‐F Modifed Display TFT 2.0 Inch 240 X 320, Suppy voltage: 2.8V, Operating Temp Range: -20°C to 70°C NR\nRechargeable Li-ion Battery Fedco Batteries L18650-1AMS 3.6V, 3450mAHr, 12.4Wh, Max temp: 60°C SGSus\nSpeaker CUI CMS‐160916‐30‐3 2.2V, Max Power: 1 W, Freq Range: 480 Hz to 20 kHz, Max Impedance: 6.9 Ω @ 2 kHz, 91 dB Max, Operating Temp Range: -20°C to 75°C NR",
+          "similarity_score": 0.7683513363904682
+        }
+      ],
+      "image_support": [],
+      "confidence": 70
+    },
+    {
+      "question_cell": "A27",
+      "prefix": "Schematics",
+      "field": "8.",
+      "answer_cell": "B27",
+      "value": null,
+      "val1": null,
+      "st1": "Schematics - Refer to Illustration ++ for schematics requiring verification during Field Representative Inspection Audits.",
+      "resp1": null,
+      "st2": null,
+      "resp2": null,
+      "checkbox": true,
+      "field_merged": false,
+      "fm_range": null,
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": "extraction",
+      "user_editable": true,
+      "ai_fillable": true,
+      "accuracy_level": false
+    },
+    {
+      "question_cell": "A28",
+      "prefix": "Markings",
+      "field": "9.",
+      "answer_cell": "B28",
+      "value": "Markings - The product is marked as follows: The product is marked with the applicant's name or brand name, model number, electrical ratings, and relevant safety symbols and warnings. Markings for fuse ratings and power supply ratings are also present.\n\nThe following markings in French are required:",
+      "val1": null,
+      "st1": "Markings - The product is marked <on a labeling system as described in item no. __ of Section 4.0 or by molding into polymeric enclosure> as follows: \n<Applicant's name, Basic or Multiple Listee's name as defined in section 9.0 or brand names;\nmodel number;\ndate of manufacturer;\nelectrical ratings, gas ratings>.x",
+      "resp1": null,
+      "st2": null,
+      "resp2": null,
+      "checkbox": true,
+      "field_merged": false,
+      "fm_range": null,
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": "extraction",
+      "user_editable": true,
+      "ai_fillable": true,
+      "accuracy_level": true,
+      "text_support": [
+        {
+          "filename": "RB-200 Criticial Components List - UPDATED by C.W..xlsx",
+          "page": 1,
+          "text": "3) Indicates specific marks to be verified, which assures the agreed level of surveillance for the component.  \"NR\" - indicates Unlisted and only visual examination is necessary.  \"See 5.0\" indicates Unlisted components or assemblies to be evaluated periodically refer to section 5.0 for details.",
+          "similarity_score": 0.8037906767199676
+        },
+        {
+          "filename": "Product2 BOM and PCA Component Map_Rev A.xlsx",
+          "page": 1,
+          "text": "12 2 Q1,5 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\n13 1 Q4 Mosfet, N-Ch, PWR TO220 IRFZ44N Same as TS130\n14 3 R8,13,15 Resistor, Thick Film, 1/10W, 1% 10k 0805 Generic Qty was 5, Ref was R2,5,8,13,15\n15 4 R2,3,4,5 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic Qty was 2, Ref was R3,4\n16 1 R6 Resistor, Thick Film, 1/10W, 1% 200 0805 Generic\n17 1 R7 Resistor, Thick Film, 1/10W, 1% 158 0805 Generic Temp range now 0-150C Value was 150\n18 1 R10 Resistor, Thick Film, 1/10W, 1% 273 0805 Generic Temp range now 0-150C Value was 196\n19 1 R12 Resistor, Thick Film, 1/10W, 1% 3.3k 0805 Generic\n20 1 R16 Resistor, Thick Film, 1/10W, 1% 220 0805 Generic\n21 1 U2 IC Comp Dual Lo Pwr  8-SOIC Nat Semi LM393MX/NOPB LM393MXTR-ND LM393\n22 1 U3 MCU SOIC_PIC Microchip PIC16F886-I/SO PIC16F886-I/SO-ND PIC16F886\n23 1 U4 RS-232 Level Shifter SOIC-DW TI MAS201IDWR 296-18484-2-ND MAX202\n24 1 VR1 5V Reg 5V,1A 3-SOT223 Zetex ZLDO1117G50 ZLDO1117G50DITR-ND\n25 1 XTAL1 Ceramic Resonator, SMD 8.0MHz 3-SMD AVX PRQC8.00CR5010X000 478-4584-1-ND\n25 1 XTAL1 Ceramic Resonator, SMD 8.0MHz SM32x13 TDK CCR8.0MXC8WT 445-5238-2-ND Obsolete",
+          "similarity_score": 0.7480968208054111
+        },
+        {
+          "filename": "Boron_StAT_Critical_Parts.xlsx",
+          "page": 1,
+          "text": "Boron 2 StAT Critical Parts\nMfg Mfg P/N Description Qty\nTE Connectivity PS0S0DM6E Power entry module with snap-in mounting, IEC connector, dual fuses, DPST switch, dual stage EMI filter & complete shield; and 6A current rating 1\nAllen Bradley 1606-XLP95E Power Supply, Compact, 95 Watt, 24 - 28 Volt DC Output, 1-Phase 1\nWalker Component Group ACH 70513-01 Assembly, Cable, AC Ground 1\nWalker Component Group ACH 70514-01 Assembly, Cable, AC Line 1\nWalker Component Group ACH 70515-01 Assembly, Cable, AC Neutral 1\nLittlefuse\nEaton 218005XP\nS506-5-R Fuse, Glass, 5A, 250VAC, 5X20mm 2",
+          "similarity_score": 0.7442525392374745
+        }
+      ],
+      "image_support": [],
+      "confidence": 90.0
+    },
+    {
+      "question_cell": "A29",
+      "prefix": "Cautionary Markings",
+      "field": "10.",
+      "answer_cell": "B29",
+      "value": null,
+      "st1": "The following are required",
+      "resp1": null,
+      "st2": null,
+      "resp2": null,
+      "checkbox": true,
+      "field_merged": false,
+      "fm_range": null,
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": "extraction",
+      "user_editable": true,
+      "ai_fillable": true,
+      "accuracy_level": false
+    },
+    {
+      "question_cell": "A30",
+      "prefix": "Installation, Operating and Safety Instructions",
+      "field": "11.",
+      "answer_cell": "B30",
+      "value": "Null",
+      "val1": null,
+      "st1": "Installation, Operating and Safety Instructions - Instructions for installation and use of this product are provided by the manufacturer. Refer to Illustrations ++ for details.",
+      "resp1": null,
+      "st2": null,
+      "resp2": null,
+      "checkbox": true,
+      "field_merged": false,
+      "fm_range": null,
+      "value_merged": false,
+      "vm_range": null,
+      "task_type": "extraction",
+      "user_editable": true,
+      "ai_fillable": true,
+      "accuracy_level": true,
+      "text_support": [
+        {
+          "filename": "RB-200 Criticial Components List - UPDATED by C.W..xlsx",
+          "page": 1,
+          "text": "4.0 Critical Components\nPhoto # Item no.1   Name Manufacturer/ trademark2 Type / model2 Technical data and securement means Mark(s) of conformity3\nEnclosure SABIC (E45329) Xenoy 5220U Material: Polybutylene Terephthalate/Polycarbonate (PBT/PC), 2mm thick, UL94HB @ 1.5 mm, RTI: 75°C UR\nPCB ISOLA (E41625) 185HR 94V-0, thickness: 1.593mm, RTI: 130°C @ 0.38 mm Min. UR\nAdhesive Material for Marking Label 3M (MH16411) 7871 Polyester label, service temperature: -40 to 150°C UR\nVibe Motor Jameco Reliapro Vibrating Shaftless Motor 3Vdc, 80mA, 9000 RPM @ 3V, Operating Temp Range: -20°C to 60°C NR\nCamera Module SHENZHEN V‐VISION TECHNOLOGY CO. LTD OV5640 5MP, 1080P, 4.5V, 130mA, Operating Temp Range: -20 to 70°C NR\nTFT Display Okaya RJ240320T‐2x0BN‐F Modifed Display TFT 2.0 Inch 240 X 320, Suppy voltage: 2.8V, Operating Temp Range: -20°C to 70°C NR\nRechargeable Li-ion Battery Fedco Batteries L18650-1AMS 3.6V, 3450mAHr, 12.4Wh, Max temp: 60°C SGSus\nSpeaker CUI CMS‐160916‐30‐3 2.2V, Max Power: 1 W, Freq Range: 480 Hz to 20 kHz, Max Impedance: 6.9 Ω @ 2 kHz, 91 dB Max, Operating Temp Range: -20°C to 75°C NR",
+          "similarity_score": 0.7630179757840665
+        },
+        {
+          "filename": "Boron_StAT_Critical_Parts.xlsx",
+          "page": 1,
+          "text": "Boron 2 StAT Critical Parts\nMfg Mfg P/N Description Qty\nTE Connectivity PS0S0DM6E Power entry module with snap-in mounting, IEC connector, dual fuses, DPST switch, dual stage EMI filter & complete shield; and 6A current rating 1\nAllen Bradley 1606-XLP95E Power Supply, Compact, 95 Watt, 24 - 28 Volt DC Output, 1-Phase 1\nWalker Component Group ACH 70513-01 Assembly, Cable, AC Ground 1\nWalker Component Group ACH 70514-01 Assembly, Cable, AC Line 1\nWalker Component Group ACH 70515-01 Assembly, Cable, AC Neutral 1\nLittlefuse\nEaton 218005XP\nS506-5-R Fuse, Glass, 5A, 250VAC, 5X20mm 2",
+          "similarity_score": 0.740240846467049
+        },
+        {
+          "filename": "Product2 BOM and PCA Component Map_Rev A.xlsx",
+          "page": 1,
+          "text": "J1 CONN HEADER 2POS .100 VERT TIN Thru Hole Molex 22-23-2021 WM4200-ND RTD\nJ2 CONN 3POS .100 VERT 2 conns\nfor 6 pos Thru Hole AMP 382437 A26245-ND PGM\nTwo 3 pin connectors instead of One 6 pin\nJ3 Jack, DB9, Female, Vertical PC Mount Thru Hole Norcomp 171-009-213R011 5209FE-ND RS232\nJ4 CONN HEADER 2POS .100 VERT TIN Thru Hole Molex 22-23-2021 WM4200-ND FAN\nJ5 Jack, DC Power Thru Hole CUI PJ-011A CP-011A-ND PWR\nJ6 conn_spade Thru Hole Keystone 1287 1287K-ND Peltier\nJ7 conn_spade Thru Hole Keystone 1287 1287K-ND Peltier\nD1 DIODE 75V 150MA SOD-323F Fairchild 1N4148WS IN4148WSFSCT-ND 1N4148WS\nLED1 LED Thru Hole Mouser 604-WP 7113GT Buffer\nQ1 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\nQ4 Mosfet, N-Ch, PWR TO220 IRFZ44N Same as TS130\nQ5 Mosfet, N-Ch, SIG SOT23 Fairchild BSS138 BSS138TR-ND signal\nR2 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR3 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR4 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR5 Resistor, Thick Film, 1/10W, 1% 1k 0805 Generic\nR6 Resistor, Thick Film, 1/10W, 1% 200 0805 Generic\nR7 Resistor, Thick Film, 1/10W, 1% 158 0805 Generic\nR8 Resistor, Thick Film, 1/10W, 1% 10k 0805 Generic",
+          "similarity_score": 0.7250472899828299
+        }
+      ],
+      "image_support": [],
+      "confidence": 30
+    }
+  ]
+}

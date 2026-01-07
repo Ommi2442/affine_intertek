@@ -1029,7 +1029,7 @@ def generate_cdr(projectId: str):
             projectId
         )
         print("----- JSON CDR uploaded -----")
-
+        
         # ------------------ UPLOAD EXCEL ------------------
         save_local_xlsx_to_blob_and_cosmos_cdr(
             str(output_excel_path),
@@ -1106,99 +1106,6 @@ def pdf_proxy(
 
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=502, detail=str(e))
-
-
-# def save_pdfs_to_root_for_testing(
-#     project_id: str,
-#     pdf_outputs: list
-# ):
-#     """
-#     Save all PDFs directly in the backend root directory
-#     (for testing only).
-#     """
-#     for pdf in pdf_outputs:
-#         filename = pdf["filename"]
-#         pdf_bytes = base64.b64decode(pdf["data"])
-
-#         # Prefix with project_id to avoid name collisions
-#         # safe_name = f"{project_id}_{filename}"
-#         file_path = os.path.join(os.getcwd(), file_name)
-
-#         with open(file_path, "wb") as f:
-#             f.write(pdf_bytes)
-
-
-
-# @router.get("/project-pdfs-load")
-# def get_project_pdfs(project_id: str = Query(...)):
-#     try:
-#         query = "SELECT * FROM c WHERE c.Project_Id = @pid"
-#         items = list(
-#             COSMOS_DB_project_Container.query_items(
-#                 query=query,
-#                 parameters=[{"name": "@pid", "value": project_id}],
-#                 enable_cross_partition_query=True
-#             )
-#         )
-
-#         if not items:
-#             raise HTTPException(status_code=404, detail="Project not found")
-
-#         project = items[0]
-#         documents = project.get("Source_Doc", [])
-#         pdf_outputs = []
-
-#         for doc in documents:
-#             filename = doc["filename"]
-#             url = doc["url"]
-#             lower = filename.lower()
-
-#             # ---------- PDF ----------
-#             if lower.endswith(".pdf"):
-#                 resp = requests.get(url, timeout=30)
-#                 resp.raise_for_status()
-
-#                 pdf_outputs.append({
-#                     "filename": filename,
-#                     "data": base64.b64encode(resp.content).decode()
-#                 })
-
-#             # ---------- DOCX → PDF (WINDOWS + LINUX) ----------
-#             elif lower.endswith(".docx"):
-#                 with tempfile.TemporaryDirectory() as tmp:
-#                     docx_path = os.path.join(tmp, filename)
-#                     pdf_path = os.path.join(
-#                         tmp, filename.replace(".docx", ".pdf")
-#                     )
-
-#                     resp = requests.get(url, timeout=30)
-#                     resp.raise_for_status()
-
-#                     with open(docx_path, "wb") as f:
-#                         f.write(resp.content)
-
-#                     # 🔥 OS-AWARE CONVERSION
-#                     convert_docx_to_pdf(docx_path, pdf_path)
-
-#                     if not os.path.exists(pdf_path):
-#                         raise RuntimeError("DOCX to PDF conversion failed")
-
-#                     with open(pdf_path, "rb") as f:
-#                         pdf_bytes = f.read()
-
-#                 pdf_outputs.append({
-#                     "filename": filename.replace(".docx", ".pdf"),
-#                     "data": base64.b64encode(pdf_bytes).decode()
-#                 })
-#         save_pdfs_to_root_for_testing(project_id, pdf_outputs)
-
-#         return JSONResponse({
-#             "project_id": project_id,
-#             "pdfs": pdf_outputs
-#         })
-
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
 
 
 

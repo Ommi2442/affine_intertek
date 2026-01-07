@@ -65,6 +65,7 @@ def get_image_urls_from_container_sas():
     print("Image URLs constructed:", len(image_urls))
     return image_urls
 
+from urllib.parse import quote
 
 # from azure.storage.blob import BlobServiceClient
 from urllib.parse import quote

@@ -3,9 +3,9 @@
         {
             "start_cell": "A3",
             "row_type": "table_data",
-            "photo_no": "guide",
+            "photo_no": "1",
             "item_no": "1",
-            "name": "Connection Lines and Cables",
+            "name": "0.2 um Membrane Filters",
             "manufacturer": null,
             "type_model": null,
             "technical_data": null,
@@ -19,15 +19,23 @@
             "ai_fillable": true,
             "accuracy_level": false,
             "image_support": null,
-            "text_support": "CellFE_Infinity_MTx_Operating_Manual.docx",
-            "confidence": "0.7"
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+                    "page": 1,
+                    "similarity_score": null,
+                    "text": "ce behind instrument\nCompressed Air Inlet \u2013 The primary attachment point of the instrument \u2013compatible with \u00bc\u201d NPT Pressure line tubing fitted with a push to connect fitting. The instrument can be attached to a pressurized air source of 100 PSI for optimal functioning. The pressurized air may not exceed 120 PSI; the instrument can supply up to 80 PSI to liquid samples, but only if hooked up to a pressure source of 100 \u2013 105 PSI. \nConnecting the tubing: Ensure the air source is turned off and decompressed. Gently push the push-to-connect fitting into the compressed air inlet of the instrument. \nDisconnecting the tubing: turn off the instrument and shut off the air source. Ensure both systems are decompressed before removing the tubing by pushing the small tab located on the instrument\u2019s compressed air inlet.\nAir Intake Fan \u2013 Provides cooling for internal electrical components and power supply. CAUTION Do not block \u2013 Ensure at least 6\u201d of clearance behind instrument\nPower Connection Port \u2013 Auxiliary port that powers the instrument. The C13 to 5-15 power cord can be plugged directly into the Infinity MTx, with the opposing 3-prong end able to connect to a properly grounded 3-prong, 110-120V/50-60Hz power source. \nPower Switch \u2013 Switch that turns the instrument on and off. Electrical supply is limited by the power switch, and after operation it is best to shut the instrument off. \nUSB-A Connection Port \u2013 An auxiliary port that a USB type A can be attached to. Used to export data. This data export process is detailed in the software section.\nLAN Connection Port \u2013 An auxiliary port that a LAN cable can be connected to. For current customer use, the instrument does not have internet connection capabilities.\n\nInfinity MPA \n\nMPA Lid \u2013 Attached via a hinge to the collection chamber lid. Once samples are loaded into the sample chambers, the lid can be closed by pushing down until the lid latch is locked in place. Once closed, the 0.2 um membrane filters located on the air inle",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/cdr-test/CellFE_Infinity_MTx_Operating_Manual.docx"
+                }
+            ],
+            "confidence": 80
         },
         {
             "start_cell": "A4",
             "row_type": "table_data",
-            "photo_no": "guide",
+            "photo_no": "1",
             "item_no": "2",
-            "name": "Electrical Outlet",
+            "name": "Air Intake Fan",
             "manufacturer": null,
             "type_model": null,
             "technical_data": null,
@@ -41,15 +49,23 @@
             "ai_fillable": true,
             "accuracy_level": false,
             "image_support": null,
-            "text_support": "CellFE_Infinity_MTx_Operating_Manual.docx",
-            "confidence": "0.8"
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+                    "page": 1,
+                    "similarity_score": null,
+                    "text": "ce behind instrument\nCompressed Air Inlet \u2013 The primary attachment point of the instrument \u2013compatible with \u00bc\u201d NPT Pressure line tubing fitted with a push to connect fitting. The instrument can be attached to a pressurized air source of 100 PSI for optimal functioning. The pressurized air may not exceed 120 PSI; the instrument can supply up to 80 PSI to liquid samples, but only if hooked up to a pressure source of 100 \u2013 105 PSI. \nConnecting the tubing: Ensure the air source is turned off and decompressed. Gently push the push-to-connect fitting into the compressed air inlet of the instrument. \nDisconnecting the tubing: turn off the instrument and shut off the air source. Ensure both systems are decompressed before removing the tubing by pushing the small tab located on the instrument\u2019s compressed air inlet.\nAir Intake Fan \u2013 Provides cooling for internal electrical components and power supply. CAUTION Do not block \u2013 Ensure at least 6\u201d of clearance behind instrument\nPower Connection Port \u2013 Auxiliary port that powers the instrument. The C13 to 5-15 power cord can be plugged directly into the Infinity MTx, with the opposing 3-prong end able to connect to a properly grounded 3-prong, 110-120V/50-60Hz power source. \nPower Switch \u2013 Switch that turns the instrument on and off. Electrical supply is limited by the power switch, and after operation it is best to shut the instrument off. \nUSB-A Connection Port \u2013 An auxiliary port that a USB type A can be attached to. Used to export data. This data export process is detailed in the software section.\nLAN Connection Port \u2013 An auxiliary port that a LAN cable can be connected to. For current customer use, the instrument does not have internet connection capabilities.\n\nInfinity MPA \n\nMPA Lid \u2013 Attached via a hinge to the collection chamber lid. Once samples are loaded into the sample chambers, the lid can be closed by pushing down until the lid latch is locked in place. Once closed, the 0.2 um membrane filters located on the air inle",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/cdr-test/CellFE_Infinity_MTx_Operating_Manual.docx"
+                }
+            ],
+            "confidence": 80
         },
         {
             "start_cell": "A5",
             "row_type": "table_data",
-            "photo_no": "guide",
+            "photo_no": "1",
             "item_no": "3",
-            "name": "Enclosure",
+            "name": "Compressed Air Inlet",
             "manufacturer": null,
             "type_model": null,
             "technical_data": null,
@@ -63,14 +79,112 @@
             "ai_fillable": true,
             "accuracy_level": false,
             "image_support": null,
-            "text_support": "CellFE_Infinity_MTx_Operating_Manual.docx; CellFE_Infinity_MTx_Operating_Manual.docx; CellFE_Infinity_MTx_Operating_Manual.docx; CellFE_Infinity_MTx_Operating_Manual.docx",
-            "confidence": "1"
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+                    "page": 1,
+                    "similarity_score": null,
+                    "text": "ce behind instrument\nCompressed Air Inlet \u2013 The primary attachment point of the instrument \u2013compatible with \u00bc\u201d NPT Pressure line tubing fitted with a push to connect fitting. The instrument can be attached to a pressurized air source of 100 PSI for optimal functioning. The pressurized air may not exceed 120 PSI; the instrument can supply up to 80 PSI to liquid samples, but only if hooked up to a pressure source of 100 \u2013 105 PSI. \nConnecting the tubing: Ensure the air source is turned off and decompressed. Gently push the push-to-connect fitting into the compressed air inlet of the instrument. \nDisconnecting the tubing: turn off the instrument and shut off the air source. Ensure both systems are decompressed before removing the tubing by pushing the small tab located on the instrument\u2019s compressed air inlet.\nAir Intake Fan \u2013 Provides cooling for internal electrical components and power supply. CAUTION Do not block \u2013 Ensure at least 6\u201d of clearance behind instrument\nPower Connection Port \u2013 Auxiliary port that powers the instrument. The C13 to 5-15 power cord can be plugged directly into the Infinity MTx, with the opposing 3-prong end able to connect to a properly grounded 3-prong, 110-120V/50-60Hz power source. \nPower Switch \u2013 Switch that turns the instrument on and off. Electrical supply is limited by the power switch, and after operation it is best to shut the instrument off. \nUSB-A Connection Port \u2013 An auxiliary port that a USB type A can be attached to. Used to export data. This data export process is detailed in the software section.\nLAN Connection Port \u2013 An auxiliary port that a LAN cable can be connected to. For current customer use, the instrument does not have internet connection capabilities.\n\nInfinity MPA \n\nMPA Lid \u2013 Attached via a hinge to the collection chamber lid. Once samples are loaded into the sample chambers, the lid can be closed by pushing down until the lid latch is locked in place. Once closed, the 0.2 um membrane filters located on the air inle",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/cdr-test/CellFE_Infinity_MTx_Operating_Manual.docx"
+                }
+            ],
+            "confidence": 90
         },
         {
             "start_cell": "A6",
             "row_type": "table_data",
-            "photo_no": "guide",
+            "photo_no": "1",
             "item_no": "4",
+            "name": "Exhaust Air Vents",
+            "manufacturer": null,
+            "type_model": null,
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": false,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+                    "page": 1,
+                    "similarity_score": null,
+                    "text": "Exceptional performance \u2013 high cell viability and delivery efficiencies with decreased recovery and expansion times\nSimple, streamlined workflow \u2014  easy to optimize and no need for cell concentration and buffer exchanges\nOperational and cell-friendly processing \u2014 no specific media, buffers, or chemical additives required\n\n\nProduct Contents\nWith the purchase of the Infinity MTx, CellFE provides the following products and accessories:\nSystem contents\n\nOptimizer kit contents\nUpon purchase of the Infinity MTx, users are asked to select an Optimizer Kit with sizes relevant to the cell types that will be used (see sizes below). Optimizer kits come with four MPAs. Once the desired MPA size is determined, users can purchase single-use MPAs of the correct size in packs of four. \nOptimizer Kits\n\n\n\n\n\nSystem Components\nInfinity MTx device\nFront Panel\n\nUser Interface Touchscreen \u2013 From here, the operator can detail and conduct the transfection processes, view and export information about previous transfection runs, change default system settings, and access additional information about operating the Infinity MTx. (See the software section of the manual for more information).\n\nSample Loading Tray \u2013 Compatible with the Infinity MPA and Optimizer kit. Use the eject button on the touchscreen to open the tray. The MPA or Optimizer kit can be placed in the open tray by matching up the protrusion on the device with the recess on the tray.  WARNING:  Ensure nothing is touching the seam between the tray and the main body of the instrument, as this can damage the instrumentation and may cause harm to the user.\nBarcode Scanner \u2013 Located on the underside of the instrument above the tray. The barcode scanner reads the barcodes on the Infinity MPA package and saves device specific information to the notes section. Press the \u201cScan /Read ID\u201d button to scan the barcode. \n\nBack Panel\nExhaust Air Vents \u2013 Used to vent air out of the instrument. CAUTION Do not block \u2013 Ensure at least 6\u201d of clearan",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/cdr-test/CellFE_Infinity_MTx_Operating_Manual.docx"
+                }
+            ],
+            "confidence": 90
+        },
+        {
+            "start_cell": "A7",
+            "row_type": "table_data",
+            "photo_no": "1",
+            "item_no": "5",
+            "name": "Front Panel",
+            "manufacturer": null,
+            "type_model": null,
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": false,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+                    "page": 1,
+                    "similarity_score": null,
+                    "text": "Exceptional performance \u2013 high cell viability and delivery efficiencies with decreased recovery and expansion times\nSimple, streamlined workflow \u2014  easy to optimize and no need for cell concentration and buffer exchanges\nOperational and cell-friendly processing \u2014 no specific media, buffers, or chemical additives required\n\n\nProduct Contents\nWith the purchase of the Infinity MTx, CellFE provides the following products and accessories:\nSystem contents\n\nOptimizer kit contents\nUpon purchase of the Infinity MTx, users are asked to select an Optimizer Kit with sizes relevant to the cell types that will be used (see sizes below). Optimizer kits come with four MPAs. Once the desired MPA size is determined, users can purchase single-use MPAs of the correct size in packs of four. \nOptimizer Kits\n\n\n\n\n\nSystem Components\nInfinity MTx device\nFront Panel\n\nUser Interface Touchscreen \u2013 From here, the operator can detail and conduct the transfection processes, view and export information about previous transfection runs, change default system settings, and access additional information about operating the Infinity MTx. (See the software section of the manual for more information).\n\nSample Loading Tray \u2013 Compatible with the Infinity MPA and Optimizer kit. Use the eject button on the touchscreen to open the tray. The MPA or Optimizer kit can be placed in the open tray by matching up the protrusion on the device with the recess on the tray.  WARNING:  Ensure nothing is touching the seam between the tray and the main body of the instrument, as this can damage the instrumentation and may cause harm to the user.\nBarcode Scanner \u2013 Located on the underside of the instrument above the tray. The barcode scanner reads the barcodes on the Infinity MPA package and saves device specific information to the notes section. Press the \u201cScan /Read ID\u201d button to scan the barcode. \n\nBack Panel\nExhaust Air Vents \u2013 Used to vent air out of the instrument. CAUTION Do not block \u2013 Ensure at least 6\u201d of clearan",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/cdr-test/CellFE_Infinity_MTx_Operating_Manual.docx"
+                }
+            ],
+            "confidence": 90
+        },
+        {
+            "start_cell": "A8",
+            "row_type": "table_data",
+            "photo_no": "1",
+            "item_no": "6",
+            "name": "Infinity MTx device",
+            "manufacturer": null,
+            "type_model": null,
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": false,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+                    "page": 1,
+                    "similarity_score": null,
+                    "text": "Exceptional performance \u2013 high cell viability and delivery efficiencies with decreased recovery and expansion times\nSimple, streamlined workflow \u2014  easy to optimize and no need for cell concentration and buffer exchanges\nOperational and cell-friendly processing \u2014 no specific media, buffers, or chemical additives required\n\n\nProduct Contents\nWith the purchase of the Infinity MTx, CellFE provides the following products and accessories:\nSystem contents\n\nOptimizer kit contents\nUpon purchase of the Infinity MTx, users are asked to select an Optimizer Kit with sizes relevant to the cell types that will be used (see sizes below). Optimizer kits come with four MPAs. Once the desired MPA size is determined, users can purchase single-use MPAs of the correct size in packs of four. \nOptimizer Kits\n\n\n\n\n\nSystem Components\nInfinity MTx device\nFront Panel\n\nUser Interface Touchscreen \u2013 From here, the operator can detail and conduct the transfection processes, view and export information about previous transfection runs, change default system settings, and access additional information about operating the Infinity MTx. (See the software section of the manual for more information).\n\nSample Loading Tray \u2013 Compatible with the Infinity MPA and Optimizer kit. Use the eject button on the touchscreen to open the tray. The MPA or Optimizer kit can be placed in the open tray by matching up the protrusion on the device with the recess on the tray.  WARNING:  Ensure nothing is touching the seam between the tray and the main body of the instrument, as this can damage the instrumentation and may cause harm to the user.\nBarcode Scanner \u2013 Located on the underside of the instrument above the tray. The barcode scanner reads the barcodes on the Infinity MPA package and saves device specific information to the notes section. Press the \u201cScan /Read ID\u201d button to scan the barcode. \n\nBack Panel\nExhaust Air Vents \u2013 Used to vent air out of the instrument. CAUTION Do not block \u2013 Ensure at least 6\u201d of clearan",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/cdr-test/CellFE_Infinity_MTx_Operating_Manual.docx"
+                }
+            ],
+            "confidence": 100
+        },
+        {
+            "start_cell": "A9",
+            "row_type": "table_data",
+            "photo_no": "1",
+            "item_no": "7",
             "name": "Power Connection Port",
             "manufacturer": null,
             "type_model": null,
@@ -85,58 +199,22 @@
             "ai_fillable": true,
             "accuracy_level": false,
             "image_support": null,
-            "text_support": "CellFE_Infinity_MTx_Operating_Manual.docx",
-            "confidence": "0.8"
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+                    "page": 1,
+                    "similarity_score": null,
+                    "text": "ce behind instrument\nCompressed Air Inlet \u2013 The primary attachment point of the instrument \u2013compatible with \u00bc\u201d NPT Pressure line tubing fitted with a push to connect fitting. The instrument can be attached to a pressurized air source of 100 PSI for optimal functioning. The pressurized air may not exceed 120 PSI; the instrument can supply up to 80 PSI to liquid samples, but only if hooked up to a pressure source of 100 \u2013 105 PSI. \nConnecting the tubing: Ensure the air source is turned off and decompressed. Gently push the push-to-connect fitting into the compressed air inlet of the instrument. \nDisconnecting the tubing: turn off the instrument and shut off the air source. Ensure both systems are decompressed before removing the tubing by pushing the small tab located on the instrument\u2019s compressed air inlet.\nAir Intake Fan \u2013 Provides cooling for internal electrical components and power supply. CAUTION Do not block \u2013 Ensure at least 6\u201d of clearance behind instrument\nPower Connection Port \u2013 Auxiliary port that powers the instrument. The C13 to 5-15 power cord can be plugged directly into the Infinity MTx, with the opposing 3-prong end able to connect to a properly grounded 3-prong, 110-120V/50-60Hz power source. \nPower Switch \u2013 Switch that turns the instrument on and off. Electrical supply is limited by the power switch, and after operation it is best to shut the instrument off. \nUSB-A Connection Port \u2013 An auxiliary port that a USB type A can be attached to. Used to export data. This data export process is detailed in the software section.\nLAN Connection Port \u2013 An auxiliary port that a LAN cable can be connected to. For current customer use, the instrument does not have internet connection capabilities.\n\nInfinity MPA \n\nMPA Lid \u2013 Attached via a hinge to the collection chamber lid. Once samples are loaded into the sample chambers, the lid can be closed by pushing down until the lid latch is locked in place. Once closed, the 0.2 um membrane filters located on the air inle",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/cdr-test/CellFE_Infinity_MTx_Operating_Manual.docx"
+                }
+            ],
+            "confidence": 95
         },
         {
-            "start_cell": "A7",
+            "start_cell": "A10",
             "row_type": "table_data",
-            "photo_no": "guide",
-            "item_no": "5",
-            "name": "Power Cord (C13 to 5-15)",
-            "manufacturer": null,
-            "type_model": null,
-            "technical_data": null,
-            "marks_of_conf": null,
-            "field_merged": false,
-            "fm_range": null,
-            "value_merged": false,
-            "vm_range": null,
-            "task_type": "extraction",
-            "user_editable": true,
-            "ai_fillable": true,
-            "accuracy_level": false,
-            "image_support": null,
-            "text_support": "CellFE_Infinity_MTx_Operating_Manual.docx",
-            "confidence": "0.9"
-        },
-        {
-            "start_cell": "A8",
-            "row_type": "table_data",
-            "photo_no": "guide",
-            "item_no": "6",
-            "name": "Power Supply",
-            "manufacturer": null,
-            "type_model": null,
-            "technical_data": null,
-            "marks_of_conf": null,
-            "field_merged": false,
-            "fm_range": null,
-            "value_merged": false,
-            "vm_range": null,
-            "task_type": "extraction",
-            "user_editable": true,
-            "ai_fillable": true,
-            "accuracy_level": false,
-            "image_support": null,
-            "text_support": "CellFE_Infinity_MTx_Operating_Manual.docx; CellFE_Infinity_MTx_Operating_Manual.docx; CellFE_Infinity_MTx_Operating_Manual.docx",
-            "confidence": "1"
-        },
-        {
-            "start_cell": "A9",
-            "row_type": "table_data",
-            "photo_no": "guide",
-            "item_no": "7",
+            "photo_no": "1",
+            "item_no": "8",
             "name": "Power Switch",
             "manufacturer": null,
             "type_model": null,
@@ -151,8 +229,106 @@
             "ai_fillable": true,
             "accuracy_level": false,
             "image_support": null,
-            "text_support": "CellFE_Infinity_MTx_Operating_Manual.docx; CellFE_Infinity_MTx_Operating_Manual.docx",
-            "confidence": "1"
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+                    "page": 1,
+                    "similarity_score": null,
+                    "text": "ce behind instrument\nCompressed Air Inlet \u2013 The primary attachment point of the instrument \u2013compatible with \u00bc\u201d NPT Pressure line tubing fitted with a push to connect fitting. The instrument can be attached to a pressurized air source of 100 PSI for optimal functioning. The pressurized air may not exceed 120 PSI; the instrument can supply up to 80 PSI to liquid samples, but only if hooked up to a pressure source of 100 \u2013 105 PSI. \nConnecting the tubing: Ensure the air source is turned off and decompressed. Gently push the push-to-connect fitting into the compressed air inlet of the instrument. \nDisconnecting the tubing: turn off the instrument and shut off the air source. Ensure both systems are decompressed before removing the tubing by pushing the small tab located on the instrument\u2019s compressed air inlet.\nAir Intake Fan \u2013 Provides cooling for internal electrical components and power supply. CAUTION Do not block \u2013 Ensure at least 6\u201d of clearance behind instrument\nPower Connection Port \u2013 Auxiliary port that powers the instrument. The C13 to 5-15 power cord can be plugged directly into the Infinity MTx, with the opposing 3-prong end able to connect to a properly grounded 3-prong, 110-120V/50-60Hz power source. \nPower Switch \u2013 Switch that turns the instrument on and off. Electrical supply is limited by the power switch, and after operation it is best to shut the instrument off. \nUSB-A Connection Port \u2013 An auxiliary port that a USB type A can be attached to. Used to export data. This data export process is detailed in the software section.\nLAN Connection Port \u2013 An auxiliary port that a LAN cable can be connected to. For current customer use, the instrument does not have internet connection capabilities.\n\nInfinity MPA \n\nMPA Lid \u2013 Attached via a hinge to the collection chamber lid. Once samples are loaded into the sample chambers, the lid can be closed by pushing down until the lid latch is locked in place. Once closed, the 0.2 um membrane filters located on the air inle",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/cdr-test/CellFE_Infinity_MTx_Operating_Manual.docx"
+                }
+            ],
+            "confidence": 90
+        },
+        {
+            "start_cell": "A11",
+            "row_type": "table_data",
+            "photo_no": "1",
+            "item_no": "9",
+            "name": "Push-to-Connect Fitting",
+            "manufacturer": null,
+            "type_model": null,
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": false,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+                    "page": 1,
+                    "similarity_score": null,
+                    "text": "ce behind instrument\nCompressed Air Inlet \u2013 The primary attachment point of the instrument \u2013compatible with \u00bc\u201d NPT Pressure line tubing fitted with a push to connect fitting. The instrument can be attached to a pressurized air source of 100 PSI for optimal functioning. The pressurized air may not exceed 120 PSI; the instrument can supply up to 80 PSI to liquid samples, but only if hooked up to a pressure source of 100 \u2013 105 PSI. \nConnecting the tubing: Ensure the air source is turned off and decompressed. Gently push the push-to-connect fitting into the compressed air inlet of the instrument. \nDisconnecting the tubing: turn off the instrument and shut off the air source. Ensure both systems are decompressed before removing the tubing by pushing the small tab located on the instrument\u2019s compressed air inlet.\nAir Intake Fan \u2013 Provides cooling for internal electrical components and power supply. CAUTION Do not block \u2013 Ensure at least 6\u201d of clearance behind instrument\nPower Connection Port \u2013 Auxiliary port that powers the instrument. The C13 to 5-15 power cord can be plugged directly into the Infinity MTx, with the opposing 3-prong end able to connect to a properly grounded 3-prong, 110-120V/50-60Hz power source. \nPower Switch \u2013 Switch that turns the instrument on and off. Electrical supply is limited by the power switch, and after operation it is best to shut the instrument off. \nUSB-A Connection Port \u2013 An auxiliary port that a USB type A can be attached to. Used to export data. This data export process is detailed in the software section.\nLAN Connection Port \u2013 An auxiliary port that a LAN cable can be connected to. For current customer use, the instrument does not have internet connection capabilities.\n\nInfinity MPA \n\nMPA Lid \u2013 Attached via a hinge to the collection chamber lid. Once samples are loaded into the sample chambers, the lid can be closed by pushing down until the lid latch is locked in place. Once closed, the 0.2 um membrane filters located on the air inle",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/cdr-test/CellFE_Infinity_MTx_Operating_Manual.docx"
+                }
+            ],
+            "confidence": 85
+        },
+        {
+            "start_cell": "A12",
+            "row_type": "table_data",
+            "photo_no": "1",
+            "item_no": "10",
+            "name": "Sample Loading Tray",
+            "manufacturer": null,
+            "type_model": null,
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": false,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+                    "page": 1,
+                    "similarity_score": null,
+                    "text": "Exceptional performance \u2013 high cell viability and delivery efficiencies with decreased recovery and expansion times\nSimple, streamlined workflow \u2014  easy to optimize and no need for cell concentration and buffer exchanges\nOperational and cell-friendly processing \u2014 no specific media, buffers, or chemical additives required\n\n\nProduct Contents\nWith the purchase of the Infinity MTx, CellFE provides the following products and accessories:\nSystem contents\n\nOptimizer kit contents\nUpon purchase of the Infinity MTx, users are asked to select an Optimizer Kit with sizes relevant to the cell types that will be used (see sizes below). Optimizer kits come with four MPAs. Once the desired MPA size is determined, users can purchase single-use MPAs of the correct size in packs of four. \nOptimizer Kits\n\n\n\n\n\nSystem Components\nInfinity MTx device\nFront Panel\n\nUser Interface Touchscreen \u2013 From here, the operator can detail and conduct the transfection processes, view and export information about previous transfection runs, change default system settings, and access additional information about operating the Infinity MTx. (See the software section of the manual for more information).\n\nSample Loading Tray \u2013 Compatible with the Infinity MPA and Optimizer kit. Use the eject button on the touchscreen to open the tray. The MPA or Optimizer kit can be placed in the open tray by matching up the protrusion on the device with the recess on the tray.  WARNING:  Ensure nothing is touching the seam between the tray and the main body of the instrument, as this can damage the instrumentation and may cause harm to the user.\nBarcode Scanner \u2013 Located on the underside of the instrument above the tray. The barcode scanner reads the barcodes on the Infinity MPA package and saves device specific information to the notes section. Press the \u201cScan /Read ID\u201d button to scan the barcode. \n\nBack Panel\nExhaust Air Vents \u2013 Used to vent air out of the instrument. CAUTION Do not block \u2013 Ensure at least 6\u201d of clearan",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/cdr-test/CellFE_Infinity_MTx_Operating_Manual.docx"
+                }
+            ],
+            "confidence": 80
+        },
+        {
+            "start_cell": "A13",
+            "row_type": "table_data",
+            "photo_no": "1",
+            "item_no": "11",
+            "name": "User Interface Touchscreen",
+            "manufacturer": null,
+            "type_model": null,
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": false,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+                    "page": 1,
+                    "similarity_score": null,
+                    "text": "Exceptional performance \u2013 high cell viability and delivery efficiencies with decreased recovery and expansion times\nSimple, streamlined workflow \u2014  easy to optimize and no need for cell concentration and buffer exchanges\nOperational and cell-friendly processing \u2014 no specific media, buffers, or chemical additives required\n\n\nProduct Contents\nWith the purchase of the Infinity MTx, CellFE provides the following products and accessories:\nSystem contents\n\nOptimizer kit contents\nUpon purchase of the Infinity MTx, users are asked to select an Optimizer Kit with sizes relevant to the cell types that will be used (see sizes below). Optimizer kits come with four MPAs. Once the desired MPA size is determined, users can purchase single-use MPAs of the correct size in packs of four. \nOptimizer Kits\n\n\n\n\n\nSystem Components\nInfinity MTx device\nFront Panel\n\nUser Interface Touchscreen \u2013 From here, the operator can detail and conduct the transfection processes, view and export information about previous transfection runs, change default system settings, and access additional information about operating the Infinity MTx. (See the software section of the manual for more information).\n\nSample Loading Tray \u2013 Compatible with the Infinity MPA and Optimizer kit. Use the eject button on the touchscreen to open the tray. The MPA or Optimizer kit can be placed in the open tray by matching up the protrusion on the device with the recess on the tray.  WARNING:  Ensure nothing is touching the seam between the tray and the main body of the instrument, as this can damage the instrumentation and may cause harm to the user.\nBarcode Scanner \u2013 Located on the underside of the instrument above the tray. The barcode scanner reads the barcodes on the Infinity MPA package and saves device specific information to the notes section. Press the \u201cScan /Read ID\u201d button to scan the barcode. \n\nBack Panel\nExhaust Air Vents \u2013 Used to vent air out of the instrument. CAUTION Do not block \u2013 Ensure at least 6\u201d of clearan",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/cdr-test/CellFE_Infinity_MTx_Operating_Manual.docx"
+                }
+            ],
+            "confidence": 80
         }
     ]
 }
