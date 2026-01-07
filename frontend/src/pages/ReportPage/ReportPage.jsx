@@ -170,17 +170,11 @@ const ReportPage = () => {
   useEffect(() => {
     const isReportPage = location.pathname.includes('report-page');
 
-    console.log({
-      path: location.pathname,
-      navigationType,
-      isReportPage,
-    });
-
     // 🔥 Clear IndexedDB when user navigates BACK or FORWARD
     // and is NOT explicitly staying on report-page
     if (navigationType === 'POP' && !isReportPage) {
-      console.log('Back navigation → clearing IndexedDB');
-      idb_clear_all();
+      console.log('Leaving report page → clearing IndexedDB');
+      idb_clear_all(); //  REQUIRED
     }
   }, [location.pathname, navigationType]);
 
@@ -220,14 +214,15 @@ const ReportPage = () => {
           // ----------------------------------
           setIsFinalJsonLoaded(res.is_final);
 
-          if (res.is_final) {
+          if (res.is_final && res.json_data?.Tables) {
             setFinalTrfJson(res.json_data);
 
-            // SAVE FINAL TRF FOR CONFIDENCE
-            //await idb_set(`trf_final_${projectID}`, res.json_data, STORES.TRF);
-            //window.dispatchEvent(new Event('idb-updated'));
-            showPartStatusPopup('Final TRF loaded');
-            setCurrentPart((p) => p + 1);
+            //  BACKEND IS AUTHORITATIVE HERE
+            await idb_set('tables', res.json_data.Tables);
+
+            // optional but safe
+            window.dispatchEvent(new Event('idb-updated'));
+
             return;
           }
 
