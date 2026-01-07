@@ -9,7 +9,7 @@ trigger:
 variables:
 - group: Backend-queue-conapp
 - name: IMAGE_TAG
-  value: v20
+  value: v21
 stages:
 - stage: BuildAndPush
   displayName: 'Build and Push Backend Docker Image'
