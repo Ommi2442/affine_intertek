@@ -41,7 +41,13 @@ import { RenderPage5DynamicGroups } from './PageRenderers/RenderPage5DynamicGrou
 
 const DataTable = forwardRef(
   (
-    { jsonData, onBookmarkClick, onConfidenceChange, editMode = false },
+    {
+      jsonData,
+      onBookmarkClick,
+      onConfidenceChange,
+      editMode = false,
+      isHardRefresh,
+    },
     ref
   ) => {
     const containerRef = useRef(null);
@@ -74,8 +80,18 @@ const DataTable = forwardRef(
     //  - editMode === true (user clicked Edit/Refine)
     //  - item.is_textbox !== false (textbox allowed)
 
-    const splitLines = (v) =>
-      typeof v === 'string' && v.length > 0 ? v.split('\n') : [''];
+    const normalizeToArray = (v) => {
+      // already correct format
+      if (Array.isArray(v)) return v;
+
+      // legacy string support
+      if (typeof v === 'string' && v.length > 0) {
+        return v.split('\n');
+      }
+
+      // default
+      return [''];
+    };
 
     const addPage3Row = (tableIdx) => {
       setTables((prev) => {
@@ -85,10 +101,10 @@ const DataTable = forwardRef(
         table.Items = table.Items.map((item) => {
           if (item.page_no !== 3 || item.is_table !== true) return item;
 
-          const lines = splitLines(item.value);
+          const rows = normalizeToArray(item.value);
           return {
             ...item,
-            value: [...lines, ''].join('\n'), // append empty row
+            value: [...rows, ''], // add empty row
             is_user_modified: true,
           };
         });
@@ -97,16 +113,72 @@ const DataTable = forwardRef(
       });
     };
 
-    useEffect(() => {
-      idb_get('tables').then((saved) => {
-        if (saved && Array.isArray(saved)) {
-          setTables(saved);
-        }
+    const deletePage3Row = (tableIdx) => {
+      setTables((prev) => {
+        const next = prev.map((t) => ({ ...t, Items: [...t.Items] }));
+        const table = next[tableIdx];
+
+        table.Items = table.Items.map((item) => {
+          if (item.page_no !== 3 || item.is_table !== true) return item;
+
+          const rows = normalizeToArray(item.value);
+
+          // 🚫 keep at least one row
+          if (rows.length <= 1) return item;
+
+          return {
+            ...item,
+            value: rows.slice(0, -1), // ✅ remove last row
+            is_user_modified: true,
+          };
+        });
+
+        return next;
       });
-    }, []);
+
+      // realtime confidence update
+      onConfidenceChange?.();
+    };
+
+    // useEffect(() => {
+    //   idb_get('tables').then((saved) => {
+    //     if (saved && Array.isArray(saved)) {
+    //       setTables(saved);
+    //     }
+    //   });
+    // }, []);
+    useEffect(() => {
+      let cancelled = false;
+
+      const load = async () => {
+        // 1️⃣ HARD REFRESH → LOAD FROM INDEXEDDB ONLY
+        if (isHardRefresh) {
+          const saved = await idb_get('tables');
+          if (!cancelled && saved?.length) {
+            setTables(saved);
+            return;
+          }
+        }
+
+        // 2️⃣ NAVIGATION / FRESH LOAD → BACKEND IS KING
+        if (jsonData?.Tables?.length) {
+          setTables(jsonData.Tables);
+          await idb_set('tables', jsonData.Tables);
+        }
+      };
+
+      load();
+      return () => {
+        cancelled = true;
+      };
+    }, [jsonData, isHardRefresh]);
 
     const isEditable = (item) => {
       if (!item) return false;
+      const hasValueKey = (item) =>
+        item && Object.prototype.hasOwnProperty.call(item, 'value');
+
+      if (!hasValueKey(item)) return false;
       if (item.user_editable !== true) return false;
 
       // Remark / Verdict → editable only in edit mode
@@ -546,6 +618,19 @@ const DataTable = forwardRef(
       if (tIdx == null || iIdx == null) return null;
       if (hovered.t !== tIdx || hovered.i !== iIdx) return null;
 
+      //  NEW CONDITION — hide for TBD-Info not available
+      const item = tables?.[tIdx]?.Items?.[iIdx];
+      if (item.user_editable !== true) return null;
+      if (!Object.prototype.hasOwnProperty.call(item, 'value')) {
+        return null;
+      }
+      if (
+        typeof item?.value === 'string' &&
+        item.value.trim().toLowerCase() === 'tbd-info not available'
+      ) {
+        return null;
+      }
+
       return (
         <div className="dt-hover-actions">
           <IconButton size="small" onClick={() => handleApprove?.(tIdx, iIdx)}>
@@ -637,6 +722,8 @@ const DataTable = forwardRef(
         const maxColumns = Math.max(
           ...Object.values(rowsByQR).map((rows) => rows.length)
         );
+
+        const canEditPage3 = pageNo === 3 && editMode === true;
 
         return (
           <TableContainer
@@ -734,6 +821,8 @@ const DataTable = forwardRef(
                               setHovered({ t: null, i: null })
                             }
                           >
+                            {renderHoverActions(tIdx, iIdx, true)}
+
                             {/* ================= SINGLE ROW ================= */}
                             {isPage7CheckboxUI ? (
                               <div
@@ -877,7 +966,9 @@ const DataTable = forwardRef(
                               : [''];
 
                           const rowCount = Math.max(
-                            ...rowItems.map((c) => splitLines(c.value).length)
+                            ...rowItems.map(
+                              (c) => normalizeToArray(c.value).length
+                            )
                           );
 
                           return Array.from({ length: rowCount }).map(
@@ -888,7 +979,7 @@ const DataTable = forwardRef(
                                   const iIdx = col.__i;
                                   const editable = isEditable(col);
 
-                                  const lines = splitLines(col.value);
+                                  const lines = normalizeToArray(col.value);
                                   const cellValue = lines[rowIdx] ?? '';
 
                                   return (
@@ -913,12 +1004,15 @@ const DataTable = forwardRef(
 
                                                 next[tIdx].Items[iIdx] = {
                                                   ...next[tIdx].Items[iIdx],
-                                                  value: updated.join('\n'),
+                                                  value: updated, //  KEEP ARRAY
                                                   is_user_modified: true,
+                                                  is_user_edited: true,
                                                 };
 
                                                 return next;
                                               });
+
+                                              onConfidenceChange?.();
                                             }}
                                           />
                                         )}
@@ -1007,13 +1101,30 @@ const DataTable = forwardRef(
               </TableBody>
             </Table>
             {pageNo === 3 && (
-              <Box sx={{ textAlign: 'right', p: 1 }}>
-                <button
-                  className="dt-add-row-btn"
-                  onClick={() => addPage3Row(group[0].__t)}
-                >
-                  ➕ Add Row
-                </button>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: 1,
+                  p: 1,
+                }}
+              >
+                {canEditPage3 && (
+                  <button
+                    className="dt-add-row-btn"
+                    onClick={() => addPage3Row(group[0].__t)}
+                  >
+                    ➕ Add Row
+                  </button>
+                )}
+                {canEditPage3 && (
+                  <button
+                    className="dt-delete-row-btn"
+                    onClick={() => deletePage3Row(group[0].__t)}
+                  >
+                    ➖ Delete Row
+                  </button>
+                )}
               </Box>
             )}
 
@@ -1653,7 +1764,22 @@ const DataTable = forwardRef(
     };
     // PAGE 9 → 42 SPECIAL 4-COLUMN IEC 61010-1 TABLE
     const renderPart10Table = (pageItems) => {
-      const items = pageItems.filter((i) => i.disable_text !== true);
+      //const items = pageItems.filter((i) => i.disable_text !== true);
+
+      const HIDE_FIELDS = new Set([
+        'Requirement + Test',
+        'Result - Remark',
+        'Verdict',
+      ]);
+
+      const items = pageItems.filter((i) => {
+        if (i.disable_text === true) return false;
+
+        //  hide unwanted header-like rows purely by field name
+        if (HIDE_FIELDS.has(i.field)) return false;
+
+        return true;
+      });
 
       // Header row (if exists)
       const headerItem = items.find((i) => i.table_head === true);
@@ -1743,11 +1869,12 @@ const DataTable = forwardRef(
       };
 
       // Remark / Verdict Cells
-      const renderRemarkOrVerdictCell = (item) => {
+      const renderRemarkOrVerdictCell = (item, tIdx, iIdx) => {
         if (!item) return null;
+        if (tIdx == null || iIdx == null) return null;
 
-        const tIdx = item.__t;
-        const iIdx = item.__i;
+        // const tIdx = item.__t;
+        // const iIdx = item.__i;
         if (iIdx === -1) return null;
 
         const value = item.value ?? item.Value ?? '';
@@ -1901,7 +2028,9 @@ const DataTable = forwardRef(
 
                   <TableCell sx={bodyCellSx}>
                     {renderRemarkOrVerdictCell(
-                      tables?.[row.remarkRef?.__t]?.Items?.[row.remarkRef?.__i]
+                      tables?.[row.remarkRef?.__t]?.Items?.[row.remarkRef?.__i],
+                      row.remarkRef?.__t,
+                      row.remarkRef?.__i
                     )}
                   </TableCell>
 
@@ -1909,7 +2038,9 @@ const DataTable = forwardRef(
                     {renderRemarkOrVerdictCell(
                       tables?.[row.verdictRef?.__t]?.Items?.[
                         row.verdictRef?.__i
-                      ]
+                      ],
+                      row.verdictRef?.__t,
+                      row.verdictRef?.__i
                     )}
                   </TableCell>
                 </TableRow>
