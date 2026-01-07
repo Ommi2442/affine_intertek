@@ -31,13 +31,13 @@ import mimetypes
 from fastapi import HTTPException
 
 
-AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net'
+AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=stintertekesusstage;AccountKey=X3xxXc+G6VT3GNShGEIO+boKEbI2jLbh0U9wg5/U2UME328bFHPVdeJDgp9fyKfs7IW/MoJnpi5Q+ASti9+IlA==;EndpointSuffix=core.windows.net'
 blob_service = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
-blob_container = 'stintertekesusdev-blob'
+blob_container = 'stintertekesusstage-blob'
 
-COSMOS_DB_URI="https://csdb-intertek-esus-dev.documents.azure.com:443/"
-COSMOS_DB_KEY="azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00MFDbK88ApotACDbODLFXA=="
-COSMOS_DB_DATABASE="intertek_poc_dev"
+COSMOS_DB_URI="https://csdb-intertek-esus-stage.documents.azure.com:443/"
+COSMOS_DB_KEY="HpRV1o6cIgx2jae8eh2XF6hSLUobpnUOg5F2ElDq4SeP1p4OPxf9QEWQko5lVFyQQtvCAOuejS55ACDbKGjKow=="
+COSMOS_DB_DATABASE="intertek_poc_stage"
 COSMOS_PROJECT_TRF_CONTAINER="Project_TRF"
 COSMOS_PROJECT_CDR_CONTAINER="Project_CDR"
 
