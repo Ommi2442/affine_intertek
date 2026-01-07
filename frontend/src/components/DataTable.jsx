@@ -74,8 +74,18 @@ const DataTable = forwardRef(
     //  - editMode === true (user clicked Edit/Refine)
     //  - item.is_textbox !== false (textbox allowed)
 
-    const splitLines = (v) =>
-      typeof v === 'string' && v.length > 0 ? v.split('\n') : [''];
+    const normalizeToArray = (v) => {
+      // already correct format
+      if (Array.isArray(v)) return v;
+
+      // legacy string support
+      if (typeof v === 'string' && v.length > 0) {
+        return v.split('\n');
+      }
+
+      // default
+      return [''];
+    };
 
     const addPage3Row = (tableIdx) => {
       setTables((prev) => {
@@ -85,10 +95,10 @@ const DataTable = forwardRef(
         table.Items = table.Items.map((item) => {
           if (item.page_no !== 3 || item.is_table !== true) return item;
 
-          const lines = splitLines(item.value);
+          const rows = normalizeToArray(item.value);
           return {
             ...item,
-            value: [...lines, ''].join('\n'), // append empty row
+            value: [...rows, ''], // add empty row
             is_user_modified: true,
           };
         });
@@ -105,14 +115,14 @@ const DataTable = forwardRef(
         table.Items = table.Items.map((item) => {
           if (item.page_no !== 3 || item.is_table !== true) return item;
 
-          const lines = splitLines(item.value);
+          const rows = normalizeToArray(item.value);
 
-          // 🚫 Don't delete if only one row exists
-          if (lines.length <= 1) return item;
+          // 🚫 keep at least one row
+          if (rows.length <= 1) return item;
 
           return {
             ...item,
-            value: lines.slice(0, -1).join('\n'), // remove last row
+            value: rows.slice(0, -1), // ✅ remove last row
             is_user_modified: true,
           };
         });
@@ -157,6 +167,10 @@ const DataTable = forwardRef(
 
     const isEditable = (item) => {
       if (!item) return false;
+      const hasValueKey = (item) =>
+        item && Object.prototype.hasOwnProperty.call(item, 'value');
+
+      if (!hasValueKey(item)) return false;
       if (item.user_editable !== true) return false;
 
       // Remark / Verdict → editable only in edit mode
@@ -944,7 +958,9 @@ const DataTable = forwardRef(
                               : [''];
 
                           const rowCount = Math.max(
-                            ...rowItems.map((c) => splitLines(c.value).length)
+                            ...rowItems.map(
+                              (c) => normalizeToArray(c.value).length
+                            )
                           );
 
                           return Array.from({ length: rowCount }).map(
@@ -955,7 +971,7 @@ const DataTable = forwardRef(
                                   const iIdx = col.__i;
                                   const editable = isEditable(col);
 
-                                  const lines = splitLines(col.value);
+                                  const lines = normalizeToArray(col.value);
                                   const cellValue = lines[rowIdx] ?? '';
 
                                   return (
@@ -980,12 +996,15 @@ const DataTable = forwardRef(
 
                                                 next[tIdx].Items[iIdx] = {
                                                   ...next[tIdx].Items[iIdx],
-                                                  value: updated.join('\n'),
+                                                  value: updated, //  KEEP ARRAY
                                                   is_user_modified: true,
+                                                  is_user_edited: true,
                                                 };
 
                                                 return next;
                                               });
+
+                                              onConfidenceChange?.();
                                             }}
                                           />
                                         )}
