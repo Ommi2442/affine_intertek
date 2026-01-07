@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Grid,
   Card,
@@ -6,6 +6,10 @@ import {
   Typography,
   Box,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 
 import { useMsal } from '@azure/msal-react';
@@ -18,6 +22,7 @@ const LOGIN_CLICKED_KEY = 'LOGIN_CLICKED';
 export default function LoginPage() {
   const { instance, inProgress } = useMsal();
   const navigate = useNavigate();
+  const [unauthorizedOpen, setUnauthorizedOpen] = useState(false);
 
   /* ------------------------------------------------------
      HANDLE REDIRECT (ONLY AFTER LOGIN BUTTON CLICK)
@@ -77,6 +82,7 @@ export default function LoginPage() {
       localStorage.setItem('logintype', 'sso');
 
       const backendResponse = await ssouserdataApi({
+        status: userAccount.status,
         name: userAccount.name,
         email: userAccount.username,
         accessToken: response.accessToken,
@@ -87,6 +93,11 @@ export default function LoginPage() {
       if (backendResponse?.data?.status === 'success') {
         localStorage.setItem('role', backendResponse.data.role);
         navigate('/dashboard', { replace: true });
+      }
+      // FAILED → show unauthorized dialog
+      if (backendResponse?.data?.status === 'Failed') {
+        setUnauthorizedOpen(true);
+        return;
       }
     } catch (error) {
       console.error('Post-redirect SSO processing failed:', error);
@@ -229,6 +240,38 @@ export default function LoginPage() {
           </CardContent>
         </Card>
       </Grid>
+      <Dialog
+        open={unauthorizedOpen}
+        disableEscapeKeyDown
+        aria-labelledby="unauthorized-dialog-title"
+      >
+        <DialogTitle id="unauthorized-dialog-title">
+          Unauthorized Access
+        </DialogTitle>
+
+        <DialogContent>
+          <Typography sx={{ mt: 1 }}>
+            You are not authorized to access this application.
+            <br />
+            Please contact the administrator for access.
+          </Typography>
+        </DialogContent>
+
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              setUnauthorizedOpen(false);
+              sessionStorage.clear();
+              localStorage.clear();
+              instance.setActiveAccount(null);
+            }}
+          >
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
 }
