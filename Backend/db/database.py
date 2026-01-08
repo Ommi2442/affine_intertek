@@ -4,11 +4,13 @@ from azure.cosmos import CosmosClient
 
 load_dotenv()
 
+
 COSMOS_DB_URI = os.getenv("COSMOS_DB_URI")
 COSMOS_DB_KEY = os.getenv("COSMOS_DB_KEY")
 COSMOS_DB_DATABASE = os.getenv("COSMOS_DB_DATABASE")
 COSMOS_DB_users_Container = os.getenv("COSMOS_DB_users_Container")
 COSMOS_DB_users_registration=os.getenv("COSMOS_DB_users_registration")
+
 COSMOS_DB_project_Container_name = os.getenv("COSMOS_DB_project_Container")
 COSMOS_DB_project_TRF_Container = os.getenv("COSMOS_DB_project_TRF_Container")
 COSMOS_DB_project_CDR_Container = os.getenv("COSMOS_DB_project_CDR_Container")
