@@ -1,4 +1,4 @@
-
+from queue_worker import update_project_progress_CDR
 from fastapi import APIRouter, HTTPException, Depends, Body, Form, UploadFile, File, Query, logger, BackgroundTasks, status
 import traceback
 from azure.storage.blob import ContainerClient
@@ -936,7 +936,27 @@ def generate_cdr(projectId: str):
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="projectId is required"
             )
+        project_id=projectId
+        query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
+        docs = list(
+            projects_container.query_items(
+                query=query,
+                enable_cross_partition_query=True,
+            )
+        )
 
+        if not docs:
+            print(f" Project not found: {project_id}")
+            return True
+
+        project_doc = docs[0]
+        update_project_progress_CDR(
+            project_doc,
+            cdr_stage="steps in Progress",
+            cdr_percentage=10,
+            cdr_step="Starting runnig CDR",
+            cdr_completed=False
+        )
         ############### QUEUE LOGIC (COMMENTED) ################
         # queue_client_cdr.send_message(json.dumps({
         #     "projectId": projectId,
@@ -1037,6 +1057,13 @@ def generate_cdr(projectId: str):
         )
         print("----- Excel CDR uploaded -----")
 
+        update_project_progress_CDR(
+            project_doc,
+            cdr_stage="All Steps Completed",
+            cdr_percentage=100,
+            cdr_step="COMPLETED",
+            cdr_completed=True
+        )
         return {
             "message": "CDR Report generated successfully",
             "projectId": projectId,
