@@ -6,14 +6,13 @@ from openpyxl.drawing.image import Image
 from openpyxl.utils import column_index_from_string, get_column_letter
 from openpyxl.styles import Border, Side, Font
 from pathlib import Path
-# Base directory of this file (CDR_Pipelines)
 BASE_DIR = Path(__file__).resolve().parent
-
 # utility.cdr_report.CDR_Pipelines.
 # ===================== CONFIG =====================
 
-# EXCEL_TEMPLATE = Path("CDR_template.xlsx")
+#EXCEL_TEMPLATE = Path("CDR_template.xlsx")
 EXCEL_TEMPLATE = BASE_DIR /"CDR_template.xlsx"
+
 # OUTPUT_EXCEL = Path(r".\utility\cdr_report\CDR_Pipelines\CDR_Report.xlsx")
 # OUTPUT_EXCEL = Path("Final_CDR_Report_@@@@@@@.xlsx")
 # JSON_PATH = Path(r".\utility\cdr_report\CDR_Pipelines\cdr_payload_v5_updated.json")

@@ -45,7 +45,7 @@ def create_s4_json(input_excel, output_json):
             "user_editable": True,
             "ai_fillable": True,
             "accuracy_level": False,
-            "image_support": c2_utils.clean_value(row.get("URL")),
+            "image_support": c2_utils.clean_value(row.get("Image URLs")),
             "text_support": [
                                 {
                                     "filename": c2_utils.clean_value(row.get("Filename")),
@@ -82,8 +82,8 @@ def create_s3_json(input_excel, output_json):
     # Strict image validation
     # --------------------------------
     def has_real_image(row):
-        img = str(row.get("URL", "")).strip().lower()
-        src = str(row.get("Source Type", "")).strip().lower()
+        img = str(row.get("Image URLs", "")).strip().lower()
+        src = str(row.get("Source Types", "")).strip().lower()
         photo = str(row.get("photo_no", "")).strip().lower()
 
         if not photo or photo in ("guide", "nan", "none"):
@@ -159,10 +159,10 @@ def create_s3_json(input_excel, output_json):
             "prefix": "Product",
             "field": build_field_text(
                 c2_utils.clean_value(row.get("photo_no")),
-                c2_utils.clean_value(row.get("Filename"))
+                c2_utils.clean_value(row.get("Image Captions"))
             ),
             "answer_cell": f"{column}{current_row + 1}",
-            "photo_path": c2_utils.clean_value(row.get("URL")),
+            "photo_path": c2_utils.clean_value(row.get("Image URLs")),
             "field_merged": False,
             "fm_range": None,
             "value_merged": False,

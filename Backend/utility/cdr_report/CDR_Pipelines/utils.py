@@ -982,6 +982,57 @@ def move_device_images_in_blob(
 
     return moved_blobs
 
+
+import json
+from urllib.parse import urlparse, quote
+
+def make_blob_url(container_sas_url: str, filename: str) -> str:
+    u = urlparse(container_sas_url)
+    container_base = f"{u.scheme}://{u.netloc}{u.path}".rstrip("/")
+    sas_query = u.query
+    encoded = quote(filename, safe="")
+    return f"{container_base}/{encoded}?{sas_query}" if sas_query else f"{container_base}/{encoded}"
+
+def add_urls_sheet_1_and_6(payload: dict, container_sas_url: str):
+    """
+    Returns:
+      updated_payload (dict): same object updated in-place (also returned)
+      updated_count (int): number of text_support items updated
+    Updates ONLY:
+      Sheets where sheet_no in (1, 6)
+    """
+    updated = 0
+
+    def walk(node):
+        nonlocal updated
+        if isinstance(node, dict):
+            ts = node.get("text_support")
+            if isinstance(ts, list):
+                for item in ts:
+                    if (
+                        isinstance(item, dict)
+                        and item.get("filename")
+                        and not item.get("url")  # only fill missing/empty url
+                    ):
+                        item["url"] = make_blob_url(container_sas_url, item["filename"])
+                        updated += 1
+
+            for v in node.values():
+                walk(v)
+
+        elif isinstance(node, list):
+            for it in node:
+                walk(it)
+
+    for sheet in payload.get("Sheets", []):
+        if sheet.get("sheet_no") in (1, 6):  # ✅ only 1 and 6
+            walk(sheet)
+
+    return payload, updated
+
+
+
+
 import time
 import random
 from typing import Optional
