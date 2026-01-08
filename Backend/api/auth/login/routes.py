@@ -1,10 +1,8 @@
-from db.database import COSMOS_DB_users_regis
-
 from fastapi import APIRouter, HTTPException
 from datetime import datetime, timedelta, timezone
 from .models import EmailRequest, OTPVerifyRequest
 from .utils import generate_otp, encrypt_otp, decrypt_otp, send_email
-from db.database import COSMOS_DB_users_Container,COSMOS_DB_users_regis
+from db.database import COSMOS_DB_users_Container,COSMOS_DB_users_registration
 from api.auth.jwt_auth.utils import create_access_token 
 import hmac
 import logging
@@ -154,7 +152,7 @@ def verify_otp(data: OTPVerifyRequest):
 async def sso_login(data: EmailRequest):
     try:
         
-        COSMOS_DB_user_registration_Container = COSMOS_DB_users_regis
+        COSMOS_DB_user_registration_Container = COSMOS_DB_users_registration
         registration_query = "SELECT u.email FROM user_registration u"
         registered_emails = [item["email"] for item in COSMOS_DB_user_registration_Container.query_items(
             query=registration_query,

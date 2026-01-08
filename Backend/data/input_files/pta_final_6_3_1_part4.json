@@ -12,12 +12,12 @@
           "field": "Easily-touched parts are smooth and rounded",
           "answer_row": 559,
           "answer_column": 2,
-          "custom_prompt": "Verify that easily touched parts have no sharp edges and are smooth and rounded.",
+          "custom_prompt": "Verify that easily touched parts of the equipment are smooth and rounded.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 28
         },
@@ -34,8 +34,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 28
         },
@@ -48,12 +48,12 @@
           "field": "Do not cause injury during normal use and",
           "answer_row": 560,
           "answer_column": 2,
-          "custom_prompt": "Verify that sharp edges do not cause injury during normal use.",
+          "custom_prompt": "Verify that there are any sharp edges in the equipment and do not cause injury during normal use.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 28
         },
@@ -66,12 +66,12 @@
           "field": "Do not cause injury during normal use and",
           "answer_row": 560,
           "answer_column": 3,
-          "custom_prompt": "Verify that sharp edges do not cause injury during normal use.",
+          "custom_prompt": "Verify that there are any sharp edges in the equipment and do not cause injury during normal use.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 28
         },
@@ -84,12 +84,12 @@
           "field": "Do not cause injury during single fault condition",
           "answer_row": 561,
           "answer_column": 2,
-          "custom_prompt": "Verify that sharp edges do not cause injury during single fault condition.",
+          "custom_prompt": "Verify that there are any sharp edges in the equipment and do not cause injury during single fault condition.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 28
         },
@@ -102,12 +102,12 @@
           "field": "Do not cause injury during single fault condition",
           "answer_row": 561,
           "answer_column": 3,
-          "custom_prompt": "Verify that sharp edges do not cause injury during single fault condition.",
+          "custom_prompt": "Verify that there are any sharp edges in the equipment and do not cause injury during single fault condition.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 28
         },
@@ -125,7 +125,13 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [563, 566, 575, 581, 585],
+          "dependency_rows": [
+            563,
+            566,
+            575,
+            581,
+            585
+          ],
           "page_no": 28
         },
         {
@@ -138,11 +144,17 @@
           "answer_row": 562,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [563, 566, 575, 581, 585],
+          "dependency_rows": [
+            563,
+            566,
+            575,
+            581,
+            585
+          ],
           "page_no": 28
         },
         {
@@ -159,7 +171,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [564, 565],
+          "dependency_rows": [
+            564,
+            565
+          ],
           "page_no": 28
         },
         {
@@ -172,11 +187,14 @@
           "answer_row": 563,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [564, 565],
+          "dependency_rows": [
+            564,
+            565
+          ],
           "page_no": 28
         },
         {
@@ -261,7 +279,16 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [567, 568, 569, 570, 571, 572, 573, 574],
+          "dependency_rows": [
+            567,
+            568,
+            569,
+            570,
+            571,
+            572,
+            573,
+            574
+          ],
           "page_no": 28
         },
         {
@@ -277,8 +304,17 @@
           "task_type": "verdict_dependency",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
-          "dependency_rows": [567, 568, 569, 570, 571, 572, 573, 574],
+          "accuracy_level": true,
+          "dependency_rows": [
+            567,
+            568,
+            569,
+            570,
+            571,
+            572,
+            573,
+            574
+          ],
           "page_no": 28
         },
         {
@@ -308,7 +344,7 @@
           "answer_row": 567,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -324,7 +360,7 @@
           "field": "obviously intended to operate on parts or materials external of the equipment",
           "answer_row": 568,
           "answer_column": 2,
-          "custom_prompt": "Verify that access to hazardous moving parts is permitted only when the equipment is obviously intended to operate on external parts or materials.",
+          "custom_prompt": "Verify that incase there are any hazardous moving parts in the equipment the access to such parts is permitted if the equipment is clearly designed to operate on external parts or materials, and exposure to those moving parts is inherent to the function.Mention 'No such parts' incase the equipment is not designed to operate on external parts or materials",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -342,7 +378,7 @@
           "field": "obviously intended to operate on parts or materials external of the equipment",
           "answer_row": 568,
           "answer_column": 3,
-          "custom_prompt": "Verify that access to hazardous moving parts is permitted only when the equipment is obviously intended to operate on external parts or materials.",
+          "custom_prompt": "Verify that incase there are any hazardous moving parts in the equipment the access to such parts is permitted if the equipment is clearly designed to operate on external parts or materials, and exposure to those moving parts is inherent to the function.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -360,7 +396,7 @@
           "field": "inadvertent touching of moving parts minimized \tby equipment design (e .g. guards or handles)",
           "answer_row": 569,
           "answer_column": 2,
-          "custom_prompt": "Verify that access to hazardous moving parts is permitted only when inadvertent touching is minimized by equipment design, such as guards or handles.",
+          "custom_prompt": "Verify that incase there are any hazardous moving parts in the equipment inadvertent touching of moving parts is minimized by equipment design, such as guards or handles. Mention 'No such parts' incase the equipment does not have any hazardous moving part",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -378,7 +414,7 @@
           "field": "inadvertent touching of moving parts minimized \tby equipment design (e .g. guards or handles)",
           "answer_row": 569,
           "answer_column": 3,
-          "custom_prompt": "Verify that access to hazardous moving parts is permitted only when inadvertent touching is minimized by equipment design, such as guards or handles.",
+          "custom_prompt": "Verify that incase there are any hazardous moving parts in the equipment inadvertent touching of moving parts is minimized by equipment design, such as guards or handles.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -414,7 +450,7 @@
           "answer_row": 570,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -430,7 +466,7 @@
           "field": "1)\taccess requires tool",
           "answer_row": 571,
           "answer_column": 2,
-          "custom_prompt": "Verify that access to hazardous moving parts is permitted only when operator access is unavoidable outside normal use and requires a tool.",
+          "custom_prompt": "Verify that incase there are any hazardous moving parts in the equipment and the operator access to such parts is unavoidable outside normal use, then the access to such parts requires tool. Mention 'No such parts' incase the equipment does not have any hazardous moving part ",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -448,7 +484,7 @@
           "field": "1)\taccess requires tool",
           "answer_row": 571,
           "answer_column": 3,
-          "custom_prompt": "Verify that access to hazardous moving parts is permitted only when operator access is unavoidable outside normal use and requires a tool.",
+          "custom_prompt": "Verify that incase there are any hazardous moving parts in the equipment and the operator access to such parts is unavoidable outside normal use, then the access to such parts requires tool.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -466,7 +502,7 @@
           "field": "2)\tstatement about training in the instructions",
           "answer_row": 572,
           "answer_column": 2,
-          "custom_prompt": "Verify that if operator access to hazardous moving parts is unavoidable outside normal use, the instructions include a statement about required training.",
+          "custom_prompt": "Verify that incase there are any hazardous moving parts in the equipment and the operator access to such parts is unavoidable outside normal use, then the statement about training is provided in the instructions. Mention 'No such parts' incase the equipment does not have any hazardous moving part",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -484,7 +520,7 @@
           "field": "2)\tstatement about training in the instructions",
           "answer_row": 572,
           "answer_column": 3,
-          "custom_prompt": "Verify that if operator access to hazardous moving parts is unavoidable outside normal use, the instructions include a statement about required training.",
+          "custom_prompt": "Verify that incase there are any hazardous moving parts in the equipment and the operator access to such parts is unavoidable outside normal use, then the statement about training is provided in the instructions.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -502,7 +538,7 @@
           "field": "3)\twarning markings on covers prohibiting access \t\tby untrained operators",
           "answer_row": 573,
           "answer_column": 2,
-          "custom_prompt": "Verify that access to hazardous moving parts is permitted only when operator access is unavoidable outside normal use and warning markings on covers prohibit access by untrained operators.",
+          "custom_prompt": "Verify that incase there are any hazardous moving parts in the equipment and the operator access to such parts is unavoidable outside normal use, then the warning markings on covers prohibiting access by untrained operators are provided. Mention 'No such parts' incase the equipment does not have any hazardous moving part",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -520,7 +556,7 @@
           "field": "3)\twarning markings on covers prohibiting access \t\tby untrained operators",
           "answer_row": 573,
           "answer_column": 3,
-          "custom_prompt": "Verify that access to hazardous moving parts is permitted only when operator access is unavoidable outside normal use and warning markings on covers prohibit access by untrained operators.",
+          "custom_prompt": "Verify that incase there are any hazardous moving parts in the equipment and the operator access to such parts is unavoidable outside normal use, then the warning markings on covers prohibiting access by untrained operators are provided.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -538,7 +574,7 @@
           "field": "or symbol 14 with full details in documentation",
           "answer_row": 574,
           "answer_column": 2,
-          "custom_prompt": "Verify that access to hazardous moving parts is permitted only when operator access is unavoidable outside normal use and the required precautions or symbol 14 with full details in the documentation are provided.",
+          "custom_prompt": "Verify that incase there are any hazardous moving parts in the equipment and the operator access to such parts is unavoidable outside normal use, then the symbol 14 with full details in documentation is provided. Mention 'No such parts' incase the equipment does not have any hazardous moving part",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -556,7 +592,7 @@
           "field": "or symbol 14 with full details in documentation",
           "answer_row": 574,
           "answer_column": 3,
-          "custom_prompt": "Verify that access to hazardous moving parts is permitted only when operator access is unavoidable outside normal use and the required precautions or symbol 14 with full details in the documentation are provided.",
+          "custom_prompt": "Verify that incase there are any hazardous moving parts in the equipment and the operator access to such parts is unavoidable outside normal use, then the symbol 14 with full details in documentation is provided.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -579,7 +615,13 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [576, 577, 578, 579, 580],
+          "dependency_rows": [
+            576,
+            577,
+            578,
+            579,
+            580
+          ],
           "page_no": 29
         },
         {
@@ -592,11 +634,17 @@
           "answer_row": 575,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [576, 577, 578, 579, 580],
+          "dependency_rows": [
+            576,
+            577,
+            578,
+            579,
+            580
+          ],
           "page_no": 29
         },
         {
@@ -608,12 +656,12 @@
           "field": "risk is reduced to a tolerable level by protective measures as specified in Table 12",
           "answer_row": 576,
           "answer_column": 2,
-          "custom_prompt": "Verify that the risk assessment for mechanical hazards from moving parts has been performed and that the risk is reduced to a tolerable level using protective measures specified in Table 12.",
+          "custom_prompt": "Verify that any mechanical hazards caused by moving parts are identified and suitable protective measures as specified in Table 12 are applied to reduce the risk to tolerable level.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 29
         },
@@ -629,10 +677,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 29
+          "page_no": 29,
+          "custom_prompt": "Verify that any mechanical hazards caused by moving parts are identified and suitable protective measures as specified in Table 12 are applied to reduce the risk to tolerable level."
         },
         {
           "clause_row": 577,
@@ -661,7 +710,7 @@
           "answer_row": 577,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -677,12 +726,12 @@
           "field": "Low level measures",
           "answer_row": 578,
           "answer_column": 2,
-          "custom_prompt": "Verify that a risk assessment is performed for mechanical hazards from moving parts and that low-level protective measures from Table 12 are applied to reduce risk to a tolerable level.",
+          "custom_prompt": "Verify that any mechanical hazards caused by moving parts are identified and low level protective measures are applied to reduce the risk to tolerable level.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 29
         },
@@ -698,10 +747,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 29
+          "page_no": 29,
+          "custom_prompt": "Verify that any mechanical hazards caused by moving parts are identified and low level protective measures are applied to reduce the risk to tolerable level."
         },
         {
           "clause_row": 579,
@@ -712,12 +762,12 @@
           "field": "Moderate measures",
           "answer_row": 579,
           "answer_column": 2,
-          "custom_prompt": "Verify that mechanical hazards from moving parts have been risk-assessed and reduced to a tolerable level using the moderate protective measures specified in Table 12.",
+          "custom_prompt": "Verify that any mechanical hazards caused by moving parts are identified and moderate level protective measures are applied to reduce the risk to tolerable level.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 29
         },
@@ -733,10 +783,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 29
+          "page_no": 29,
+          "custom_prompt": "Verify that any mechanical hazards caused by moving parts are identified and moderate level protective measures are applied to reduce the risk to tolerable level."
         },
         {
           "clause_row": 580,
@@ -747,12 +798,12 @@
           "field": "Stringent measures",
           "answer_row": 580,
           "answer_column": 2,
-          "custom_prompt": "Verify that risk assessment for mechanical hazards to body parts has been performed and that risk is reduced to a tolerable level by applying the minimum protective measures classified as stringent measures per Table 12.",
+          "custom_prompt": "Verify that any mechanical hazards caused by moving parts are identified and stringent level protective measures are applied to reduce the risk to tolerable level.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 29
         },
@@ -768,10 +819,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 29
+          "page_no": 29,
+          "custom_prompt": "Verify that any mechanical hazards caused by moving parts are identified and stringent level protective measures are applied to reduce the risk to tolerable level."
         },
         {
           "clause_row": 581,
@@ -783,11 +835,15 @@
           "answer_row": 581,
           "answer_column": 2,
           "value": "(see Form A.20)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [582, 583, 584],
+          "dependency_rows": [
+            582,
+            583,
+            584
+          ],
           "page_no": 29
         },
         {
@@ -800,11 +856,15 @@
           "answer_row": 581,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [582, 583, 584],
+          "dependency_rows": [
+            582,
+            583,
+            584
+          ],
           "page_no": 29
         },
         {
@@ -834,7 +894,7 @@
           "answer_row": 582,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -921,11 +981,14 @@
           "answer_row": 585,
           "answer_column": 2,
           "value": "(see Form A.20)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [586, 588],
+          "dependency_rows": [
+            586,
+            588
+          ],
           "page_no": 29
         },
         {
@@ -938,11 +1001,14 @@
           "answer_row": 585,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [586, 588],
+          "dependency_rows": [
+            586,
+            588
+          ],
           "page_no": 29
         },
         {
@@ -959,7 +1025,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [587],
+          "dependency_rows": [
+            587
+          ],
           "page_no": 29
         },
         {
@@ -972,11 +1040,13 @@
           "answer_row": 586,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [587],
+          "dependency_rows": [
+            587
+          ],
           "page_no": 29
         },
         {
@@ -991,10 +1061,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 29
+          "page_no": 29,
+          "custom_prompt": "Verify the gap limitations between moving parts,If levels of 7.3.4 exceeded and a body part may be inserted minimum gap as specified in Table 13 assured in normal and in single fault condition"
         },
         {
           "clause_row": 587,
@@ -1027,7 +1098,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [589],
+          "dependency_rows": [
+            589
+          ],
           "page_no": 29
         },
         {
@@ -1040,11 +1113,13 @@
           "answer_row": 588,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [589],
+          "dependency_rows": [
+            589
+          ],
           "page_no": 29
         },
         {
@@ -1056,7 +1131,7 @@
           "field": "Maximum gap as specified in Table 14 assured in normal and in single fault condition",
           "answer_row": 589,
           "answer_column": 2,
-          "custom_prompt": "Verify that access to moving parts is normally prevented and that maximum gaps comply with Table 14 in both normal and single fault conditions.",
+          "custom_prompt": "Verify the gap limitations betwen moving parts, maximum gap as specified in Table 14 assured in both normal and single fault conditions.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -1096,7 +1171,17 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [591, 592, 593, 594, 595, 596, 597, 598, 599],
+          "dependency_rows": [
+            591,
+            592,
+            593,
+            594,
+            595,
+            596,
+            597,
+            598,
+            599
+          ],
           "page_no": 29
         },
         {
@@ -1109,11 +1194,21 @@
           "answer_row": 590,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [591, 592, 593, 594, 595, 596, 597, 598, 599],
+          "dependency_rows": [
+            591,
+            592,
+            593,
+            594,
+            595,
+            596,
+            597,
+            598,
+            599
+          ],
           "page_no": 29
         },
         {
@@ -1125,7 +1220,7 @@
           "field": "Equipment not secured to building structure is physical stable",
           "answer_row": 591,
           "answer_column": 2,
-          "custom_prompt": "Verify that equipment not secured to the building structure is physically stable.",
+          "custom_prompt": "Verify that the equipment is physically stable if not secured to building structure.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -1143,7 +1238,7 @@
           "field": "Equipment not secured to building structure is physical stable",
           "answer_row": 591,
           "answer_column": 3,
-          "custom_prompt": "Verify that equipment not secured to the building structure is physically stable.",
+          "custom_prompt": "Verify that the equipment is physically stable if not secured to building structure.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -1161,7 +1256,7 @@
           "field": "Stability maintained after opening of drawers etc. by automatic means, or",
           "answer_row": 592,
           "answer_column": 2,
-          "custom_prompt": "Verify that stability is maintained after opening drawers or similar parts, either by automatic means or equivalent provisions.",
+          "custom_prompt": "Verify that stability of the equipment is maintained after opening drawers or similar parts by automatic means.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -1179,7 +1274,7 @@
           "field": "Stability maintained after opening of drawers etc. by automatic means, or",
           "answer_row": 592,
           "answer_column": 3,
-          "custom_prompt": "Verify that stability is maintained after opening drawers or similar parts, either by automatic means or equivalent provisions.",
+          "custom_prompt": "Verify that stability of the equipment is maintained after opening drawers or similar parts by automatic means.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -1197,7 +1292,7 @@
           "field": "warning marking requires the application of means",
           "answer_row": 593,
           "answer_column": 2,
-          "custom_prompt": "Verify that stability-related warning markings indicate that additional means are required to ensure stability.",
+          "custom_prompt": "Verify that incase the equipment is not inherently stable and additional means is applied to ensure stability then the warning marking mentions the same. Mention 'No additional means for stability' incase no additional means is required to ensure stability of the equipment.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -1215,7 +1310,7 @@
           "field": "warning marking requires the application of means",
           "answer_row": 593,
           "answer_column": 3,
-          "custom_prompt": "Verify that stability-related warning markings indicate that additional means are required to ensure stability.",
+          "custom_prompt": "Verify that incase the equipment is not inherently stable and additional means is applied to ensure stability then the warning marking mentions the same.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -1234,7 +1329,7 @@
           "answer_row": 594,
           "answer_column": 2,
           "value": "(see Form A.20A)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -1251,7 +1346,7 @@
           "answer_row": 594,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -1372,7 +1467,7 @@
           "field": "overload test with 4 times maximum load for castor or support foot that supports greatest load, or",
           "answer_row": 598,
           "answer_column": 2,
-          "custom_prompt": "Verify stability by performing the overload test using four times the maximum load on the castor or support foot that carries the greatest load.",
+          "custom_prompt": "Verify stability of the equipment by performing the overload test using four times the maximum load on the castor or support foot that carries the greatest load.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -1407,7 +1502,7 @@
           "field": "castor or support foot that supports greatest load removed from equipment",
           "answer_row": 599,
           "answer_column": 2,
-          "custom_prompt": "Verify stability by checking compliance when the castor or support foot carrying the greatest load is removed from the equipment.",
+          "custom_prompt": "Verify stability by checking compliance when the castor or support foot that supports the greatest load is removed from the equipment.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -1447,7 +1542,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [601, 605, 607],
+          "dependency_rows": [
+            601,
+            605,
+            607
+          ],
           "page_no": 30
         },
         {
@@ -1460,11 +1559,15 @@
           "answer_row": 600,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [601, 605, 607],
+          "dependency_rows": [
+            601,
+            605,
+            607
+          ],
           "page_no": 30
         },
         {
@@ -1481,7 +1584,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [602, 603, 604],
+          "dependency_rows": [
+            602,
+            603,
+            604
+          ],
           "page_no": 30
         },
         {
@@ -1498,7 +1605,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [602, 603, 604],
+          "dependency_rows": [
+            602,
+            603,
+            604
+          ],
           "page_no": 30
         },
         {
@@ -1510,7 +1621,7 @@
           "field": "Equipment more than 18 kg\t:",
           "answer_row": 602,
           "answer_column": 2,
-          "custom_prompt": "Verify that appropriate provisions for lifting and carrying are provided for equipment weighing more than 18 kg.",
+          "custom_prompt": "Verify that if the equipment is more than 18 kg.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -1528,7 +1639,7 @@
           "field": "Equipment more than 18 kg\t:",
           "answer_row": 602,
           "answer_column": 3,
-          "custom_prompt": "Verify that appropriate provisions for lifting and carrying are provided for equipment weighing more than 18 kg.",
+          "custom_prompt": "Verify that if the equipment is more than 18 kg.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -1546,7 +1657,7 @@
           "field": "Has means for lifting or carrying; or",
           "answer_row": 603,
           "answer_column": 2,
-          "custom_prompt": "Verify that the equipment has appropriate means for lifting or carrying.",
+          "custom_prompt": "Verify that the equipment has any physical means for lifting and carrying.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -1564,7 +1675,7 @@
           "field": "Has means for lifting or carrying; or",
           "answer_row": 603,
           "answer_column": 3,
-          "custom_prompt": "Verify that the equipment has appropriate means for lifting or carrying.",
+          "custom_prompt": "Verify that the equipment has any physical means for lifting and carrying.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -1582,7 +1693,7 @@
           "field": "Directions are given in documentation",
           "answer_row": 604,
           "answer_column": 2,
-          "custom_prompt": "Verify that directions for lifting and carrying are provided in the documentation.",
+          "custom_prompt": "Verify and mention directions for lifting and carrying the equipment are provided in the documentation.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -1621,10 +1732,13 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
-          "dependency_rows": [606],
-          "page_no": 30
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "dependency_rows": [
+            606
+          ],
+          "page_no": 30,
+          "custom_prompt": "Verify if the equipment has any handles or grips for lifting and carrying.Mention 'No handles or grips' incase the equipment does not have any handles or grips."
         },
         {
           "clause_row": 605,
@@ -1638,9 +1752,11 @@
           "value": null,
           "task_type": "verdict_dependency",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [606],
+          "dependency_rows": [
+            606
+          ],
           "page_no": 30
         },
         {
@@ -1657,7 +1773,7 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 30
         },
@@ -1674,8 +1790,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 30
         },
@@ -1693,8 +1809,12 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [608, 609],
-          "page_no": 30
+          "dependency_rows": [
+            608,
+            609
+          ],
+          "page_no": 30,
+          "custom_prompt": "Verify incase the equipment has any lifting devices or supporting parts for lifting and carrying. Mention 'No lifting devices or supporting parts' incase the equipment does not have any lifting devices or supporting parts for lifting and carrying."
         },
         {
           "clause_row": 607,
@@ -1706,11 +1826,14 @@
           "answer_row": 607,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [608, 609],
+          "dependency_rows": [
+            608,
+            609
+          ],
           "page_no": 30
         },
         {
@@ -1722,7 +1845,7 @@
           "field": "rated for maximum load; or",
           "answer_row": 608,
           "answer_column": 2,
-          "custom_prompt": "Verify that lifting devices and supporting parts are rated for the maximum load.",
+          "custom_prompt": "Verify that incase the equipment has lifting devices or supporting parts for lifting and carrying they are rated for the maximum load.Mention 'No lifting devices or supporting parts' incase the equipment does not have any lifting devices or supporting parts for lifting and carrying.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -1743,10 +1866,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 30
+          "page_no": 30,
+          "custom_prompt": "Verify that incase the equipment has lifting devices or supporting parts for lifting and carrying they are rated for the maximum load."
         },
         {
           "clause_row": 609,
@@ -1757,7 +1881,7 @@
           "field": "Tested with four times maximum static load",
           "answer_row": 609,
           "answer_column": 2,
-          "custom_prompt": "Verify that lifting devices and supporting parts are tested with four times the maximum static load.",
+          "custom_prompt": "Verify that lifting devices and supporting parts if present are tested with four times the maximum static load.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -1797,7 +1921,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [611, 612],
+          "dependency_rows": [
+            611,
+            612
+          ],
           "page_no": 30
         },
         {
@@ -1810,11 +1937,14 @@
           "answer_row": 610,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [611, 612],
+          "dependency_rows": [
+            611,
+            612
+          ],
           "page_no": 30
         },
         {
@@ -1827,7 +1957,7 @@
           "answer_row": 611,
           "answer_column": 2,
           "value": "(see Form A.20B)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -1861,7 +1991,7 @@
           "answer_row": 612,
           "answer_column": 2,
           "value": "(see Form A.20B)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -1899,7 +2029,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [614, 615],
+          "dependency_rows": [
+            614,
+            615
+          ],
           "page_no": 30
         },
         {
@@ -1916,7 +2049,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [614, 615],
+          "dependency_rows": [
+            614,
+            615
+          ],
           "page_no": 30
         },
         {
@@ -1928,7 +2064,7 @@
           "field": "Equipment contains or limits the energy",
           "answer_row": 614,
           "answer_column": 2,
-          "custom_prompt": "Verify that the equipment contains or limits the energy of any expelled parts to prevent mechanical hazards.",
+          "custom_prompt": "Verify if the equipment has any expelled parts the equipment contains or limits the energy.Mention 'No expelled parts' incase the equipment does not have any expelled parts.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -1946,7 +2082,7 @@
           "field": "Equipment contains or limits the energy",
           "answer_row": 614,
           "answer_column": 3,
-          "custom_prompt": "Verify that the equipment contains or limits the energy of any expelled parts to prevent mechanical hazards.",
+          "custom_prompt": "Verify if the equipment has any expelled parts the equipment contains or limits the energy.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -1964,7 +2100,7 @@
           "field": "Protection not removable without the aid of a tool",
           "answer_row": 615,
           "answer_column": 2,
-          "custom_prompt": "Verify that protection against expelled parts cannot be removed without the use of a tool.",
+          "custom_prompt": "Verify if the equipment has any expelled parts the protection cannot be removed without the use of a tool.Mention 'No expelled parts' incase the equipment does not have any expelled parts.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -1982,7 +2118,7 @@
           "field": "Protection not removable without the aid of a tool",
           "answer_row": 615,
           "answer_column": 3,
-          "custom_prompt": "Verify that protection against expelled parts cannot be removed without the use of a tool.",
+          "custom_prompt": "Verify if the equipment has any expelled parts the protection cannot be removed without the use of a tool.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -2001,11 +2137,15 @@
           "answer_row": 617,
           "answer_column": 2,
           "value": "RESISTANCE TO MECHANICAL STRESSES",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [618, 644, 652],
+          "dependency_rows": [
+            618,
+            644,
+            652
+          ],
           "page_no": 30
         },
         {
@@ -2018,11 +2158,15 @@
           "answer_row": 617,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [618, 644, 652],
+          "dependency_rows": [
+            618,
+            644,
+            652
+          ],
           "page_no": 30
         },
         {
@@ -2040,8 +2184,31 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": [
-            619, 620, 621, 622, 623, 624, 625, 626, 627, 628, 629, 630, 631,
-            632, 633, 634, 635, 636, 637, 638, 639, 640, 641, 642, 643
+            619,
+            620,
+            621,
+            622,
+            623,
+            624,
+            625,
+            626,
+            627,
+            628,
+            629,
+            630,
+            631,
+            632,
+            633,
+            634,
+            635,
+            636,
+            637,
+            638,
+            639,
+            640,
+            641,
+            642,
+            643
           ],
           "page_no": 30
         },
@@ -2055,13 +2222,36 @@
           "answer_row": 618,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": [
-            619, 620, 621, 622, 623, 624, 625, 626, 627, 628, 629, 630, 631,
-            632, 633, 634, 635, 636, 637, 638, 639, 640, 641, 642, 643
+            619,
+            620,
+            621,
+            622,
+            623,
+            624,
+            625,
+            626,
+            627,
+            628,
+            629,
+            630,
+            631,
+            632,
+            633,
+            634,
+            635,
+            636,
+            637,
+            638,
+            639,
+            640,
+            641,
+            642,
+            643
           ],
           "page_no": 30
         },
@@ -2079,7 +2269,7 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 30
         },
@@ -2096,8 +2286,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 30
         },
@@ -2115,7 +2305,7 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 30
         },
@@ -2132,8 +2322,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 30
         },
@@ -2164,7 +2354,7 @@
           "answer_row": 621,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2180,7 +2370,7 @@
           "field": "Lower level justified by risk assessment of manufacturer",
           "answer_row": 622,
           "answer_column": 2,
-          "custom_prompt": "Verify that impact levels below 5 J but not less than 1 J are acceptable only when the lower level is justified by the manufacturer's risk assessment.",
+          "custom_prompt": "Verify that only if the normal protection levels to mechanical stresses is less than 5J but not less than 1J the lower levels is justified by risk assessment of manufacturer.Mention 'Not Applicable' incase the equipment does not qualify for lower levels of protection.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -2198,7 +2388,7 @@
           "field": "Lower level justified by risk assessment of manufacturer",
           "answer_row": 622,
           "answer_column": 3,
-          "custom_prompt": "Verify that impact levels below 5 J but not less than 1 J are acceptable only when the lower level is justified by the manufacturer's risk assessment.",
+          "custom_prompt": "Verify that only if the normal protection levels to mechanical stresses is less than 5J but not less than 1J the lower levels is justified by risk assessment of manufacturer.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -2216,7 +2406,7 @@
           "field": "Equipment installed in its intended application is not easily touched",
           "answer_row": 623,
           "answer_column": 2,
-          "custom_prompt": "Verify that for impact levels below 5 J but not less than 1 J, the equipment in its intended installation is not easily touched.",
+          "custom_prompt": "Verify that only if the normal protection levels to mechanical stresses is less than 5J but not less than 1J the equipment installed in its intended application is not easily touched.Mention 'Not Applicable' incase the equipment does not qualify for lower levels of protection.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -2234,7 +2424,7 @@
           "field": "Equipment installed in its intended application is not easily touched",
           "answer_row": 623,
           "answer_column": 3,
-          "custom_prompt": "Verify that for impact levels below 5 J but not less than 1 J, the equipment in its intended installation is not easily touched.",
+          "custom_prompt": "Verify that only if the normal protection levels to mechanical stresses is less than 5J but not less than 1J the equipment installed in its intended application is not easily touched.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -2252,7 +2442,7 @@
           "field": "Only occasional access during normal use",
           "answer_row": 624,
           "answer_column": 2,
-          "custom_prompt": "Verify that for impact levels below 5 J but not less than 1 J, the condition of only occasional access during normal use is satisfied.",
+          "custom_prompt": "Verify that only if the normal protection levels to mechanical stresses is less than 5J but not less than 1J only occasional access to the equipment is required during normal use.Mention 'Not Applicable' incase the equipment does not qualify for lower levels of protection.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -2270,7 +2460,7 @@
           "field": "Only occasional access during normal use",
           "answer_row": 624,
           "answer_column": 3,
-          "custom_prompt": "Verify that for impact levels below 5 J but not less than 1 J, the condition of only occasional access during normal use is satisfied.",
+          "custom_prompt": "Verify that only if the normal protection levels to mechanical stresses is less than 5J but not less than 1J only occasional access to the equipment is required during normal use.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -2291,10 +2481,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 30
+          "page_no": 30,
+          "custom_prompt": "Verify that only if the normal protection levels to mechanical stresses is less than 5J but not less than 1J then IK code in accordance to IEC 62262 marked or symbol 14 used with full information in the documentation.Mention 'Not Applicable' incase the equipment does not qualify for lower levels of protection."
         },
         {
           "clause_row": 625,
@@ -2308,10 +2499,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 30
+          "page_no": 30,
+          "custom_prompt": "Verify that only if the normal protection levels to mechanical stresses is less than 5J but not less than 1J then IK code in accordance to IEC 62262 marked or symbol 14 used with full information in the documentation."
         },
         {
           "clause_row": 626,
@@ -2325,10 +2517,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 31
+          "page_no": 31,
+          "custom_prompt": "Verify that only if the normal protection levels to mechanical stresses is less than 5J but not less than 1J and for non-metallic ENCLOSURES rated below 2 °C ambient temperature value chosen for minimum RATED temperature.Mention 'Not Applicable' incase the equipment does not qualify for lower levels of protection."
         },
         {
           "clause_row": 626,
@@ -2342,10 +2535,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 31
+          "page_no": 31,
+          "custom_prompt": "Verify that only if the normal protection levels to mechanical stresses is less than 5J but not less than 1J and for non-metallic ENCLOSURES rated below 2 °C ambient temperature value chosen for minimum RATED temperature."
         },
         {
           "clause_row": 627,
@@ -2359,10 +2553,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 31
+          "page_no": 31,
+          "custom_prompt": "Verify that only if the normal protection levels to mechanical stresses is less than 5J but not less than 1J and impact energies between IK values, the IK code marked for nearest lower value.Mention 'Not Applicable' incase the equipment does not qualify for lower levels of protection."
         },
         {
           "clause_row": 627,
@@ -2376,10 +2571,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 31
+          "page_no": 31,
+          "custom_prompt": "Verify that only if the normal protection levels to mechanical stresses is less than 5J but not less than 1J and impact energies between IK values, the IK code marked for nearest lower value."
         },
         {
           "clause_row": 628,
@@ -2391,7 +2587,7 @@
           "answer_row": 628,
           "answer_column": 2,
           "value": "(see Form A.16)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2408,7 +2604,7 @@
           "answer_row": 628,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2613,7 +2809,7 @@
           "answer_row": 634,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2664,7 +2860,7 @@
           "answer_row": 636,
           "answer_column": 2,
           "value": "(see Form A.30)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2947,7 +3143,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [645, 648],
+          "dependency_rows": [
+            645,
+            648
+          ],
           "page_no": 31
         },
         {
@@ -2960,11 +3159,14 @@
           "answer_row": 644,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [645, 648],
+          "dependency_rows": [
+            645,
+            648
+          ],
           "page_no": 31
         },
         {
@@ -2977,11 +3179,14 @@
           "answer_row": 645,
           "answer_column": 2,
           "value": "(see Form A.21A)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [646, 647],
+          "dependency_rows": [
+            646,
+            647
+          ],
           "page_no": 31
         },
         {
@@ -2994,11 +3199,14 @@
           "answer_row": 645,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [646, 647],
+          "dependency_rows": [
+            646,
+            647
+          ],
           "page_no": 31
         },
         {
@@ -3081,11 +3289,15 @@
           "answer_row": 648,
           "answer_column": 2,
           "value": "(see Form A.21A)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [649, 650, 651],
+          "dependency_rows": [
+            649,
+            650,
+            651
+          ],
           "page_no": 31
         },
         {
@@ -3098,11 +3310,15 @@
           "answer_row": 648,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [649, 650, 651],
+          "dependency_rows": [
+            649,
+            650,
+            651
+          ],
           "page_no": 31
         },
         {
@@ -3168,7 +3384,7 @@
           "answer_row": 650,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3220,11 +3436,14 @@
           "answer_row": 652,
           "answer_column": 2,
           "value": "(see Form A.21B)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [653, 655],
+          "dependency_rows": [
+            653,
+            655
+          ],
           "page_no": 31
         },
         {
@@ -3237,11 +3456,14 @@
           "answer_row": 652,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [653, 655],
+          "dependency_rows": [
+            653,
+            655
+          ],
           "page_no": 31
         },
         {
@@ -3259,7 +3481,9 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [654],
+          "dependency_rows": [
+            654
+          ],
           "page_no": 31
         },
         {
@@ -3273,11 +3497,13 @@
           "answer_column": 3,
           "custom_prompt": "Verify resistance to mechanical stress by confirming that drop tests are conducted using the required drop height or angle.",
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [654],
+          "dependency_rows": [
+            654
+          ],
           "page_no": 31
         },
         {
@@ -3307,7 +3533,7 @@
           "answer_row": 654,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3329,7 +3555,10 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [656, 657],
+          "dependency_rows": [
+            656,
+            657
+          ],
           "page_no": 32
         },
         {
@@ -3342,11 +3571,14 @@
           "answer_row": 655,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [656, 657],
+          "dependency_rows": [
+            656,
+            657
+          ],
           "page_no": 32
         },
         {
@@ -3429,11 +3661,18 @@
           "answer_row": 659,
           "answer_column": 2,
           "value": "PROTECTION AGAINST THE SPREAD OF FIRE",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [660, 667, 673, 692, 700, 707],
+          "dependency_rows": [
+            660,
+            667,
+            673,
+            692,
+            700,
+            707
+          ],
           "page_no": 32
         },
         {
@@ -3446,11 +3685,18 @@
           "answer_row": 659,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [660, 667, 673, 692, 700, 707],
+          "dependency_rows": [
+            660,
+            667,
+            673,
+            692,
+            700,
+            707
+          ],
           "page_no": 32
         },
         {
@@ -3467,7 +3713,14 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [661, 662, 663, 664, 665, 666],
+          "dependency_rows": [
+            661,
+            662,
+            663,
+            664,
+            665,
+            666
+          ],
           "page_no": 32
         },
         {
@@ -3480,11 +3733,18 @@
           "answer_row": 660,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [661, 662, 663, 664, 665, 666],
+          "dependency_rows": [
+            661,
+            662,
+            663,
+            664,
+            665,
+            666
+          ],
           "page_no": 32
         },
         {
@@ -3566,7 +3826,7 @@
           "answer_row": 663,
           "answer_column": 2,
           "value": "(see Form A.22)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3583,7 +3843,7 @@
           "answer_row": 663,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3600,7 +3860,7 @@
           "answer_row": 664,
           "answer_column": 2,
           "value": "(see Form A.1)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3706,7 +3966,13 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [668, 669, 670, 671, 672],
+          "dependency_rows": [
+            668,
+            669,
+            670,
+            671,
+            672
+          ],
           "page_no": 32
         },
         {
@@ -3719,11 +3985,17 @@
           "answer_row": 667,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [668, 669, 670, 671, 672],
+          "dependency_rows": [
+            668,
+            669,
+            670,
+            671,
+            672
+          ],
           "page_no": 32
         },
         {
@@ -3770,7 +4042,7 @@
           "answer_row": 669,
           "answer_column": 2,
           "value": "(see Forms A.14 and A.18)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3804,7 +4076,7 @@
           "answer_row": 670,
           "answer_column": 2,
           "value": "(see Form A.1)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3872,7 +4144,7 @@
           "answer_row": 672,
           "answer_column": 2,
           "value": "(see Form A.1)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3910,7 +4182,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [674, 679],
+          "dependency_rows": [
+            674,
+            679
+          ],
           "page_no": 32
         },
         {
@@ -3923,11 +4198,14 @@
           "answer_row": 673,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [674, 679],
+          "dependency_rows": [
+            674,
+            679
+          ],
           "page_no": 32
         },
         {
@@ -3944,7 +4222,12 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [675, 676, 677, 678],
+          "dependency_rows": [
+            675,
+            676,
+            677,
+            678
+          ],
           "page_no": 32
         },
         {
@@ -3957,11 +4240,16 @@
           "answer_row": 674,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [675, 676, 677, 678],
+          "dependency_rows": [
+            675,
+            676,
+            677,
+            678
+          ],
           "page_no": 32
         },
         {
@@ -3991,7 +4279,7 @@
           "answer_row": 675,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4116,7 +4404,18 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": [
-            680, 681, 682, 683, 684, 685, 686, 687, 688, 689, 690, 691
+            680,
+            681,
+            682,
+            683,
+            684,
+            685,
+            686,
+            687,
+            688,
+            689,
+            690,
+            691
           ],
           "page_no": 32
         },
@@ -4130,12 +4429,23 @@
           "answer_row": 679,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": [
-            680, 681, 682, 683, 684, 685, 686, 687, 688, 689, 690, 691
+            680,
+            681,
+            682,
+            683,
+            684,
+            685,
+            686,
+            687,
+            688,
+            689,
+            690,
+            691
           ],
           "page_no": 32
         },
@@ -4149,7 +4459,7 @@
           "answer_row": 680,
           "answer_column": 2,
           "value": "(see TABLE 1.A or Form A.23)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4183,7 +4493,7 @@
           "answer_row": 681,
           "answer_column": 2,
           "value": "(see TABLE 1.A or Form A.23)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4217,7 +4527,7 @@
           "answer_row": 682,
           "answer_column": 2,
           "value": "(see Form A.22)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4234,7 +4544,7 @@
           "answer_row": 682,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4269,7 +4579,7 @@
           "answer_row": 683,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4444,7 +4754,7 @@
           "answer_row": 688,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4496,7 +4806,7 @@
           "answer_row": 690,
           "answer_column": 2,
           "value": "(see TABLE 1.A or Form A.22)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4565,11 +4875,19 @@
           "answer_row": 692,
           "answer_column": 2,
           "value": "(see Form A.24)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [693, 694, 695, 696, 697, 698, 699],
+          "dependency_rows": [
+            693,
+            694,
+            695,
+            696,
+            697,
+            698,
+            699
+          ],
           "page_no": 33
         },
         {
@@ -4582,11 +4900,19 @@
           "answer_row": 692,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [693, 694, 695, 696, 697, 698, 699],
+          "dependency_rows": [
+            693,
+            694,
+            695,
+            696,
+            697,
+            698,
+            699
+          ],
           "page_no": 33
         },
         {
@@ -4652,7 +4978,7 @@
           "answer_row": 694,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4848,7 +5174,14 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [701, 702, 703, 704, 705, 706],
+          "dependency_rows": [
+            701,
+            702,
+            703,
+            704,
+            705,
+            706
+          ],
           "page_no": 33
         },
         {
@@ -4861,11 +5194,18 @@
           "answer_row": 700,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [701, 702, 703, 704, 705, 706],
+          "dependency_rows": [
+            701,
+            702,
+            703,
+            704,
+            705,
+            706
+          ],
           "page_no": 33
         },
         {
@@ -4878,7 +5218,7 @@
           "answer_row": 701,
           "answer_column": 2,
           "value": "(see Form A.25)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4929,7 +5269,7 @@
           "answer_row": 702,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5090,7 +5430,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [708, 713, 717],
+          "dependency_rows": [
+            708,
+            713,
+            717
+          ],
           "page_no": 33
         },
         {
@@ -5103,11 +5447,15 @@
           "answer_row": 707,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [708, 713, 717],
+          "dependency_rows": [
+            708,
+            713,
+            717
+          ],
           "page_no": 33
         },
         {
@@ -5124,7 +5472,12 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [709, 710, 711, 712],
+          "dependency_rows": [
+            709,
+            710,
+            711,
+            712
+          ],
           "page_no": 33
         },
         {
@@ -5137,11 +5490,16 @@
           "answer_row": 708,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [709, 710, 711, 712],
+          "dependency_rows": [
+            709,
+            710,
+            711,
+            712
+          ],
           "page_no": 33
         },
         {
@@ -5190,7 +5548,7 @@
           "answer_row": 710,
           "answer_column": 2,
           "value": "(see Forms A.14 and A.15)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5298,7 +5656,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [714, 715, 716],
+          "dependency_rows": [
+            714,
+            715,
+            716
+          ],
           "page_no": 34
         },
         {
@@ -5315,7 +5677,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [714, 715, 716],
+          "dependency_rows": [
+            714,
+            715,
+            716
+          ],
           "page_no": 34
         },
         {
@@ -5346,7 +5712,7 @@
           "answer_row": 714,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5439,7 +5805,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [718],
+          "dependency_rows": [
+            718
+          ],
           "page_no": 34
         },
         {
@@ -5456,7 +5824,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [718],
+          "dependency_rows": [
+            718
+          ],
           "page_no": 34
         },
         {
@@ -5505,11 +5875,17 @@
           "answer_row": 720,
           "answer_column": 2,
           "value": "EQUIPMENT TEMPERATURE LIMITS AND RESISTANCE TO HEAT",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [721, 729, 733, 740, 748],
+          "dependency_rows": [
+            721,
+            729,
+            733,
+            740,
+            748
+          ],
           "page_no": 34
         },
         {
@@ -5522,11 +5898,17 @@
           "answer_row": 720,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [721, 729, 733, 740, 748],
+          "dependency_rows": [
+            721,
+            729,
+            733,
+            740,
+            748
+          ],
           "page_no": 34
         },
         {
@@ -5543,7 +5925,15 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [722, 723, 724, 725, 726, 727, 728],
+          "dependency_rows": [
+            722,
+            723,
+            724,
+            725,
+            726,
+            727,
+            728
+          ],
           "page_no": 34
         },
         {
@@ -5556,11 +5946,19 @@
           "answer_row": 721,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [722, 723, 724, 725, 726, 727, 728],
+          "dependency_rows": [
+            722,
+            723,
+            724,
+            725,
+            726,
+            727,
+            728
+          ],
           "page_no": 34
         },
         {
@@ -5573,7 +5971,7 @@
           "answer_row": 722,
           "answer_column": 2,
           "value": "(see Form A.26A)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5590,7 +5988,7 @@
           "answer_row": 722,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5695,7 +6093,7 @@
           "answer_row": 725,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5821,7 +6219,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [730, 731, 732],
+          "dependency_rows": [
+            730,
+            731,
+            732
+          ],
           "page_no": 34
         },
         {
@@ -5834,11 +6236,15 @@
           "answer_row": 729,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [730, 731, 732],
+          "dependency_rows": [
+            730,
+            731,
+            732
+          ],
           "page_no": 34
         },
         {
@@ -5851,7 +6257,7 @@
           "answer_row": 730,
           "answer_column": 2,
           "value": "(see Form A.26B)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5868,7 +6274,7 @@
           "answer_row": 730,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5959,7 +6365,14 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [734, 735, 736, 737, 738, 739],
+          "dependency_rows": [
+            734,
+            735,
+            736,
+            737,
+            738,
+            739
+          ],
           "page_no": 34
         },
         {
@@ -5972,11 +6385,18 @@
           "answer_row": 733,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [734, 735, 736, 737, 738, 739],
+          "dependency_rows": [
+            734,
+            735,
+            736,
+            737,
+            738,
+            739
+          ],
           "page_no": 34
         },
         {
@@ -5989,7 +6409,7 @@
           "answer_row": 734,
           "answer_column": 2,
           "value": "(see Form A.26A)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6006,7 +6426,7 @@
           "answer_row": 734,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6202,7 +6622,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [741, 744, 746],
+          "dependency_rows": [
+            741,
+            744,
+            746
+          ],
           "page_no": 35
         },
         {
@@ -6215,11 +6639,15 @@
           "answer_row": 740,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [741, 744, 746],
+          "dependency_rows": [
+            741,
+            744,
+            746
+          ],
           "page_no": 35
         },
         {
@@ -6236,7 +6664,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [742, 743],
+          "dependency_rows": [
+            742,
+            743
+          ],
           "page_no": 35
         },
         {
@@ -6249,11 +6680,14 @@
           "answer_row": 741,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [742, 743],
+          "dependency_rows": [
+            742,
+            743
+          ],
           "page_no": 35
         },
         {
@@ -6266,7 +6700,7 @@
           "answer_row": 742,
           "answer_column": 2,
           "value": "(see Form A.26A)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6318,7 +6752,7 @@
           "answer_row": 743,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6339,7 +6773,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [745],
+          "dependency_rows": [
+            745
+          ],
           "page_no": 35
         },
         {
@@ -6352,11 +6788,13 @@
           "answer_row": 744,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [745],
+          "dependency_rows": [
+            745
+          ],
           "page_no": 35
         },
         {
@@ -6369,7 +6807,7 @@
           "answer_row": 745,
           "answer_column": 2,
           "value": "(see Form A.26A)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6407,7 +6845,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [747],
+          "dependency_rows": [
+            747
+          ],
           "page_no": 35
         },
         {
@@ -6420,11 +6860,13 @@
           "answer_row": 746,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [747],
+          "dependency_rows": [
+            747
+          ],
           "page_no": 35
         },
         {
@@ -6437,7 +6879,7 @@
           "answer_row": 747,
           "answer_column": 2,
           "value": "(see Form A.26A)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6475,7 +6917,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [749, 750, 753],
+          "dependency_rows": [
+            749,
+            750,
+            753
+          ],
           "page_no": 35
         },
         {
@@ -6488,11 +6934,15 @@
           "answer_row": 748,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [749, 750, 753],
+          "dependency_rows": [
+            749,
+            750,
+            753
+          ],
           "page_no": 35
         },
         {
@@ -6505,7 +6955,7 @@
           "answer_row": 749,
           "answer_column": 2,
           "value": "(see Form A.16)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6539,11 +6989,14 @@
           "answer_row": 750,
           "answer_column": 2,
           "value": "(see Form A.27)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [751, 752],
+          "dependency_rows": [
+            751,
+            752
+          ],
           "page_no": 35
         },
         {
@@ -6556,11 +7009,14 @@
           "answer_row": 750,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [751, 752],
+          "dependency_rows": [
+            751,
+            752
+          ],
           "page_no": 35
         },
         {
@@ -6591,7 +7047,7 @@
           "answer_row": 751,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6648,7 +7104,14 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [754, 755, 756, 757, 758, 759],
+          "dependency_rows": [
+            754,
+            755,
+            756,
+            757,
+            758,
+            759
+          ],
           "page_no": 35
         },
         {
@@ -6661,11 +7124,18 @@
           "answer_row": 753,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [754, 755, 756, 757, 758, 759],
+          "dependency_rows": [
+            754,
+            755,
+            756,
+            757,
+            758,
+            759
+          ],
           "page_no": 35
         },
         {
@@ -6820,7 +7290,7 @@
           "answer_row": 758,
           "answer_column": 2,
           "value": "(see Form A.28)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6854,7 +7324,7 @@
           "answer_row": 759,
           "answer_column": 2,
           "value": "(see Form A.29)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6888,11 +7358,19 @@
           "answer_row": 761,
           "answer_column": 2,
           "value": "PROTECTION AGAINST HAZARDS FROM FLUIDS AND SOLID FOREIGN OBJECTS",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [762, 765, 766, 767, 768, 770, 796],
+          "dependency_rows": [
+            762,
+            765,
+            766,
+            767,
+            768,
+            770,
+            796
+          ],
           "page_no": 35
         },
         {
@@ -6905,11 +7383,19 @@
           "answer_row": 761,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [762, 765, 766, 767, 768, 770, 796],
+          "dependency_rows": [
+            762,
+            765,
+            766,
+            767,
+            768,
+            770,
+            796
+          ],
           "page_no": 35
         },
         {
@@ -6926,7 +7412,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [763, 764],
+          "dependency_rows": [
+            763,
+            764
+          ],
           "page_no": 35
         },
         {
@@ -6943,7 +7432,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [763, 764],
+          "dependency_rows": [
+            763,
+            764
+          ],
           "page_no": 35
         },
         {
