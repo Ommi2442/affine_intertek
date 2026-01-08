@@ -334,7 +334,7 @@ def top_chunks_as_json(vs, question: str, k_search: int = 300, top_k: int = 5, t
                 continue
             seen.add(key)
 
-        source = md.get("citation") or md.get("source_file") or md.get("source") or "UNKNOWN"
+        source = md.get("source_file") or md.get("citation") or md.get("source") or "UNKNOWN"
         page = md.get("page") or md.get("page_label")  # may be None / str / int
 
         out.append({

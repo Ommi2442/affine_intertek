@@ -1,21 +1,221 @@
 {
     "confidence": {
         "applicant": {
-            "name": 100,
-            "address": 100,
-            "country": 100,
-            "contacts": 100,
-            "phone": 100,
+            "name": 0,
+            "address": 0,
+            "country": 0,
+            "contacts": 0,
+            "phone": 0,
             "fax": 0,
-            "email": 100
+            "email": 0
         },
         "manufacturers": [
             {
-                "label": "Manufacturer",
+                "label": "Enclosure",
                 "name": 100,
-                "address": 100,
-                "country": 100,
-                "contacts": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "PCB",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "Adhesive Material for Marking Label",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "Vibe Motor",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "Camera Module",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "TFT Display",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "Rechargeable Li-ion Battery",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "Speaker",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "Fuel Cell",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "Capacitor (C54)",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "LED Light",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "Switching Adaptor",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "USB Charging Cable",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "Fuse (F1)",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "Power entry module",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "Power Supply",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "Assembly, Cable, AC Ground",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "Assembly, Cable, AC Line",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "Assembly, Cable, AC Neutral",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "Fuse, Glass",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
+                "phone": 0,
+                "fax": 0,
+                "email": 0
+            },
+            {
+                "label": "Fuse, Glass",
+                "name": 100,
+                "address": 0,
+                "country": 0,
+                "contacts": 0,
                 "phone": 0,
                 "fax": 0,
                 "email": 0

@@ -2,7 +2,7 @@
   "Sheets": [
     {
       "sheet_no": 1,
-      "sheet_name": "1.0 Report Information",
+      "sheet_name": "1.0 References",
       "Items": [
         {
           "question_cell": "A1",
@@ -39,7 +39,7 @@
           "prefix": "Report",
           "field": "Report Number",
           "answer_cell": "B3",
-          "value": "Info not in TRF",
+          "value": "105709135MPK",
           "field_merged": false,
           "fm_range": null,
           "value_merged": false,
@@ -47,22 +47,24 @@
           "task_type": "extraction",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true
+          "accuracy_level": true,
+          "confidence": 100
         },
         {
           "question_cell": "C3",
           "prefix": "Report",
           "field": "Original Issued:",
           "answer_cell": "D3",
-          "value": null,
+          "value": "2024-04-08",
           "field_merged": false,
           "fm_range": null,
           "value_merged": false,
           "vm_range": null,
-          "task_type": null,
+          "task_type": "extraction",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 100
         },
         {
           "question_cell": "E3",
@@ -92,7 +94,8 @@
           "task_type": "extraction",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true
+          "accuracy_level": true,
+          "confidence": 100
         },
         {
           "question_cell": "A5",
@@ -126,34 +129,34 @@
           "confidence": 100,
           "text_support": [
             {
+              "filename": "Cell_Gener8_Agent_Agreement_2018_1_.pdf",
+              "page": 1,
+              "similarity_score": 0.853403462739581,
+              "text": "```json\n{\n  \"Applicant\": {\n    \"Legal Entity Name\": \"CellFE, Inc.\",\n    \"DBA\": null,\n    \"Street Address\": \"1000 Atlantic Avenue, Suite 104\",\n    \"City, State, Postal Code, Country\": \"USA\",\n    \"Phone Number\": \"(818) 689-2280\",\n    \"Email\": \"leo@cellfebiotech.com\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Leonid Fomin\",\n        \"Role\": \"Primary\",\n        \"Phone Number\": null,\n        \"Email\": null\n      },\n      {\n        \"Name\": \"Sewon Han\",\n        \"Role\": \"Secondary\",\n        \"Phone Number\": null,\n        \"Email\": null\n      }\n    ]\n  },\n  \"Bill-To\": {\n    \"Legal Entity Name\": null,\n    \"Street Address\": null,\n    \"City, State, Postal Code, Country\": null,\n    \"Accounts Payable Contact\": null,\n    \"Phone Number\": null,\n    \"Email\": null\n  },\n  \"Manufacturer\": {\n    \"Legal Entity Name\": \"Gener8 LLC\",\n    \"Street Address\": \"2560 Junction Avenue\",\n    \"City, State, Postal Code, Country\": \"USA\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Shivam Patel\",\n        \"Role\": \"Primary\",\n        \"Phone Number\": null,\n        \"Email\": \"spatel@gener8.net\"\n      },\n      {\n        \"Name\": \"Desiree Minkler\",\n        \"Role\": \"Alternate\",\n        \"Phone Number\": \"N/A\",\n        \"Email\": null"
+            },
+            {
               "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
               "page": 1,
-              "score": 0.8445244260497511,
+              "similarity_score": 0.8446024126631642,
               "text": "{\n  \"Applicant\": {\n    \"Legal Entity Name\": \"CellFE, Inc.\",\n    \"DBA\": null,\n    \"Street Address\": \"1000 Atlantic Avenue, Suite 104,\",\n    \"City, State, Postal Code, Country\": \"Alameda, CA, 95401, USA\",\n    \"Phone Number\": \"(818) 689-2280\",\n    \"Email\": \"leo@cellfebiotech.com\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Leonid Fomin\",\n        \"Role\": null,\n        \"Phone Number\": \"(818) 689-2280\",\n        \"Email\": \"leo@cellfebiotech.com\"\n      },\n      {\n        \"Name\": \"Sewoon Han\",\n        \"Role\": null,\n        \"Phone Number\": \"N/A\",\n        \"Email\": \"sewoon@cellfebiotech.com\"\n      }\n    ]\n  },\n  \"Bill-To\": {\n    \"Legal Entity Name\": \"CellFE, Inc.\",\n    \"Street Address\": \"1000 Atlantic Avenue, Suite 104\",\n    \"City, State, Postal Code, Country\": \"Alameda, CA, 95401, USA\",\n    \"Accounts Payable Contact\": \"Leonid Fomin\",\n    \"Phone Number\": \"(818) 689-2280\",\n    \"Email\": \"leo@cellfebiotech.com\"\n  },\n  \"Manufacturer\": {\n    \"Legal Entity Name\": \"Gener8 LLC\",\n    \"Street Address\": \"2560 Junction Avenue\",\n    \"City, State, Postal Code, Country\": \"San Jose, CA, 94085, USA\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Shivam Patel\",\n        \"Role\": null,\n        \"Phone Number\": \"N/A\","
             },
             {
-              "filename": "Cell_Gener8_Agent_Agreement_2018_1_.pdf",
-              "page": 1,
-              "score": 0.8444132667961731,
-              "text": "{\n  \"Applicant\": {\n    \"Legal Entity Name\": \"CellFE, Inc.\",\n    \"DBA\": null,\n    \"Street Address\": \"1000 Atlantic Avenue, Suite 104\",\n    \"City, State, Postal Code, Country\": \"USA\",\n    \"Phone Number\": \"(818) 689-2280\",\n    \"Email\": \"leo@cellfebiotech.com\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Leonid Fomin\",\n        \"Role\": \"Primary Contact\",\n        \"Phone Number\": null,\n        \"Email\": null\n      },\n      {\n        \"Name\": \"Sewon Han\",\n        \"Role\": \"Secondary Contact\",\n        \"Phone Number\": null,\n        \"Email\": null\n      }\n    ]\n  },\n  \"Bill-To\": {\n    \"Legal Entity Name\": null,\n    \"Street Address\": null,\n    \"City, State, Postal Code, Country\": null,\n    \"Accounts Payable Contact\": null,\n    \"Phone Number\": null,\n    \"Email\": null\n  },\n  \"Manufacturer\": {\n    \"Legal Entity Name\": \"Gener8 LLC\",\n    \"Street Address\": \"2560 Junction Avenue\",\n    \"City, State, Postal Code, Country\": \"USA\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Shivam Patel\",\n        \"Role\": \"Primary Contact\",\n        \"Phone Number\": null,\n        \"Email\": \"spatel@gener8.net\"\n      },\n      {\n        \"Name\": \"Desiree Minkler\",\n        \"Role\": \"Alternate Contact\",\n        \"Phone Number\": \"N/A\","
+              "filename": "Product_Information_Packet_Safety-2.22.24.pdf#page=0",
+              "page": "1",
+              "similarity_score": 0.817169444230443,
+              "text": "INFORMATION REQUIRED FOR PRODUCT SUBMITTAL\n \n \nBefore the product evaluation can begin, the attached four pages must be completed and returned\n \nprior to the project start date\n.  Please \nfeel free to duplicate these sheets as needed.  \n \n \n1.\n \nProduct \nInformation\n \n(\nP\nage \n2)\n \n–\n \nThis information is for use directly in the listing report.\n \n \na)\n \nProduct Name\n \nb)\n \nModel Nos. \n-\n \nInclude all models to be covered.\n \nc)\n \nApplicant\n \n–\n \nName, \naddress\n \nand contact name of \ncompany submitting the product and is financially responsible.\n \nd)\n \nManufacturers\n \n-\n \nN\name and address of company who will be manufacturing the product.\n \ne)\n \nProduct Description \n-\n \nDescribe product briefly but completely, (i.e., function of product, environment for use, \npermanently connected vs. cord connected).  Include all options available.\n \nf)\n \nMod\nel Similarities \n-\n \nDescribe all differences between models.\n \ng)\n \nElectrical Rating \n-\n \nratings for all models in volts, Hz, no. of phases, and amperes or watts.\n \nh)\n \nOverload Protection \n-\n \nProtection for entire system, (fus\nes\n, circuit breaker, branch circuit protection \nor thermal fuse).\n \n \n2.\n \nElectrical Component Information"
+            },
+            {
+              "filename": "Product Information Packet_Safety-2.22.24.pdf#page=0",
+              "page": "1",
+              "similarity_score": 0.8171685637220595,
+              "text": "INFORMATION REQUIRED FOR PRODUCT SUBMITTAL\n \n \nBefore the product evaluation can begin, the attached four pages must be completed and returned\n \nprior to the project start date\n.  Please \nfeel free to duplicate these sheets as needed.  \n \n \n1.\n \nProduct \nInformation\n \n(\nP\nage \n2)\n \n–\n \nThis information is for use directly in the listing report.\n \n \na)\n \nProduct Name\n \nb)\n \nModel Nos. \n-\n \nInclude all models to be covered.\n \nc)\n \nApplicant\n \n–\n \nName, \naddress\n \nand contact name of \ncompany submitting the product and is financially responsible.\n \nd)\n \nManufacturers\n \n-\n \nN\name and address of company who will be manufacturing the product.\n \ne)\n \nProduct Description \n-\n \nDescribe product briefly but completely, (i.e., function of product, environment for use, \npermanently connected vs. cord connected).  Include all options available.\n \nf)\n \nMod\nel Similarities \n-\n \nDescribe all differences between models.\n \ng)\n \nElectrical Rating \n-\n \nratings for all models in volts, Hz, no. of phases, and amperes or watts.\n \nh)\n \nOverload Protection \n-\n \nProtection for entire system, (fus\nes\n, circuit breaker, branch circuit protection \nor thermal fuse).\n \n \n2.\n \nElectrical Component Information"
             },
             {
               "filename": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf#page=0",
               "page": "1",
-              "score": 0.8045746376295089,
+              "similarity_score": 0.8044025131312499,
               "text": "Billing info change - please update your recordsBilling info change - please update your recordsBilling info change - please update your recordsBilling info change - please update your records Purchase Order Revision Order DateBill ToBill ToBill ToBill To\nGENER8 Accounts Payable P70909 0 8/23/2023\n5975 Castle Creek Pkwy N. Dr. Supplier Print Date\nSuite 250\nINTZZ03 8/23/2023apgroup@gener8.net\nPurchase OrderPurchase OrderPurchase OrderPurchase Order\nIndianapolis, IN 46250-2781\nUNITED STATES\nSSSSuuuupppppppplllliiiieeeerrrr\nSSSShhhhiiiipppp TTTToooo Gener8 LLCIntertek Testing Services N.A. Inc\n3933 US Route 11 2560 Junction Ave\nCortland, NY 13045 San Jose, CA 95134\nUNITED STATES UNITED STATES\n+1-613-599-6626\nBuyer Attention\nMandy Nguyen  +1-613-599-6626\nShip ViaCredit Terms FOB\nPrePay & AddDue on Receipt Origin\nRemarks ProjectQuotes attached 13403\nGener8 PO & Part Number to be referenced on all packing lists & invoices.\n1. Include RoHS 3 certificate required with shipment\n2. Include CoC required with shipment.\n3. Include Materials Certificate if applicable.\n4. Include Plating Certificate if applicable.\n5. Include FAIR (1st Article Insp Report) if applicable.\n6. Include Packing slip"
-            },
-            {
-              "filename": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf#page=0",
-              "page": "1",
-              "score": 0.7854263473538332,
-              "text": "4. Include Plating Certificate if applicable.\n5. Include FAIR (1st Article Insp Report) if applicable.\n6. Include Packing slip\nPLEASE EMAIL ALL INVOICES TO : apgroup@gener8.net\nMail to :\nACCOUNTS PAYABLE\n5975 CASTLE CREEK PKWY N DR, STE 250\nINDIANAPOLIS, IN 46250\n(800) 338-4105 x55012\nLineLineLineLine Item NumberItem NumberItem NumberItem Number RevRevRevRev Need DateNeed DateNeed DateNeed Date qty_ordqty_ordqty_ordqty_ord UMUMUMUM TTTT Unit CostUnit CostUnit CostUnit Cost Extended CostExtended CostExtended CostExtended Cost\n1 EMC Testing 8/31/2023 1.0 EA N 24,050.00 24,050.00\n-\n*Per quote# Qu-01384314-3\n2 EMC testing 8/31/2023 1.0 EA N 11,400.00 11,400.00\n-\n*Per Quote# Qu-01384746-0\n3 Safety Testing 8/31/2023 1.0 EA N 21,350.00 21,350.00\n-\n*Per Quote# Qu-01382686-0\nUSD Line Total 56,800.00\nTotal Tax 0.00\nTotal Amount 56,800.00\n3:51:35 PM8/23/2023 1/1"
-            },
-            {
-              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
-              "page": 1,
-              "score": 0.7844661925948191,
-              "text": "\"Contacts\": [\n      {\n        \"Name\": \"Shivam Patel\",\n        \"Role\": null,\n        \"Phone Number\": \"N/A\",\n        \"Email\": \"spatel@gener8.net\"\n      },\n      {\n        \"Name\": \"Desiree Minkler\",\n        \"Role\": null,\n        \"Phone Number\": \"N/A\",\n        \"Email\": \"dminkler@gener8.net\"\n      }\n    ],\n    \"Estimated Production Date\": \"11/1/23\",\n    \"Labeling Method\": \"Obtained from another source (Direct Imprint)\"\n  },\n  \"Completed By\": \"Shivam Patel\",\n  \"Dates\": {\n    \"Form Completion\": \"9/21/23\"\n  },\n  \"Signatures\": null\n}"
             }
           ]
         },
@@ -210,7 +213,7 @@
           "prefix": "Applicant",
           "field": "Phone",
           "answer_cell": "B10",
-          "value": "(818) 689-2280",
+          "value": "(818) 689-2280\nN/A",
           "field_merged": false,
           "fm_range": null,
           "value_merged": true,
@@ -384,7 +387,7 @@
     },
     {
       "sheet_no": 2,
-      "sheet_name": "2.0 Product Information",
+      "sheet_name": "2.0 Description",
       "Items": [
         {
           "question_cell": "A1",
@@ -820,7 +823,7 @@
           "task_type": "extraction",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false
+          "accuracy_level": true
         },
         {
           "question_cell": "A21",
@@ -840,7 +843,7 @@
           "task_type": "extraction",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false
+          "accuracy_level": true
         },
         {
           "question_cell": "A22",
@@ -860,7 +863,7 @@
           "task_type": "extraction",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false
+          "accuracy_level": true
         },
         {
           "question_cell": "A23",
@@ -880,7 +883,7 @@
           "task_type": "extraction",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false
+          "accuracy_level": true
         },
         {
           "question_cell": "A24",
@@ -901,7 +904,7 @@
           "task_type": "extraction",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false
+          "accuracy_level": true
         },
         {
           "question_cell": "A25",
@@ -921,7 +924,7 @@
           "task_type": "extraction",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false
+          "accuracy_level": true
         },
         {
           "question_cell": "A26",
@@ -944,7 +947,7 @@
           "task_type": "extraction",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false
+          "accuracy_level": true
         },
         {
           "question_cell": "A27",
@@ -986,7 +989,7 @@
           "task_type": "extraction",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false
+          "accuracy_level": true
         },
         {
           "question_cell": "A29",
@@ -1027,7 +1030,7 @@
           "task_type": "extraction",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false
+          "accuracy_level": true
         }
       ]
     }
