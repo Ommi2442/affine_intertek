@@ -214,58 +214,137 @@ def sanitize_blob_name(name: str) -> str:
 
 
 
-def is_editable_pdf(pdf_path) -> bool:
-    """
-    True if PDF contains AcroForm (fillable fields).
-    """
-    reader = PdfReader(pdf_path)
-    return bool(reader.get_fields())
+# def is_editable_pdf(pdf_path) -> bool:
+#     """
+#     True if PDF contains AcroForm (fillable fields).
+#     """
+#     reader = PdfReader(pdf_path)
+#     return bool(reader.get_fields())
 
 
 # -------------------------------------------------------------------------
 # STRICT CAD/Schematic Page Detector (EXACT logic from notebook)
 # -------------------------------------------------------------------------
+# def extract_relevant_pdf_page_images(pdf_path, dpi=200):
+#     """
+#     STRICT selection of pages containing diagrams / CAD / schematics.
+#     EXTENDED:
+#     - If PDF is editable → convert ALL pages to images
+#     - Else → keep EXACT notebook logic
+#     """
+
+#     import fitz
+#     import os
+
+#     pdf = fitz.open(pdf_path)
+#     base = os.path.basename(pdf_path)
+
+#     image_page_metadata = []
+
+#     # -------------------------------------------------
+#     # NEW: Editable PDF shortcut
+#     # -------------------------------------------------
+#     if is_editable_pdf(pdf_path):
+#         for i, page in enumerate(pdf):
+#             page_num = i + 1
+#             try:
+#                 pix = page.get_pixmap(dpi=dpi)
+#                 img_path = f"{pdf_path}_page_{page_num}.png"
+#                 pix.save(img_path)
+
+#                 image_page_metadata.append({
+#                     "pdf_file": base,
+#                     "page": page_num,
+#                     "local_image_path": img_path,
+#                     "reason": "editable_pdf_full_page"
+#                 })
+#             except Exception as e:
+#                 print(f"[WARN] Image extraction failed for {base} page {page_num}: {e}")
+
+#         return image_page_metadata
+
+#     # -------------------------------------------------
+#     # ORIGINAL NOTEBOOK LOGIC (UNTOUCHED)
+#     # -------------------------------------------------
+#     for i, page in enumerate(pdf):
+#         page_num = i + 1
+
+#         text = page.get_text().strip()
+#         images = page.get_images(full=True)
+#         drawings = page.get_drawings()
+#         blocks = page.get_text("blocks")
+
+#         text_len = len(text)
+#         num_blocks = len(blocks)
+#         vector_ops = len(drawings)
+
+#         raster_area = 0
+#         for img in images:
+#             try:
+#                 w = img[2]
+#                 h = img[3]
+#                 raster_area += (w * h)
+#             except:
+#                 continue
+
+#         should_extract = False
+
+#         if raster_area > 500000:
+#             should_extract = True
+#         elif vector_ops > 150:
+#             should_extract = True
+#         elif text_len < 30:
+#             should_extract = True
+#         elif num_blocks > 30 and text_len < 150:
+#             should_extract = True
+#         elif (
+#             any(k in text.lower() for k in ["label", "regulatory"])
+#             and vector_ops > 20
+#             and text_len < 600
+#         ):
+#             should_extract = True
+#         elif any(k in base.lower() for k in ["schematic", "cad", "drawing", "layout", "wiring"]) and text_len < 80:
+#             should_extract = True
+#         elif len(pdf) <= 3 and (vector_ops > 20 or text_len < 600):
+#             should_extract = True
+
+#         if not should_extract:
+#             continue
+
+#         try:
+#             pix = page.get_pixmap(dpi=dpi)
+#             img_path = f"{pdf_path}_page_{page_num}.png"
+#             pix.save(img_path)
+
+#             image_page_metadata.append({
+#                 "pdf_file": base,
+#                 "page": page_num,
+#                 "local_image_path": img_path,
+#                 "text_length": text_len,
+#                 "raster_area": raster_area,
+#                 "vector_ops": vector_ops,
+#                 "blocks": num_blocks,
+#             })
+
+#         except Exception as e:
+#             print(f"[WARN] Image extraction failed for {base} page {page_num}: {e}")
+
+#     return image_page_metadata
+
+
+
 def extract_relevant_pdf_page_images(pdf_path, dpi=200):
     """
     STRICT selection of pages containing diagrams / CAD / schematics.
-    EXTENDED:
-    - If PDF is editable → convert ALL pages to images
-    - Else → keep EXACT notebook logic
+    EXACT code copied from your notebook. No modifications.
     """
 
     import fitz
-    import os
-
     pdf = fitz.open(pdf_path)
     base = os.path.basename(pdf_path)
 
     image_page_metadata = []
 
-    # -------------------------------------------------
-    # NEW: Editable PDF shortcut
-    # -------------------------------------------------
-    if is_editable_pdf(pdf_path):
-        for i, page in enumerate(pdf):
-            page_num = i + 1
-            try:
-                pix = page.get_pixmap(dpi=dpi)
-                img_path = f"{pdf_path}_page_{page_num}.png"
-                pix.save(img_path)
-
-                image_page_metadata.append({
-                    "pdf_file": base,
-                    "page": page_num,
-                    "local_image_path": img_path,
-                    "reason": "editable_pdf_full_page"
-                })
-            except Exception as e:
-                print(f"[WARN] Image extraction failed for {base} page {page_num}: {e}")
-
-        return image_page_metadata
-
-    # -------------------------------------------------
-    # ORIGINAL NOTEBOOK LOGIC (UNTOUCHED)
-    # -------------------------------------------------
     for i, page in enumerate(pdf):
         page_num = i + 1
 
@@ -287,6 +366,7 @@ def extract_relevant_pdf_page_images(pdf_path, dpi=200):
             except:
                 continue
 
+        # --- EXACT strict rules from notebook ---
         should_extract = False
 
         if raster_area > 500000:
@@ -311,6 +391,7 @@ def extract_relevant_pdf_page_images(pdf_path, dpi=200):
         if not should_extract:
             continue
 
+        # ---- Extract the page image EXACTLY like notebook ----
         try:
             pix = page.get_pixmap(dpi=dpi)
             img_path = f"{pdf_path}_page_{page_num}.png"
@@ -330,6 +411,7 @@ def extract_relevant_pdf_page_images(pdf_path, dpi=200):
             print(f"[WARN] Image extraction failed for {base} page {page_num}: {e}")
 
     return image_page_metadata
+
 
 
 # -------------------------------------------------------------------------

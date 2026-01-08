@@ -2008,6 +2008,51 @@ def download_marking_images_from_json_new(json_data: dict):
 from docx import Document
 from docx.shared import Inches
 
+# def fetch_marking_plate_urls_and_update_json_new(
+#     retriever,
+#     json_data: dict,
+#     table_no: int,
+#     question_row: int,
+#     question_column: int,
+#     top_k: int = 1
+# ):
+#     """
+#     Fetches marking plate URLs from retriever and stores them
+#     in JSON as the ONLY source of truth.
+#     """
+
+#     # Fetch from retriever
+#     docs = retriever.invoke("marking plate")[:top_k]
+
+#     marking_urls = []
+#     for idx, d in enumerate(docs, start=1):
+#         url = d.metadata.get("blob_url")
+#         if url:
+#             marking_urls.append({
+#                 "id": idx,
+#                 "url": url
+#             })
+
+#     if not marking_urls:
+#         return json_data
+
+#     # Update JSON at exact location
+#     for table in json_data.get("Tables", []):
+#         if table.get("Table") != table_no:
+#             continue
+
+#         for item in table.get("Items", []):
+#             if (
+#                 item.get("question_row") == question_row and
+#                 item.get("question_column") == question_column
+#             ):
+#                 item["marking_urls"] = marking_urls
+#                 return json_data
+
+#     return json_data
+
+
+
 def fetch_marking_plate_urls_and_update_json_new(
     retriever,
     json_data: dict,
@@ -2019,24 +2064,81 @@ def fetch_marking_plate_urls_and_update_json_new(
     """
     Fetches marking plate URLs from retriever and stores them
     in JSON as the ONLY source of truth.
+    Deterministic + robust marking plate detection.
     """
 
-    # Fetch from retriever
-    docs = retriever.invoke("marking plate")[:top_k]
+    # --------------------------------------------------
+    # STEP 1 — High-recall query (do NOT reduce)
+    # --------------------------------------------------
+    QUERY = (
+        "equipment marking label rating plate regulatory label "
+        "electrical ratings certification serial number"
+    )
 
-    marking_urls = []
-    for idx, d in enumerate(docs, start=1):
-        url = d.metadata.get("blob_url")
-        if url:
-            marking_urls.append({
-                "id": idx,
-                "url": url
-            })
+    # Retrieve MORE candidates (important)
+    docs = retriever.invoke(QUERY)[:20]
 
-    if not marking_urls:
+    if not docs:
         return json_data
 
-    # Update JSON at exact location
+    scored_candidates = []
+
+    for d in docs:
+        text = (d.page_content or "").lower()
+        url = d.metadata.get("blob_url")
+
+        if not url:
+            continue
+
+        score = 0
+
+        # -------------------------------
+        # STRONG POSITIVE SIGNALS
+        # -------------------------------
+        if re.search(r"\b(vdc|vac|hz|watt|amp|a)\b", text):
+            score += 4
+
+        if re.search(r"\b(sn|s/n|serial)\b", text):
+            score += 3
+
+        if re.search(r"\b(ce|ul|etl|fcc|intertek|csa|tuv)\b", text):
+            score += 3
+
+        # -------------------------------
+        # WEAK POSITIVE SIGNALS
+        # -------------------------------
+        if "label" in text or "marking" in text:
+            score += 2
+
+        # -------------------------------
+        # NEGATIVE SIGNALS (filter noise)
+        # -------------------------------
+        if any(k in text for k in ["figure", "table", "section", "page"]):
+            score -= 2
+
+        if len(text) > 2000:
+            score -= 2  # large drawings / manuals
+
+        # Threshold ensures TRUE marking plates only
+        if score >= 5:
+            scored_candidates.append((score, url))
+
+    if not scored_candidates:
+        return json_data
+
+    # --------------------------------------------------
+    # STEP 2 — Pick best candidates
+    # --------------------------------------------------
+    scored_candidates.sort(reverse=True, key=lambda x: x[0])
+
+    marking_urls = [
+        {"id": idx + 1, "url": url}
+        for idx, (_, url) in enumerate(scored_candidates[:top_k])
+    ]
+
+    # --------------------------------------------------
+    # STEP 3 — Update JSON (UNCHANGED)
+    # --------------------------------------------------
     for table in json_data.get("Tables", []):
         if table.get("Table") != table_no:
             continue
@@ -2050,6 +2152,7 @@ def fetch_marking_plate_urls_and_update_json_new(
                 return json_data
 
     return json_data
+ 
 
 
 
