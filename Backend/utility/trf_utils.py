@@ -198,63 +198,119 @@ def _extract_from_txt(path):
             return ""
 
 
-def convert_doc_to_pdf(input_path, output_path=None):
-    """
-    Convert .doc or .docx to PDF using LibreOffice.
-    Works on Windows + Linux.
-    """
+#### For Windows
+# def convert_doc_to_pdf(input_path, output_path=None):
+#     """
+#     Convert .doc or .docx to PDF using LibreOffice.
+#     Works on Windows + Linux.
+#     """
 
-    if not os.path.isfile(input_path):
-        raise FileNotFoundError(f"Input file not found: {input_path}")
+#     if not os.path.isfile(input_path):
+#         raise FileNotFoundError(f"Input file not found: {input_path}")
 
-    # Determine output path
-    if output_path is None:
-        base, _ = os.path.splitext(input_path)
-        output_path = base + ".pdf"
+#     # Determine output path
+#     if output_path is None:
+#         base, _ = os.path.splitext(input_path)
+#         output_path = base + ".pdf"
 
-    out_dir = os.path.dirname(os.path.abspath(output_path))
+#     out_dir = os.path.dirname(os.path.abspath(output_path))
 
-    # Detect libreoffice binary
+#     # Detect libreoffice binary
+#     system = platform.system().lower()
+
+#     if system == "windows":
+#         # Try typical install locations
+#         possible_paths = [
+#             r"C:\Program Files\LibreOffice\program\soffice.exe",
+#             r"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
+#         ]
+#         soffice = next((p for p in possible_paths if os.path.isfile(p)), None)
+
+#         if soffice is None:
+#             soffice = shutil.which("soffice")  # last fallback
+
+#         if soffice is None:
+#             raise RuntimeError("LibreOffice not found. Install from https://www.libreoffice.org/")
+#     else:
+#         # Linux/macOS
+#         soffice = shutil.which("libreoffice") or shutil.which("soffice")
+
+#         if soffice is None:
+#             raise RuntimeError("LibreOffice not installed. Install using your package manager.")
+
+#     cmd = [
+#         soffice,
+#         "--headless",
+#         "--convert-to", "pdf",
+#         "--outdir", out_dir,
+#         input_path
+#     ]
+
+#     try:
+#         subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+#     except subprocess.CalledProcessError as e:
+#         raise RuntimeError(f"PDF conversion failed: {e.stderr.decode()}")
+
+#     return output_path
+
+
+
+#### For Linux ######
+def convert_doc_to_pdf_linux(doc_path: str, pdf_path: str):
     system = platform.system().lower()
 
-    if system == "windows":
-        # Try typical install locations
-        possible_paths = [
-            r"C:\Program Files\LibreOffice\program\soffice.exe",
-            r"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
-        ]
-        soffice = next((p for p in possible_paths if os.path.isfile(p)), None)
+    if system == "linux":
+        subprocess.run(
+            [
+                "soffice",
+                "--headless",
+                "--convert-to",
+                "pdf",
+                "--outdir",
+                os.path.dirname(pdf_path),
+                doc_path,
+            ],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        return
 
-        if soffice is None:
-            soffice = shutil.which("soffice")  # last fallback
+    raise RuntimeError(f"Unsupported OS for DOC conversion: {system}")
+ 
 
-        if soffice is None:
-            raise RuntimeError("LibreOffice not found. Install from https://www.libreoffice.org/")
-    else:
-        # Linux/macOS
-        soffice = shutil.which("libreoffice") or shutil.which("soffice")
 
-        if soffice is None:
-            raise RuntimeError("LibreOffice not installed. Install using your package manager.")
+##### For Windows
+# def pdf_convert(file1,file2):
+#     """file1 is docx and file2 is pdf""" 
+#     return docx2pdf.convert(file1,file2)
 
-    cmd = [
-        soffice,
-        "--headless",
-        "--convert-to", "pdf",
-        "--outdir", out_dir,
-        input_path
-    ]
 
-    try:
-        subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    except subprocess.CalledProcessError as e:
-        raise RuntimeError(f"PDF conversion failed: {e.stderr.decode()}")
+#### For Linux ######
+def convert_docx_to_pdf_linux(docx_path: str, pdf_path: str):
+    system = platform.system().lower()
 
-    return output_path
+    if system == "linux":
+        subprocess.run(
+            [
+                "soffice",
+                "--headless",
+                "--convert-to",
+                "pdf",
+                "--outdir",
+                os.path.dirname(pdf_path),
+                docx_path,
+            ],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        return
 
-def pdf_convert(file1,file2):
-    """file1 is docx and file2 is pdf""" 
-    return docx2pdf.convert(file1,file2)
+    raise RuntimeError(f"Unsupported OS for DOCX conversion: {system}")
+
+
+
 
 ### If chunks ingested don't run
 def _blob_name_from_url(url, container):
@@ -455,7 +511,7 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                 if ext == "docx":
                     pdf_path = os.path.splitext(local_path)[0] + ".pdf"
                     try:
-                        pdf_convert(local_path, pdf_path)
+                        convert_docx_to_pdf_linux(local_path, pdf_path)
                         # record converted pdf path
                         converted_pdf_paths.append(pdf_path)
                         if verbose:
@@ -466,10 +522,22 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                     # do NOT extract text for docx as per request
                     continue
 
-                # 🆕 DOC → convert to pdf (using your working helper)
+                # 🆕 DOC → convert to pdf (using your working helper) (windows)
+                # if ext == "doc":
+                #     try:
+                #         pdf_path = convert_doc_to_pdf(local_path)  # your working function
+                #         converted_pdf_paths.append(pdf_path)
+                #         if verbose:
+                #             print(f"[INFO] Converted DOC to PDF: {local_path} -> {pdf_path}")
+                #     except Exception as e:
+                #         if verbose:
+                #             print(f"[WARN] .doc conversion failed for {base_name}: {e}")
+                #     continue
+
                 if ext == "doc":
+                    pdf_path = os.path.splitext(local_path)[0] + ".pdf"
                     try:
-                        pdf_path = convert_doc_to_pdf(local_path)  # your working function
+                        convert_doc_to_pdf_linux(local_path, pdf_path)
                         converted_pdf_paths.append(pdf_path)
                         if verbose:
                             print(f"[INFO] Converted DOC to PDF: {local_path} -> {pdf_path}")
@@ -477,6 +545,8 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                         if verbose:
                             print(f"[WARN] .doc conversion failed for {base_name}: {e}")
                     continue
+ 
+ 
 
 
                 # PDF -> record downloaded path (do NOT extract text)
