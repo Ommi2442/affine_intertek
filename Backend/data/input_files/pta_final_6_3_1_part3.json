@@ -69,7 +69,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [360],
+          "dependency_rows": [
+            360
+          ],
           "page_no": 21
         },
         {
@@ -82,11 +84,13 @@
           "answer_row": 359,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [360],
+          "dependency_rows": [
+            360
+          ],
           "page_no": 21
         },
         {
@@ -99,7 +103,7 @@
           "answer_row": 360,
           "answer_column": 2,
           "value": "(see Form A.5)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -137,7 +141,12 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [362, 363, 364, 365],
+          "dependency_rows": [
+            362,
+            363,
+            364,
+            365
+          ],
           "page_no": 21
         },
         {
@@ -150,11 +159,16 @@
           "answer_row": 361,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [362, 363, 364, 365],
+          "dependency_rows": [
+            362,
+            363,
+            364,
+            365
+          ],
           "page_no": 21
         },
         {
@@ -184,7 +198,7 @@
           "answer_row": 362,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -310,7 +324,14 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [367, 368, 369, 370, 371, 372],
+          "dependency_rows": [
+            367,
+            368,
+            369,
+            370,
+            371,
+            372
+          ],
           "page_no": 21
         },
         {
@@ -323,11 +344,18 @@
           "answer_row": 366,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [367, 368, 369, 370, 371, 372],
+          "dependency_rows": [
+            367,
+            368,
+            369,
+            370,
+            371,
+            372
+          ],
           "page_no": 21
         },
         {
@@ -358,7 +386,7 @@
           "answer_row": 367,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -462,7 +490,7 @@
           "answer_row": 370,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -549,11 +577,15 @@
           "answer_row": 373,
           "answer_column": 2,
           "value": "(see Form A.14)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [374, 397, 424],
+          "dependency_rows": [
+            374,
+            397,
+            424
+          ],
           "page_no": 21
         },
         {
@@ -566,11 +598,15 @@
           "answer_row": 373,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [374, 397, 424],
+          "dependency_rows": [
+            374,
+            397,
+            424
+          ],
           "page_no": 21
         },
         {
@@ -587,7 +623,13 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [375, 377, 380, 384, 386],
+          "dependency_rows": [
+            375,
+            377,
+            380,
+            384,
+            386
+          ],
           "page_no": 21
         },
         {
@@ -600,11 +642,17 @@
           "answer_row": 374,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [375, 377, 380, 384, 386],
+          "dependency_rows": [
+            375,
+            377,
+            380,
+            384,
+            386
+          ],
           "page_no": 21
         },
         {
@@ -621,7 +669,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [376],
+          "dependency_rows": [
+            376
+          ],
           "page_no": 21
         },
         {
@@ -634,11 +684,13 @@
           "answer_row": 375,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [376],
+          "dependency_rows": [
+            376
+          ],
           "page_no": 21
         },
         {
@@ -690,7 +742,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [378, 379],
+          "dependency_rows": [
+            378,
+            379
+          ],
           "page_no": 21
         },
         {
@@ -703,11 +758,14 @@
           "answer_row": 377,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [378, 379],
+          "dependency_rows": [
+            378,
+            379
+          ],
           "page_no": 21
         },
         {
@@ -720,7 +778,7 @@
           "answer_row": 378,
           "answer_column": 2,
           "value": "(see Forms A.14 and A.15)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -794,7 +852,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [381, 382, 383],
+          "dependency_rows": [
+            381,
+            382,
+            383
+          ],
           "page_no": 21
         },
         {
@@ -807,11 +869,15 @@
           "answer_row": 380,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [381, 382, 383],
+          "dependency_rows": [
+            381,
+            382,
+            383
+          ],
           "page_no": 21
         },
         {
@@ -824,7 +890,7 @@
           "answer_row": 381,
           "answer_column": 2,
           "value": "(see Forms A.14 and A.15)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -932,7 +998,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [385],
+          "dependency_rows": [
+            385
+          ],
           "page_no": 22
         },
         {
@@ -945,11 +1013,13 @@
           "answer_row": 384,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [385],
+          "dependency_rows": [
+            385
+          ],
           "page_no": 22
         },
         {
@@ -962,7 +1032,7 @@
           "answer_row": 385,
           "answer_column": 2,
           "value": "(see Forms A.14 and A.15)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -996,11 +1066,22 @@
           "answer_row": 386,
           "answer_column": 2,
           "value": "(see Forms A.14 and A.15)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [387, 388, 389, 390, 391, 392, 393, 394, 395, 396],
+          "dependency_rows": [
+            387,
+            388,
+            389,
+            390,
+            391,
+            392,
+            393,
+            394,
+            395,
+            396
+          ],
           "page_no": 22
         },
         {
@@ -1013,11 +1094,22 @@
           "answer_row": 386,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [387, 388, 389, 390, 391, 392, 393, 394, 395, 396],
+          "dependency_rows": [
+            387,
+            388,
+            389,
+            390,
+            391,
+            392,
+            393,
+            394,
+            395,
+            396
+          ],
           "page_no": 22
         },
         {
@@ -1187,7 +1279,7 @@
           "answer_row": 391,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -1383,7 +1475,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [398, 401],
+          "dependency_rows": [
+            398,
+            401
+          ],
           "page_no": 22
         },
         {
@@ -1396,11 +1491,14 @@
           "answer_row": 397,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [398, 401],
+          "dependency_rows": [
+            398,
+            401
+          ],
           "page_no": 22
         },
         {
@@ -1413,7 +1511,7 @@
           "answer_row": 398,
           "answer_column": 2,
           "value": "(see Forms A.14 and A.15)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -1430,7 +1528,7 @@
           "answer_row": 398,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -1521,7 +1619,12 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [402, 410, 412, 418],
+          "dependency_rows": [
+            402,
+            410,
+            412,
+            418
+          ],
           "page_no": 22
         },
         {
@@ -1534,11 +1637,16 @@
           "answer_row": 401,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [402, 410, 412, 418],
+          "dependency_rows": [
+            402,
+            410,
+            412,
+            418
+          ],
           "page_no": 22
         },
         {
@@ -1555,7 +1663,15 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [403, 404, 405, 406, 407, 408, 409],
+          "dependency_rows": [
+            403,
+            404,
+            405,
+            406,
+            407,
+            408,
+            409
+          ],
           "page_no": 22
         },
         {
@@ -1568,11 +1684,19 @@
           "answer_row": 402,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [403, 404, 405, 406, 407, 408, 409],
+          "dependency_rows": [
+            403,
+            404,
+            405,
+            406,
+            407,
+            408,
+            409
+          ],
           "page_no": 22
         },
         {
@@ -1620,7 +1744,7 @@
           "answer_row": 404,
           "answer_column": 2,
           "value": "(see Form A.18)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -1671,7 +1795,7 @@
           "answer_row": 405,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -1829,7 +1953,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [411],
+          "dependency_rows": [
+            411
+          ],
           "page_no": 23
         },
         {
@@ -1842,11 +1968,13 @@
           "answer_row": 410,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [411],
+          "dependency_rows": [
+            411
+          ],
           "page_no": 23
         },
         {
@@ -1898,7 +2026,13 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [413, 414, 415, 416, 417],
+          "dependency_rows": [
+            413,
+            414,
+            415,
+            416,
+            417
+          ],
           "page_no": 23
         },
         {
@@ -1911,11 +2045,17 @@
           "answer_row": 412,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [413, 414, 415, 416, 417],
+          "dependency_rows": [
+            413,
+            414,
+            415,
+            416,
+            417
+          ],
           "page_no": 23
         },
         {
@@ -1981,7 +2121,7 @@
           "answer_row": 414,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2107,7 +2247,13 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [419, 420, 421, 422, 423],
+          "dependency_rows": [
+            419,
+            420,
+            421,
+            422,
+            423
+          ],
           "page_no": 23
         },
         {
@@ -2120,11 +2266,17 @@
           "answer_row": 418,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [419, 420, 421, 422, 423],
+          "dependency_rows": [
+            419,
+            420,
+            421,
+            422,
+            423
+          ],
           "page_no": 23
         },
         {
@@ -2190,7 +2342,7 @@
           "answer_row": 420,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2242,7 +2394,7 @@
           "answer_row": 422,
           "answer_column": 2,
           "value": "(see Form A.18)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2276,7 +2428,7 @@
           "answer_row": 423,
           "answer_column": 2,
           "value": "(see Form A.18)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2315,7 +2467,12 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [425, 430, 438, 442],
+          "dependency_rows": [
+            425,
+            430,
+            438,
+            442
+          ],
           "page_no": 23
         },
         {
@@ -2328,11 +2485,16 @@
           "answer_row": 424,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [425, 430, 438, 442],
+          "dependency_rows": [
+            425,
+            430,
+            438,
+            442
+          ],
           "page_no": 23
         },
         {
@@ -2349,7 +2511,12 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [426, 427, 428, 429],
+          "dependency_rows": [
+            426,
+            427,
+            428,
+            429
+          ],
           "page_no": 23
         },
         {
@@ -2362,11 +2529,16 @@
           "answer_row": 425,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [426, 427, 428, 429],
+          "dependency_rows": [
+            426,
+            427,
+            428,
+            429
+          ],
           "page_no": 23
         },
         {
@@ -2397,7 +2569,7 @@
           "answer_row": 426,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2519,11 +2691,19 @@
           "answer_row": 430,
           "answer_column": 2,
           "value": "(see Forms A.14 and A.15)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [431, 432, 433, 434, 435, 436, 437],
+          "dependency_rows": [
+            431,
+            432,
+            433,
+            434,
+            435,
+            436,
+            437
+          ],
           "page_no": 23
         },
         {
@@ -2536,11 +2716,19 @@
           "answer_row": 430,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [431, 432, 433, 434, 435, 436, 437],
+          "dependency_rows": [
+            431,
+            432,
+            433,
+            434,
+            435,
+            436,
+            437
+          ],
           "page_no": 23
         },
         {
@@ -2623,7 +2811,7 @@
           "answer_row": 433,
           "answer_column": 2,
           "value": "(see Form A.18)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2674,7 +2862,7 @@
           "answer_row": 434,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -2796,11 +2984,15 @@
           "answer_row": 438,
           "answer_column": 2,
           "value": "(see Forms A.14 and A.15)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [439, 440, 441],
+          "dependency_rows": [
+            439,
+            440,
+            441
+          ],
           "page_no": 24
         },
         {
@@ -2813,11 +3005,15 @@
           "answer_row": 438,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [439, 440, 441],
+          "dependency_rows": [
+            439,
+            440,
+            441
+          ],
           "page_no": 24
         },
         {
@@ -2939,7 +3135,12 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [443, 454, 456, 462],
+          "dependency_rows": [
+            443,
+            454,
+            456,
+            462
+          ],
           "page_no": 24
         },
         {
@@ -2952,11 +3153,16 @@
           "answer_row": 442,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [443, 454, 456, 462],
+          "dependency_rows": [
+            443,
+            454,
+            456,
+            462
+          ],
           "page_no": 24
         },
         {
@@ -2973,7 +3179,18 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [444, 445, 446, 447, 448, 449, 450, 451, 452, 453],
+          "dependency_rows": [
+            444,
+            445,
+            446,
+            447,
+            448,
+            449,
+            450,
+            451,
+            452,
+            453
+          ],
           "page_no": 24
         },
         {
@@ -2986,11 +3203,22 @@
           "answer_row": 443,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [444, 445, 446, 447, 448, 449, 450, 451, 452, 453],
+          "dependency_rows": [
+            444,
+            445,
+            446,
+            447,
+            448,
+            449,
+            450,
+            451,
+            452,
+            453
+          ],
           "page_no": 24
         },
         {
@@ -3021,7 +3249,7 @@
           "answer_row": 444,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3038,7 +3266,7 @@
           "answer_row": 445,
           "answer_column": 2,
           "value": "(see Form A.18)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3107,7 +3335,7 @@
           "answer_row": 447,
           "answer_column": 2,
           "value": "(see Form A.18)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3193,7 +3421,7 @@
           "answer_row": 449,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3351,7 +3579,9 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [455],
+          "dependency_rows": [
+            455
+          ],
           "page_no": 24
         },
         {
@@ -3364,11 +3594,13 @@
           "answer_row": 454,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [455],
+          "dependency_rows": [
+            455
+          ],
           "page_no": 24
         },
         {
@@ -3420,7 +3652,13 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [457, 458, 459, 460, 461],
+          "dependency_rows": [
+            457,
+            458,
+            459,
+            460,
+            461
+          ],
           "page_no": 25
         },
         {
@@ -3433,11 +3671,17 @@
           "answer_row": 456,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [457, 458, 459, 460, 461],
+          "dependency_rows": [
+            457,
+            458,
+            459,
+            460,
+            461
+          ],
           "page_no": 25
         },
         {
@@ -3504,7 +3748,7 @@
           "answer_column": 3,
           "custom_prompt": "Verify that thin-film reinforced insulation for secondary circuits derived from mains circuits of overvoltage category II up to 300 V has adequate electric strength using one of the permitted methods.",
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3556,7 +3800,7 @@
           "answer_row": 460,
           "answer_column": 2,
           "value": "(see Form A.18)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3590,7 +3834,7 @@
           "answer_row": 461,
           "answer_column": 2,
           "value": "(see Form A.18)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3628,7 +3872,15 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [463, 464, 465, 466, 467, 468, 469],
+          "dependency_rows": [
+            463,
+            464,
+            465,
+            466,
+            467,
+            468,
+            469
+          ],
           "page_no": 25
         },
         {
@@ -3641,11 +3893,19 @@
           "answer_row": 462,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [463, 464, 465, 466, 467, 468, 469],
+          "dependency_rows": [
+            463,
+            464,
+            465,
+            466,
+            467,
+            468,
+            469
+          ],
           "page_no": 25
         },
         {
@@ -3710,7 +3970,7 @@
           "answer_row": 464,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3762,7 +4022,7 @@
           "answer_row": 466,
           "answer_column": 2,
           "value": "(see Form A.18)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3796,7 +4056,7 @@
           "answer_row": 467,
           "answer_column": 2,
           "value": "(see Form A.18)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3813,7 +4073,7 @@
           "answer_row": 467,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3900,7 +4160,7 @@
           "answer_row": 470,
           "answer_column": 2,
           "value": "(see Forms A.14 and A.18)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -3938,7 +4198,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [472, 478, 482],
+          "dependency_rows": [
+            472,
+            478,
+            482
+          ],
           "page_no": 25
         },
         {
@@ -3951,11 +4215,15 @@
           "answer_row": 471,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [472, 478, 482],
+          "dependency_rows": [
+            472,
+            478,
+            482
+          ],
           "page_no": 25
         },
         {
@@ -3972,7 +4240,13 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [473, 474, 475, 476, 477],
+          "dependency_rows": [
+            473,
+            474,
+            475,
+            476,
+            477
+          ],
           "page_no": 25
         },
         {
@@ -3985,11 +4259,17 @@
           "answer_row": 472,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [473, 474, 475, 476, 477],
+          "dependency_rows": [
+            473,
+            474,
+            475,
+            476,
+            477
+          ],
           "page_no": 25
         },
         {
@@ -4020,7 +4300,7 @@
           "answer_row": 473,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4181,7 +4461,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [479, 480, 481],
+          "dependency_rows": [
+            479,
+            480,
+            481
+          ],
           "page_no": 25
         },
         {
@@ -4194,11 +4478,15 @@
           "answer_row": 478,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [479, 480, 481],
+          "dependency_rows": [
+            479,
+            480,
+            481
+          ],
           "page_no": 25
         },
         {
@@ -4228,7 +4516,7 @@
           "answer_row": 479,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4319,7 +4607,13 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [483, 484, 485, 486, 487],
+          "dependency_rows": [
+            483,
+            484,
+            485,
+            486,
+            487
+          ],
           "page_no": 26
         },
         {
@@ -4336,7 +4630,13 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": true,
-          "dependency_rows": [483, 484, 485, 486, 487],
+          "dependency_rows": [
+            483,
+            484,
+            485,
+            486,
+            487
+          ],
           "page_no": 26
         },
         {
@@ -4366,7 +4666,7 @@
           "answer_row": 483,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4531,7 +4831,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [202, 209],
+          "dependency_rows": [
+            202,
+            209
+          ],
           "page_no": 26
         },
         {
@@ -4544,11 +4847,14 @@
           "answer_row": 488,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [202, 209],
+          "dependency_rows": [
+            202,
+            209
+          ],
           "page_no": 26
         },
         {
@@ -4565,7 +4871,16 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [490, 491, 492, 493, 494, 495, 496, 497],
+          "dependency_rows": [
+            490,
+            491,
+            492,
+            493,
+            494,
+            495,
+            496,
+            497
+          ],
           "page_no": 26
         },
         {
@@ -4578,11 +4893,20 @@
           "answer_row": 489,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [490, 491, 492, 493, 494, 495, 496, 497],
+          "dependency_rows": [
+            490,
+            491,
+            492,
+            493,
+            494,
+            495,
+            496,
+            497
+          ],
           "page_no": 26
         },
         {
@@ -4594,12 +4918,12 @@
           "field": "rated for maximum equipment current (see 5.1.3 c)",
           "answer_row": 490,
           "answer_column": 2,
-          "custom_prompt": "Verify that mains supply cords are rated for the maximum equipment current as per 5.1.3(c), ensuring the marked power or input current is at least 90% of the maximum value, and that separate values are marked for multiple voltage ranges unless they differ by less than 20%.",
+          "custom_prompt": "Verify and mention the rating for maximum equipment current of the mains supply cords",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 26
         },
@@ -4615,10 +4939,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 26
+          "page_no": 26,
+          "custom_prompt": "Verify and mention the rating for maximum equipment current of the mains supply cords"
         },
         {
           "clause_row": 491,
@@ -4629,7 +4954,7 @@
           "field": "Cable complies with IEC 60227 or IEC 60245",
           "answer_row": 491,
           "answer_column": 2,
-          "custom_prompt": "Verify that the mains supply cable complies with IEC 60227 or IEC 60245.",
+          "custom_prompt": "Verify that the mains supply cable complies with IEC Standard 60227 or IEC 60245.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -4700,12 +5025,12 @@
           "field": "Temperature rating (cord and inlet)\t:",
           "answer_row": 493,
           "answer_column": 2,
-          "custom_prompt": "Verify the temperature rating of the mains supply cord and inlet.",
+          "custom_prompt": "Verify and mention the temperature rating of the mains supply cord and inlet.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 26
         },
@@ -4719,7 +5044,7 @@
           "answer_row": 493,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4735,12 +5060,12 @@
           "field": "Green/yellow used only for connection to protective conductor terminals",
           "answer_row": 494,
           "answer_column": 2,
-          "custom_prompt": "Verify that green/yellow conductors in mains supply cords are used only for connection to protective conductor terminals.",
+          "custom_prompt": "Verify if protective conductor terminals are present green/yellow insulation is used for connection to protective conductor terminals.Mention 'No Protective conductor terminals' incase protective conductor terminals are not present.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 26
         },
@@ -4756,10 +5081,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 26
+          "page_no": 26,
+          "custom_prompt": "Verify if protective conductor terminals are present green/yellow insulation is used for connection to protective conductor terminals."
         },
         {
           "clause_row": 495,
@@ -4774,8 +5100,8 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 26
         },
@@ -4789,7 +5115,7 @@
           "answer_row": 495,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -4805,7 +5131,7 @@
           "field": "Conform to IEC 60799; or",
           "answer_row": 496,
           "answer_column": 2,
-          "custom_prompt": "Verify that mains supply cords conform to IEC 60799 or equivalent requirements.",
+          "custom_prompt": "Verify that if the equipment uses a detachable mains supply cord with an IEC Standard 60320 connector then the mains supply connector comply with the requirements of IEC Standard 60799.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -4826,10 +5152,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 26
+          "page_no": 26,
+          "custom_prompt": "Verify that if the equipment uses a detachable mains supply cord with an IEC Standard 60320 connector then the mains supply connector comply with the requirements of IEC Standard 60799."
         },
         {
           "clause_row": 497,
@@ -4840,12 +5167,12 @@
           "field": "Have the current rating of the mains connector",
           "answer_row": 497,
           "answer_column": 2,
-          "custom_prompt": "Verify that mains supply cords have the current rating of the mains connector.",
+          "custom_prompt": "Verify that if the equipment uses a detachable mains supply cord with an IEC Standard 60320 connector the current rating of the mains connector is mentioned.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 26
         },
@@ -4861,10 +5188,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 26
+          "page_no": 26,
+          "custom_prompt": "Verify that if the equipment uses a detachable mains supply cord with an IEC Standard 60320 connector the current rating of the mains connector is mentioned."
         },
         {
           "clause_row": 498,
@@ -4880,7 +5208,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [499, 502],
+          "dependency_rows": [
+            499,
+            502
+          ],
           "page_no": 26
         },
         {
@@ -4893,11 +5224,14 @@
           "answer_row": 498,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [499, 502],
+          "dependency_rows": [
+            499,
+            502
+          ],
           "page_no": 26
         },
         {
@@ -4914,7 +5248,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [500, 501],
+          "dependency_rows": [
+            500,
+            501
+          ],
           "page_no": 26
         },
         {
@@ -4927,11 +5264,14 @@
           "answer_row": 499,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [500, 501],
+          "dependency_rows": [
+            500,
+            501
+          ],
           "page_no": 26
         },
         {
@@ -4948,7 +5288,7 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 26
         },
@@ -4965,8 +5305,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 26
         },
@@ -4984,7 +5324,7 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 26
         },
@@ -5001,8 +5341,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 26
         },
@@ -5020,7 +5360,16 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [503, 504, 505, 506, 507, 508, 509, 510],
+          "dependency_rows": [
+            503,
+            504,
+            505,
+            506,
+            507,
+            508,
+            509,
+            510
+          ],
           "page_no": 26
         },
         {
@@ -5033,11 +5382,20 @@
           "answer_row": 502,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [503, 504, 505, 506, 507, 508, 509, 510],
+          "dependency_rows": [
+            503,
+            504,
+            505,
+            506,
+            507,
+            508,
+            509,
+            510
+          ],
           "page_no": 26
         },
         {
@@ -5049,7 +5407,7 @@
           "field": "Protective earth conductor is the last to take the strain",
           "answer_row": 503,
           "answer_column": 2,
-          "custom_prompt": "Verify that for non-detachable mains supply cords, the protective earth conductor is the last to take the strain at the cord anchorage.",
+          "custom_prompt": "Verify that for non-detachable mains supply cords, the protective earth conductor is the last to take the strain.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -5084,7 +5442,7 @@
           "field": "cord is not clamped by direct pressure from a screw",
           "answer_row": 504,
           "answer_column": 2,
-          "custom_prompt": "Verify that for non-detachable mains supply cords, the protective earth conductor is the last to take strain and the cord is not clamped by direct pressure from a screw.",
+          "custom_prompt": "Verify that for non-detachable mains supply cords, the cord is not clamped by direct pressure from a screw.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -5189,7 +5547,7 @@
           "field": "no failure of cord insulation in anchorage with metal parts",
           "answer_row": 507,
           "answer_column": 2,
-          "custom_prompt": "Verify that the cord anchorage prevents any failure of the cord insulation where metal parts are involved.",
+          "custom_prompt": "Verify that the cord anchorage for non-detachable mains supply cord prevents any failure of the cord insulation where metal parts are involved.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -5259,7 +5617,7 @@
           "field": "cord replacement does not cause a hazard and method of strain relief is clear",
           "answer_row": 509,
           "answer_column": 2,
-          "custom_prompt": "Verify that cord replacement does not cause a hazard and that the method of strain relief is clearly defined.",
+          "custom_prompt": "Verify that cord replacement for non-detachable mains supply cord does not cause a hazard and that the method of strain relief is clearly defined.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -5295,7 +5653,7 @@
           "answer_row": 510,
           "answer_column": 2,
           "value": "(see Form A.19)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5333,7 +5691,16 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [512, 513, 514, 515, 516, 517, 518, 519],
+          "dependency_rows": [
+            512,
+            513,
+            514,
+            515,
+            516,
+            517,
+            518,
+            519
+          ],
           "page_no": 26
         },
         {
@@ -5346,11 +5713,20 @@
           "answer_row": 511,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [512, 513, 514, 515, 516, 517, 518, 519],
+          "dependency_rows": [
+            512,
+            513,
+            514,
+            515,
+            516,
+            517,
+            518,
+            519
+          ],
           "page_no": 26
         },
         {
@@ -5367,7 +5743,7 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 27
         },
@@ -5383,10 +5759,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 27
+          "page_no": 27,
+          "custom_prompt": "Verify that mains supply plugs, connectors, and related components conform to the relevant specifications."
         },
         {
           "clause_row": 513,
@@ -5415,7 +5792,7 @@
           "answer_row": 513,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5471,7 +5848,7 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 27
         },
@@ -5487,10 +5864,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 27
+          "page_no": 27,
+          "custom_prompt": "Verify that mains-type plugs are used only for connection to the mains supply."
         },
         {
           "clause_row": 516,
@@ -5502,7 +5880,7 @@
           "answer_row": 516,
           "answer_column": 2,
           "value": "(see Form A.5)",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5539,7 +5917,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 27
@@ -5554,7 +5932,7 @@
           "answer_row": 517,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5570,7 +5948,7 @@
           "field": "marking if accepts a standard mains supply plug\n(see 5.1.3e)",
           "answer_row": 518,
           "answer_column": 2,
-          "custom_prompt": "Verify that accessory mains socket-outlets accepting standard mains plugs are properly marked as required by 5.1.3(e), including cases where plug pins may receive a charge from an internal capacitor.",
+          "custom_prompt": "Verify incase there are accessory mains socket outlets the outlets are marked if it accepts a standard mains supply plug. Mention 'No Accessory Mains socket outlets' incase the equipment does not have any accessory mains socket outlets.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -5588,7 +5966,7 @@
           "field": "marking if accepts a standard mains supply plug\n(see 5.1.3e)",
           "answer_row": 518,
           "answer_column": 3,
-          "custom_prompt": "Verify that accessory mains socket-outlets accepting standard mains plugs are properly marked as required by 5.1.3(e), including cases where plug pins may receive a charge from an internal capacitor.",
+          "custom_prompt": "Verify incase there are accessory mains socket outlets the outlets are marked if it accepts a standard mains supply plug.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -5606,12 +5984,12 @@
           "field": "input has a protective earth conductor if outlet has earth terminal contact",
           "answer_row": 519,
           "answer_column": 2,
-          "custom_prompt": "Verify that accessory mains socket outlets have an input protective earth conductor when the outlet includes an earth terminal contact.",
+          "custom_prompt": "Verify incase there are accessory mains socket outlets the input has a protective earth conductor if outlet has earth terminal contact.Mention 'No Accessory Mains socket outlets' incase the equipment does not have any accessory mains socket outlets.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 27
         },
@@ -5627,10 +6005,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 27
+          "page_no": 27,
+          "custom_prompt": "Verify incase there are accessory mains socket outlets the input has a protective earth conductor if outlet has earth terminal contact."
         },
         {
           "clause_row": 520,
@@ -5646,7 +6025,12 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [521, 522, 523, 535],
+          "dependency_rows": [
+            521,
+            522,
+            523,
+            535
+          ],
           "page_no": 27
         },
         {
@@ -5659,11 +6043,16 @@
           "answer_row": 520,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [521, 522, 523, 535],
+          "dependency_rows": [
+            521,
+            522,
+            523,
+            535
+          ],
           "page_no": 27
         },
         {
@@ -5750,7 +6139,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [524, 530],
+          "dependency_rows": [
+            524,
+            530
+          ],
           "page_no": 27
         },
         {
@@ -5763,11 +6155,14 @@
           "answer_row": 523,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [524, 530],
+          "dependency_rows": [
+            524,
+            530
+          ],
           "page_no": 27
         },
         {
@@ -5783,9 +6178,15 @@
           "custom_prompt": "Verify the disconnection requirements for permanently connected equipment and multi-phase equipment.",
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
-          "dependency_rows": [525, 526, 527, 528, 529],
+          "ai_fillable": false,
+          "accuracy_level": false,
+          "dependency_rows": [
+            525,
+            526,
+            527,
+            528,
+            529
+          ],
           "page_no": 27
         },
         {
@@ -5800,9 +6201,15 @@
           "value": null,
           "task_type": "verdict_dependency",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [525, 526, 527, 528, 529],
+          "dependency_rows": [
+            525,
+            526,
+            527,
+            528,
+            529
+          ],
           "page_no": 27
         },
         {
@@ -5814,7 +6221,7 @@
           "field": "Employs switch or circuit-breaker",
           "answer_row": 525,
           "answer_column": 2,
-          "custom_prompt": "Verify that permanently connected or multi-phase equipment employs a switch or circuit-breaker for disconnection from the supply source.",
+          "custom_prompt": "Verify incase the equipment is permanently connected equipment or multi-phase equipment it employs a switch or circuit breaker. Mention 'Not Permanently connected or multi-phase' incase the equipment is not permanently connected equipment or multi-phase equipment.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -5832,7 +6239,7 @@
           "field": "Employs switch or circuit-breaker",
           "answer_row": 525,
           "answer_column": 3,
-          "custom_prompt": "Verify that permanently connected or multi-phase equipment employs a switch or circuit-breaker for disconnection from the supply source.",
+          "custom_prompt": "Verify incase the equipment is permanently connected equipment or multi-phase equipment it employs a switch or circuit breaker.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -5868,7 +6275,7 @@
           "answer_row": 526,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -5884,7 +6291,7 @@
           "field": "switch or circuit-breaker to be included in building installation",
           "answer_row": 527,
           "answer_column": 2,
-          "custom_prompt": "Verify that if a switch or circuit-breaker is not part of permanently connected or multi-phase equipment, the documentation requires it to be included in the building installation.",
+          "custom_prompt": "Verify incase the equipment is permanently connected equipment or multi-phase equipment and switch or circuit-breaker is not built into the equipment then external switch or circuit-breaker is included in building installation. Mention 'Not Permanently connected or multi-phase' incase the equipment is not permanently connected equipment or multi-phase equipment.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -5902,7 +6309,7 @@
           "field": "switch or circuit-breaker to be included in building installation",
           "answer_row": 527,
           "answer_column": 3,
-          "custom_prompt": "Verify that if a switch or circuit-breaker is not part of permanently connected or multi-phase equipment, the documentation requires it to be included in the building installation.",
+          "custom_prompt": "Verify incase the equipment is permanently connected equipment or multi-phase equipment and switch or circuit-breaker is not built into the equipment then external switch or circuit-breaker is included in building installation.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -5920,7 +6327,7 @@
           "field": "suitable location easily reached",
           "answer_row": 528,
           "answer_column": 2,
-          "custom_prompt": "Verify that when a switch or circuit-breaker is not part of permanently connected or multi-phase equipment, the documentation specifies a suitable and easily reachable location.",
+          "custom_prompt": "Verify incase the equipment is permanently connected equipment or multi-phase equipment and switch or circuit-breaker is not built into the equipment then suitable location of the external switch or circuit breaker is easily reached. Mention 'Not Permanently connected or multi-phase' incase the equipment is not permanently connected equipment or multi-phase equipment.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -5938,7 +6345,7 @@
           "field": "suitable location easily reached",
           "answer_row": 528,
           "answer_column": 3,
-          "custom_prompt": "Verify that when a switch or circuit-breaker is not part of permanently connected or multi-phase equipment, the documentation specifies a suitable and easily reachable location.",
+          "custom_prompt": "Verify incase the equipment is permanently connected equipment or multi-phase equipment and switch or circuit-breaker is not built into the equipment then suitable location of the external switch or circuit breaker is easily reached.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -5956,7 +6363,7 @@
           "field": "marking as disconnecting for the equipment",
           "answer_row": 529,
           "answer_column": 2,
-          "custom_prompt": "Verify that for permanently connected or multi-phase equipment, if the disconnecting switch or circuit-breaker is not part of the equipment, the documentation requires it to be marked as the disconnecting means for the equipment.",
+          "custom_prompt": "Verify incase the equipment is permanently connected equipment or multi-phase equipment and switch or circuit-breaker is not built into the equipment then the external switch or circuit breaker is marked as the disconnecting device. Mention 'Not Permanently connected or multi-phase' incase the equipment is not permanently connected equipment or multi-phase equipment.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -5974,7 +6381,7 @@
           "field": "marking as disconnecting for the equipment",
           "answer_row": 529,
           "answer_column": 3,
-          "custom_prompt": "Verify that for permanently connected or multi-phase equipment, if the disconnecting switch or circuit-breaker is not part of the equipment, the documentation requires it to be marked as the disconnecting means for the equipment.",
+          "custom_prompt": "Verify incase the equipment is permanently connected equipment or multi-phase equipment and switch or circuit-breaker is not built into the equipment then the external switch or circuit breaker is marked as the disconnecting device.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -5997,7 +6404,12 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [531, 532, 533, 534],
+          "dependency_rows": [
+            531,
+            532,
+            533,
+            534
+          ],
           "page_no": 27
         },
         {
@@ -6014,7 +6426,12 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [531, 532, 533, 534],
+          "dependency_rows": [
+            531,
+            532,
+            533,
+            534
+          ],
           "page_no": 27
         },
         {
@@ -6030,8 +6447,8 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 27
         },
@@ -6045,7 +6462,7 @@
           "answer_row": 531,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6061,7 +6478,7 @@
           "field": "switch or circuit-breaker",
           "answer_row": 532,
           "answer_column": 2,
-          "custom_prompt": "Verify that single-phase cord-connected equipment is provided with a switch or circuit-breaker for disconnection from the supply.",
+          "custom_prompt": "Verify that incase the equipment is a single-phase cord-connected equipment and is provided with a switch or circuit-breaker for disconnection from the supply.Mention 'Not Single phase cord connected equipment' incase the equipment is not Single phase cord connected equipment",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -6079,7 +6496,7 @@
           "field": "switch or circuit-breaker",
           "answer_row": 532,
           "answer_column": 3,
-          "custom_prompt": "Verify that single-phase cord-connected equipment is provided with a switch or circuit-breaker for disconnection from the supply.",
+          "custom_prompt": "Verify that incase the equipment is a single-phase cord-connected equipment and is provided with a switch or circuit-breaker for disconnection from the supply.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -6097,7 +6514,7 @@
           "field": "appliance coupler (disconnectable without tool)",
           "answer_row": 533,
           "answer_column": 2,
-          "custom_prompt": "Verify that single-phase cord-connected equipment is provided with an appliance coupler that can be disconnected without a tool.",
+          "custom_prompt": "Verify that incase the equipment is a single-phase cord-connected equipment and is provided with a appliance coupler for disconnection from the supply.Mention 'Not Single phase cord connected equipment' incase the equipment is not Single phase cord connected equipment.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -6115,7 +6532,7 @@
           "field": "appliance coupler (disconnectable without tool)",
           "answer_row": 533,
           "answer_column": 3,
-          "custom_prompt": "Verify that single-phase cord-connected equipment is provided with an appliance coupler that can be disconnected without a tool.",
+          "custom_prompt": "Verify that incase the equipment is a single-phase cord-connected equipment and is provided with a appliance coupler for disconnection from the supply.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -6133,7 +6550,7 @@
           "field": "separable plug (without locking device)",
           "answer_row": 534,
           "answer_column": 2,
-          "custom_prompt": "Verify that single-phase cord-connected equipment is provided with a separable plug without a locking device.",
+          "custom_prompt": "Verify that incase the equipment is a single-phase cord-connected equipment and is provided with a separable plug without locking device for disconnection from the supply.Mention 'Not Single phase cord connected equipment' incase the equipment is not Single phase cord connected equipment.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -6151,7 +6568,7 @@
           "field": "separable plug (without locking device)",
           "answer_row": 534,
           "answer_column": 3,
-          "custom_prompt": "Verify that single-phase cord-connected equipment is provided with a separable plug without a locking device.",
+          "custom_prompt": "Verify that incase the equipment is a single-phase cord-connected equipment and is provided with a separable plug without locking device for disconnection from the supply.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -6174,7 +6591,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [536, 541, 548],
+          "dependency_rows": [
+            536,
+            541,
+            548
+          ],
           "page_no": 27
         },
         {
@@ -6187,11 +6608,15 @@
           "answer_row": 535,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [536, 541, 548],
+          "dependency_rows": [
+            536,
+            541,
+            548
+          ],
           "page_no": 27
         },
         {
@@ -6208,7 +6633,12 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [537, 538, 539, 540],
+          "dependency_rows": [
+            537,
+            538,
+            539,
+            540
+          ],
           "page_no": 27
         },
         {
@@ -6225,7 +6655,12 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [537, 538, 539, 540],
+          "dependency_rows": [
+            537,
+            538,
+            539,
+            540
+          ],
           "page_no": 27
         },
         {
@@ -6237,7 +6672,7 @@
           "field": "Disconnecting device part of equipment",
           "answer_row": 537,
           "answer_column": 2,
-          "custom_prompt": "Verify that the disconnecting device is part of the equipment.",
+          "custom_prompt": "Verify that any disconnecting device present is part of the equipment.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -6255,7 +6690,7 @@
           "field": "Disconnecting device part of equipment",
           "answer_row": 537,
           "answer_column": 3,
-          "custom_prompt": "Verify that the disconnecting device is part of the equipment.",
+          "custom_prompt": "Verify that any disconnecting device present is part of the equipment.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -6273,7 +6708,7 @@
           "field": "Electrically close to the supply",
           "answer_row": 538,
           "answer_column": 2,
-          "custom_prompt": "Verify that the disconnecting device is electrically close to the supply.",
+          "custom_prompt": "Verify that any disconnecting device present is electrically close to the supply",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -6291,7 +6726,7 @@
           "field": "Electrically close to the supply",
           "answer_row": 538,
           "answer_column": 3,
-          "custom_prompt": "Verify that the disconnecting device is electrically close to the supply.",
+          "custom_prompt": "Verify that any disconnecting device present is electrically close to the supply.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -6309,7 +6744,7 @@
           "field": "Power-consuming components not electrically located between the supply source and the disconnecting device",
           "answer_row": 539,
           "answer_column": 2,
-          "custom_prompt": "Verify that no power-consuming components are electrically located between the supply source and the disconnecting device.",
+          "custom_prompt": "Verify that power-consuming components are not electrically located between the supply source and the disconnecting device.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -6327,7 +6762,7 @@
           "field": "Power-consuming components not electrically located between the supply source and the disconnecting device",
           "answer_row": 539,
           "answer_column": 3,
-          "custom_prompt": "Verify that no power-consuming components are electrically located between the supply source and the disconnecting device.",
+          "custom_prompt": "Verify that power-consuming components are not electrically located between the supply source and the disconnecting device.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -6345,7 +6780,7 @@
           "field": "Except electromagnetic interference suppression circuits permitted to be located on the supply side of the disconnecting device",
           "answer_row": 540,
           "answer_column": 2,
-          "custom_prompt": "Verify that all circuits except electromagnetic interference suppression circuits are located on the load side of the disconnecting device.",
+          "custom_prompt": "Verify that incase there are any electromagnetic interference suppression circuits they are located on the supply side of the disconnecting device.Mention 'No electromagnetic interference suppression circuits' incase there are no electromagnetic suppression circuits.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -6363,7 +6798,7 @@
           "field": "Except electromagnetic interference suppression circuits permitted to be located on the supply side of the disconnecting device",
           "answer_row": 540,
           "answer_column": 3,
-          "custom_prompt": "Verify that all circuits except electromagnetic interference suppression circuits are located on the load side of the disconnecting device.",
+          "custom_prompt": "Verify that incase there are any electromagnetic interference suppression circuits they are located on the supply side of the disconnecting device.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -6386,7 +6821,14 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [542, 543, 544, 545, 546, 547],
+          "dependency_rows": [
+            542,
+            543,
+            544,
+            545,
+            546,
+            547
+          ],
           "page_no": 28
         },
         {
@@ -6399,11 +6841,18 @@
           "answer_row": 541,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [542, 543, 544, 545, 546, 547],
+          "dependency_rows": [
+            542,
+            543,
+            544,
+            545,
+            546,
+            547
+          ],
           "page_no": 28
         },
         {
@@ -6433,7 +6882,7 @@
           "answer_row": 542,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6449,7 +6898,7 @@
           "field": "Circuit breaker meets the relevant requirements IEC 60947-2 and is suitable for the application",
           "answer_row": 543,
           "answer_column": 2,
-          "custom_prompt": "Verify that the circuit breaker meets the relevant requirements of IEC 60947-2 and is suitable for the intended application.",
+          "custom_prompt": "Verify if circuit breakers are used as disconnection device the circuit breaker meets the relevant requirements of IEC 60947-2 and is suitable for the intended application.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -6467,7 +6916,7 @@
           "field": "Circuit breaker meets the relevant requirements IEC 60947-2 and is suitable for the application",
           "answer_row": 543,
           "answer_column": 3,
-          "custom_prompt": "Verify that the circuit breaker meets the relevant requirements of IEC 60947-2 and is suitable for the intended application.",
+          "custom_prompt": "Verify if circuit breakers are used as disconnection device the circuit breaker meets the relevant requirements of IEC 60947-2 and is suitable for the intended application.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -6485,7 +6934,7 @@
           "field": "Switch meets the relevant requirements IEC 60947-3 and is suitable for the application",
           "answer_row": 544,
           "answer_column": 2,
-          "custom_prompt": "Verify that the switch used as a disconnecting device complies with IEC 60947-3 and is suitable for the intended application.",
+          "custom_prompt": "Verify if switch is used as a disconnecting device it complies with IEC 60947-3 and is suitable for the intended application.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -6503,11 +6952,11 @@
           "field": "Switch meets the relevant requirements IEC 60947-3 and is suitable for the application",
           "answer_row": 544,
           "answer_column": 3,
-          "custom_prompt": "Verify that the switch used as a disconnecting device complies with IEC 60947-3 and is suitable for the intended application.",
+          "custom_prompt": "Verify if switch is used as a disconnecting device it complies with IEC 60947-3 and is suitable for the intended application.",
           "value": null,
           "task_type": "verdict",
-          "user_editable": false,
-          "ai_fillable": false,
+          "user_editable": true,
+          "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 28
@@ -6540,7 +6989,7 @@
           "answer_row": 545,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6556,7 +7005,7 @@
           "field": "Not incorporated in mains cord",
           "answer_row": 546,
           "answer_column": 2,
-          "custom_prompt": "Verify that disconnecting devices such as switches and circuit-breakers are not incorporated in the mains cord.",
+          "custom_prompt": "Verify that disconnecting devices used such as switches and circuit-breakers are not incorporated in the mains cord.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -6574,7 +7023,7 @@
           "field": "Not incorporated in mains cord",
           "answer_row": 546,
           "answer_column": 3,
-          "custom_prompt": "Verify that disconnecting devices such as switches and circuit-breakers are not incorporated in the mains cord.",
+          "custom_prompt": "Verify that disconnecting devices used such as switches and circuit-breakers are not incorporated in the mains cord.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -6595,10 +7044,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 28
+          "page_no": 28,
+          "custom_prompt": "Verify that disconnecting devices used such as switches and circuit-breakers does not interrupt protective earth conductor."
         },
         {
           "clause_row": 547,
@@ -6612,10 +7062,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 28
+          "page_no": 28,
+          "custom_prompt": "Verify that disconnecting devices used such as switches and circuit-breakers does not interrupt protective earth conductor"
         },
         {
           "clause_row": 548,
@@ -6631,7 +7082,12 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [549, 550, 551, 552],
+          "dependency_rows": [
+            549,
+            550,
+            551,
+            552
+          ],
           "page_no": 28
         },
         {
@@ -6646,9 +7102,14 @@
           "value": null,
           "task_type": "verdict_dependency",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [549, 550, 551, 552],
+          "dependency_rows": [
+            549,
+            550,
+            551,
+            552
+          ],
           "page_no": 28
         },
         {
@@ -6664,8 +7125,8 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 28
         },
@@ -6679,7 +7140,7 @@
           "answer_row": 549,
           "answer_column": 3,
           "value": "—",
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
@@ -6695,7 +7156,7 @@
           "field": "Readily identifiable and easily reached by the operator",
           "answer_row": 550,
           "answer_column": 2,
-          "custom_prompt": "Verify that the appliance couplers and plugs used as disconnecting devices are readily identifiable and easily reachable by the operator.",
+          "custom_prompt": "Verify if appliance couplers or separable plugs are used as disconnecting device they are readily identifiable and easily reached by the operator.Mention 'No Appliance coupler or separable plug' incase there are no appliance couplers or separable plugs used",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -6713,7 +7174,7 @@
           "field": "Readily identifiable and easily reached by the operator",
           "answer_row": 550,
           "answer_column": 3,
-          "custom_prompt": "Verify that the appliance couplers and plugs used as disconnecting devices are readily identifiable and easily reachable by the operator.",
+          "custom_prompt": "Verify if appliance couplers or separable plugs are used as disconnecting device they are readily identifiable and easily reached by the operator.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -6736,7 +7197,7 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 28
         },
@@ -6753,8 +7214,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 28
         },
@@ -6772,7 +7233,7 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 28
         },
@@ -6789,8 +7250,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 28
         },
@@ -6804,11 +7265,19 @@
           "answer_row": 554,
           "answer_column": 2,
           "value": "PROTECTION AGAINST MECHANICAL HAZARDS",
-          "task_type": null,
+          "task_type": "remark",
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [555, 558, 562, 590, 600, 610, 613],
+          "dependency_rows": [
+            555,
+            558,
+            562,
+            590,
+            600,
+            610,
+            613
+          ],
           "page_no": 28
         },
         {
@@ -6821,11 +7290,19 @@
           "answer_row": 554,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [555, 558, 562, 590, 600, 610, 613],
+          "dependency_rows": [
+            555,
+            558,
+            562,
+            590,
+            600,
+            610,
+            613
+          ],
           "page_no": 28
         },
         {
@@ -6842,7 +7319,10 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [556, 557],
+          "dependency_rows": [
+            556,
+            557
+          ],
           "page_no": 28
         },
         {
@@ -6855,11 +7335,14 @@
           "answer_row": 555,
           "answer_column": 3,
           "value": null,
-          "task_type": null,
+          "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [556, 557],
+          "dependency_rows": [
+            556,
+            557
+          ],
           "page_no": 28
         },
         {
@@ -6875,8 +7358,8 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 28
         },
@@ -6893,8 +7376,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 28
         },
@@ -6946,7 +7429,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [559, 560, 561],
+          "dependency_rows": [
+            559,
+            560,
+            561
+          ],
           "page_no": 28
         },
         {
@@ -6963,7 +7450,11 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [559, 560, 561],
+          "dependency_rows": [
+            559,
+            560,
+            561
+          ],
           "page_no": 28
         }
       ]
