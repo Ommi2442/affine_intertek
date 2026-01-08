@@ -1,4 +1,4 @@
-
+from openpyxl import load_workbook
 from pathlib import Path
 from datetime import datetime
 import uuid
@@ -260,62 +260,6 @@ def save_local_json_to_blob_and_cosmos(
         results.append(result)
 
     return results
-
-
-
-
-def save_local_json_to_blob_and_cosmos_cdr(
-    file_path: str,
-    project_id: str
-) -> dict:
-    """
-    Reads a local JSON file, uploads it to Blob Storage,
-    and stores the blob URL in Cosmos DB
-    """
-
-    path = Path(file_path)
-    print("\n\n\n file_path:", file_path)
-    import time; time.sleep(2)
-    if not path.exists():
-        raise FileNotFoundError(f"File not found: {file_path}")
-
-    if path.suffix.lower() != ".json":
-        raise ValueError("Only .json files are allowed")
-
-    filename = path.name
-
-    # ---------- 1. Read local JSON ----------
-    with open(path, "r", encoding="utf-8") as f:
-        json_data = json.load(f)
-
-    # ---------- 2. Upload to Blob ----------
-    blob_path = f"Documents/{project_id}/Generated_cdr_Report/{filename}"
-    blob_client = blob_service.get_blob_client(
-        container=blob_container,
-        blob=blob_path
-    )
-
-    with open(path, "rb") as file_bytes:
-        blob_client.upload_blob(
-            file_bytes,
-            overwrite=True,
-            content_type="application/json"
-        )
-
-    blob_url = blob_client.url
-
-    # ---------- 3. Save metadata in Cosmos ----------
-    cosmos_item = {
-        "id": str(uuid.uuid4()),
-        "project_id": project_id,
-        "filename": filename,
-        "blob_url": blob_url,
-        "uploaded_on": datetime.utcnow().isoformat() + "Z"
-    }
-
-    cdr_container.create_item(cosmos_item)
-
-    return cosmos_item
 
 
 def fetch_json_from_blob(blob_url: str) -> dict:
@@ -622,7 +566,7 @@ def save_local_xlsx_to_blob_and_cosmos_cdr(xlsx_file_path: str, project_id: str)
             overwrite=True,
             content_settings=ContentSettings(content_type=content_type)
         )
-
+    
     cosmos_item = {
         "id": str(uuid.uuid4()),
         "project_id": project_id,
@@ -637,3 +581,68 @@ def save_local_xlsx_to_blob_and_cosmos_cdr(xlsx_file_path: str, project_id: str)
     cosmos_items.append(cosmos_item)
     return cosmos_items
 
+
+
+def save_local_json_to_blob_and_cosmos_cdr(
+    json_file_name: str,
+    project_id: str,
+    update_only: bool = False
+) -> dict:
+    
+    path = Path(json_file_name)
+    print("json_file_name --- ",json_file_name)
+    # ---------- existence check ----------
+    if not path.exists():
+        raise FileNotFoundError(f"File not found: {path}")
+
+    # ---------- allowed file type ----------
+    if path.suffix.lower() != ".json":
+        raise ValueError("Only .json files are allowed")
+
+    # ---------- filename ----------
+    filename = path.name
+    print("Filename:", filename)
+
+    # ---------- correct blob folder for CDR ----------
+    blob_path = f"Documents/{project_id}/Generated_cdr_Report/{filename}"
+    blob_client = blob_service.get_blob_client(
+        container=blob_container,
+        blob=blob_path
+    )
+    with open(path, "r", encoding="utf-8") as f:
+        json.load(f)
+    content_type = "application/json"
+
+    if update_only and not blob_client.exists():
+        raise FileNotFoundError(f"Cannot update missing blob: {blob_path}")
+
+    with open(path, "rb") as f:
+        blob_client.upload_blob(
+            f,
+            overwrite=True,
+            content_type=content_type
+        )
+
+    result = {
+        "project_id": project_id,
+        "filename": filename,
+        "file_type": "json",
+        "blob_path": blob_path,
+        "blob_url": blob_client.url,
+        "status": "updated" if update_only else "created"
+    }
+
+    if not update_only:
+        cosmos_item = {
+            "id": str(uuid.uuid4()),
+            "project_id": project_id,
+            "filename": filename,
+            "file_type": "json",
+            "blob_path": blob_path,
+            "blob_url": blob_client.url,
+            "uploaded_on": datetime.utcnow().isoformat() + "Z"
+        }
+        cdr_container.create_item(cosmos_item)
+        result["cosmos_id"] = cosmos_item["id"]
+
+    return result

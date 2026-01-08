@@ -1260,15 +1260,14 @@ async def finalize_reports(payload: FinalizeReportPayload):
             if report_type == "TRF"
             else COSMOS_DB_project_CDR_Container
         )
-
+        print("Finalize api for CDR Generating for --- ",container)
         # --------------------------------------------------
         # Fetch Cosmos record
         # --------------------------------------------------
         record = fetch_final_json_record(container, project_id)
-
+        
         blob_path = record["blob_path"]
         blob_url = record["blob_url"]
-
         # --------------------------------------------------
         # Replace JSON in Blob
         # --------------------------------------------------
@@ -1278,27 +1277,66 @@ async def finalize_reports(payload: FinalizeReportPayload):
             blob_path=blob_path,
             json_data=updated_data
         )
-
+        
         # --------------------------------------------------
         # Replace local final_output.json
         # --------------------------------------------------
-        replace_local_final_json(project_id, updated_data)
+        if report_type == "TRF":
+            replace_local_final_json(project_id, updated_data)
+            BASE_DIR = Path(__file__).resolve().parent.parent
+            DATA_DIR = BASE_DIR / "data" 
+            OUTPUT_JSON_PATH = DATA_DIR / project_id / "final_output.json"
+            OUTPUT_DOCX_PATH = DATA_DIR / project_id / "final_output.docx"
+            
+            save_local_json_to_blob_and_cosmos(str(OUTPUT_JSON_PATH),str(OUTPUT_DOCX_PATH),project_id=project_id,
+            update_only=True)    
+            update_docx_from_existing_json(
+                input_docx_path=OUTPUT_DOCX_PATH,
+                input_json_path=OUTPUT_JSON_PATH,
+                output_docx_path=OUTPUT_DOCX_PATH,
+            )
+        
+        if report_type == "CDR":
+            print("---- inside the CDR update-----")
+            BASE_DIR = Path(__file__).resolve().parents[1]
+            DATA_DIR = BASE_DIR / "data"
+            DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-        BASE_DIR = Path(__file__).resolve().parent.parent
-        DATA_DIR = BASE_DIR / "data" 
-        OUTPUT_JSON_PATH = DATA_DIR / project_id / "final_output.json"
-        OUTPUT_DOCX_PATH = DATA_DIR / project_id / "final_output.docx"
+            OUTPUT_JSON_PATH = DATA_DIR / f"iec_output_cdr_{project_id}.json"
+            OUTPUT_JSON_PATH_local = DATA_DIR / f"iec_output_cdr_{project_id}_updated.json" 
 
-        save_local_json_to_blob_and_cosmos(str(OUTPUT_JSON_PATH),str(OUTPUT_DOCX_PATH),project_id=project_id,
-        update_only=True)
+            with open(OUTPUT_JSON_PATH, "w", encoding="utf-8") as f:
+                json.dump(updated_data, f, indent=2, ensure_ascii=False)
+            
+            save_local_json_to_blob_and_cosmos_cdr(
+                str(OUTPUT_JSON_PATH),
+                project_id=project_id,
+                update_only=True
+            )
+            updated_json_data=fetch_json_from_blob(blob_url)
+            with open(OUTPUT_JSON_PATH_local, "w", encoding="utf-8") as f:
+                json.dump(updated_json_data, f, indent=2, ensure_ascii=False)
 
-
-        update_docx_from_existing_json(
-            input_docx_path=OUTPUT_DOCX_PATH,
-            input_json_path=OUTPUT_JSON_PATH,
-            output_docx_path=OUTPUT_DOCX_PATH,
-        )
-
+            output_excel_path = DATA_DIR / f"iec_output_sheet_{project_id}.xlsx"
+            
+            try:
+                fill_excel_from_json(updated_json_data, str(output_excel_path))
+                cosmos_item = save_local_xlsx_to_blob_and_cosmos_cdr(str(output_excel_path), project_id)
+                first_item = cosmos_item[0]
+                blob_url_xlsx = first_item['blob_url']
+                record = fetch_final_json_record(container, project_id)
+                blob_url = record["blob_url"]
+                
+                if not cosmos_item:
+                    raise HTTPException(
+                        status_code=500,
+                        detail="CDR Excel upload failed"
+                    )
+            except Exception as e:
+                raise HTTPException(
+                status_code=500,
+                detail=f"CDR Excel generation failed: {str(e)}"
+                )
         return {
             "status": "success",
             "reportType": report_type,
