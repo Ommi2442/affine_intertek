@@ -339,22 +339,6 @@ blob_service = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION
 blob_container = 'stintertekesusdev-blob'
 
 
-# def download_docx_from_blob(project_id: str, local_folder: str = "./downloads") -> str:
-
-#     docx_file_path = f"Documents/{project_id}/Generated_trf_Report/final_output_{project_id}.docx"
-
-#     Path(local_folder).mkdir(parents=True, exist_ok=True)
-
-#     local_file_path = os.path.join(local_folder, f"iec_output_{project_id}.docx")
-
-#     blob_client = blob_service.get_blob_client(container=blob_container, blob=docx_file_path)
-
-#     with open(local_file_path, "wb") as f:
-#         download_stream = blob_client.download_blob()
-#         f.write(download_stream.readall())
-
-#     print(f"File downloaded to: {local_file_path}")
-#     return local_file_path,docx_file_path
 
 
 
