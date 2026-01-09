@@ -167,7 +167,9 @@ async def get_all_projects(payload: ProjectFilter):
                     c.Proj_Created_On,
                     c.Proj_Created_By,
                     c.Proj_Archived,
-                    c.Project_Progress
+                    c.Project_Progress,
+                    c.CDR_Project_Progress
+
                 FROM c
                 WHERE c.Proj_Created_By = "{user_email}"
                   AND c.Proj_Archived = false
@@ -182,7 +184,8 @@ async def get_all_projects(payload: ProjectFilter):
                     c.Proj_Created_On,
                     c.Proj_Created_By,
                     c.Proj_Archived,
-                    c.Project_Progress
+                    c.Project_Progress,
+                    c.CDR_Project_Progress
                 FROM c
                 WHERE c.Proj_Archived = false
             """
@@ -202,6 +205,7 @@ async def get_all_projects(payload: ProjectFilter):
         projects = []
         for p in items:
             progress = p.get("Project_Progress") or {}
+            cdr_progress = p.get("CDR_Project_Progress") or {}
 
             projects.append({
                 "Project_Id": p.get("Project_Id"),
@@ -217,11 +221,11 @@ async def get_all_projects(payload: ProjectFilter):
                 "trf_error": progress.get("trf_error"),
                 "trf_completed": progress.get("trf_completed", "No"),
 
-                "cdr_percentage": progress.get("cdr_percentage", 10),
-                "cdr_step": progress.get("cdr_step"),
-                "cdr_last_updated": progress.get("cdr_last_updated"),
-                "cdr_error": progress.get("cdr_error"),
-                "cdr_completed": progress.get("cdr_completed", "No"),
+                "cdr_percentage": cdr_progress.get("cdr_percentage"),
+                "cdr_step": cdr_progress.get("cdr_step"),
+                "cdr_last_updated": cdr_progress.get("last_updated"),
+                "cdr_error": cdr_progress.get("error"),
+                "cdr_completed": cdr_progress.get("cdr_completed", "No"),
 
                 "letter_percentage": progress.get("letter_percentage", 10),
                 "letter_step": progress.get("letter_step"),
@@ -229,6 +233,7 @@ async def get_all_projects(payload: ProjectFilter):
                 "letter_error": progress.get("letter_error"),
                 "letter_completed": progress.get("letter_completed", "No")
             })
+            print(projects)
 
         return {
             "status": "success",
@@ -1059,11 +1064,12 @@ def generate_cdr(projectId: str):
 
         update_project_progress_CDR(
             project_doc,
-            cdr_stage="All Steps Completed",
+            cdr_stage="Completed",
             cdr_percentage=100,
-            cdr_step="COMPLETED",
+            cdr_step="CDR generated and stored",
             cdr_completed=True
         )
+        print("#################")
         return {
             "message": "CDR Report generated successfully",
             "projectId": projectId,
