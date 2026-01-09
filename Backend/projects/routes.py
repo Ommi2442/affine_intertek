@@ -1,3 +1,7 @@
+from fastapi import HTTPException
+from fastapi.responses import StreamingResponse
+from pathlib import Path
+from azure.core.exceptions import ResourceNotFoundError
 from queue_worker import update_project_progress_CDR
 from fastapi import APIRouter, HTTPException, Depends, Body, Form, UploadFile, File, Query, logger, BackgroundTasks, status
 import traceback
@@ -1088,20 +1092,42 @@ def generate_cdr(projectId: str):
 
 
 @router.get("/download-file")
-def download_file(project_id: str):
-    docx_path = download_docx_from_local(project_id)
+def download_file(project_id: str,report_type:str):
+    report_type=report_type.lower()
+    if report_type=='trf':
+        docx_path = download_docx_from_local(project_id)
+        file_like = open(docx_path, "rb")
+        return StreamingResponse(
+            file_like,
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            headers={
+                "Content-Disposition": f'attachment; filename="final_output_{project_id}.docx"',
+                "Content-Length": str(docx_path.stat().st_size)
+            })
+    elif report_type == "cdr":
+        blob_path = (
+            f"Documents/{project_id}/Generated_cdr_Report/"
+            f"iec_output_sheet_{project_id}.xlsx")
 
-    file_like = open(docx_path, "rb")
+        blob_client = blob_service.get_blob_client(
+            container=blob_container,
+            blob=blob_path
+        )
 
-    return StreamingResponse(
-        file_like,
-        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        headers={
-            "Content-Disposition": f'attachment; filename="final_output_{project_id}.docx"',
-            "Content-Length": str(docx_path.stat().st_size)
-        }
-    )
+        if not blob_client.exists():
+            raise HTTPException(
+                status_code=404,
+                detail=f"XLSX file not found at {blob_path}"
+            )
+        stream = blob_client.download_blob()
 
+        return StreamingResponse(
+            stream.chunks(),
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={
+                "Content-Disposition": f'attachment; filename="iec_output_sheet_{project_id}.xlsx"'
+            }
+        )
 
 
 @router.get("/pdf-proxy")
