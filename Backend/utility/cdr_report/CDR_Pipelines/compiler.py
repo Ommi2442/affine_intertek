@@ -148,6 +148,33 @@ def apply_outside_borders(ws, start_row, end_row, start_col="A", end_col="G"):
                 border = border + OUTSIDE_BORDERS["right"]
 
             cell.border = border
+            
+from openpyxl.styles import Font, Color
+
+def force_all_text_black(wb):
+    """
+    Force font color = black for all non-empty cells in all sheets.
+    Preserves existing font styles.
+    """
+    black = Color(rgb="FF000000")  # ARGB
+
+    for ws in wb.worksheets:
+        for row in ws.iter_rows():
+            for cell in row:
+                if cell.value is None:
+                    continue
+
+                old_font = cell.font or Font()
+                cell.font = Font(
+                    name=old_font.name,
+                    size=old_font.size,
+                    bold=old_font.bold,
+                    italic=old_font.italic,
+                    underline=old_font.underline,
+                    strike=old_font.strike,
+                    color=black
+                )
+
 
 
 import re
@@ -569,6 +596,7 @@ def fill_excel_from_json(JSON_PATH, OUTPUT_EXCEL_PATH):
         else:
             continue
 
+    force_all_text_black(wb)
 
     wb.save(OUTPUT_EXCEL_PATH)
     print(f"✅ Excel generated: {OUTPUT_EXCEL_PATH}")
