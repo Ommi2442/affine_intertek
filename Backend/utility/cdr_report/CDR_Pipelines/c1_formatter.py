@@ -12,6 +12,8 @@ def build_field_text(photo_no, image_reason):
     return f"Photo {photo_no}"
 
 def run_formatter():
+    configs.require_runtime()
+
     print("Starting Formatting...")
     
     # ===================== PART 1: COMPONENT JSON =====================
@@ -101,10 +103,11 @@ def run_formatter():
             "ai_fillable": True,
             "accuracy_level": True,
             "image_support": (
-                                row.get("image_url")
+                                c1_utils.clean_value(row.get("image_url"))
                                 if row["photo_no"] != "Not Shown"
                                 else None
                             ),
+
             "text_support": [{"filename": c1_utils.clean_value(row.get("sheet_name")),
                              "page": c1_utils.clean_value(row.get("sheet_name")),
                              "similarity_score": None,

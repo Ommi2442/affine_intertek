@@ -2,10 +2,11 @@
 import utility.cdr_report.CDR_Pipelines.c2_extractor as c2_extractor
 import utility.cdr_report.CDR_Pipelines.c2_processor as c2_processor
 import utility.cdr_report.CDR_Pipelines.c2_formatter as c2_formatter
-
+import utility.cdr_report.CDR_Pipelines.configs as configs
 
 def run_case2_pipeline():
-     
+    configs.require_runtime()
+    
     print("Step 1 : Extracting . . .")
     c2_extractor.run_extractor()
     

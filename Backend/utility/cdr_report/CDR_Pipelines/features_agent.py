@@ -8,7 +8,7 @@ from langchain_core.prompts import ChatPromptTemplate
 # Your existing pipeline entrypoint
 from utility.cdr_report.CDR_Pipelines.features import features_main, rag_multimodal_retrieve
 
-
+import utility.cdr_report.CDR_Pipelines.configs as configs
 import json
 import copy
 from typing import Any, Dict, List, Optional
@@ -145,11 +145,14 @@ def features_tools_main(
     run_audit: bool = True,
     audit_path: str = "features_audit.json",
 ) -> Dict[str, Any]:
+
     """
     Guaranteed output stability:
     - returns EXACT dict from features_main(vs, image_urls)
     - audit results are saved separately and never fed back
     """
+    configs.require_runtime()
+
     tools = build_tools(vs, image_urls)
     
     import os, threading

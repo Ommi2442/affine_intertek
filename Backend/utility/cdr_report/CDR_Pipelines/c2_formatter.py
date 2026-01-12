@@ -1,4 +1,4 @@
-# formatter.py
+# c2_formatter.py
 import json
 import pandas as pd
 import utility.cdr_report.CDR_Pipelines.c2_utils as c2_utils
@@ -82,8 +82,8 @@ def create_s3_json(input_excel, output_json):
     # Strict image validation
     # --------------------------------
     def has_real_image(row):
-        img = str(row.get("Image URLs", "")).strip().lower()
-        src = str(row.get("Source Types", "")).strip().lower()
+        img = str(row.get("URL", "")).strip().lower()
+        src = str(row.get("Source Type", "")).strip().lower()
         photo = str(row.get("photo_no", "")).strip().lower()
 
         if not photo or photo in ("guide", "nan", "none"):
@@ -182,6 +182,8 @@ def create_s3_json(input_excel, output_json):
     
     
 def run_formatter():
+    configs.require_runtime()
+
         # 5. FORMATTING (JSON)
     print("\n--- Formatting JSONs ---")
     create_s4_json(configs.OUTPUT_EXCEL_DEDUPED, configs.OUTPUT_JSON_S4)

@@ -1,6 +1,5 @@
 from azure.storage.blob import BlobServiceClient
 from azure.core.exceptions import ResourceNotFoundError
-from utility.cdr_report.CDR_Pipelines.configs import *
 import utility.cdr_report.CDR_Pipelines.configs as configs
 from urllib.parse import quote
 import pandas as pd
@@ -8,25 +7,39 @@ from io import BytesIO
 
 # ===================== CONFIG =====================
 
-AZURE_CONNECTION_STRING = AZURE_CONN_STRING
-CONTAINER_NAME = BLOB_CONTAINER_NAME
-CONTAINER_SAS_URL = AZURE_BLOB_CONTAINER_SAS_URL
+AZURE_CONNECTION_STRING = configs.AZURE_BLOB_CONNECTION_STRING
+CONTAINER_NAME = configs.BLOB_CONTAINER_NAME
+CONTAINER_SAS_URL = configs.AZURE_BLOB_CONTAINER_SAS_URL
 
-MAX_HEADER_SCAN_ROWS = 10
+
+MAX_HEADER_SCAN_ROWS = 15
 
 BOM_COLUMNS = {
     "line",
-    "parent part number",
     "qty",
     "u/m",
+    "name",
     "description",
     "manufacturer",
-    "manufacturer part number",
-    "vendor",
-    "vendor part number",
+    "manufacturer part number"
 }
 
 # ===================== HELPERS =====================
+
+# switch.py
+
+def get_bom_filenames() -> set[str]:
+    """
+    Returns lowercase filenames of detected BOM blobs.
+    Intended for retrieval-time filtering.
+    """
+    bom_items = find_bom_blob_url()
+    return {
+        item["name"].lower()
+        for item in bom_items
+        if item.get("name")
+    }
+
 
 def normalize(text: str) -> str:
     return (
@@ -56,7 +69,7 @@ def is_bom_excel(excel_bytes: bytes) -> bool:
                 if cell and str(cell).strip()
             }
 
-            if len(BOM_COLUMNS & found) >= int(0.8 * len(BOM_COLUMNS)):
+            if len(BOM_COLUMNS & found) >= int(0.28 * len(BOM_COLUMNS)):
                 return True
 
     except Exception:
@@ -128,10 +141,14 @@ from azure.storage.blob import BlobServiceClient
 from azure.core.exceptions import ResourceNotFoundError
 
 def find_bom_blob_url() -> list[dict]:
+
     """
     Locate BOM files (Excel + BOM PDFs only).
     Uses multithreading for PDF validation.
     """
+    
+    configs.require_runtime()
+    project_id = configs.runtime.project_id
 
     blob_service_client = BlobServiceClient.from_connection_string(
         AZURE_CONNECTION_STRING
@@ -147,7 +164,10 @@ def find_bom_blob_url() -> list[dict]:
     pdf_candidates: list[dict] = []
 
     # ------------------ DISCOVERY (single-threaded) ------------------
-    for blob in container_client.list_blobs():
+    prefix = f"Documents/{project_id}/source_documents/"
+
+    for blob in container_client.list_blobs(name_starts_with=prefix):
+
         name = blob.name
         lname = name.lower()
 
@@ -161,7 +181,8 @@ def find_bom_blob_url() -> list[dict]:
                 if is_bom_excel(excel_bytes):
                     excel_results.append({
                         "url": f"{base_url}/{quote(name)}?{sas}",
-                        "name": name,
+                        "name": name.split("/")[-1],
+                        "path": name,
                         "type": "xlsx",
                     })
 
@@ -172,7 +193,8 @@ def find_bom_blob_url() -> list[dict]:
         elif lname.endswith(".pdf"):
             pdf_candidates.append({
                 "url": f"{base_url}/{quote(name)}?{sas}",
-                "name": name,
+                "name": name.split("/")[-1],
+                "path": name,
                 "type": "pdf",
             })
 

@@ -239,7 +239,6 @@ async def get_all_projects(payload: ProjectFilter):
                 "letter_error": progress.get("letter_error"),
                 "letter_completed": progress.get("letter_completed", "No")
             })
-            print(projects)
 
         return {
             "status": "success",
@@ -1058,7 +1057,7 @@ def generate_cdr(projectId: str):
             output_excel_path = DATA_DIR / f"iec_output_sheet_{projectId}.xlsx"
 
             # ------------------ PIPELINE ------------------
-            result = main2(
+            result = main2(project_id,
                 trf_filled,
                 output_excel_path=output_excel_path
             )

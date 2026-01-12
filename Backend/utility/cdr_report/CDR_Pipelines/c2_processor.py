@@ -165,6 +165,8 @@ def deduplicate_components(df):
 
 
 def run_processor():
+    configs.require_runtime()
+
         # 3. CLASSIFICATION
     print("\n--- Classifying Components ---")
     df_raw = pd.read_excel(configs.OUTPUT_EXCEL_RAW, dtype=str)

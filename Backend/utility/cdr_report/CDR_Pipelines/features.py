@@ -656,6 +656,9 @@ def build_all_sections_final_json(
     }
 
 def features_main(vs, image_urls, llm=None):
+    import utility.cdr_report.CDR_Pipelines.configs as configs
+    configs.require_runtime()
+
     llm = llm or configs.llm
     all_out = build_all_sections_final_json(
         section_cfgs=section_cfgs,

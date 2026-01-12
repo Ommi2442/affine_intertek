@@ -1,4 +1,13 @@
 # utils.py
+
+
+# NOTE:
+# c1_utils is intentionally runtime-agnostic.
+# Do NOT access configs.runtime or project_id here.
+# This module must remain safe to import before init_runtime().
+
+
+
 import re
 import json
 import numpy as np
@@ -18,7 +27,7 @@ cosmos_client = CosmosClient(configs.COSMOS_ENDPOINT, configs.COSMOS_KEY)
 cosmos_db = cosmos_client.get_database_client(configs.COSMOS_DB_NAME)
 cosmos_container = cosmos_db.create_container_if_not_exists(
     id=configs.COSMOS_CONTAINER_NAME,
-    partition_key=PartitionKey(path="/source")
+    partition_key=PartitionKey(path=configs.PARTITION_KEY)
 )
 
 # Alias for compatibility with original code

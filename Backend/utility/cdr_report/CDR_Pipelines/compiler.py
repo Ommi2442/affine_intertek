@@ -6,13 +6,13 @@ from openpyxl.drawing.image import Image
 from openpyxl.utils import column_index_from_string, get_column_letter
 from openpyxl.styles import Border, Side, Font
 from pathlib import Path
+
 BASE_DIR = Path(__file__).resolve().parent
 # utility.cdr_report.CDR_Pipelines.
 # ===================== CONFIG =====================
 
 #EXCEL_TEMPLATE = Path("CDR_template.xlsx")
 EXCEL_TEMPLATE = BASE_DIR /"CDR_template.xlsx"
-
 # OUTPUT_EXCEL = Path(r".\utility\cdr_report\CDR_Pipelines\CDR_Report.xlsx")
 # OUTPUT_EXCEL = Path("Final_CDR_Report_@@@@@@@.xlsx")
 # JSON_PATH = Path(r".\utility\cdr_report\CDR_Pipelines\cdr_payload_v5_updated.json")
@@ -27,8 +27,8 @@ TABLE_COLUMNS = [
     "marks_of_conf",
 ]
 
-BLUE_FONT = Font(color="0000FF")  # Excel blue
-BLUE_FONT_BOLD = Font(color="0000FF",bold=True)  # Excel blue
+BLUE_FONT = Font(color="000000")  # Excel blue
+BLUE_FONT_BOLD = Font(color="000000",bold=True)  # Excel blue
 THIN = Side(style="thin")
 ALL_BORDERS = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
 OUTSIDE_BORDERS = {"top": Border(top=THIN),"bottom": Border(bottom=THIN),"left": Border(left=THIN),"right": Border(right=THIN),}
@@ -263,18 +263,26 @@ def write_from_json(ws, items: list):
         field = it.get("field")
         val = it.get("value")
 
-        # Write label
+        # ---------- Write label ----------
         if qc and field and task != "blank":
             ws[qc].value = field
 
-        # Write value (top-left of merge)
-        if task == "extraction" and ac and val is not None:
-            ws[ac].value = val
+        # ---------- Always touch answer_cell ----------
+        if task == "extraction" and ac:
+            cell = ws[ac]
+
+            if val is None or str(val).strip() == "":
+                # JSON null ⇒ wipe template value
+                cell.value = None
+                continue
+
+            # JSON value present ⇒ write
+            cell.value = val
 
             if isinstance(val, str) and "\n" in val:
-                a = ws[ac].alignment
-                ws[ac].alignment = copy(a) if a else None
-                ws[ac].alignment = ws[ac].alignment.copy(
+                a = cell.alignment
+                cell.alignment = (copy(a) if a else None)
+                cell.alignment = cell.alignment.copy(
                     wrap_text=True,
                     vertical="top"
                 )
@@ -463,7 +471,7 @@ def handle_sheet_4(ws, rows):
 
     apply_outside_borders(ws, notes_block_start, notes_block_end)
 
-BLUE_FONT_S6 = Font(name="Arial", size=10, color="0000FF")
+BLUE_FONT_S6 = Font(name="Arial", size=10, color="000000")
 
 def handle_sheet_6(ws, items):
     """
