@@ -86,7 +86,12 @@ const RenderSheetDefaultExcel = ({
 
                 {item.ai_fillable === true &&
                   item.accuracy_level === true &&
-                  renderConfidenceColor(item.confidence, item.is_user_edited)}
+                  renderConfidenceColor(
+                    item.confidence,
+                    item.is_user_edited,
+                    item.ai_fillable,
+                    item.accuracy_level
+                  )}
               </div>
             </Box>
           </Box>

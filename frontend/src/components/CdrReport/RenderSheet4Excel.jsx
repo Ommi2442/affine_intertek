@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Typography,
   TextField,
@@ -10,7 +10,11 @@ import {
   TableRow,
   Paper,
   Box,
+  IconButton,
+  Button,
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 import HoverActionWrapper from '../Common/HoverActionsWrapper';
 import CommentDialog from '../CommentDialog';
 import { useCommentActions } from '../Common/useCommentActions';
@@ -26,7 +30,8 @@ const RenderSheet4Excel = ({
 }) => {
   if (!sheet || !Array.isArray(sheet.Rows)) return null;
 
-  const [hovered, setHovered] = useState({ i: null });
+  const [hoveredRow, setHoveredRow] = useState(null);
+  const [rowsState, setRowsState] = useState([]);
 
   const {
     isCommentOpen,
@@ -40,36 +45,49 @@ const RenderSheet4Excel = ({
 
   const titleItem = sheet.Items?.[0] ?? null;
   const headerRow = sheet.Rows.find((r) => r.row_type === 'column_headings');
-  const dataRows = sheet.Rows.filter((r) => r.row_type === 'table_data');
+
+  useEffect(() => {
+    setRowsState(sheet.Rows.filter((r) => r.row_type === 'table_data'));
+  }, [sheet]);
 
   const border = { border: '1px solid #000' };
 
-  /* ---------------- CELL RENDER (NO HOVER HERE) ---------------- */
-  const renderCell = (value, editable, onChange = () => {}) => (
-    <TableCell
-      sx={{
-        ...border,
-        whiteSpace: 'normal',
-        wordBreak: 'break-word',
-        overflowWrap: 'anywhere',
-        verticalAlign: 'middle',
-      }}
-    >
+  /* ---------------- ADD / DELETE ROW ---------------- */
+  const addRow = () => {
+    setRowsState((prev) => [
+      ...prev,
+      {
+        row_type: 'table_data',
+        photo_no: '',
+        item_no: String(prev.length + 1),
+        name: '',
+        manufacturer: '',
+        type_model: '',
+        technical_data: '',
+        marks_of_conf: '',
+        user_editable: true,
+        ai_fillable: false,
+        accuracy_level: false,
+        confidence: null,
+        is_user_edited: true,
+      },
+    ]);
+  };
+
+  const deleteRow = (idx) => {
+    setRowsState((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  /* ---------------- CELL RENDER ---------------- */
+  const renderCell = (value, editable, onChange) => (
+    <TableCell sx={border}>
       <TextField
         size="small"
         fullWidth
         value={value ?? ''}
-        InputProps={{
-          readOnly: !editable,
-        }}
-        onChange={(e) => {
-          if (!editable) return;
-          onChange(e);
-        }}
-        sx={{
-          backgroundColor: editable ? '#fff' : '#f5f5f5',
-          cursor: editable ? 'text' : 'default',
-        }}
+        InputProps={{ readOnly: !editable }}
+        onChange={(e) => editable && onChange?.(e)}
+        sx={{ backgroundColor: editable ? '#fff' : '#f5f5f5' }}
       />
     </TableCell>
   );
@@ -79,24 +97,16 @@ const RenderSheet4Excel = ({
       <TableContainer component={Paper}>
         <Table size="small" sx={{ borderCollapse: 'collapse' }}>
           <TableBody>
-            {/* ---------------- TITLE ---------------- */}
+            {/* ---------- TITLE ---------- */}
             {titleItem && (
               <TableRow>
-                <TableCell
-                  colSpan={7}
-                  sx={{
-                    ...border,
-                    fontWeight: 700,
-                    background: '#f5f5f5',
-                    textAlign: 'left',
-                  }}
-                >
+                <TableCell colSpan={8} sx={{ ...border, fontWeight: 700 }}>
                   {titleItem.field}
                 </TableCell>
               </TableRow>
             )}
 
-            {/* ---------------- HEADERS ---------------- */}
+            {/* ---------- HEADER ---------- */}
             {headerRow && (
               <TableRow>
                 {[
@@ -107,35 +117,33 @@ const RenderSheet4Excel = ({
                   headerRow.type_model,
                   headerRow.technical_data,
                   headerRow.marks_of_conf,
-                ].map((label, idx) => (
+                  'Action',
+                ].map((h, i) => (
                   <TableCell
-                    key={idx}
+                    key={i}
                     sx={{
                       ...border,
                       fontWeight: 600,
-                      textAlign: 'center',
+
+                      /* THESE 4 LINES FIX THE OVERLAP */
                       whiteSpace: 'normal',
                       wordBreak: 'break-word',
-                      overflowWrap: 'anywhere',
+                      overflowWrap: 'break-word',
+                      lineHeight: 1.2,
                     }}
                   >
-                    {label}
+                    {h}
                   </TableCell>
                 ))}
               </TableRow>
             )}
 
-            {/* ---------------- DATA ROWS ---------------- */}
-            {dataRows.map((row, idx) => {
+            {/* ---------- DATA ROWS ---------- */}
+            {rowsState.map((row, idx) => {
               const editable = editMode && row.user_editable;
 
               return (
-                <TableRow
-                  key={idx}
-                  onMouseEnter={() => setHovered({ i: idx })}
-                  onMouseLeave={() => setHovered({ i: null })}
-                  sx={{ position: 'relative' }}
-                >
+                <TableRow key={idx}>
                   {renderCell(row.photo_no, false)}
                   {renderCell(row.item_no, false)}
 
@@ -167,60 +175,60 @@ const RenderSheet4Excel = ({
                     )
                   )}
 
-                  {/* -------- LAST COLUMN: SINGLE ROW-LEVEL HOVER -------- */}
+                  {/* ===== MARK(S) OF CONFORMITY (HOVER ONLY HERE) ===== */}
                   <TableCell
-                    sx={{
-                      ...border,
-                      position: 'relative',
-                      whiteSpace: 'normal',
-                      verticalAlign: 'middle',
-                    }}
+                    sx={{ ...border, position: 'relative' }}
+                    onMouseEnter={() => setHoveredRow(idx)}
+                    onMouseLeave={() => setHoveredRow(null)}
                   >
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1, // space between textbox and dot
-                      }}
-                    >
-                      {/* ✅ MARKS OF CONFORMITY TEXTBOX */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <TextField
                         size="small"
                         fullWidth
                         value={row.marks_of_conf ?? ''}
-                        InputProps={{
-                          readOnly: !editable, // 🔥 disabled initially, editable on Edit
-                        }}
-                        onChange={(e) => {
-                          if (!editable) return;
+                        InputProps={{ readOnly: !editable }}
+                        onChange={(e) =>
+                          editable &&
                           updateField(
                             sheet.sheet_no,
                             `marks_of_conf_${idx}`,
                             e.target.value
-                          );
-                        }}
-                        sx={{
-                          backgroundColor: editable ? '#fff' : '#f5f5f5',
-                          cursor: editable ? 'text' : 'default',
-                        }}
+                          )
+                        }
                       />
 
-                      {/* ✅ CONFIDENCE DOT (ALWAYS TO THE RIGHT) */}
-                      {row.user_editable === true &&
-                        row.accuracy_level === true &&
+                      {row.accuracy_level &&
                         renderConfidenceColor(
                           row.confidence,
-                          row.is_user_edited
+                          row.is_user_edited,
+                          row.ai_fillable,
+                          row.accuracy_level
                         )}
                     </Box>
 
-                    {/* ✅ ROW-LEVEL HOVER ACTIONS */}
-                    <HoverActionWrapper
-                      show={hovered.i === idx}
-                      onApprove={() => handleApprove?.(idx)}
-                      onComment={() => openComment(sheet.sheet_no, idx)}
-                      onBookmark={() => onBookmarkClick?.(row)}
-                    />
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        right: -38, //  shift right (adjust -8 / -12 if needed)
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        zIndex: 10,
+                      }}
+                    >
+                      <HoverActionWrapper
+                        show={hoveredRow === idx}
+                        onApprove={() => handleApprove?.(idx)}
+                        onComment={() => openComment(sheet.sheet_no, idx)}
+                        onBookmark={() => onBookmarkClick?.(row)}
+                      />
+                    </Box>
+                  </TableCell>
+
+                  {/* ===== DELETE (NO HOVER AT ALL) ===== */}
+                  <TableCell sx={{ ...border, textAlign: 'center' }}>
+                    <IconButton color="error" onClick={() => deleteRow(idx)}>
+                      <DeleteIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               );
@@ -229,7 +237,14 @@ const RenderSheet4Excel = ({
         </Table>
       </TableContainer>
 
-      {/* ---------------- COMMENT DIALOG ---------------- */}
+      {/* ---------- ADD ROW ---------- */}
+      <Box mt={2} display="flex" justifyContent="flex-end">
+        <Button variant="outlined" onClick={addRow}>
+          + Add Row
+        </Button>
+      </Box>
+
+      {/* ---------- COMMENTS ---------- */}
       <CommentDialog
         open={isCommentOpen}
         onClose={() => setIsCommentOpen(false)}

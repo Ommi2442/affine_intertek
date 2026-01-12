@@ -1,5 +1,9 @@
 import React from 'react';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import {
+  Navigate,
+  RouterProvider,
+  createBrowserRouter,
+} from 'react-router-dom';
 import { MsalProvider } from '@azure/msal-react';
 
 import { msalInstance } from './msalInstance';
@@ -14,6 +18,7 @@ import ReportPage from './pages/ReportPage/ReportPage';
 import GlobalLoader from './loader/GlobalLoader.jsx';
 import './loader/axiosInterceptor';
 import { BreadcrumbProvider } from './components/BreadCrumbContext';
+import CdrReportPage from './pages/ReportPage/CdrReportPage.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -39,7 +44,16 @@ function App() {
       children: [
         { path: 'dashboard', element: <Dashboard /> },
         { path: 'create-project', element: <UploadFilePage /> },
-        { path: 'report-page', element: <ReportPage /> },
+        // REPORT ROUTES
+        {
+          path: 'report-page',
+          children: [
+            { index: true, element: <Navigate to="trf" replace /> },
+            { path: 'trf', element: <ReportPage /> },
+            { path: 'cdr', element: <CdrReportPage /> },
+            // { path: 'letter', element: <LetterPage /> },
+          ],
+        },
       ],
     },
     // CATCH-ALL ROUTE (IMPORTANT FIX)

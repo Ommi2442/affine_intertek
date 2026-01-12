@@ -72,22 +72,21 @@ const Dashboard = () => {
   }, [dispatch]);
 
   const base64ToArrayBuffer = (base64) => {
-  const binary = window.atob(base64);
-  const len = binary.length;
-  const bytes = new Uint8Array(len);
+    const binary = window.atob(base64);
+    const len = binary.length;
+    const bytes = new Uint8Array(len);
 
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
 
-  return bytes.buffer;
+    return bytes.buffer;
   };
-
 
   const preloadProjectPdfs = async (projectId) => {
     const res = await fetchProjectPdfsApi(projectId);
 
-    console.log("PDFs received:", res.pdfs.length);
+    console.log('PDFs received:', res.pdfs.length);
 
     for (const pdf of res.pdfs) {
       try {
@@ -95,13 +94,12 @@ const Dashboard = () => {
 
         await savePdfToDb(projectId, pdf.filename, buffer);
 
-        console.log("Saved to IndexedDB:", pdf.filename);
+        console.log('Saved to IndexedDB:', pdf.filename);
       } catch (err) {
-        console.error("Failed saving PDF:", pdf.filename, err);
+        console.error('Failed saving PDF:', pdf.filename, err);
       }
     }
   };
-
 
   /*  FIX: Pass row details to create-project */
   const renderYesNo = (row, value, type) => {
@@ -132,7 +130,13 @@ const Dashboard = () => {
           });
         } else {
           await preloadProjectPdfs(projectId);
-          navigate('/report-page', {
+          // Decide destination based on clicked column
+          let targetRoute = '/report-page/trf';
+
+          if (type === 'CDR') targetRoute = '/report-page/cdr';
+          if (type === 'LETTER') targetRoute = '/report-page/letter';
+
+          navigate(targetRoute, {
             state: {
               standard: row?.Standard,
               projectId,
@@ -143,7 +147,7 @@ const Dashboard = () => {
           });
         }
       } finally {
-        setLoadingCell(null); // ✅ stop loader
+        setLoadingCell(null); //  stop loader
       }
     };
 
