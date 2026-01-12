@@ -7,6 +7,7 @@ import utility.cdr_report.CDR_Pipelines.configs as configs
 import utility.cdr_report.CDR_Pipelines.c1_utils as c1_utils
 import utility.cdr_report.CDR_Pipelines.c1_rules as c1_rules
 import json
+from urllib.parse import quote
 
 # ===================== INTERNAL UTILS =====================
 
@@ -27,7 +28,15 @@ def embed_text(text):
         print(f"⚠ Embedding failed: {e}")
         return None
 
+
+
+
 def get_image_urls_from_container_sas():
+    configs.require_runtime()
+    project_id = configs.runtime.project_id
+
+    device_prefix = f"Documents/{project_id}/source_documents/device_images/"
+
     blob_service = BlobServiceClient.from_connection_string(
         configs.AZURE_BLOB_CONNECTION_STRING
     )
@@ -35,24 +44,14 @@ def get_image_urls_from_container_sas():
         configs.BLOB_CONTAINER_NAME
     )
 
-    blob_names = [
-        blob.name
-        for blob in container_client.list_blobs(name_starts_with="device_images/")
-        if blob.name.lower().endswith((".jpg", ".jpeg", ".png"))
-    ]
+    blob_urls = []
 
-    print("Blobs found in container:", len(blob_names))
+    for blob in container_client.list_blobs(name_starts_with=device_prefix):
+        blob_client = container_client.get_blob_client(blob.name)
+        blob_urls.append(blob_client.url)   # ✅ SAFE, SDK-built URL
 
-    if not blob_names:
-        return []
-
-    base, sas = configs.AZURE_BLOB_CONTAINER_SAS_URL.split("?", 1)
-    base = base.rstrip("/")
-
-    urls = [f"{base}/{name}?{sas}" for name in blob_names]
-
-    print("Image URLs constructed:", len(urls))
-    return urls
+    print("Blobs found in device_images:", len(blob_urls))
+    return blob_urls
 
 def describe_image(image_url):
     try:
@@ -140,6 +139,8 @@ def calculate_cosine_distances_matrix(comp_embeddings, img_embeddings):
 
 # ===================== MAIN PIPELINE =====================
 def run_phototagging():
+    configs.require_runtime()
+
     print("Starting Phototagging (Optimized)...")
     
     # STEP 0: LOAD ORIGINAL & FILTER CRITICAL

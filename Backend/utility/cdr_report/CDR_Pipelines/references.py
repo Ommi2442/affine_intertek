@@ -3,6 +3,8 @@ import re
 import json
 from collections import Counter
 from typing import List, Tuple, Set, Optional
+import utility.cdr_report.CDR_Pipelines.switch as switch
+
 
 from langchain_core.documents import Document
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda
@@ -20,7 +22,7 @@ from collections import defaultdict
 from utility.cdr_report.CDR_Pipelines.prompts import ref_prompt as prompt
 from utility.cdr_report.CDR_Pipelines.prompts import score_prompt
 #cosmos_client = CosmosClient(url=COSMOS_URL, credential=COSMOS_KEY)
-container = cosmos_client.get_database_client(DB_NAME).get_container_client(CONT_NAME)
+cosmos_container = cosmos_client.get_database_client(DB_NAME).get_container_client(CONT_NAME)
 
 EMAIL_RE = re.compile(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", re.I)
 PHONE_RE = re.compile(r"(\+\d[\d\s\-\(\)]{6,}\d|\(\d{3}\)\s*\d{3}\-\d{4})")
@@ -61,6 +63,25 @@ from utility.cdr_report.CDR_Pipelines.json_utils import top_chunks_as_json
 
 # context = format_docs(out["docs"])                # reuse the exact same docs
 # extracted = out["answer"]                         # already a dict if JsonOutputParser used
+
+
+def get_bom_source_files() -> set[str]:
+    configs.require_runtime()
+    return switch.get_bom_filenames()
+
+
+def exclude_bom_docs(docs: list[Document]) -> list[Document]:
+    bom_files = get_bom_source_files()
+    filtered = []
+
+    for d in docs:
+        sf = (d.metadata.get("source_file") or "").lower()
+        if sf and sf in bom_files:
+            continue
+        filtered.append(d)
+
+    return filtered
+
 
 
 def clip_text(text: str, head: int = 2200, tail: int = 1200) -> str:
@@ -204,7 +225,7 @@ def build_fallback_query(user_question: str) -> str:
     # You can tune this. Goal: pull anything that contains relevant structured identifiers.
     return (
         user_question
-        + " Applicant Bill-To Manufacturer Factory Legal Entity Name Street Address Contacts Email Phone Fax "
+        + " Applicant Bill-To Manufacturer Name Address Contacts Email Phone Fax "
         + " Name and address of factory"
     )
 
@@ -254,7 +275,7 @@ def add_general_fallback(
     return docs + chosen
 
 def build_context_docs(vs, container, retrieved_docs: List[Document], user_question: str, max_final: int = 25) -> List[Document]:
-    original = list(retrieved_docs)
+    original = exclude_bom_docs(list(retrieved_docs))
 
     # Expand CIS/Agreement-like sources (and ideally remove originals for those expanded sources)
     expanded = expand_form_sources(container, original, max_sources=3)
@@ -262,11 +283,14 @@ def build_context_docs(vs, container, retrieved_docs: List[Document], user_quest
 
     # Second retrieval pass: real fallback to other files not in initial top-k
     fallback_query = build_fallback_query(user_question)
-    fallback_candidates = vs.similarity_search(
+    fallback_candidates = exclude_bom_docs(
+    vs.similarity_search(
         fallback_query,
         k=80,
         search_type="vector"
     )
+)
+
 
     # Merge candidates broadly (include expanded so novelty selection sees everything)
     merged_candidates = dedupe_docs(expanded + fallback_candidates)
@@ -282,11 +306,14 @@ def build_context_docs(vs, container, retrieved_docs: List[Document], user_quest
     final_docs.sort(key=doc_usefulness_score, reverse=True)
     final_docs = cap_per_source(final_docs, max_per_source=4)
     final_docs = dedupe_docs(final_docs)
-
+    final_docs = exclude_bom_docs(final_docs)
+    
     return final_docs[:max_final]
 
 
 def references_main(vs, ref):
+    configs.require_runtime()
+
     print('inside reference_main')
     retriever = vs.as_retriever(
         search_type="vector",
@@ -301,7 +328,7 @@ def references_main(vs, ref):
         )
         | RunnableLambda(lambda x: {
             "raw_docs": x["docs"],
-            "docs": build_context_docs(vs, container, x["docs"], x["question"]),
+            "docs": build_context_docs(vs, cosmos_container, x["docs"], x["question"]),
             "question": x["question"],
         })
         | RunnableLambda(lambda x: {

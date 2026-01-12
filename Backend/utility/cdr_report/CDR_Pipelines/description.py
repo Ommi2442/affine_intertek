@@ -44,7 +44,7 @@ def build_product_section_items(product_info: dict):
 
 
 def description_main(vs,ref):
-
+    configs.require_runtime()
     prompt_refine_product = ChatPromptTemplate.from_messages(
         [
             (

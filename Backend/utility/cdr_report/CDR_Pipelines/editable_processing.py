@@ -258,9 +258,9 @@ import time
 from typing import Dict, Any
 
 def process_pdfs(
-    src_root: str = "src_files",
-    flattened_dir: str = "flattened_pdfs",
-    images_root: str = "page_images",
+    src_root: str = configs.SRC_ROOT,
+    flattened_dir: str = configs.FLAT_ROOT,
+    images_root: str = configs.IMG_ROOT,
     dpi: int = 200,
     archive_root: str | None = None,
 ) -> Dict[str, Any]:
@@ -335,10 +335,12 @@ def process_pdfs(
     return results
 
 def extract_cis():
+    import utility.cdr_report.CDR_Pipelines.configs as configs
+    configs.require_runtime()
     results = process_pdfs(
-        src_root="src_files",
-        flattened_dir="flattened_pdfs",
-        images_root="page_images",
+        src_root=configs.SRC_ROOT,
+        flattened_dir=configs.FLAT_ROOT,
+        images_root=configs.IMG_ROOT,
         dpi=200
     )
 

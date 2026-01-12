@@ -6,13 +6,13 @@ from urllib.parse import urlparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import utility.cdr_report.CDR_Pipelines.configs as configs
-from utility.cdr_report.CDR_Pipelines. configs import *
-from utility.cdr_report.CDR_Pipelines. switch import find_bom_blob_url
+from utility.cdr_report.CDR_Pipelines.switch import find_bom_blob_url
 
 # ============================================================
 # CONFIG
 # ============================================================
 
+CONF_THRESHOLD = 0.6
 HEADER_SCAN_ROWS = 15
 
 BOM_COLUMNS = [
@@ -102,6 +102,24 @@ def merge_bom_sheets_from_sas_url(bom_sas_url: str) -> pd.DataFrame:
 
     return pd.concat(merged_rows, ignore_index=True)
 
+def structured_bom_confidence(df: pd.DataFrame) -> float:
+    score = 0.0
+
+    if "Description" in df and df["Description"].notna().any():
+        score += 0.4
+
+    if (
+        "Manufacturer Part Number" in df
+        and df["Manufacturer Part Number"].notna().any()
+    ):
+        score += 0.4
+
+    if "QTY" in df and df["QTY"].notna().any():
+        score += 0.2
+
+    return score
+
+
 # ============================================================
 # PDF BOM — RAG USING EXISTING VECTOR STORE
 # ============================================================
@@ -119,7 +137,13 @@ Rules:
 - Do NOT infer missing values
 - Missing fields must be null
 - Output MUST be valid JSON
-- Return a JSON array
+- Return a JSON arrays
+- description only available in columns (description, name, part description) 
+- if "name" and "value" column present, then Description = "name"+"value"
+- U/M only available in columns (U/M, uom)
+- do not use any other columns than those specified, ignore the rest.
+- manufacturer only available in columns (manufacturer, mfg, mfr, Manufacturer/trademark2)
+- manufacturer part number only available in columns (manufacturer part number, mfg p/n, mfr-pn, mpn, Type/model2)
 """
 
 USER_PROMPT = """
@@ -130,10 +154,10 @@ Return EXACTLY this schema:
 {{
   "Line": string | null,
   "Description": string | null,
+  "Manufacturer' : String | null,
   "Manufacturer Part Number": string | null,
   "QTY": string | null,
   "U/M": string | null,
-  "Rev": string | null
 }}
 
 Context:
@@ -157,62 +181,41 @@ def _retrieve_bom_chunks(pdf_name: str, *, vs) -> list[str]:
     """
     docs = vs.similarity_search(
         query="bill of materials part number quantity",
-        k=40
+        k=20
     )
     return [d.page_content for d in docs]
 
 
 import json
 
-def _parse_pdf_bom_with_vs(pdf_url: str, pdf_name: str, *, vs) -> pd.DataFrame:
+def _parse_bom_with_vs(
+    *,
+    source_url: str,
+    source_name: str,
+    vs,
+) -> pd.DataFrame:
     rows = []
 
-    chunks = _retrieve_bom_chunks(pdf_name, vs=vs)
-    print(f"{pdf_name}: retrieved {len(chunks)} chunks")
+    chunks = _retrieve_bom_chunks(source_name, vs=vs)
+    print(f"{source_name}: retrieved {len(chunks)} chunks")
 
     for idx, text in enumerate(chunks, start=1):
-
         try:
             raw = rag_chain.invoke({"CONTEXT": text})
-
-            # LangChain returns AIMessage → extract text
-            if hasattr(raw, "content"):
-                raw_text = raw.content
-            else:
-                raw_text = raw
-
-            if not isinstance(raw_text, str):
-                continue
-
+            raw_text = raw.content if hasattr(raw, "content") else raw
             raw_text = raw_text.strip()
             if not raw_text:
                 continue
 
-            try:
-                items = json.loads(raw_text)
-            except Exception as e:
-                print("❌ JSON parse failed:", e)
-                print("RAW TEXT:", raw_text[:500])
-                continue
-
-        except Exception as e:
-            print("❌ JSON parse failed:", e)
-            print("RAW OUTPUT:", raw)
+            items = json.loads(raw_text)
+        except Exception:
             continue
 
-        # 🔎 FIX 4 — VISIBILITY (ADD HERE)
-        print(f"\n🔹 [{pdf_name}] Chunk {idx}")
-        print("🔹 RAW (first 500 chars):")
-        print(raw[:500] if isinstance(raw, str) else raw)
-        print("🔹 PARSED ITEMS:", items)
-
         if not isinstance(items, list):
-            print("⚠ Parsed output is not a list, skipping")
             continue
 
         for it in items:
             if not any(it.values()):
-                print("⚠ Empty item skipped:", it)
                 continue
 
             rows.append({
@@ -221,7 +224,7 @@ def _parse_pdf_bom_with_vs(pdf_url: str, pdf_name: str, *, vs) -> pd.DataFrame:
                 "QTY": it.get("QTY"),
                 "U/M": it.get("U/M"),
                 "Description": it.get("Description"),
-                "Manufacturer": None,
+                "Manufacturer": it.get("Manufacturer"),
                 "Manufacturer Part Number": it.get("Manufacturer Part Number"),
                 "Vendor": None,
                 "Vendor Part Number": None,
@@ -231,8 +234,8 @@ def _parse_pdf_bom_with_vs(pdf_url: str, pdf_name: str, *, vs) -> pd.DataFrame:
                 "SP": None,
                 "Rev": it.get("Rev"),
                 "Customer Reference Number": None,
-                "sheet_name": pdf_name,
-                "source_doc": pdf_url,
+                "sheet_name": source_name,
+                "source_doc": source_url,
             })
 
     return pd.DataFrame(rows, columns=MASTER_BOM_COLUMNS)
@@ -241,6 +244,7 @@ def deduplicate_master_bom(df: pd.DataFrame) -> pd.DataFrame:
     """
     Deduplicate master BOM rows based on:
       - Description
+      - Manufacturer
       - Manufacturer Part Number
 
     Merge provenance fields:
@@ -255,6 +259,13 @@ def deduplicate_master_bom(df: pd.DataFrame) -> pd.DataFrame:
         .str.strip()
         .str.lower()
     )
+    
+    df["_mfr_norm"] = (
+        df["Manufacturer"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+    )
 
     df["_mpn_norm"] = (
         df["Manufacturer Part Number"]
@@ -264,7 +275,7 @@ def deduplicate_master_bom(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Rows eligible for deduplication
-    has_keys = df["_desc_norm"].ne("nan") & df["_mpn_norm"].ne("nan")
+    has_keys = df["_desc_norm"].ne("nan") & df["_mpn_norm"].ne("nan") & df["_mfr_norm"].ne("nan")
 
     dedupe_df = df[has_keys].copy()
     passthrough_df = df[~has_keys].copy()
@@ -286,21 +297,21 @@ def deduplicate_master_bom(df: pd.DataFrame) -> pd.DataFrame:
 
     # All other columns → take first non-null
     for col in df.columns:
-        if col not in agg_map and col not in ["_desc_norm", "_mpn_norm"]:
+        if col not in agg_map and col not in ["_desc_norm", "_mfr_norm", "_mpn_norm"]:
             agg_map[col] = "first"
 
     deduped = (
         dedupe_df
-        .groupby(["_desc_norm", "_mpn_norm"], dropna=False)
+        .groupby(["_desc_norm", "_mfr_norm", "_mpn_norm"], dropna=False)
         .agg(agg_map)
         .reset_index(drop=True)
     )
-
+    
     # Recombine with rows we intentionally skipped
     final_df = pd.concat([deduped, passthrough_df], ignore_index=True)
 
     # Cleanup
-    final_df = final_df.drop(columns=["_desc_norm", "_mpn_norm"], errors="ignore")
+    final_df = final_df.drop(columns=["_desc_norm", "_mfr_norm", "_mpn_norm"], errors="ignore")
 
     return final_df
 
@@ -314,14 +325,28 @@ def _process_single_bom_file(f: dict, *, vs) -> pd.DataFrame | None:
 
     if f["type"] == "xlsx":
         df = merge_bom_sheets_from_sas_url(f["url"])
-        return df.reindex(columns=MASTER_BOM_COLUMNS)
 
-    if f["type"] == "pdf":
-        return _parse_pdf_bom_with_vs(
-            pdf_url=f["url"],
-            pdf_name=f["name"],
+        confidence = structured_bom_confidence(df)
+
+        if confidence >= CONF_THRESHOLD:
+            print(f"✔ Structured BOM detected ({confidence:.2f}) — using Excel parser")
+            return df.reindex(columns=MASTER_BOM_COLUMNS)
+
+        print("⚠ Low structure confidence — falling back to RAG for XLSX")
+        return _parse_bom_with_vs(
+            source_url=f["url"],
+            source_name=f["name"],
             vs=vs,
         )
+
+
+    if f["type"] == "pdf":
+        return _parse_bom_with_vs(
+            source_url=f["url"],
+            source_name=f["name"],
+            vs=vs,
+        )
+
 
     return None
 
@@ -331,6 +356,8 @@ def run_master_bom(
     bom_files: list[dict] | None = None,
     vs,
 ):
+    configs.require_runtime()
+
     if vs is None:
         raise RuntimeError("Vector store (vs) must be provided to run_master_bom")
 
@@ -368,6 +395,6 @@ def run_master_bom(
     master_df = deduplicate_master_bom(master_df)
     print(f"After dedupe: {len(master_df)} rows")
 
-    master_df.to_excel("master_bom.xlsx", index=False)
+    master_df.to_excel(configs.MASTER_SHEET_PATH, index=False)
 
     print("✅ master_bom.xlsx generated successfully")
