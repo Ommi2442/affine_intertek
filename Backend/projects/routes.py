@@ -1,4 +1,8 @@
-
+from fastapi import HTTPException
+from fastapi.responses import StreamingResponse
+from pathlib import Path
+from azure.core.exceptions import ResourceNotFoundError
+from queue_worker import update_project_progress_CDR
 from fastapi import APIRouter, HTTPException, Depends, Body, Form, UploadFile, File, Query, logger, BackgroundTasks, status
 import traceback
 from azure.storage.blob import ContainerClient
@@ -136,6 +140,8 @@ async def get_project(project_id: str):
                 enable_cross_partition_query=True
             )
         )
+        cdr_percent=items[0].get('CDR_Project_Progress',None)
+        print("cdr_percent --- ",cdr_percent.get("cdr_percentage"))
         if not items:
             raise HTTPException(status_code=404, detail="Project not found")
         return {"status": "success", "data": items[0]}
@@ -167,7 +173,9 @@ async def get_all_projects(payload: ProjectFilter):
                     c.Proj_Created_On,
                     c.Proj_Created_By,
                     c.Proj_Archived,
-                    c.Project_Progress
+                    c.Project_Progress,
+                    c.CDR_Project_Progress
+
                 FROM c
                 WHERE c.Proj_Created_By = "{user_email}"
                   AND c.Proj_Archived = false
@@ -182,7 +190,8 @@ async def get_all_projects(payload: ProjectFilter):
                     c.Proj_Created_On,
                     c.Proj_Created_By,
                     c.Proj_Archived,
-                    c.Project_Progress
+                    c.Project_Progress,
+                    c.CDR_Project_Progress
                 FROM c
                 WHERE c.Proj_Archived = false
             """
@@ -202,6 +211,7 @@ async def get_all_projects(payload: ProjectFilter):
         projects = []
         for p in items:
             progress = p.get("Project_Progress") or {}
+            cdr_progress = p.get("CDR_Project_Progress") or {}
 
             projects.append({
                 "Project_Id": p.get("Project_Id"),
@@ -217,11 +227,11 @@ async def get_all_projects(payload: ProjectFilter):
                 "trf_error": progress.get("trf_error"),
                 "trf_completed": progress.get("trf_completed", "No"),
 
-                "cdr_percentage": progress.get("cdr_percentage", 10),
-                "cdr_step": progress.get("cdr_step"),
-                "cdr_last_updated": progress.get("cdr_last_updated"),
-                "cdr_error": progress.get("cdr_error"),
-                "cdr_completed": progress.get("cdr_completed", "No"),
+                "cdr_percentage": cdr_progress.get("cdr_percentage"),
+                "cdr_step": cdr_progress.get("cdr_step"),
+                "cdr_last_updated": cdr_progress.get("last_updated"),
+                "cdr_error": cdr_progress.get("error"),
+                "cdr_completed": cdr_progress.get("cdr_completed", "No"),
 
                 "letter_percentage": progress.get("letter_percentage", 10),
                 "letter_step": progress.get("letter_step"),
@@ -229,6 +239,7 @@ async def get_all_projects(payload: ProjectFilter):
                 "letter_error": progress.get("letter_error"),
                 "letter_completed": progress.get("letter_completed", "No")
             })
+            print(projects)
 
         return {
             "status": "success",
@@ -936,112 +947,169 @@ def generate_cdr(projectId: str):
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="projectId is required"
             )
-
-        ############### QUEUE LOGIC (COMMENTED) ################
-        # queue_client_cdr.send_message(json.dumps({
-        #     "projectId": projectId,
-        #     "action": "CDR_Generation",
-        #     "timestamp": datetime.utcnow().isoformat()
-        # }))
-        #
-        # MAX_WAIT_SECONDS = 6000
-        # POLL_INTERVAL = 2
-        # elapsed = 0
-        #
-        # while elapsed < MAX_WAIT_SECONDS:
-        #     query = "SELECT * FROM c WHERE c.Project_Id = @pid"
-        #     params = [{"name": "@pid", "value": projectId}]
-        #
-        #     docs = list(projects_container.query_items(
-        #         query=query,
-        #         parameters=params,
-        #         enable_cross_partition_query=True,
-        #     ))
-        #
-        #     if docs:
-        #         progress = docs[0].get("CDR_Project_Progress") or {}
-        #         percentage = progress.get("cdr_percentage")
-        #
-        #         if percentage == 100:
-        #             break
-        #
-        #     time.sleep(POLL_INTERVAL)
-        #     elapsed += POLL_INTERVAL
-        #
-        # if elapsed >= MAX_WAIT_SECONDS:
-        #     raise HTTPException(status_code=408, detail="CDR generation timed out")
-        ############### QUEUE LOGIC END #######################
-
-
-        # ------------------ COSMOS QUERY ------------------
-        query = "SELECT c.blob_url FROM c WHERE c.project_id = @pid"
-        params = [{"name": "@pid", "value": projectId}]
-
-        try:
-            items = list(trf_container.query_items(
+        project_id=projectId
+        query = "SELECT * FROM c WHERE c.Project_Id = @pid"
+        params = [{"name": "@pid", "value": project_id}]        
+        items = list(
+            COSMOS_DB_project_Container.query_items(
                 query=query,
                 parameters=params,
-                enable_cross_partition_query=True,
-            ))
-        except Exception:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to query project data from database"
+                enable_cross_partition_query=True
             )
-
-        if not items:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Project '{projectId}' not found"
-            )
-
-        blob_url = items[0].get("blob_url")
-        if not blob_url or not isinstance(blob_url, str):
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="CDR Blob URL not found or invalid"
-            )
-
-        response = requests.get(blob_url)
-        response.raise_for_status()
-        trf_filled = response.json()
-
-        # ------------------ PATH SETUP ------------------
-        BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
-        DATA_DIR = BASE_DIR / "data"
-        DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-        output_json_path = DATA_DIR / f"iec_output_cdr_{projectId}.json"
-        output_excel_path = DATA_DIR / f"iec_output_sheet_{projectId}.xlsx"
-
-        # ------------------ PIPELINE ------------------
-        result = main2(
-            trf_filled,
-            output_excel_path=output_excel_path
         )
-
-        # ------------------ SAVE JSON ------------------
-        with open(output_json_path, "w", encoding="utf-8") as f:
-            json.dump(result, f, indent=2, ensure_ascii=False)
-
-        save_cdr_local_json_to_blob_and_cosmos_cdr(
-            output_json_path,
-            projectId
-        )
-        print("----- JSON CDR uploaded -----")
+        cdr_percent=items[0].get('CDR_Project_Progress',None)
         
-        # ------------------ UPLOAD EXCEL ------------------
-        save_local_xlsx_to_blob_and_cosmos_cdr(
-            str(output_excel_path),
-            projectId
-        )
-        print("----- Excel CDR uploaded -----")
+        if cdr_percent.get("cdr_percentage")<100:
+            query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
+            docs = list(
+                projects_container.query_items(
+                    query=query,
+                    enable_cross_partition_query=True,
+                )
+            )
 
-        return {
-            "message": "CDR Report generated successfully",
-            "projectId": projectId,
-            "data": result
-        }
+            if not docs:
+                print(f" Project not found: {project_id}")
+                return True
+
+            project_doc = docs[0]
+            update_project_progress_CDR(
+                project_doc,
+                cdr_stage="steps in Progress",
+                cdr_percentage=10,
+                cdr_step="Starting runnig CDR",
+                cdr_completed=False
+            )
+            ############### QUEUE LOGIC (COMMENTED) ################
+            # queue_client_cdr.send_message(json.dumps({
+            #     "projectId": projectId,
+            #     "action": "CDR_Generation",
+            #     "timestamp": datetime.utcnow().isoformat()
+            # }))
+            #
+            # MAX_WAIT_SECONDS = 6000
+            # POLL_INTERVAL = 2
+            # elapsed = 0
+            #
+            # while elapsed < MAX_WAIT_SECONDS:
+            #     query = "SELECT * FROM c WHERE c.Project_Id = @pid"
+            #     params = [{"name": "@pid", "value": projectId}]
+            #
+            #     docs = list(projects_container.query_items(
+            #         query=query,
+            #         parameters=params,
+            #         enable_cross_partition_query=True,
+            #     ))
+            #
+            #     if docs:
+            #         progress = docs[0].get("CDR_Project_Progress") or {}
+            #         percentage = progress.get("cdr_percentage")
+            #
+            #         if percentage == 100:
+            #             break
+            #
+            #     time.sleep(POLL_INTERVAL)
+            #     elapsed += POLL_INTERVAL
+            #
+            # if elapsed >= MAX_WAIT_SECONDS:
+            #     raise HTTPException(status_code=408, detail="CDR generation timed out")
+            ############### QUEUE LOGIC END #######################
+
+
+            # ------------------ COSMOS QUERY ------------------
+            query = "SELECT c.blob_url FROM c WHERE c.project_id = @pid"
+            params = [{"name": "@pid", "value": projectId}]
+
+            try:
+                items = list(trf_container.query_items(
+                    query=query,
+                    parameters=params,
+                    enable_cross_partition_query=True,
+                ))
+            except Exception:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Failed to query project data from database"
+                )
+
+            if not items:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Project '{projectId}' not found"
+                )
+
+            blob_url = items[0].get("blob_url")
+            if not blob_url or not isinstance(blob_url, str):
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="CDR Blob URL not found or invalid"
+                )
+
+            response = requests.get(blob_url)
+            response.raise_for_status()
+            trf_filled = response.json()
+
+            # ------------------ PATH SETUP ------------------
+            BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
+            DATA_DIR = BASE_DIR / "data"
+            DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+            output_json_path = DATA_DIR / f"iec_output_cdr_{projectId}.json"
+            output_excel_path = DATA_DIR / f"iec_output_sheet_{projectId}.xlsx"
+
+            # ------------------ PIPELINE ------------------
+            result = main2(
+                trf_filled,
+                output_excel_path=output_excel_path
+            )
+
+            # ------------------ SAVE JSON ------------------
+            with open(output_json_path, "w", encoding="utf-8") as f:
+                json.dump(result, f, indent=2, ensure_ascii=False)
+
+            save_cdr_local_json_to_blob_and_cosmos_cdr(
+                output_json_path,
+                projectId
+            )
+            print("----- JSON CDR uploaded -----")
+            
+            # ------------------ UPLOAD EXCEL ------------------
+            save_local_xlsx_to_blob_and_cosmos_cdr(
+                str(output_excel_path),
+                projectId
+            )
+            print("----- Excel CDR uploaded -----")
+
+            update_project_progress_CDR(
+                project_doc,
+                cdr_stage="Completed",
+                cdr_percentage=100,
+                cdr_step="CDR generated and stored",
+                cdr_completed=True
+            )
+            print("#################")
+            return {
+                "message": "CDR Report generated successfully",
+                "projectId": projectId,
+                "data": result
+            }
+        if cdr_percent.get("cdr_percentage")==100:
+            print("----CDR is already generated-----")
+            BASE_DIR = Path(__file__).resolve().parents[1] 
+            DATA_DIR = BASE_DIR / "data"
+            DATA_DIR.mkdir(parents=True, exist_ok=True)
+            output_json_path = DATA_DIR / f"iec_output_cdr_{projectId}.json"
+            with open(output_json_path, "r", encoding="utf-8") as f:
+                cdr_output = json.load(f)
+            
+
+            return {
+                "message": "CDR Report Already Generated ",
+                "projectId": projectId,
+                "data": cdr_output
+            }
+            
+
 
     except HTTPException:
         raise
@@ -1055,20 +1123,42 @@ def generate_cdr(projectId: str):
 
 
 @router.get("/download-file")
-def download_file(project_id: str):
-    docx_path = download_docx_from_local(project_id)
+def download_file(project_id: str,report_type:str):
+    report_type=report_type.lower()
+    if report_type=='trf':
+        docx_path = download_docx_from_local(project_id)
+        file_like = open(docx_path, "rb")
+        return StreamingResponse(
+            file_like,
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            headers={
+                "Content-Disposition": f'attachment; filename="final_output_{project_id}.docx"',
+                "Content-Length": str(docx_path.stat().st_size)
+            })
+    elif report_type == "cdr":
+        blob_path = (
+            f"Documents/{project_id}/Generated_cdr_Report/"
+            f"iec_output_sheet_{project_id}.xlsx")
 
-    file_like = open(docx_path, "rb")
+        blob_client = blob_service.get_blob_client(
+            container=blob_container,
+            blob=blob_path
+        )
 
-    return StreamingResponse(
-        file_like,
-        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        headers={
-            "Content-Disposition": f'attachment; filename="final_output_{project_id}.docx"',
-            "Content-Length": str(docx_path.stat().st_size)
-        }
-    )
+        if not blob_client.exists():
+            raise HTTPException(
+                status_code=404,
+                detail=f"XLSX file not found at {blob_path}"
+            )
+        stream = blob_client.download_blob()
 
+        return StreamingResponse(
+            stream.chunks(),
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={
+                "Content-Disposition": f'attachment; filename="iec_output_sheet_{project_id}.xlsx"'
+            }
+        )
 
 
 @router.get("/pdf-proxy")
