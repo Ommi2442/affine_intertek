@@ -7,7 +7,11 @@ export default function RouteDbGuard() {
 
   useEffect(() => {
     // ✅ Allow IndexedDB ONLY on /report-page
-    if (location.pathname !== '/report-page') {
+    console.log('location', location.pathname);
+    if (
+      location.pathname !== '/report-page/trf' &&
+      location.pathname !== '/report-page/cdr'
+    ) {
       idb_clear_all();
     }
   }, [location.pathname]);

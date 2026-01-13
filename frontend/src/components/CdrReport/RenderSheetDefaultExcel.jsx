@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, TextField } from '@mui/material';
 import HoverActionWrapper from '../Common/HoverActionsWrapper';
 import CommentDialog from '../CommentDialog';
@@ -16,6 +16,14 @@ const RenderSheetDefaultExcel = ({
 }) => {
   if (!sheet || !Array.isArray(sheet.Items)) return null;
 
+  /* ---------------- LOCAL EDIT STATE ---------------- */
+  const [localItems, setLocalItems] = useState(sheet.Items);
+
+  // Sync only when switching sheets, NOT on every keystroke
+  useEffect(() => {
+    setLocalItems(sheet.Items.map((i) => ({ ...i })));
+  }, [sheet.sheet_no]);
+
   const [hovered, setHovered] = useState({ i: null });
 
   const {
@@ -30,7 +38,7 @@ const RenderSheetDefaultExcel = ({
 
   return (
     <>
-      {sheet.Items.map((item, idx) => {
+      {localItems.map((item, idx) => {
         const isEditable = editMode && item.user_editable;
 
         return (
@@ -52,7 +60,7 @@ const RenderSheetDefaultExcel = ({
               onMouseEnter={() => setHovered({ i: idx })}
               onMouseLeave={() => setHovered({ i: null })}
             >
-              <div style={{ display: 'flex' }}>
+              <Box sx={{ display: 'flex' }}>
                 <TextField
                   size="small"
                   fullWidth
@@ -62,10 +70,13 @@ const RenderSheetDefaultExcel = ({
                   }}
                   onChange={(e) => {
                     if (!isEditable) return;
-                    updateField(
-                      sheet.sheet_no,
-                      item.answer_cell ?? item.field,
-                      e.target.value
+                    const value = e.target.value;
+
+                    // Fast local update
+                    setLocalItems((prev) =>
+                      prev.map((it, i) =>
+                        i === idx ? { ...it, value, is_user_edited: true } : it
+                      )
                     );
                   }}
                   sx={{
@@ -76,12 +87,20 @@ const RenderSheetDefaultExcel = ({
 
                 <HoverActionWrapper
                   show={hovered.i === idx}
-                  onApprove={() => handleApprove?.(idx)}
-                  onComment={() => openComment(sheet.sheet_no, idx)}
-                  onBookmark={() => {
-                    const row = sheet.Items[idx];
-                    onBookmarkClick?.(row ?? { __i: idx });
+                  onApprove={() => {
+                    const item = localItems[idx];
+
+                    // Commit to parent + IndexedDB
+                    updateField(
+                      sheet.sheet_no,
+                      item.answer_cell ?? item.field,
+                      item.value
+                    );
+
+                    handleApprove?.(idx);
                   }}
+                  onComment={() => openComment(sheet.sheet_no, idx)}
+                  onBookmark={() => onBookmarkClick?.(localItems[idx])}
                 />
 
                 {item.ai_fillable === true &&
@@ -92,7 +111,7 @@ const RenderSheetDefaultExcel = ({
                     item.ai_fillable,
                     item.accuracy_level
                   )}
-              </div>
+              </Box>
             </Box>
           </Box>
         );

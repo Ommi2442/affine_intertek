@@ -46,9 +46,11 @@ const RenderSheet4Excel = ({
   const titleItem = sheet.Items?.[0] ?? null;
   const headerRow = sheet.Rows.find((r) => r.row_type === 'column_headings');
 
+  // Sync only when sheet changes (NOT on every keystroke)
   useEffect(() => {
-    setRowsState(sheet.Rows.filter((r) => r.row_type === 'table_data'));
-  }, [sheet]);
+    const data = sheet.Rows.filter((r) => r.row_type === 'table_data');
+    setRowsState(data.map((r) => ({ ...r })));
+  }, [sheet.sheet_no]);
 
   const border = { border: '1px solid #000' };
 
@@ -78,7 +80,34 @@ const RenderSheet4Excel = ({
     setRowsState((prev) => prev.filter((_, i) => i !== idx));
   };
 
-  /* ---------------- CELL RENDER ---------------- */
+  /* ---------------- LOCAL EDIT ---------------- */
+  const updateLocal = (idx, key, value) => {
+    setRowsState((prev) =>
+      prev.map((r, i) =>
+        i === idx ? { ...r, [key]: value, is_user_edited: true } : r
+      )
+    );
+  };
+
+  /* ---------------- COMMIT ON APPROVE ---------------- */
+  const commitRow = (idx) => {
+    const row = rowsState[idx];
+    if (!row) return;
+
+    Object.entries(row).forEach(([key, value]) => {
+      if (
+        !['row_type', 'confidence', 'accuracy_level', 'ai_fillable'].includes(
+          key
+        )
+      ) {
+        updateField(sheet.sheet_no, `${key}_${idx}`, value);
+      }
+    });
+
+    handleApprove?.(idx);
+  };
+
+  /* ---------------- CELL ---------------- */
   const renderCell = (value, editable, onChange) => (
     <TableCell sx={border}>
       <TextField
@@ -86,7 +115,7 @@ const RenderSheet4Excel = ({
         fullWidth
         value={value ?? ''}
         InputProps={{ readOnly: !editable }}
-        onChange={(e) => editable && onChange?.(e)}
+        onChange={(e) => editable && onChange(e.target.value)}
         sx={{ backgroundColor: editable ? '#fff' : '#f5f5f5' }}
       />
     </TableCell>
@@ -124,8 +153,6 @@ const RenderSheet4Excel = ({
                     sx={{
                       ...border,
                       fontWeight: 600,
-
-                      /* THESE 4 LINES FIX THE OVERLAP */
                       whiteSpace: 'normal',
                       wordBreak: 'break-word',
                       overflowWrap: 'break-word',
@@ -138,7 +165,7 @@ const RenderSheet4Excel = ({
               </TableRow>
             )}
 
-            {/* ---------- DATA ROWS ---------- */}
+            {/* ---------- DATA ---------- */}
             {rowsState.map((row, idx) => {
               const editable = editMode && row.user_editable;
 
@@ -147,35 +174,23 @@ const RenderSheet4Excel = ({
                   {renderCell(row.photo_no, false)}
                   {renderCell(row.item_no, false)}
 
-                  {renderCell(row.name, editable, (e) =>
-                    updateField(sheet.sheet_no, `name_${idx}`, e.target.value)
+                  {renderCell(row.name, editable, (v) =>
+                    updateLocal(idx, 'name', v)
                   )}
 
-                  {renderCell(row.manufacturer, editable, (e) =>
-                    updateField(
-                      sheet.sheet_no,
-                      `manufacturer_${idx}`,
-                      e.target.value
-                    )
+                  {renderCell(row.manufacturer, editable, (v) =>
+                    updateLocal(idx, 'manufacturer', v)
                   )}
 
-                  {renderCell(row.type_model, editable, (e) =>
-                    updateField(
-                      sheet.sheet_no,
-                      `type_model_${idx}`,
-                      e.target.value
-                    )
+                  {renderCell(row.type_model, editable, (v) =>
+                    updateLocal(idx, 'type_model', v)
                   )}
 
-                  {renderCell(row.technical_data, editable, (e) =>
-                    updateField(
-                      sheet.sheet_no,
-                      `technical_data_${idx}`,
-                      e.target.value
-                    )
+                  {renderCell(row.technical_data, editable, (v) =>
+                    updateLocal(idx, 'technical_data', v)
                   )}
 
-                  {/* ===== MARK(S) OF CONFORMITY (HOVER ONLY HERE) ===== */}
+                  {/* ----- MARKS OF CONF ----- */}
                   <TableCell
                     sx={{ ...border, position: 'relative' }}
                     onMouseEnter={() => setHoveredRow(idx)}
@@ -189,11 +204,7 @@ const RenderSheet4Excel = ({
                         InputProps={{ readOnly: !editable }}
                         onChange={(e) =>
                           editable &&
-                          updateField(
-                            sheet.sheet_no,
-                            `marks_of_conf_${idx}`,
-                            e.target.value
-                          )
+                          updateLocal(idx, 'marks_of_conf', e.target.value)
                         }
                       />
 
@@ -209,7 +220,7 @@ const RenderSheet4Excel = ({
                     <Box
                       sx={{
                         position: 'absolute',
-                        right: -38, //  shift right (adjust -8 / -12 if needed)
+                        right: -38,
                         top: '50%',
                         transform: 'translateY(-50%)',
                         zIndex: 10,
@@ -217,14 +228,14 @@ const RenderSheet4Excel = ({
                     >
                       <HoverActionWrapper
                         show={hoveredRow === idx}
-                        onApprove={() => handleApprove?.(idx)}
+                        onApprove={() => commitRow(idx)}
                         onComment={() => openComment(sheet.sheet_no, idx)}
                         onBookmark={() => onBookmarkClick?.(row)}
                       />
                     </Box>
                   </TableCell>
 
-                  {/* ===== DELETE (NO HOVER AT ALL) ===== */}
+                  {/* ----- DELETE ----- */}
                   <TableCell sx={{ ...border, textAlign: 'center' }}>
                     <IconButton color="error" onClick={() => deleteRow(idx)}>
                       <DeleteIcon />

@@ -54,6 +54,7 @@ const CdrReportPage = () => {
 
   const [openCitationDialog, setOpenCitationDialog] = useState(false);
   const [selectedCitation, setSelectedCitation] = useState(null);
+  const [liveCdrData, setLiveCdrData] = useState(null);
 
   const navigationType = useNavigationType();
   const isHardRefresh = navigationType === 'POP';
@@ -65,7 +66,8 @@ const CdrReportPage = () => {
     if (!updated) return;
 
     idb_set(storageKey, updated, STORES.CDR);
-    setCdrJson(updated);
+    //setCdrJson(updated);
+    setLiveCdrData(updated);
   }, [confidenceTick]);
 
   /* ---------------- LOAD LOGIC ---------------- */
@@ -310,9 +312,9 @@ const CdrReportPage = () => {
               </CardContent>
             </Card>
 
-            {cdrJson && (
+            {(liveCdrData || cdrJson) && (
               <ConfidenceScore
-                data={cdrJson}
+                data={liveCdrData || cdrJson}
                 reportType="cdr"
                 confidenceTick={confidenceTick}
                 projectId={projectId}

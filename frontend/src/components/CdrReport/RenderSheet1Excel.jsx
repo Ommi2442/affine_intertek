@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Typography,
   TextField,
@@ -80,6 +80,10 @@ const RenderSheet1Excel = ({
     return value.replace(/\n+/g, ', ');
   };
 
+  useEffect(() => {
+    setLocalItems(sheet.Items.map((i) => ({ ...i })));
+  }, [sheet.sheet_no]);
+
   const toBackendContact = (value) => {
     if (typeof value !== 'string') return value;
     return value
@@ -129,15 +133,18 @@ const RenderSheet1Excel = ({
             InputProps={{ readOnly: !isEditable }}
             onChange={(e) => {
               if (!isEditable) return;
+
               const uiValue = e.target.value;
               const backendValue = isContactField
                 ? toBackendContact(uiValue)
                 : uiValue;
 
-              updateField(
-                sheet.sheet_no,
-                item.answer_cell ?? item.field,
-                backendValue
+              setLocalItems((prev) =>
+                prev.map((it, idx) =>
+                  idx === itemIndex
+                    ? { ...it, value: backendValue, is_user_edited: true }
+                    : it
+                )
               );
             }}
             sx={{
@@ -149,7 +156,17 @@ const RenderSheet1Excel = ({
           <Box sx={{ position: 'relative', zIndex: 2 }}>
             <HoverActionWrapper
               show={hovered.i === itemIndex}
-              onApprove={() => handleApprove?.(itemIndex)}
+              onApprove={() => {
+                const item = localItems[itemIndex];
+
+                updateField(
+                  sheet.sheet_no,
+                  item.answer_cell ?? item.field,
+                  item.value
+                );
+
+                handleApprove?.(itemIndex);
+              }}
               onComment={() => openComment(sheet.sheet_no, itemIndex)}
               onBookmark={() => onBookmarkClick?.(item)}
             />
