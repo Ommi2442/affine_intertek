@@ -1,21 +1,31 @@
-FROM python:3.10.19
+FROM python:3.13.9
 
 WORKDIR /app
 
 ENV PYTHONUNBUFFERED=1
 
+# -------------------------------------------------
+# System dependencies + LibreOffice (soffice)
+# -------------------------------------------------
 RUN apt-get update && apt-get install -y \
     build-essential gcc \
+    libreoffice \
+    fontconfig \
+    fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
+
+RUN python -m pip install --upgrade pip setuptools wheel
 
 RUN pip install --no-cache-dir -r requirements.txt 
 
 COPY . .
 
 EXPOSE 8000
+EXPOSE 9000
 
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-# Production server
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+ENTRYPOINT ["/app/entrypoint.sh"]
