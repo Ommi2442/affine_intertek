@@ -72,17 +72,22 @@ const RenderSheet6Excel = ({
   return (
     <Box>
       {localItems.map((item, idx) => {
+        // Removes only "Label - " or "Label – " from the start of the value
+        const stripLeadingLabel = (value, label) => {
+          if (!value || !label) return value;
+
+          // Escape special regex chars in label
+          const safeLabel = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+          // Match:  ^Label -   OR   ^Label –
+          const regex = new RegExp(`^${safeLabel}\\s*[–-]\\s*`, 'i');
+
+          return value.replace(regex, '');
+        };
         let label = item.prefix || item.field || '';
-
-        if (label.includes('-')) {
-          label = label.split('-').slice(1).join('-').trim();
-        }
-
         let valueText = item.value ?? '';
 
-        if (typeof valueText === 'string' && valueText.includes('-')) {
-          valueText = valueText.split('-').slice(1).join('-').trim();
-        }
+        valueText = stripLeadingLabel(valueText, label);
 
         const isLongText = valueText.length > 80 || valueText.includes('\n');
         const isEditable = editMode && item.user_editable;
