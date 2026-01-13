@@ -41,6 +41,22 @@ const RenderSheetDefaultExcel = ({
       {localItems.map((item, idx) => {
         const isEditable = editMode && item.user_editable;
 
+        const normalizeConfidence = (value) => {
+          const num = Number(value);
+          if (Number.isNaN(num)) return null;
+          return num <= 1 ? Math.round(num * 100) : Math.round(num);
+        };
+
+        const hasValue =
+          item.value !== null &&
+          item.value !== undefined &&
+          String(item.value).trim() !== '';
+
+        const canApprove =
+          item.ai_fillable === true &&
+          item.accuracy_level === true &&
+          normalizeConfidence(item.confidence) !== null;
+
         return (
           <Box
             key={idx}
@@ -87,20 +103,25 @@ const RenderSheetDefaultExcel = ({
 
                 <HoverActionWrapper
                   show={hovered.i === idx}
-                  onApprove={() => {
-                    const item = localItems[idx];
+                  onApprove={
+                    canApprove
+                      ? () => {
+                          const item = localItems[idx];
 
-                    // Commit to parent + IndexedDB
-                    updateField(
-                      sheet.sheet_no,
-                      item.answer_cell ?? item.field,
-                      item.value
-                    );
+                          updateField(
+                            sheet.sheet_no,
+                            item.answer_cell ?? item.field,
+                            item.value
+                          );
 
-                    handleApprove?.(idx);
-                  }}
+                          handleApprove?.(idx);
+                        }
+                      : null
+                  }
                   onComment={() => openComment(sheet.sheet_no, idx)}
-                  onBookmark={() => onBookmarkClick?.(localItems[idx])}
+                  onBookmark={
+                    hasValue ? () => onBookmarkClick?.(localItems[idx]) : null
+                  }
                 />
 
                 {item.ai_fillable === true &&

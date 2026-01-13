@@ -674,50 +674,52 @@ const DataTable = forwardRef(
       if (tIdx == null || iIdx == null) return null;
       if (hovered.t !== tIdx || hovered.i !== iIdx) return null;
 
-      //  NEW CONDITION — hide for TBD-Info not available
       const item = tables?.[tIdx]?.Items?.[iIdx];
-      if (item.user_editable !== true) return null;
-      if (!Object.prototype.hasOwnProperty.call(item, 'value')) {
-        return null;
-      }
-      if (
-        typeof item?.value === 'string' &&
-        item.value.trim().toLowerCase() === 'tbd-info not available'
-      ) {
-        return null;
-      }
+      if (!item || item.user_editable !== true) return null;
+
+      const hasValueField = Object.prototype.hasOwnProperty.call(item, 'value');
+      if (!hasValueField) return null;
+
+      const isTbdNotAvailable =
+        typeof item.value === 'string' &&
+        item.value.trim().toLowerCase() === 'tbd-info not available';
+
+      const canApprove =
+        item.ai_fillable === true && item.accuracy_level === true;
 
       return (
         <div className="dt-hover-actions">
-          <IconButton size="small" onClick={() => handleApprove?.(tIdx, iIdx)}>
-            <CheckCircleIcon className="dt-icon-approve" />
-          </IconButton>
+          {/* ✅ APPROVE — only when AI confidence exists */}
+          {canApprove && (
+            <IconButton size="small" onClick={() => handleApprove(tIdx, iIdx)}>
+              <CheckCircleIcon className="dt-icon-approve" />
+            </IconButton>
+          )}
 
+          {/* ✅ COMMENT — always allowed */}
           <IconButton size="small" onClick={() => openComment(tIdx, iIdx)}>
             <ChatBubbleOutlineOutlinedIcon className="dt-icon-comment" />
           </IconButton>
 
-          {/* Bookmark: send the full row object (safe lookup) */}
-          <IconButton
-            size="small"
-            onClick={() => {
-              const row =
-                // safe access to the row object from tables state
-                (Array.isArray(tables) &&
-                  tables[tIdx] &&
-                  Array.isArray(tables[tIdx].Items) &&
-                  tables[tIdx].Items[iIdx]) ??
-                null;
-
-              // call parent with object; fallback to {__t,__i} if not found
-              onBookmarkClick?.(row ?? { __t: tIdx, __i: iIdx });
-            }}
-          >
-            <MenuBookOutlinedIcon className="dt-icon-bookmark" />
-          </IconButton>
+          {/* 🚫 BOOKMARK hidden only for "TBD-Info not available" */}
+          {!isTbdNotAvailable && (
+            <IconButton
+              size="small"
+              onClick={() => {
+                const row = tables?.[tIdx]?.Items?.[iIdx] ?? {
+                  __t: tIdx,
+                  __i: iIdx,
+                };
+                onBookmarkClick?.(row);
+              }}
+            >
+              <MenuBookOutlinedIcon className="dt-icon-bookmark" />
+            </IconButton>
+          )}
         </div>
       );
     };
+
     // TABLE MODE (is_table: true) - grouped table rendering
     const renderTableGroupsForPage = (pageItems, pageNo) => {
       const tableItems = pageItems.filter(

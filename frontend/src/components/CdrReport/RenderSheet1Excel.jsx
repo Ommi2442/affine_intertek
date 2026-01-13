@@ -114,6 +114,22 @@ const RenderSheet1Excel = ({
       typeof item.field === 'string' &&
       item.field.toLowerCase().includes('contact');
 
+    const normalizeConfidence = (value) => {
+      const num = Number(value);
+      if (Number.isNaN(num)) return null;
+      return num <= 1 ? Math.round(num * 100) : Math.round(num);
+    };
+
+    const canApprove =
+      item.ai_fillable === true &&
+      item.accuracy_level === true &&
+      normalizeConfidence(item.confidence) !== null;
+
+    const hasValue =
+      item.value !== null &&
+      item.value !== undefined &&
+      String(item.value).trim() !== '';
+
     return (
       <TableCell
         sx={{ ...border, position: 'relative' }}
@@ -156,19 +172,23 @@ const RenderSheet1Excel = ({
           <Box sx={{ position: 'relative', zIndex: 2 }}>
             <HoverActionWrapper
               show={hovered.i === itemIndex}
-              onApprove={() => {
-                const item = localItems[itemIndex];
+              onApprove={
+                canApprove
+                  ? () => {
+                      const item = localItems[itemIndex];
 
-                updateField(
-                  sheet.sheet_no,
-                  item.answer_cell ?? item.field,
-                  item.value
-                );
+                      updateField(
+                        sheet.sheet_no,
+                        item.answer_cell ?? item.field,
+                        item.value
+                      );
 
-                handleApprove?.(itemIndex);
-              }}
+                      handleApprove?.(itemIndex);
+                    }
+                  : null
+              }
               onComment={() => openComment(sheet.sheet_no, itemIndex)}
-              onBookmark={() => onBookmarkClick?.(item)}
+              onBookmark={hasValue ? () => onBookmarkClick?.(item) : null}
             />
           </Box>
 
