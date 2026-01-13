@@ -155,12 +155,18 @@ const RenderSheet1Excel = ({
                 ? toBackendContact(uiValue)
                 : uiValue;
 
+              // Update UI
               setLocalItems((prev) =>
                 prev.map((it, idx) =>
-                  idx === itemIndex
-                    ? { ...it, value: backendValue, is_user_edited: true }
-                    : it
+                  idx === itemIndex ? { ...it, value: backendValue } : it
                 )
+              );
+
+              // Commit to CDR (this sets is_user_edited + fires onConfidenceChange)
+              updateField(
+                sheet.sheet_no,
+                item.answer_cell ?? item.field,
+                backendValue
               );
             }}
             sx={{
@@ -175,15 +181,7 @@ const RenderSheet1Excel = ({
               onApprove={
                 canApprove
                   ? () => {
-                      const item = localItems[itemIndex];
-
-                      updateField(
-                        sheet.sheet_no,
-                        item.answer_cell ?? item.field,
-                        item.value
-                      );
-
-                      handleApprove?.(itemIndex);
+                      handleApprove?.(itemIndex); //  ONLY approve
                     }
                   : null
               }
