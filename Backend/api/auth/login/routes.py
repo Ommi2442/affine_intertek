@@ -11,6 +11,8 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
+from azure.cosmos import CosmosClient
+from utility.trf_utils import create_db_and_container
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -20,6 +22,20 @@ SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
 SMTP_USERNAME = os.getenv("SMTP_USERNAME")  
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD") 
 LOGIN_URL = os.getenv("LOGIN_URL") 
+
+
+COSMOS_URL = os.getenv("COSMOS_URL")
+COSMOS_KEY = os.getenv("COSMOS_KEY")
+COSMOS_DB_TEXT     = os.getenv("COSMOS_DB_TEXT")
+COSMOS_CONT_TEXT   = os.getenv("COSMOS_CONT_TEXT")
+COSMOS_DB_IMAGE   = os.getenv("COSMOS_DB_IMAGE")
+COSMOS_CONT_IMAGE   = os.getenv("COSMOS_CONT_IMAGE")
+EMBED_DIM = 1536
+
+client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY)
+
+create_db_and_container(client, COSMOS_DB_TEXT, "/vector", EMBED_DIM, COSMOS_CONT_TEXT)
+create_db_and_container(client, COSMOS_DB_IMAGE, "/vector", EMBED_DIM, COSMOS_CONT_IMAGE)
 
 router = APIRouter()
 

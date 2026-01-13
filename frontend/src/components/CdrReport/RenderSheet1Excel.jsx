@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Typography,
   TextField,
@@ -30,20 +30,22 @@ const colSpanFromRange = (startCell, endCell) => {
 const rowNumberFromCell = (cell = '') =>
   Number(cell.replace(/[A-Z]/g, '')) || 0;
 
-/* ---------------- STATIC FIELDS ---------------- */
-const MANUFACTURER_FIELDS = [
-  'Manufacturer',
-  'Address',
-  'Country',
-  'Contact',
-  'Phone',
-  'FAX',
-  'Email',
-];
-
 /* ---------------- PREFIX HELPERS ---------------- */
 const isApplicant = (item) => item.prefix === 'Applicant';
 const isManufacturer1 = (item) => item.prefix === 'Manufacturer 1';
+
+const isManufacturer2Plus = (item) =>
+  typeof item.prefix === 'string' &&
+  item.prefix.startsWith('Manufacturer ') &&
+  item.prefix !== 'Manufacturer 1';
+
+const isAnyManufacturer = (item) =>
+  typeof item.prefix === 'string' && item.prefix.startsWith('Manufacturer');
+
+const getManufacturerIndex = (prefix = '') => {
+  const n = parseInt(prefix.replace('Manufacturer ', ''), 10);
+  return isNaN(n) ? 0 : n;
+};
 
 /* ---------------- COMPONENT ---------------- */
 const RenderSheet1Excel = ({
@@ -53,10 +55,11 @@ const RenderSheet1Excel = ({
   handleApprove,
   onBookmarkClick,
 }) => {
-  if (!sheet || !Array.isArray(sheet.Items)) return null;
+  const [localItems, setLocalItems] = useState(sheet.Items);
+
+  if (!sheet || !Array.isArray(localItems)) return null;
 
   const [hovered, setHovered] = useState({ i: null });
-  const [extraManufacturers, setExtraManufacturers] = useState([]);
 
   const {
     isCommentOpen,
@@ -72,7 +75,25 @@ const RenderSheet1Excel = ({
 
   /* ---------------- GROUP ITEMS BY ROW ---------------- */
   const rows = {};
-  sheet.Items.forEach((item) => {
+  const toUiContact = (value) => {
+    if (typeof value !== 'string') return value;
+    return value.replace(/\n+/g, ', ');
+  };
+
+  useEffect(() => {
+    setLocalItems(sheet.Items.map((i) => ({ ...i })));
+  }, [sheet.Items]);
+
+  const toBackendContact = (value) => {
+    if (typeof value !== 'string') return value;
+    return value
+      .split(',')
+      .map((v) => v.trim())
+      .filter(Boolean)
+      .join('\n');
+  };
+
+  localItems.forEach((item) => {
     const row =
       rowNumberFromCell(item.question_cell) ||
       rowNumberFromCell(item.answer_cell);
@@ -86,9 +107,28 @@ const RenderSheet1Excel = ({
     .map(Number)
     .sort((a, b) => a - b);
 
-  /* ---------------- VALUE CELL (UNCHANGED) ---------------- */
+  /* ---------------- VALUE CELL ---------------- */
   const renderValue = (item, itemIndex, colSpan = 1) => {
     const isEditable = editMode && item.user_editable;
+    const isContactField =
+      typeof item.field === 'string' &&
+      item.field.toLowerCase().includes('contact');
+
+    const normalizeConfidence = (value) => {
+      const num = Number(value);
+      if (Number.isNaN(num)) return null;
+      return num <= 1 ? Math.round(num * 100) : Math.round(num);
+    };
+
+    const canApprove =
+      item.ai_fillable === true &&
+      item.accuracy_level === true &&
+      normalizeConfidence(item.confidence) !== null;
+
+    const hasValue =
+      item.value !== null &&
+      item.value !== undefined &&
+      String(item.value).trim() !== '';
 
     return (
       <TableCell
@@ -97,18 +137,36 @@ const RenderSheet1Excel = ({
         onMouseEnter={() => setHovered({ i: itemIndex })}
         onMouseLeave={() => setHovered({ i: null })}
       >
-        <div style={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex' }}>
           <TextField
             size="small"
             fullWidth
-            value={item.value ?? ''}
+            value={
+              isContactField
+                ? toUiContact(item.value ?? '')
+                : (item.value ?? '')
+            }
             InputProps={{ readOnly: !isEditable }}
             onChange={(e) => {
               if (!isEditable) return;
+
+              const uiValue = e.target.value;
+              const backendValue = isContactField
+                ? toBackendContact(uiValue)
+                : uiValue;
+
+              // Update UI
+              setLocalItems((prev) =>
+                prev.map((it, idx) =>
+                  idx === itemIndex ? { ...it, value: backendValue } : it
+                )
+              );
+
+              // Commit to CDR (this sets is_user_edited + fires onConfidenceChange)
               updateField(
                 sheet.sheet_no,
                 item.answer_cell ?? item.field,
-                e.target.value
+                backendValue
               );
             }}
             sx={{
@@ -120,128 +178,217 @@ const RenderSheet1Excel = ({
           <Box sx={{ position: 'relative', zIndex: 2 }}>
             <HoverActionWrapper
               show={hovered.i === itemIndex}
-              onApprove={() => handleApprove?.(itemIndex)}
+              onApprove={
+                canApprove
+                  ? () => {
+                      handleApprove?.(itemIndex); //  ONLY approve
+                    }
+                  : null
+              }
               onComment={() => openComment(sheet.sheet_no, itemIndex)}
-              onBookmark={() => onBookmarkClick?.(item)}
+              onBookmark={hasValue ? () => onBookmarkClick?.(item) : null}
             />
           </Box>
 
           {item.ai_fillable &&
             item.accuracy_level &&
-            renderConfidenceColor(item.confidence, item.is_user_edited)}
-        </div>
+            renderConfidenceColor(
+              item.confidence,
+              item.is_user_edited,
+              item.ai_fillable,
+              item.accuracy_level
+            )}
+        </Box>
       </TableCell>
     );
   };
 
-  /* ---------------- GENERIC TABLE RENDER ---------------- */
-  const renderTable = (filterFn) => (
-    <TableContainer component={Paper} sx={{ width: '100%' }}>
-      <Table size="small" sx={{ borderCollapse: 'collapse' }}>
-        <TableBody>
-          {sortedRows.map((rowNo) => {
-            const rowItems = rows[rowNo].filter(filterFn);
-            if (!rowItems.length) return null;
+  const isBlankRow = (items) =>
+    items.every((i) => i.task_type === 'blank' || i.field === null);
 
-            return (
-              <TableRow key={rowNo}>
-                {rowItems.map((item) => {
-                  const itemIndex = sheet.Items.indexOf(item);
+  /* ---------------- GENERIC TABLE ---------------- */
+  const renderTable = (filterFn) => {
+    let lastWasBlank = false; // ✅ must be here
 
-                  if (item.field_merged && item.fm_range) {
-                    const span = colSpanFromRange(
-                      item.question_cell,
-                      item.fm_range
-                    );
+    return (
+      <TableContainer component={Paper} sx={{ width: '100%' }}>
+        <Table size="small" sx={{ borderCollapse: 'collapse' }}>
+          <TableBody>
+            {sortedRows.map((rowNo) => {
+              const rowItems = rows[rowNo].filter(filterFn);
+              if (!rowItems.length) return null;
+
+              const blank = isBlankRow(rowItems);
+
+              // Skip consecutive blank rows
+              if (blank && lastWasBlank) {
+                return null;
+              }
+
+              lastWasBlank = blank;
+
+              // Render a divider instead of empty rows
+              if (blank) {
+                return (
+                  <TableRow key={rowNo}>
+                    <TableCell colSpan={6} sx={{ p: 0 }}>
+                      <Box sx={{ height: 1, background: '#ccc', my: 1 }} />
+                    </TableCell>
+                  </TableRow>
+                );
+              }
+
+              return (
+                <TableRow key={rowNo}>
+                  {rowItems.map((item) => {
+                    const itemIndex = localItems.indexOf(item);
+
+                    if (item.field_merged && item.fm_range) {
+                      const span = colSpanFromRange(
+                        item.question_cell,
+                        item.fm_range
+                      );
+                      return (
+                        <TableCell
+                          key={itemIndex}
+                          colSpan={span}
+                          sx={{
+                            ...border,
+                            fontWeight: 700,
+                            background: '#f5f5f5',
+                          }}
+                        >
+                          {item.field}
+                        </TableCell>
+                      );
+                    }
+
                     return (
-                      <TableCell
-                        key={itemIndex}
-                        colSpan={span}
-                        sx={{
-                          ...border,
-                          fontWeight: 700,
-                          background: '#f5f5f5',
-                        }}
-                      >
-                        {item.field}
-                      </TableCell>
+                      <React.Fragment key={itemIndex}>
+                        <TableCell sx={border}>{item.field}</TableCell>
+                        {renderValue(item, itemIndex)}
+                      </React.Fragment>
                     );
-                  }
+                  })}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  };
 
+  /* ---------------- ADD MANUFACTURER ---------------- */
+  const handleAddManufacturer = () => {
+    const base = localItems.filter(isManufacturer1);
+    if (!base.length) return;
+
+    let max = 1;
+    localItems.forEach((it) => {
+      if (it.prefix?.startsWith('Manufacturer ')) {
+        const n = parseInt(it.prefix.replace('Manufacturer ', ''), 10);
+        if (!isNaN(n)) max = Math.max(max, n);
+      }
+    });
+
+    const nextPrefix = `Manufacturer ${max + 1}`;
+
+    const clones = base.map((it) => ({
+      ...JSON.parse(JSON.stringify(it)),
+      prefix: nextPrefix,
+      value: null,
+      is_user_modified: false,
+      is_user_approved: false,
+      is_user_edited: false,
+    }));
+
+    setLocalItems((prev) => [...prev, ...clones]);
+  };
+
+  /* ---------------- MANUFACTURER BLOCK ---------------- */
+  const manufacturer2Plus = localItems.filter(isManufacturer2Plus);
+
+  const manufacturerGroups = {};
+  manufacturer2Plus.forEach((item) => {
+    if (!manufacturerGroups[item.prefix]) {
+      manufacturerGroups[item.prefix] = [];
+    }
+    manufacturerGroups[item.prefix].push(item);
+  });
+
+  const manufacturerBlocks = Object.values(manufacturerGroups);
+
+  const renderManufacturerBlock = (items) => {
+    if (!items.length) return null;
+    const prefix = items[0].prefix;
+    const manufacturerNo = getManufacturerIndex(prefix);
+
+    const localRows = {};
+    items.forEach((item) => {
+      const row =
+        rowNumberFromCell(item.question_cell) ||
+        rowNumberFromCell(item.answer_cell);
+      if (!localRows[row]) localRows[row] = [];
+      localRows[row].push(item);
+    });
+
+    const sorted = Object.keys(localRows)
+      .map(Number)
+      .sort((a, b) => a - b);
+
+    const handleDelete = () => {
+      setLocalItems((prev) => prev.filter((i) => i.prefix !== prefix));
+    };
+
+    return (
+      <TableContainer component={Paper} sx={{ width: '100%' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            px: 1,
+            py: 0.5,
+            borderBottom: '1px solid #ccc',
+            background: '#f5f5f5',
+            fontWeight: 600,
+          }}
+        >
+          <Typography>Manufacturer {manufacturerNo}</Typography>
+          {editMode && (
+            <IconButton size="small" onClick={handleDelete}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          )}
+        </Box>
+
+        <Table size="small">
+          <TableBody>
+            {sorted.map((rowNo) => (
+              <TableRow key={rowNo}>
+                {localRows[rowNo].map((item) => {
+                  const itemIndex = localItems.indexOf(item);
                   return (
                     <React.Fragment key={itemIndex}>
                       <TableCell sx={border}>{item.field}</TableCell>
-                      {renderValue(item, itemIndex, 1)}
+                      {renderValue(item, itemIndex)}
                     </React.Fragment>
                   );
                 })}
               </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  };
 
-  /* ---------------- EMPTY MANUFACTURER (WITH DELETE) ---------------- */
-  const renderEmptyManufacturer = (idx) => (
-    <TableContainer component={Paper} sx={{ width: '100%' }}>
-      <Table size="small" sx={{ borderCollapse: 'collapse' }}>
-        <TableBody>
-          <TableRow>
-            <TableCell
-              colSpan={2}
-              sx={{
-                ...border,
-                fontWeight: 700,
-                background: '#f5f5f5',
-                position: 'relative',
-              }}
-            >
-              Manufacturer {idx + 2}
-              {/* ❌ DELETE BUTTON */}
-              <IconButton
-                size="small"
-                sx={{ position: 'absolute', right: 4, top: 4 }}
-                onClick={() =>
-                  setExtraManufacturers((prev) =>
-                    prev.filter((_, i) => i !== idx)
-                  )
-                }
-              >
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            </TableCell>
-          </TableRow>
-
-          {MANUFACTURER_FIELDS.map((field) => (
-            <TableRow key={field}>
-              <TableCell sx={border}>{field}</TableCell>
-              <TableCell sx={border}>
-                <TextField
-                  size="small"
-                  fullWidth
-                  value={extraManufacturers[idx]?.[field] ?? ''}
-                  onChange={(e) => {
-                    const copy = [...extraManufacturers];
-                    copy[idx] = { ...copy[idx], [field]: e.target.value };
-                    setExtraManufacturers(copy);
-                  }}
-                />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-
+  /* ---------------- RENDER ---------------- */
   return (
     <>
-      {/* ===== TOP DATA ===== */}
-      {renderTable((item) => !isApplicant(item) && !isManufacturer1(item))}
+      {renderTable((item) => !isApplicant(item) && !isAnyManufacturer(item))}
 
-      {/* ===== APPLICANT + MANUFACTURER 1 ===== */}
       <Box
         sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mt: 2 }}
       >
@@ -249,14 +396,12 @@ const RenderSheet1Excel = ({
         {renderTable(isManufacturer1)}
       </Box>
 
-      {/* ===== EXTRA MANUFACTURERS ===== */}
       <Box mt={3}>
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-          {extraManufacturers.map((_, idx) => (
-            <Box key={idx}>{renderEmptyManufacturer(idx)}</Box>
+          {manufacturerBlocks.map((block, idx) => (
+            <Box key={idx}>{renderManufacturerBlock(block)}</Box>
           ))}
 
-          {/* ➕ ADD BUTTON */}
           <Box
             sx={{
               border: '1px dashed #999',
@@ -266,7 +411,7 @@ const RenderSheet1Excel = ({
               justifyContent: 'center',
               cursor: 'pointer',
             }}
-            onClick={() => setExtraManufacturers((m) => [...m, {}])}
+            onClick={() => editMode && handleAddManufacturer()}
           >
             <Typography fontWeight={600}>+ Add Manufacturer</Typography>
           </Box>

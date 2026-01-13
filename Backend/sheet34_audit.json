@@ -1,0 +1,13 @@
+{
+  "plan": {
+    "plan": [
+      "Detect BOM files",
+      "Run exactly one pipeline (c1 OR c2)",
+      "Never mix pipelines",
+      "Do not mutate outputs"
+    ]
+  },
+  "audit": {
+    "warnings": []
+  }
+}

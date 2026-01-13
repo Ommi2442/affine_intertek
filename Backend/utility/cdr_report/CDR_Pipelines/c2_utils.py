@@ -26,7 +26,7 @@ def get_cosmos_container():
     db = client.get_database_client(configs.COSMOS_DB_NAME)
     return db.create_container_if_not_exists(
         id=configs.COSMOS_CONTAINER_NAME,
-        partition_key=PartitionKey(path="/source")
+        partition_key=PartitionKey(path=configs.PARTITION_KEY)
     )
 
 # ===================== TOKEN TRACKING =====================
@@ -46,13 +46,24 @@ def track_usage(resp):
 
 # ===================== BLOB & FILE UTILS =====================
 def get_image_urls_from_container_sas():
-    blob_service = BlobServiceClient.from_connection_string(configs.AZURE_BLOB_CONNECTION_STRING)
-    container_client = blob_service.get_container_client(configs.BLOB_CONTAINER_NAME)
+    configs.require_runtime()
+    project_id = configs.runtime.project_id
+
+    prefix = f"Documents/{project_id}/source_documents/device_images/"
+
+    blob_service = BlobServiceClient.from_connection_string(
+        configs.AZURE_BLOB_CONNECTION_STRING
+    )
+    container_client = blob_service.get_container_client(
+        configs.BLOB_CONTAINER_NAME
+    )
 
     blob_names = sorted([
-        blob.name for blob in container_client.list_blobs(name_starts_with="device_images/")
+        blob.name
+        for blob in container_client.list_blobs(name_starts_with=device_prefix)
         if blob.name.lower().endswith((".jpg", ".jpeg", ".png"))
     ])
+
     
     print("Blobs found in container:", len(blob_names))
     if not blob_names:
@@ -70,15 +81,23 @@ def get_image_urls_from_container_sas():
 from urllib.parse import quote
 
 def find_user_guide_blob():
+    configs.require_runtime()
+    project_id = configs.runtime.project_id
+
+    prefix = f"Documents/{project_id}/"
+
     blob_service = BlobServiceClient.from_connection_string(
         configs.AZURE_BLOB_CONNECTION_STRING
     )
-
     container_client = blob_service.get_container_client(
         configs.BLOB_CONTAINER_NAME
     )
 
-    all_blobs = [blob.name for blob in container_client.list_blobs()]
+    all_blobs = [
+        blob.name
+        for blob in container_client.list_blobs(name_starts_with=prefix)
+    ]
+
 
     if not all_blobs:
         print("❌ Container is empty.")

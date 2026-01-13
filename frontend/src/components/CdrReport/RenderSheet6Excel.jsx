@@ -1,10 +1,11 @@
 /* eslint-disable */
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, TextField, Divider } from '@mui/material';
 import HoverActionWrapper from '../Common/HoverActionsWrapper';
 import CommentDialog from '../CommentDialog';
 import { useCommentActions } from '../Common/useCommentActions';
 import { renderConfidenceColor } from '../../utils/renderConfidenceColor';
+import { useRef } from 'react';
 
 /* ---------------- COMPONENT ---------------- */
 const RenderSheet6Excel = ({
@@ -13,10 +14,21 @@ const RenderSheet6Excel = ({
   updateField,
   onBookmarkClick,
   handleApprove,
+  onConfidenceChange,
 }) => {
   if (!sheet || !Array.isArray(sheet.Items)) return null;
 
+  /* ---------------- LOCAL EDIT STATE ---------------- */
+  const [localItems, setLocalItems] = useState(sheet.Items);
+  const editedOnceRef = useRef(new Set());
+
+  // Sync only when sheet changes (NOT on every keystroke)
+  useEffect(() => {
+    setLocalItems(sheet.Items.map((i) => ({ ...i })));
+  }, [sheet.Items]);
+
   const [hovered, setHovered] = useState({ i: null });
+
   const {
     isCommentOpen,
     setIsCommentOpen,
@@ -27,23 +39,78 @@ const RenderSheet6Excel = ({
     saveComment,
   } = useCommentActions(sheet);
 
+  /* ---------------- LOCAL UPDATE ---------------- */
+  const updateLocal = (idx, value) => {
+    setLocalItems((prev) =>
+      prev.map((it, i) => {
+        if (i !== idx) return it;
+
+        // 🔥 Fire confidence ONLY first time this field is edited
+        if (!editedOnceRef.current.has(idx)) {
+          editedOnceRef.current.add(idx);
+          onConfidenceChange?.();
+        }
+
+        return {
+          ...it,
+          value,
+          is_user_edited: true,
+        };
+      })
+    );
+  };
+
+  /* ---------------- COMMIT ON APPROVE ---------------- */
+  const commit = (idx) => {
+    const item = localItems[idx];
+    if (!item) return;
+
+    updateField(sheet.sheet_no, item.question_cell, item.value);
+    handleApprove?.(idx);
+  };
+
   return (
     <Box>
-      {sheet.Items.map((item, idx) => {
+      {localItems.map((item, idx) => {
+        // Removes only "Label - " or "Label – " from the start of the value
+        const stripLeadingLabel = (value, label) => {
+          if (!value || !label) return value;
+
+          // Escape special regex chars in label
+          const safeLabel = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+          // Match:  ^Label -   OR   ^Label –
+          const regex = new RegExp(`^${safeLabel}\\s*[–-]\\s*`, 'i');
+
+          return value.replace(regex, '');
+        };
         let label = item.prefix || item.field || '';
-
-        if (label.includes('-')) {
-          label = label.split('-').slice(1).join('-').trim();
-        }
-
         let valueText = item.value ?? '';
 
-        if (typeof valueText === 'string' && valueText.includes('-')) {
-          valueText = valueText.split('-').slice(1).join('-').trim();
-        }
+        valueText = stripLeadingLabel(valueText, label);
+
+        //  value existence
+        const hasValue =
+          item.value !== null &&
+          item.value !== undefined &&
+          String(item.value).trim() !== '';
+
+        //  normalize confidence
+        const normalizeConfidence = (value) => {
+          const num = Number(value);
+          if (Number.isNaN(num)) return null;
+          return num <= 1 ? Math.round(num * 100) : Math.round(num);
+        };
+
+        //  approve allowed only when AI confidence exists
+        const canApprove =
+          item.ai_fillable === true &&
+          item.accuracy_level === true &&
+          normalizeConfidence(item.confidence) !== null;
 
         const isLongText = valueText.length > 80 || valueText.includes('\n');
-        //console.log('conf', item.confidence);
+        const isEditable = editMode && item.user_editable;
+
         return (
           <Box key={idx} sx={{ py: 1 }}>
             {!item.user_editable ? (
@@ -86,30 +153,28 @@ const RenderSheet6Excel = ({
                       minRows={isLongText ? 3 : 1}
                       maxRows={12}
                       value={valueText}
-                      disabled={!editMode}
-                      onChange={(e) =>
-                        updateField(
-                          sheet.sheet_no,
-                          item.question_cell,
-                          e.target.value
-                        )
-                      }
+                      disabled={!isEditable}
+                      onChange={(e) => updateLocal(idx, e.target.value)}
                     />
 
                     <HoverActionWrapper
                       show={hovered.i === idx}
-                      onApprove={() => handleApprove?.(idx)}
+                      onApprove={canApprove ? () => commit(idx) : null}
                       onComment={() => openComment(sheet.sheet_no, idx)}
-                      onBookmark={() => {
-                        const row = sheet.Items[idx];
-                        onBookmarkClick?.(row ?? { __i: idx });
-                      }}
+                      onBookmark={
+                        hasValue
+                          ? () => onBookmarkClick?.(localItems[idx])
+                          : null
+                      }
                     />
+
                     {item.ai_fillable === true &&
                       item.accuracy_level === true &&
                       renderConfidenceColor(
                         item.confidence,
-                        item.is_user_edited
+                        item.is_user_edited,
+                        item.ai_fillable,
+                        item.accuracy_level
                       )}
                   </div>
                 </Box>
@@ -121,7 +186,7 @@ const RenderSheet6Excel = ({
         );
       })}
 
-      {/* ✅ COMMENT DIALOG */}
+      {/* COMMENT DIALOG */}
       <CommentDialog
         open={isCommentOpen}
         onClose={() => setIsCommentOpen(false)}

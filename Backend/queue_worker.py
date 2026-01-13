@@ -123,7 +123,7 @@ def update_project_progress(
 def update_project_progress_CDR(
     project_doc: dict,
     cdr_stage: str,
-    cdr_percentage: int = 10,
+    cdr_percentage: int,
     cdr_step: str | None = None,
     error: str | None = None,
     last_updated: datetime | None = None,
@@ -139,7 +139,7 @@ def update_project_progress_CDR(
     }
 
     projects_container.upsert_item(project_doc)
-    print(f" Progress updated → {cdr_percentage}% | {cdr_stage}")
+    print(f" Progress updated → {cdr_percentage}% | {cdr_stage} --- {cdr_completed}")
 
 
 

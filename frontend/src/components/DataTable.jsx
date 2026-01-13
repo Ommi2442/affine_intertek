@@ -79,7 +79,6 @@ const DataTable = forwardRef(
     //  - item.user_editable === true
     //  - editMode === true (user clicked Edit/Refine)
     //  - item.is_textbox !== false (textbox allowed)
-
     const normalizeToArray = (v) => {
       // already correct format
       if (Array.isArray(v)) return v;
@@ -182,7 +181,11 @@ const DataTable = forwardRef(
       if (item.user_editable !== true) return false;
 
       // Remark / Verdict → editable only in edit mode
-      if (item.task_type === 'remark' || item.task_type === 'verdict') {
+      if (
+        item.task_type === 'remark' ||
+        item.task_type === 'verdict' ||
+        item.task_type === 'verdict_dependency'
+      ) {
         return editMode;
       }
 
@@ -325,6 +328,50 @@ const DataTable = forwardRef(
       });
     }, [jsonData]);
 
+    // useEffect(() => {
+    //   if (!jsonData?.Tables) return;
+    //   //console.log('hhh', jsonData);
+    //   // If IndexedDB already loaded (refresh), NEVER override it
+    //   if (isRefreshRef.current) return;
+
+    //   // Only initial load from backend
+    //   setTables(jsonData.Tables);
+    //   setVisiblePages(1);
+    //   setCurrentPageIndex(0);
+    // }, [jsonData]);
+
+    // Load from IndexedDB ONLY on hard refresh (mount)
+    // useEffect(() => {
+    //   const navEntry =
+    //     performance.getEntriesByType &&
+    //     performance.getEntriesByType('navigation') &&
+    //     performance.getEntriesByType('navigation')[0];
+
+    //   const isRefresh =
+    //     (performance.navigation && performance.navigation.type === 1) ||
+    //     navEntry?.type === 'reload' ||
+    //     false;
+
+    //   isRefreshRef.current = !!isRefresh;
+
+    //   if (isRefreshRef.current) {
+    //     idb_get('tables', 'trf').then((saved) => {
+    //       if (saved) {
+    //         setTables(saved);
+    //         setVisiblePages(1);
+    //         setCurrentPageIndex(0);
+    //       }
+    //     });
+    //   }
+    // }, []);
+
+    // Save to IndexedDB whenever tables change
+    // useEffect(() => {
+    //   if (tables && tables.length > 0) {
+    //     idb_set('tables', tables);
+    //   }
+    // }, [tables]);
+
     // FLATTEN ITEMS (hide disable_text: true in UI)
     const allItems = useMemo(() => {
       const arr = [];
@@ -438,6 +485,7 @@ const DataTable = forwardRef(
         const next = prev.map((tbl) => ({ ...tbl, Items: [...tbl.Items] }));
         const item = next[t].Items[i];
 
+        // 🔹 only mark modified if value ACTUALLY changed
         const isModified = item.value !== val;
         if (!isModified) return prev;
 
@@ -519,28 +567,33 @@ const DataTable = forwardRef(
     //   }, 0);
     // };
 
-    const handleApprove = (tIdx, iIdx) => {
+    const handleApprove = async (tIdx, iIdx) => {
+      let updatedTables = null;
+
       setTables((prev) => {
         const next = prev.map((tbl) => ({ ...tbl, Items: [...tbl.Items] }));
         const item = next[tIdx].Items[iIdx];
 
         if (!item || item.is_user_approved) return prev;
 
-        // 1️⃣ Mark clicked remark / verdict
+        //  If medium / low → promote to HIGH
+        const shouldPromote =
+          item.accuracy_level === true && Number(item.confidence) < 100;
+
         next[tIdx].Items[iIdx] = {
           ...item,
           is_user_approved: true,
-          is_user_edited: true,
-          is_user_modified: true,
-          confidence: 100,
+          confidence: shouldPromote ? 100 : item.confidence, // do NOT touch user_edited
         };
 
-        // 2️⃣ PAGE 9+ → mark clause row (task_type === null)
-        if (item.task_type === 'remark' || item.task_type === 'verdict') {
+        // 🔥 Clause row promotion (page 9+)
+        if (
+          item.task_type === 'remark' ||
+          item.task_type === 'verdict' ||
+          item.task_type === 'verdict_dependency'
+        ) {
           const clauseRow = item.clause_row;
           const questionRow = item.question_row;
-
-          let clauseMatched = false;
 
           next[tIdx].Items = next[tIdx].Items.map((row) => {
             if (
@@ -548,22 +601,25 @@ const DataTable = forwardRef(
               row.clause_row === clauseRow &&
               row.question_row === questionRow
             ) {
-              clauseMatched = true;
               return {
                 ...row,
-                is_user_edited: true,
-                is_user_modified: true,
-                confidence: 100,
+                confidence: 100, // promote clause too
               };
             }
             return row;
           });
         }
 
+        updatedTables = next;
         return next;
       });
 
-      //  realtime confidence
+      // 🔥 THIS IS THE CRITICAL PART
+      if (updatedTables) {
+        await idb_set('tables', updatedTables); // <-- update IndexedDB immediately
+      }
+
+      // 🔥 Now confidence score recalculates correctly
       onConfidenceChange?.();
     };
 
@@ -618,50 +674,52 @@ const DataTable = forwardRef(
       if (tIdx == null || iIdx == null) return null;
       if (hovered.t !== tIdx || hovered.i !== iIdx) return null;
 
-      //  NEW CONDITION — hide for TBD-Info not available
       const item = tables?.[tIdx]?.Items?.[iIdx];
-      if (item.user_editable !== true) return null;
-      if (!Object.prototype.hasOwnProperty.call(item, 'value')) {
-        return null;
-      }
-      if (
-        typeof item?.value === 'string' &&
-        item.value.trim().toLowerCase() === 'tbd-info not available'
-      ) {
-        return null;
-      }
+      if (!item || item.user_editable !== true) return null;
+
+      const hasValueField = Object.prototype.hasOwnProperty.call(item, 'value');
+      if (!hasValueField) return null;
+
+      const isTbdNotAvailable =
+        typeof item.value === 'string' &&
+        item.value.trim().toLowerCase() === 'tbd-info not available';
+
+      const canApprove =
+        item.ai_fillable === true && item.accuracy_level === true;
 
       return (
         <div className="dt-hover-actions">
-          <IconButton size="small" onClick={() => handleApprove?.(tIdx, iIdx)}>
-            <CheckCircleIcon className="dt-icon-approve" />
-          </IconButton>
+          {/* ✅ APPROVE — only when AI confidence exists */}
+          {canApprove && (
+            <IconButton size="small" onClick={() => handleApprove(tIdx, iIdx)}>
+              <CheckCircleIcon className="dt-icon-approve" />
+            </IconButton>
+          )}
 
+          {/* ✅ COMMENT — always allowed */}
           <IconButton size="small" onClick={() => openComment(tIdx, iIdx)}>
             <ChatBubbleOutlineOutlinedIcon className="dt-icon-comment" />
           </IconButton>
 
-          {/* Bookmark: send the full row object (safe lookup) */}
-          <IconButton
-            size="small"
-            onClick={() => {
-              const row =
-                // safe access to the row object from tables state
-                (Array.isArray(tables) &&
-                  tables[tIdx] &&
-                  Array.isArray(tables[tIdx].Items) &&
-                  tables[tIdx].Items[iIdx]) ??
-                null;
-
-              // call parent with object; fallback to {__t,__i} if not found
-              onBookmarkClick?.(row ?? { __t: tIdx, __i: iIdx });
-            }}
-          >
-            <MenuBookOutlinedIcon className="dt-icon-bookmark" />
-          </IconButton>
+          {/* 🚫 BOOKMARK hidden only for "TBD-Info not available" */}
+          {!isTbdNotAvailable && (
+            <IconButton
+              size="small"
+              onClick={() => {
+                const row = tables?.[tIdx]?.Items?.[iIdx] ?? {
+                  __t: tIdx,
+                  __i: iIdx,
+                };
+                onBookmarkClick?.(row);
+              }}
+            >
+              <MenuBookOutlinedIcon className="dt-icon-bookmark" />
+            </IconButton>
+          )}
         </div>
       );
     };
+
     // TABLE MODE (is_table: true) - grouped table rendering
     const renderTableGroupsForPage = (pageItems, pageNo) => {
       const tableItems = pageItems.filter(
@@ -838,8 +896,6 @@ const DataTable = forwardRef(
                                     sx={{
                                       fontSize: 14,
                                       whiteSpace: 'pre-wrap',
-                                      fontWeight:
-                                        col.is_bold === true ? 700 : 400,
                                     }}
                                   >
                                     {label}
@@ -1443,8 +1499,6 @@ const DataTable = forwardRef(
                                       fontSize: 14,
                                       whiteSpace: 'pre-wrap',
                                       wordBreak: 'break-word',
-                                      fontWeight:
-                                        first.is_bold === true ? 700 : 400,
                                     }}
                                   >
                                     {fieldLabel}
@@ -1770,6 +1824,7 @@ const DataTable = forwardRef(
         'Requirement + Test',
         'Result - Remark',
         'Verdict',
+        'IEC 61010-1',
       ]);
 
       const items = pageItems.filter((i) => {
@@ -1820,7 +1875,10 @@ const DataTable = forwardRef(
             __t: item.__t,
             __i: item.__i,
           };
-        } else if (item.task_type === 'verdict') {
+        } else if (
+          item.task_type === 'verdict' ||
+          item.task_type === 'verdict_dependency'
+        ) {
           groupsByRow[key].verdictRef = {
             __t: item.__t,
             __i: item.__i,
@@ -1882,7 +1940,11 @@ const DataTable = forwardRef(
         const comment = item._comment;
 
         // Not user editable → plain text always
-        if (item.task_type !== 'remark' && item.task_type !== 'verdict') {
+        if (
+          item.task_type !== 'remark' &&
+          item.task_type !== 'verdict' &&
+          item.task_type !== 'verdict_dependency'
+        ) {
           return (
             <div className="dt-value-column dt-relative">
               <Typography sx={{ whiteSpace: 'pre-wrap' }}>{value}</Typography>
@@ -1895,8 +1957,7 @@ const DataTable = forwardRef(
           );
         }
 
-        //  user_editable === true → ALWAYS show textarea
-        //  disabled until editMode is ON
+        // else user_editable === true -> show textarea (disabled until editMode and other checks)
         return (
           <div
             className={`dt-value-column dt-relative ${
@@ -1910,7 +1971,7 @@ const DataTable = forwardRef(
                 className="dt-textarea dt-textarea-with-actions"
                 value={value}
                 rows={rows}
-                disabled={!editMode} // KEY LINE
+                disabled={!editMode}
                 style={{ marginRight: '10px' }}
                 onChange={(e) => {
                   if (!editMode) return;

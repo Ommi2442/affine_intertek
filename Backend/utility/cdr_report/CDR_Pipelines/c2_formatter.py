@@ -1,4 +1,4 @@
-# formatter.py
+# c2_formatter.py
 import json
 import pandas as pd
 import utility.cdr_report.CDR_Pipelines.c2_utils as c2_utils
@@ -45,7 +45,7 @@ def create_s4_json(input_excel, output_json):
             "user_editable": True,
             "ai_fillable": True,
             "accuracy_level": False,
-            "image_support": c2_utils.clean_value(row.get("URL")),
+            "image_support": c2_utils.clean_value(row.get("Image URLs")),
             "text_support": [
                                 {
                                     "filename": c2_utils.clean_value(row.get("Filename")),
@@ -159,10 +159,10 @@ def create_s3_json(input_excel, output_json):
             "prefix": "Product",
             "field": build_field_text(
                 c2_utils.clean_value(row.get("photo_no")),
-                c2_utils.clean_value(row.get("Filename"))
+                c2_utils.clean_value(row.get("Image Captions"))
             ),
             "answer_cell": f"{column}{current_row + 1}",
-            "photo_path": c2_utils.clean_value(row.get("URL")),
+            "photo_path": c2_utils.clean_value(row.get("Image URLs")),
             "field_merged": False,
             "fm_range": None,
             "value_merged": False,
@@ -182,6 +182,8 @@ def create_s3_json(input_excel, output_json):
     
     
 def run_formatter():
+    configs.require_runtime()
+
         # 5. FORMATTING (JSON)
     print("\n--- Formatting JSONs ---")
     create_s4_json(configs.OUTPUT_EXCEL_DEDUPED, configs.OUTPUT_JSON_S4)

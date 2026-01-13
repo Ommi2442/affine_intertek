@@ -1,9 +1,12 @@
-# extractor.py
+# c2_extractor.py
 import json
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import utility.cdr_report.CDR_Pipelines.configs as configs
 import utility.cdr_report.CDR_Pipelines.c2_utils as c2_utils
+import os
+from urllib.parse import urlparse
+
 
 openai_client = c2_utils.get_openai_client()
 
@@ -235,6 +238,8 @@ def merge_components(image_components, guide_components):
 
 
 def run_extractor():
+    configs.require_runtime()
+
     print("--- Starting Pipeline ---")
 
     # 1. DISCOVERY
@@ -262,7 +267,6 @@ def run_extractor():
     print("\n--- Extracting Components ---")
 
     image_captions, image_components = extract_components_from_images(image_urls)
-    guide_components = extract_components_from_guide(guide_text, guide_filename, guide_url)
 
     combined_components = merge_components(image_components, guide_components)
 

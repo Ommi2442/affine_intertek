@@ -1,5 +1,6 @@
 # utils.py
 
+import uuid
 import os
 import re
 import tempfile
@@ -13,8 +14,10 @@ import io
 import openpyxl
 import xlrd
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import utility.cdr_report.CDR_Pipelines.configs as configs
 from azure.storage.blob import BlobClient
-from azure.core.exceptions import ResourceNotFoundError, AzureError
+from azure.core.exceptions import ResourceNotFoundError, AzureError, HttpResponseError
+
 import pandas as pd
 from docx import Document
 import math
@@ -45,7 +48,7 @@ from openai import RateLimitError
 
 _EMBED_SEMAPHORE = threading.Semaphore(1)  # 👈 HARD GATE
 
-from utility.cdr_report.CDR_Pipelines.configs import (
+from utility.cdr_report.CDR_Pipelines. configs import (
     container,
     IMAGE_EXTS,
     AZURE_CONN_STRING,
@@ -197,62 +200,28 @@ def _blob_name_from_url(url, container):
 
 ## Getting Blob urls
 
-def get_blob_urls(conn_str: str, container: str, sas_token: str | None = None):
-    """
-    Returns a list of full blob URLs for all blobs in the given container.
+from azure.storage.blob import BlobServiceClient
+import utility.cdr_report.CDR_Pipelines.configs as configs
 
-    - Uses the connection string + container name to list blobs.
-    - Builds URLs as:
-        https://<account>.blob.core.windows.net/<container>/<blob-name>?<sas>
-    - If sas_token is None, returns plain URLs without SAS.
+def get_blob_urls(conn_str: str, container: str) -> list[str]:
+    """
+    Returns correct, downloadable blob URLs for the current project.
     """
 
-    # --- inner helper to repair malformed URLs (defensive) ---
-    def _fix_sas_blob_url(url: str) -> str:
-        """
-        Converts malformed
-          https://.../container?sv=...&sig=.../blobname
-        into
-          https://.../container/blobname?sv=...&sig=...
-        If the URL is already OK, returns it unchanged.
-        """
-        qpos = url.find("?")
-        slashpos = url.rfind("/")
+    configs.require_runtime()
+    project_id = configs.runtime.project_id
 
-        # Only "fix" if ? comes before last /
-        if qpos != -1 and qpos < slashpos:
-            prefix = url[:slashpos]       # up to before blob name
-            blob_name = url[slashpos+1:]  # after last /
-
-            base, qs = prefix.split("?", 1)
-            return f"{base}/{blob_name}?{qs}"
-
-        # already OK or no query → return as-is
-        return url
-
-    # --- list blobs and build URLs ---
     service_client = BlobServiceClient.from_connection_string(conn_str)
     container_client = service_client.get_container_client(container)
 
-    container_url = container_client.url
-    print(f"Container URL: {container_url}")
-
-    # normalize SAS once
-    qs = ""
-    if sas_token:
-        qs = "?" + sas_token.lstrip("?")
-
     blob_urls: list[str] = []
 
-    for blob in container_client.list_blobs():
-        # raw correct URL we intend to use
-        raw_url = f"{container_url}/{quote(blob.name)}{qs}"
-        # run through fixer (no-op for correct URLs, fixes any bad ones)
-        fixed_url = _fix_sas_blob_url(raw_url)
-        blob_urls.append(fixed_url)
+    prefix = f"Documents/{project_id}/source_documents/"
+    for blob in container_client.list_blobs(name_starts_with=prefix):
+        blob_client = container_client.get_blob_client(blob.name)
+        blob_urls.append(blob_client.url)   # ✅ ALWAYS CORRECT
 
     return blob_urls
-
 
 def safe_download_blob_file(conn_str, container, blob_name, local_path):
     """
@@ -507,7 +476,7 @@ def download_images_from_blob_urls(
     blob_urls,
     conn_str: str,
     container: str,
-    download_dir: str = "src_files",   # ✅ same folder as your other docs
+    download_dir: str = configs.SRC_FILES_DIR,   # ✅ same folder as your other docs
     overwrite: bool = False,
     verbose: bool = True,
 ):
@@ -637,6 +606,55 @@ def create_db_and_container():
         print("Message:", getattr(e, "message", str(e)))
         raise
 
+def add_ids_to_chunks(chunks):
+    docs = []
+    for ch in chunks:
+        docs.append(
+            Document(
+                page_content=ch.page_content,
+                metadata={
+                    **ch.metadata,
+                    "id": str(uuid.uuid4())  # REQUIRED for Cosmos DB
+                }
+            )
+        )
+    return docs
+
+def ingest_to_cosmos_parallel(vs, chunks, batch_size=10, max_workers=10):
+
+    def safe_add(doc):
+        """Add a single document with retry for CosmosDB 429 throttling."""
+        retries = 5
+        for attempt in range(retries):
+            try:
+                return vs.add_documents([doc])
+            except HttpResponseError as e:
+                if "Request rate is large" in str(e) or e.status_code == 429:
+                    wait = (attempt + 1) * 2
+                    print(f"⚠️ 429 Rate Limit → retrying in {wait}s")
+                    time.sleep(wait)
+                else:
+                    print(f"❌ Unhandled error: {e}")
+                    return None
+        print("❌ Failed after retries")
+        return None
+
+    # Sequential batches (safe for Cosmos)
+    for i in range(0, len(chunks), batch_size):
+        batch = chunks[i:i + batch_size]
+        print(f"\n🔵 Ingesting batch {i} → {i + len(batch) - 1}")
+
+        # Parallel within each batch
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_map = {executor.submit(safe_add, doc): doc for doc in batch}
+
+            for future in as_completed(future_map):
+                doc = future_map[future]
+                try:
+                    future.result()
+                except Exception as e:
+                    print(f"❌ Error inserting doc: {e}")
+
 
 def build_vectorstore(embeddings):
     # cosmos_client = CosmosClient(
@@ -679,18 +697,23 @@ def build_embeddings():
         azure_deployment=EMBED_DEPLOY,
     )
 
+def load_and_split_pdfs_text(
+    pdf_paths,
+    CHUNK_SIZE,
+    CHUNK_OVERLAP,
+    extracted_texts=None,
+    cad_schematics=False
+):
+    """
+    EXACT implementation from your notebook.
+    Returns:
+        chunks → list of text Document objects
+        image_page_metadata → list of schematic image metadata
+    """
 
-def load_and_split_pdfs_text(pdf_paths, extracted_texts=None):
-    """
-    pdf_paths: iterable of file paths (existing behavior — only PDFs processed)
-    extracted_texts: optional list of dicts. Supported shapes:
-        - { "filename.ext": "text..." }
-        - { "filename": "...", "text": "..." }
-        - mixed list containing either form
-    Returns: list of chunks (output of splitter.split_documents)
-    """
-    print('START OF CHUNKING')
     docs = []
+    image_page_metadata = []
+
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE,
         chunk_overlap=CHUNK_OVERLAP,
@@ -698,40 +721,50 @@ def load_and_split_pdfs_text(pdf_paths, extracted_texts=None):
         keep_separator=False,
     )
 
-    # --- existing PDF flow (unchanged) ---
+    # ----- STEP 1: PDF TEXT EXTRACTION -----
     for path in pdf_paths:
         if not str(path).lower().endswith(".pdf"):
             continue
+
         loader = PyPDFLoader(str(path))
         raw_docs = loader.load()
         base = os.path.basename(str(path))
+
         for d in raw_docs:
             page = int(d.metadata.get("page", 1))
             d.metadata["source_file"] = base
             d.metadata["page"] = page
             d.metadata["citation"] = f"{base}#page={page}"
+
         docs.extend(raw_docs)
 
-    # --- new: accept extracted_texts in multiple sensible shapes ---
+        # ----- STEP 2: CAD/Schematic Image Extraction -----
+        # if cad_schematics:
+        #     try:
+        #         extracted = extract_relevant_pdf_page_images(path)
+        #         image_page_metadata.extend(extracted)
+        #     except Exception as e:
+        #         print(f"[WARN] selective image extraction failed for {path}: {e}")
+
+    # ----- STEP 3: External extracted text -----
+    # -------------------------------------------------------------
+    # STEP 2 — Process externally extracted text files (unchanged)
+    # -------------------------------------------------------------
     if extracted_texts:
         for item in extracted_texts:
             if not isinstance(item, dict):
                 continue
 
-            # Case A: explicit keys 'filename' and 'text'
             if "filename" in item and "text" in item:
                 filename = item["filename"]
                 text = item["text"]
-            # Case B: single-key mapping { "actual_filename": "text..." }
             elif len(item) == 1:
                 filename, text = next(iter(item.items()))
-            # Case C: has 'text' but no filename key
             elif "text" in item:
-                filename = item.get("filename") or item.get("name") or "unknown"
+                filename = item.get("filename") or "unknown"
                 text = item["text"]
             else:
-                # Fallback: pick first string value
-                filename = None
+                filename = item.get("filename") or "unknown"
                 text = None
                 for k, v in item.items():
                     if isinstance(v, str) and v.strip():
@@ -739,24 +772,109 @@ def load_and_split_pdfs_text(pdf_paths, extracted_texts=None):
                         text = v
                         break
                 if text is None:
-                    filename = item.get("filename") or "unknown"
                     text = " ".join(str(v) for v in item.values())
 
-            base = os.path.basename(str(filename))
             metadata = {
-                "source_file": base,
+                "source_file": os.path.basename(str(filename)),
                 "page": 1,
-                "citation": f"{base}"
+                "citation": os.path.basename(str(filename))
             }
 
-            # Create a simple Document-like object expected by splitter
-            # splitter expects attributes like .page_content and .metadata
-            doc = SimpleNamespace(page_content=text or "", metadata=metadata)
+            # ORIGINAL WORKING VERSION — KEEP SimpleNamespace
+            docs.append(
+                SimpleNamespace(
+                    page_content=text or "",
+                    metadata=metadata
+                )
+            )
 
-            docs.append(doc)
-    print('END OF CHUNKING FUNCTION')
-    # finally split all collected documents (pdf chunks + plain-text docs)
-    return splitter.split_documents(docs)
+
+
+    # ----- STEP 4: Chunking -----
+    chunks = splitter.split_documents(docs)
+
+    return chunks
+    # return chunks, image_page_metadata
+
+
+
+# def load_and_split_pdfs_text(pdf_paths, extracted_texts=None):
+#     """
+#     pdf_paths: iterable of file paths (existing behavior — only PDFs processed)
+#     extracted_texts: optional list of dicts. Supported shapes:
+#         - { "filename.ext": "text..." }
+#         - { "filename": "...", "text": "..." }
+#         - mixed list containing either form
+#     Returns: list of chunks (output of splitter.split_documents)
+#     """
+#     print('START OF CHUNKING')
+#     docs = []
+#     splitter = RecursiveCharacterTextSplitter(
+#         chunk_size=CHUNK_SIZE,
+#         chunk_overlap=CHUNK_OVERLAP,
+#         separators=["\n\n", "\n", ". ", " "],
+#         keep_separator=False,
+#     )
+
+#     # --- existing PDF flow (unchanged) ---
+#     for path in pdf_paths:
+#         if not str(path).lower().endswith(".pdf"):
+#             continue
+#         loader = PyPDFLoader(str(path))
+#         raw_docs = loader.load()
+#         base = os.path.basename(str(path))
+#         for d in raw_docs:
+#             page = int(d.metadata.get("page", 1))
+#             d.metadata["source_file"] = base
+#             d.metadata["page"] = page
+#             d.metadata["citation"] = f"{base}#page={page}"
+#         docs.extend(raw_docs)
+
+#     # --- new: accept extracted_texts in multiple sensible shapes ---
+#     if extracted_texts:
+#         for item in extracted_texts:
+#             if not isinstance(item, dict):
+#                 continue
+
+#             # Case A: explicit keys 'filename' and 'text'
+#             if "filename" in item and "text" in item:
+#                 filename = item["filename"]
+#                 text = item["text"]
+#             # Case B: single-key mapping { "actual_filename": "text..." }
+#             elif len(item) == 1:
+#                 filename, text = next(iter(item.items()))
+#             # Case C: has 'text' but no filename key
+#             elif "text" in item:
+#                 filename = item.get("filename") or item.get("name") or "unknown"
+#                 text = item["text"]
+#             else:
+#                 # Fallback: pick first string value
+#                 filename = None
+#                 text = None
+#                 for k, v in item.items():
+#                     if isinstance(v, str) and v.strip():
+#                         filename = k
+#                         text = v
+#                         break
+#                 if text is None:
+#                     filename = item.get("filename") or "unknown"
+#                     text = " ".join(str(v) for v in item.values())
+
+#             base = os.path.basename(str(filename))
+#             metadata = {
+#                 "source_file": base,
+#                 "page": 1,
+#                 "citation": f"{base}"
+#             }
+
+#             # Create a simple Document-like object expected by splitter
+#             # splitter expects attributes like .page_content and .metadata
+#             doc = SimpleNamespace(page_content=text or "", metadata=metadata)
+
+#             docs.append(doc)
+#     print('END OF CHUNKING FUNCTION')
+#     # finally split all collected documents (pdf chunks + plain-text docs)
+#     return splitter.split_documents(docs)
 
 # def add_batch(batch, idx_start, vs):
 #     # helpful for logging
@@ -813,6 +931,8 @@ def delete_folder_if_exists(connection_string: str, container: str, folder_name:
     Deletes all blobs under "device_images/".
     Returns: number of blobs deleted (0 if folder doesn't exist).
     """
+    
+    configs.require_runtime()
     bsc = BlobServiceClient.from_connection_string(connection_string)
     cc = bsc.get_container_client(container)
 
@@ -885,7 +1005,9 @@ def get_image_urls_from_container_sas() -> list[str]:
     and returns FULL blob URLs (required by analyze_image).
     """
     import utility.cdr_report.CDR_Pipelines.configs as configs
-
+    configs.require_runtime()
+    project_id = configs.runtime.project_id
+    
     blob_service = BlobServiceClient.from_connection_string(
         configs.AZURE_BLOB_CONNECTION_STRING
     )
@@ -894,7 +1016,8 @@ def get_image_urls_from_container_sas() -> list[str]:
     )
 
     image_urls = []
-    blobs = list(container_client.list_blobs())
+    prefix = f"Documents/{project_id}/source_documents/"
+    blobs = list(container_client.list_blobs(name_starts_with=prefix))
 
     print(f"Blobs found in container: {len(blobs)}")
 
@@ -916,8 +1039,12 @@ def move_device_images_in_blob(
     image_urls: list[str],
     connection_string: str,
     container_name: str,
-    device_prefix: str = "device_images",
 ) -> list[str]:
+    
+    configs.require_runtime()
+    project_id = configs.runtime.project_id
+    device_prefix = f"Documents/{project_id}/source_documents/device_images/"
+
 
     def slugify(text: str) -> str:
         text = text.lower()
@@ -963,12 +1090,12 @@ def move_device_images_in_blob(
             continue
 
         ext = Path(src_blob_name).suffix or ".png"
-        dest_blob_name = f"{device_prefix}/{slug}{ext}"
+        dest_blob_name = f"{device_prefix}{slug}{ext}"
         dest_blob_client = container_client.get_blob_client(dest_blob_name)
 
         ctr = 1
         while dest_blob_client.exists():
-            dest_blob_name = f"{device_prefix}/{slug}-{ctr}{ext}"
+            dest_blob_name = f"{device_prefix}{slug}-{ctr}{ext}"
             dest_blob_client = container_client.get_blob_client(dest_blob_name)
             ctr += 1
 
@@ -981,6 +1108,54 @@ def move_device_images_in_blob(
         print(f"✅ Moved device image → {dest_blob_name}")
 
     return moved_blobs
+
+
+import json
+from urllib.parse import urlparse, quote
+
+def make_blob_url(container_sas_url: str, filename: str) -> str:
+    u = urlparse(container_sas_url)
+    container_base = f"{u.scheme}://{u.netloc}{u.path}".rstrip("/")
+    sas_query = u.query
+    encoded = quote(filename, safe="")
+    return f"{container_base}/{encoded}?{sas_query}" if sas_query else f"{container_base}/{encoded}"
+
+def add_urls_sheet_1_and_6(payload: dict, container_sas_url: str):
+    """
+    Returns:
+      updated_payload (dict): same object updated in-place (also returned)
+      updated_count (int): number of text_support items updated
+    Updates ONLY:
+      Sheets where sheet_no in (1, 6)
+    """
+    updated = 0
+
+    def walk(node):
+        nonlocal updated
+        if isinstance(node, dict):
+            ts = node.get("text_support")
+            if isinstance(ts, list):
+                for item in ts:
+                    if (
+                        isinstance(item, dict)
+                        and item.get("filename")
+                        and not item.get("url")  # only fill missing/empty url
+                    ):
+                        item["url"] = make_blob_url(container_sas_url, item["filename"])
+                        updated += 1
+
+            for v in node.values():
+                walk(v)
+
+        elif isinstance(node, list):
+            for it in node:
+                walk(it)
+
+    for sheet in payload.get("Sheets", []):
+        if sheet.get("sheet_no") in (1, 6):  # ✅ only 1 and 6
+            walk(sheet)
+
+    return payload, updated
 
 import time
 import random

@@ -23,8 +23,8 @@ import './ReportPage.css';
 
 import DataTable from '../../components/DataTable';
 import PdfViewer from '../../components/PdfViewer';
-import CdrReport from '../../components/CdrReport/CdrReport';
-import CdrLoader from '../../components/CdrReport/CdrLoader';
+//import CdrReport from '../../components/CdrReport/CdrReport';
+//import CdrLoader from '../../components/CdrReport/CdrLoader';
 //import localJson from '../../utils/iec_output_1.json';
 import localJson from '../../utils/iec_61010_output_v12.json';
 // import localJson2 from '../../utils/iec_output.json';
@@ -40,11 +40,11 @@ import {
   fetchTrfJsonPartApi,
 } from '../../redux/api/generateTrfApi';
 import { getProjectReportStatusApi } from '../../redux/api/projectStatusApi';
-import { triggerGenerateCdrApi } from '../../redux/api/generateCdrApi';
+//import { triggerGenerateCdrApi } from '../../redux/api/generateCdrApi';
 import { loadPdfWithCache } from '../../components/loadPdfWithCache';
 import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
-import { idb_clear_all } from '../../utils/idb';
+import { idb_clear_all, idb_set } from '../../utils/idb';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -56,6 +56,12 @@ const ReportPage = () => {
 
   const navigationType = useNavigationType();
 
+  //const navEntry = performance.getEntriesByType('navigation')[0];
+  // const isHardRefresh =
+  //   window.performance &&
+  //   performance.getEntriesByType('navigation')?.[0]?.type === 'reload';
+  //console.log('hard', isHardRefresh);
+
   // true only on hard refresh (F5 / reload)
   const isHardRefresh = navigationType === 'POP';
 
@@ -64,14 +70,14 @@ const ReportPage = () => {
   // --------------------------------------------------
   // STATE
   // --------------------------------------------------
-  const [reportClick, setReportClick] = useState('trf');
+  //const [reportClick, setReportClick] = useState('trf');
 
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState('Pending');
   const [refreshing, setRefreshing] = useState(false);
 
-  const [cdrJson, setCdrJson] = useState(null);
-  const [cdrLoading, setCdrLoading] = useState(false);
+  //const [cdrJson, setCdrJson] = useState(null);
+  //const [cdrLoading, setCdrLoading] = useState(false);
 
   const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
 
@@ -84,7 +90,7 @@ const ReportPage = () => {
   const [trfEditMode, setTrfEditMode] = useState(false);
   const [trfFinalised, setTrfFinalised] = useState(false);
 
-  const [cdrEditMode, setCdrEditMode] = useState(false);
+  //const [cdrEditMode, setCdrEditMode] = useState(false);
   const [cdrFinalised, setCdrFinalised] = useState(false);
 
   const [activePdfUrl, setActivePdfUrl] = useState(null);
@@ -96,15 +102,26 @@ const ReportPage = () => {
   const myData = useSelector((state) => state?.trf);
   const cdrReportData = useSelector((state) => state?.cdr);
 
-  const isEditMode = reportClick === 'cdr' ? cdrEditMode : trfEditMode;
-  const isFinalised = reportClick === 'cdr' ? cdrFinalised : trfFinalised;
+  //const isEditMode = reportClick === 'cdr' ? cdrEditMode : trfEditMode;
+  //const isFinalised = reportClick === 'cdr' ? cdrFinalised : trfFinalised;
 
   const [isFinalise, setIsFinalise] = useState(false);
 
   const [partPopupOpen, setPartPopupOpen] = useState(false);
   const [partPopupMessage, setPartPopupMessage] = useState('');
+  const [cdrJson, setCdrJson] = useState(null);
 
   const [liveTrfData, setLiveTrfData] = useState(null);
+
+  const location = useLocation();
+
+  const reportTypeFromPath = location.pathname.includes('/trf')
+    ? 'trf'
+    : location.pathname.includes('/cdr')
+      ? 'cdr'
+      : 'trf'; // default fallback
+
+  const reportClick = reportTypeFromPath;
 
   useEffect(() => {
     if (!dataTableRef.current) return;
@@ -145,6 +162,86 @@ const ReportPage = () => {
     }, 1800);
   };
 
+  // useEffect(() => {
+  //   if (!projectId) return;
+
+  //   if (isHardRefresh && localStorage.getItem('trf_store_name')) {
+  //     console.log('Reusing existing TRF store');
+  //     return;
+  //   }
+
+  //   idb_createProjectStore(projectId, 'trf');
+  // }, [projectId]);
+
+  // useEffect(() => {
+  //   if (!projectId) return;
+
+  //   const existing = localStorage.getItem('trf_store_name');
+
+  //   // Reuse if already exists
+  //   if (existing) {
+  //     console.log('Using existing TRF store:', existing);
+  //     return;
+  //   }
+
+  //   // Only create once per project
+  //   idb_createProjectStore(projectId, 'trf').then((store) => {
+  //     console.log('Created new TRF store:', store);
+  //   });
+  // }, [projectId]);
+
+  //const location = useLocation();
+
+  // useEffect(() => {
+  //   if (reportClick === 'cdr' && projectID && !cdrJson) {
+  //     fetchCdrJson();
+  //   }
+  // }, [reportClick, projectID]);
+
+  // Get CDR report JSON
+  // const fetchCdrJson = async () => {
+  //   try {
+  //     setCdrLoading(true);
+
+  //     const res = await triggerGenerateCdrApi(projectID);
+  //     console.log('CDR API RESPONSE:', res);
+
+  //     if (res?.message === 'CDR Report generated successfully' && res?.data) {
+  //       setCdrJson(res.data); // STORE JSON
+  //       setCdrLoading(false);
+  //     } else {
+  //       console.log('CDR still processing...');
+  //     }
+  //   } catch (err) {
+  //     console.error('CDR generation failed:', err);
+  //   }
+  // };
+
+  const handleGenerateCDR = () => {
+    if (!projectId) {
+      setErrorToast({
+        open: true,
+        message: 'Project ID not found. Cannot generate CDR.',
+      });
+      return;
+    }
+
+    //setReportClick('cdr');
+    navigate('/report-page/cdr', {
+      state: { from: 'trf' },
+    });
+
+    //setCdrStatus('Pending');
+    //setCdrJson(null);
+    //setCdrLoading(true);
+    //fetchCdrJson();
+    //dispatch(generateCdrRequest(projectId));
+  };
+
+  const handleGenerateLetter = () => {
+    navigate('/report-page/letter');
+  };
+
   // --------------------------------------------------
   // STATUS POLLING
   // --------------------------------------------------
@@ -169,7 +266,49 @@ const ReportPage = () => {
       setRefreshing(false);
     }
   };
-  const location = useLocation();
+
+  // useEffect(() => {
+  //   let mounted = true;
+
+  //   (async () => {
+  //     const tables = await idb_get('tables', 'TRF_STORE');
+
+  //     if (mounted && Array.isArray(tables) && tables.length > 0) {
+  //       console.log('TRF restored from IndexedDB');
+  //       setFinalTrfJson({ Tables: tables });
+  //       setIsFinalJsonLoaded(true);
+  //     }
+  //   })();
+
+  //   return () => {
+  //     mounted = false;
+  //   };
+  // }, []);
+
+  //const lastPathRef = useRef(location.pathname);
+
+  // useEffect(() => {
+  //   const prevPath = lastPathRef.current;
+  //   const currentPath = location.pathname;
+
+  //   const wasOnReport =
+  //     prevPath.startsWith('/report-page/trf') ||
+  //     prevPath.startsWith('/report-page/cdr') ||
+  //     prevPath.startsWith('/report-page/letter');
+
+  //   const nowOnReport =
+  //     currentPath.startsWith('/report-page/trf') ||
+  //     currentPath.startsWith('/report-page/cdr') ||
+  //     currentPath.startsWith('/report-page/letter');
+
+  //   // Only clear when user LEAVES report to some other page
+  //   if (wasOnReport && !nowOnReport) {
+  //     console.log('User left report page → clearing IndexedDB');
+  //     idb_clear_current('trf');
+  //   }
+
+  //   lastPathRef.current = currentPath;
+  // }, [location.pathname]);
 
   useEffect(() => {
     const isReportPage = location.pathname.includes('report-page');
@@ -303,31 +442,22 @@ const ReportPage = () => {
     }, 200);
   };
 
-  const handleFinalise = () => {
-    if (!dataTableRef.current) {
-      console.warn('DataTable ref not ready');
-      return;
-    }
+  const handleFinalise = async () => {
+    if (!dataTableRef.current) return;
 
     const updatedPayload = dataTableRef.current.getUpdatedJson();
+    if (!updatedPayload?.Tables?.length) return;
 
-    if (!updatedPayload?.Tables?.length) {
-      console.warn('Nothing to finalise');
-      return;
-    }
+    // 🔹 Save user edits to IndexedDB
+    //await idb_set('tables', updatedPayload.Tables, 'trf');
 
-    // 🔹 UI STATE (dot color)
+    // 🔹 UI
     setIsFinalise(true);
+    setCdrFinalised(true);
+    setTrfFinalised(true);
+    setTrfEditMode(false);
 
-    if (reportClick === 'cdr') {
-      setCdrFinalised(true);
-      setCdrEditMode(false);
-    } else {
-      setTrfFinalised(true);
-      setTrfEditMode(false);
-    }
-
-    // 🔹 API CALL
+    // 🔹 API
     dispatch(
       finaliseReportRequest({
         projectId,
@@ -351,7 +481,9 @@ const ReportPage = () => {
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   const handleDownload = (projectId) => {
-    window.open(`${BASE_URL}/projects/download-file?project_id=${projectId}`);
+    window.open(
+      `${BASE_URL}/projects/download-file?project_id=${projectId}&report_type=trf`
+    );
     //dispatch(downloadReportRequest(projectId));
   };
 
@@ -364,17 +496,17 @@ const ReportPage = () => {
     }
 
     /* -------- CDR -------- */
-    if (reportClick === 'cdr') {
-      // case 1: string
-      if (typeof selectedCitation === 'string') {
-        return normalizeNewLines(selectedCitation);
-      }
+    // if (reportClick === 'cdr') {
+    //   // case 1: string
+    //   if (typeof selectedCitation === 'string') {
+    //     return normalizeNewLines(selectedCitation);
+    //   }
 
-      // case 2: object with content
-      if (typeof selectedCitation.content === 'string') {
-        return normalizeNewLines(selectedCitation.content);
-      }
-    }
+    //   // case 2: object with content
+    //   if (typeof selectedCitation.content === 'string') {
+    //     return normalizeNewLines(selectedCitation.content);
+    //   }
+    // }
 
     return '';
   };
@@ -568,13 +700,13 @@ const ReportPage = () => {
             </Box>
           )}
 
-          {reportClick == 'cdr' && (
+          {/* {reportClick == 'cdr' && (
             <Box className="report-title-container">
               <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
                 CDR REPORT
               </Typography>
             </Box>
-          )}
+          )} */}
           {reportClick === 'trf' &&
             progress >= 30 &&
             (finalTrfJson ? finalTrfJson : mergedTrfJson) && (
@@ -584,14 +716,12 @@ const ReportPage = () => {
                 editMode={trfEditMode}
                 onBookmarkClick={handleBookmarkFromChild}
                 reportType="trf"
-                onConfidenceChange={() => {
-                  setConfidenceTick((v) => v + 1);
-                }}
+                onConfidenceChange={() => setConfidenceTick((v) => v + 1)}
                 isHardRefresh={isHardRefresh}
               />
             )}
 
-          {reportClick === 'cdr' && (
+          {/* {reportClick === 'cdr' && (
             <>
               {cdrLoading && <CdrLoader />}
 
@@ -610,7 +740,7 @@ const ReportPage = () => {
                 />
               )}
             </>
-          )}
+          )} */}
         </CardContent>
       </Card>
     );
@@ -781,7 +911,7 @@ const ReportPage = () => {
                       )}
 
                       {/* ---------- CDR LINK ---------- */}
-                      {reportClick === 'cdr' && item?.file && (
+                      {/* {reportClick === 'cdr' && item?.file && (
                         <Typography
                           sx={{
                             fontSize: 13,
@@ -801,7 +931,7 @@ const ReportPage = () => {
                         >
                           {item.file} (Page {item.page})
                         </Typography>
-                      )}
+                      )} */}
 
                       {/* File + page */}
                     </CardContent>
@@ -829,13 +959,8 @@ const ReportPage = () => {
 
                     action: () => {
                       setIsFinalise(false);
-                      if (reportClick === 'cdr') {
-                        setCdrEditMode(true);
-                        setCdrFinalised(false);
-                      } else {
-                        setTrfEditMode(true);
-                        setTrfFinalised(false);
-                      }
+                      setTrfEditMode(true);
+                      setTrfFinalised(false);
                     },
                   },
                   {
@@ -844,14 +969,8 @@ const ReportPage = () => {
                     bg: '#396872ff',
                     action: () => {
                       handleFinalise();
-
-                      if (reportClick === 'cdr') {
-                        setCdrEditMode(false);
-                        setCdrFinalised(true);
-                      } else {
-                        setTrfEditMode(false);
-                        setTrfFinalised(true);
-                      }
+                      setTrfEditMode(false);
+                      setTrfFinalised(true);
                     },
                   },
                   {
@@ -866,11 +985,9 @@ const ReportPage = () => {
                     bg: '#5191a0ff',
                     action: () =>
                       handleMissingField(
-                        reportClick === 'cdr'
-                          ? (cdrJson ?? localCdrJson)
-                          : (mergedTrfJson ?? localJson),
+                        mergedTrfJson ?? localJson,
                         projectID,
-                        reportClick
+                        'trf'
                       ),
                   },
                   {
@@ -896,7 +1013,7 @@ const ReportPage = () => {
                     {btn.text === 'Finalize' && isFinalJsonLoaded && (
                       <span
                         className={`finalize-status-dot ${
-                          isEditMode && !isFinalised ? 'red' : 'green'
+                          trfEditMode && !trfFinalised ? 'red' : 'green'
                         }`}
                       />
                     )}
@@ -927,14 +1044,22 @@ const ReportPage = () => {
                         variant="contained"
                         className="generate-btn"
                         style={{
-                          background: isDisabledStyle ? '#A9A9A9' : '#417581', // grey out
-                          cursor: isDisabledStyle ? 'not-allowed' : 'pointer',
-                          opacity: isDisabledStyle ? 0.7 : 1,
+                          background: !isFinalJsonLoaded
+                            ? '#A9A9A9'
+                            : trfEditMode
+                              ? '#A9A9A9'
+                              : '#417581', // grey out
+                          cursor: !isFinalJsonLoaded
+                            ? 'not-allowed'
+                            : 'pointer',
+                          opacity: !isFinalJsonLoaded ? 0.7 : 1,
+                          // background: '#417581', // grey out
+                          // cursor: 'pointer',
+                          // opacity: 1,
                         }}
                         onClick={() => {
                           //if (!isFinalise) return;
                           if (reportClick === 'trf' && !trfFinalised) return;
-                          if (reportClick === 'cdr' && !cdrFinalised) return;
                           // still prevent action
                           if (label === 'CDR') {
                             //console.log('cddddd');
@@ -961,12 +1086,9 @@ const ReportPage = () => {
           </Card>
 
           {/* CONFIDENCE CARD */}
-          {((reportClick === 'trf' && finalTrfJson) ||
-            (reportClick === 'cdr' && cdrJson)) && (
+          {reportClick === 'trf' && finalTrfJson && (
             <ConfidenceScore
-              data={
-                reportClick === 'trf' ? (liveTrfData ?? finalTrfJson) : cdrJson
-              }
+              data={reportClick === 'trf' && (liveTrfData ?? finalTrfJson)}
               reportType={reportClick}
               confidenceTick={confidenceTick}
               projectId={projectId}

@@ -4,10 +4,16 @@ import json
 import utility.cdr_report.CDR_Pipelines.configs as configs
 
 
-def build_product_section_items(product_info: dict):
+def get_trf_blob_url(conn_str, container, blob_name):
+    p = dict(x.split("=",1) for x in conn_str.split(";") if "=" in x)
+    return f"{p['BlobEndpoint'].rstrip('/')}/{container}/{quote(blob_name, safe='/')}?{p['SharedAccessSignature'].lstrip('?')}"
+
+def build_product_section_items(product_info: dict, trf_blob_url):
     """
     Convert refined product_info JSON into CDR Section 2.0 item list
     """
+    configs.require_runtime()
+
 
     field_map = [  
         ("A3", "Product", "Product ", "B3", "J3", "product"),
@@ -36,6 +42,16 @@ def build_product_section_items(product_info: dict):
             "user_editable": True,
             "ai_fillable": True,
             "accuracy_level": True,
+            "text_support": [
+                                {
+                                    "filename": f"final_output_{configs.runtime.project_id}.docx",
+                                    "page": "7" if field == "Description" else "2",
+                                    "similarity_score": None,
+                                    "text": None,
+                                    "url":  trf_blob_url
+                                }
+                            ],
+            "confidence": 0 if product_info.get(key) == None else 100,
         })
 
     return items
@@ -43,8 +59,9 @@ def build_product_section_items(product_info: dict):
 
 
 
-def description_main(vs,ref):
 
+def description_main(vs,ref):
+    configs.require_runtime()
     prompt_refine_product = ChatPromptTemplate.from_messages(
         [
             (

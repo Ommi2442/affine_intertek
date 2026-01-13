@@ -6,6 +6,8 @@ import utility.cdr_report.CDR_Pipelines.c1_rules as c1_rules
 import utility.cdr_report.CDR_Pipelines.c1_utils as c1_utils
 
 def classify_in_batches(df, batch_size):
+    configs.require_runtime()
+
     results = []
 
     for i in range(0, len(df), batch_size):
@@ -47,6 +49,8 @@ def classify_in_batches(df, batch_size):
     return pd.DataFrame(results)
 
 def run_extraction():
+    configs.require_runtime()
+
     print("Starting Extraction...")
     # Load master sheet
     master_df = pd.read_excel(configs.MASTER_SHEET_PATH, dtype=str)

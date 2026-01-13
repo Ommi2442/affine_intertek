@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, TextField } from '@mui/material';
 import HoverActionWrapper from '../Common/HoverActionsWrapper';
 import CommentDialog from '../CommentDialog';
@@ -16,6 +16,14 @@ const RenderSheetDefaultExcel = ({
 }) => {
   if (!sheet || !Array.isArray(sheet.Items)) return null;
 
+  /* ---------------- LOCAL EDIT STATE ---------------- */
+  const [localItems, setLocalItems] = useState(sheet.Items);
+
+  // Sync only when switching sheets, NOT on every keystroke
+  useEffect(() => {
+    setLocalItems(sheet.Items.map((i) => ({ ...i })));
+  }, [sheet.sheet_no]);
+
   const [hovered, setHovered] = useState({ i: null });
 
   const {
@@ -30,8 +38,24 @@ const RenderSheetDefaultExcel = ({
 
   return (
     <>
-      {sheet.Items.map((item, idx) => {
+      {localItems.map((item, idx) => {
         const isEditable = editMode && item.user_editable;
+
+        const normalizeConfidence = (value) => {
+          const num = Number(value);
+          if (Number.isNaN(num)) return null;
+          return num <= 1 ? Math.round(num * 100) : Math.round(num);
+        };
+
+        const hasValue =
+          item.value !== null &&
+          item.value !== undefined &&
+          String(item.value).trim() !== '';
+
+        const canApprove =
+          item.ai_fillable === true &&
+          item.accuracy_level === true &&
+          normalizeConfidence(item.confidence) !== null;
 
         return (
           <Box
@@ -52,7 +76,7 @@ const RenderSheetDefaultExcel = ({
               onMouseEnter={() => setHovered({ i: idx })}
               onMouseLeave={() => setHovered({ i: null })}
             >
-              <div style={{ display: 'flex' }}>
+              <Box sx={{ display: 'flex' }}>
                 <TextField
                   size="small"
                   fullWidth
@@ -62,10 +86,13 @@ const RenderSheetDefaultExcel = ({
                   }}
                   onChange={(e) => {
                     if (!isEditable) return;
-                    updateField(
-                      sheet.sheet_no,
-                      item.answer_cell ?? item.field,
-                      e.target.value
+                    const value = e.target.value;
+
+                    // Fast local update
+                    setLocalItems((prev) =>
+                      prev.map((it, i) =>
+                        i === idx ? { ...it, value, is_user_edited: true } : it
+                      )
                     );
                   }}
                   sx={{
@@ -76,18 +103,36 @@ const RenderSheetDefaultExcel = ({
 
                 <HoverActionWrapper
                   show={hovered.i === idx}
-                  onApprove={() => handleApprove?.(idx)}
+                  onApprove={
+                    canApprove
+                      ? () => {
+                          const item = localItems[idx];
+
+                          updateField(
+                            sheet.sheet_no,
+                            item.answer_cell ?? item.field,
+                            item.value
+                          );
+
+                          handleApprove?.(idx);
+                        }
+                      : null
+                  }
                   onComment={() => openComment(sheet.sheet_no, idx)}
-                  onBookmark={() => {
-                    const row = sheet.Items[idx];
-                    onBookmarkClick?.(row ?? { __i: idx });
-                  }}
+                  onBookmark={
+                    hasValue ? () => onBookmarkClick?.(localItems[idx]) : null
+                  }
                 />
 
                 {item.ai_fillable === true &&
                   item.accuracy_level === true &&
-                  renderConfidenceColor(item.confidence, item.is_user_edited)}
-              </div>
+                  renderConfidenceColor(
+                    item.confidence,
+                    item.is_user_edited,
+                    item.ai_fillable,
+                    item.accuracy_level
+                  )}
+              </Box>
             </Box>
           </Box>
         );
