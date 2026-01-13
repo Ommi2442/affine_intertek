@@ -25,7 +25,7 @@ const RenderSheet6Excel = ({
   // Sync only when sheet changes (NOT on every keystroke)
   useEffect(() => {
     setLocalItems(sheet.Items.map((i) => ({ ...i })));
-  }, [sheet.sheet_no]);
+  }, [sheet.Items]);
 
   const [hovered, setHovered] = useState({ i: null });
 
@@ -72,17 +72,41 @@ const RenderSheet6Excel = ({
   return (
     <Box>
       {localItems.map((item, idx) => {
+        // Removes only "Label - " or "Label – " from the start of the value
+        const stripLeadingLabel = (value, label) => {
+          if (!value || !label) return value;
+
+          // Escape special regex chars in label
+          const safeLabel = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+          // Match:  ^Label -   OR   ^Label –
+          const regex = new RegExp(`^${safeLabel}\\s*[–-]\\s*`, 'i');
+
+          return value.replace(regex, '');
+        };
         let label = item.prefix || item.field || '';
-
-        if (label.includes('-')) {
-          label = label.split('-').slice(1).join('-').trim();
-        }
-
         let valueText = item.value ?? '';
 
-        if (typeof valueText === 'string' && valueText.includes('-')) {
-          valueText = valueText.split('-').slice(1).join('-').trim();
-        }
+        valueText = stripLeadingLabel(valueText, label);
+
+        //  value existence
+        const hasValue =
+          item.value !== null &&
+          item.value !== undefined &&
+          String(item.value).trim() !== '';
+
+        //  normalize confidence
+        const normalizeConfidence = (value) => {
+          const num = Number(value);
+          if (Number.isNaN(num)) return null;
+          return num <= 1 ? Math.round(num * 100) : Math.round(num);
+        };
+
+        //  approve allowed only when AI confidence exists
+        const canApprove =
+          item.ai_fillable === true &&
+          item.accuracy_level === true &&
+          normalizeConfidence(item.confidence) !== null;
 
         const isLongText = valueText.length > 80 || valueText.includes('\n');
         const isEditable = editMode && item.user_editable;
@@ -135,9 +159,13 @@ const RenderSheet6Excel = ({
 
                     <HoverActionWrapper
                       show={hovered.i === idx}
-                      onApprove={() => commit(idx)}
+                      onApprove={canApprove ? () => commit(idx) : null}
                       onComment={() => openComment(sheet.sheet_no, idx)}
-                      onBookmark={() => onBookmarkClick?.(localItems[idx])}
+                      onBookmark={
+                        hasValue
+                          ? () => onBookmarkClick?.(localItems[idx])
+                          : null
+                      }
                     />
 
                     {item.ai_fillable === true &&

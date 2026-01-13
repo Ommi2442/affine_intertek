@@ -82,7 +82,7 @@ const RenderSheet1Excel = ({
 
   useEffect(() => {
     setLocalItems(sheet.Items.map((i) => ({ ...i })));
-  }, [sheet.sheet_no]);
+  }, [sheet.Items]);
 
   const toBackendContact = (value) => {
     if (typeof value !== 'string') return value;
@@ -114,6 +114,22 @@ const RenderSheet1Excel = ({
       typeof item.field === 'string' &&
       item.field.toLowerCase().includes('contact');
 
+    const normalizeConfidence = (value) => {
+      const num = Number(value);
+      if (Number.isNaN(num)) return null;
+      return num <= 1 ? Math.round(num * 100) : Math.round(num);
+    };
+
+    const canApprove =
+      item.ai_fillable === true &&
+      item.accuracy_level === true &&
+      normalizeConfidence(item.confidence) !== null;
+
+    const hasValue =
+      item.value !== null &&
+      item.value !== undefined &&
+      String(item.value).trim() !== '';
+
     return (
       <TableCell
         sx={{ ...border, position: 'relative' }}
@@ -139,12 +155,18 @@ const RenderSheet1Excel = ({
                 ? toBackendContact(uiValue)
                 : uiValue;
 
+              // Update UI
               setLocalItems((prev) =>
                 prev.map((it, idx) =>
-                  idx === itemIndex
-                    ? { ...it, value: backendValue, is_user_edited: true }
-                    : it
+                  idx === itemIndex ? { ...it, value: backendValue } : it
                 )
+              );
+
+              // Commit to CDR (this sets is_user_edited + fires onConfidenceChange)
+              updateField(
+                sheet.sheet_no,
+                item.answer_cell ?? item.field,
+                backendValue
               );
             }}
             sx={{
@@ -156,19 +178,15 @@ const RenderSheet1Excel = ({
           <Box sx={{ position: 'relative', zIndex: 2 }}>
             <HoverActionWrapper
               show={hovered.i === itemIndex}
-              onApprove={() => {
-                const item = localItems[itemIndex];
-
-                updateField(
-                  sheet.sheet_no,
-                  item.answer_cell ?? item.field,
-                  item.value
-                );
-
-                handleApprove?.(itemIndex);
-              }}
+              onApprove={
+                canApprove
+                  ? () => {
+                      handleApprove?.(itemIndex); //  ONLY approve
+                    }
+                  : null
+              }
               onComment={() => openComment(sheet.sheet_no, itemIndex)}
-              onBookmark={() => onBookmarkClick?.(item)}
+              onBookmark={hasValue ? () => onBookmarkClick?.(item) : null}
             />
           </Box>
 
@@ -185,54 +203,81 @@ const RenderSheet1Excel = ({
     );
   };
 
+  const isBlankRow = (items) =>
+    items.every((i) => i.task_type === 'blank' || i.field === null);
+
   /* ---------------- GENERIC TABLE ---------------- */
-  const renderTable = (filterFn) => (
-    <TableContainer component={Paper} sx={{ width: '100%' }}>
-      <Table size="small" sx={{ borderCollapse: 'collapse' }}>
-        <TableBody>
-          {sortedRows.map((rowNo) => {
-            const rowItems = rows[rowNo].filter(filterFn);
-            if (!rowItems.length) return null;
+  const renderTable = (filterFn) => {
+    let lastWasBlank = false; // ✅ must be here
 
-            return (
-              <TableRow key={rowNo}>
-                {rowItems.map((item) => {
-                  const itemIndex = localItems.indexOf(item);
+    return (
+      <TableContainer component={Paper} sx={{ width: '100%' }}>
+        <Table size="small" sx={{ borderCollapse: 'collapse' }}>
+          <TableBody>
+            {sortedRows.map((rowNo) => {
+              const rowItems = rows[rowNo].filter(filterFn);
+              if (!rowItems.length) return null;
 
-                  if (item.field_merged && item.fm_range) {
-                    const span = colSpanFromRange(
-                      item.question_cell,
-                      item.fm_range
-                    );
+              const blank = isBlankRow(rowItems);
+
+              // Skip consecutive blank rows
+              if (blank && lastWasBlank) {
+                return null;
+              }
+
+              lastWasBlank = blank;
+
+              // Render a divider instead of empty rows
+              if (blank) {
+                return (
+                  <TableRow key={rowNo}>
+                    <TableCell colSpan={6} sx={{ p: 0 }}>
+                      <Box sx={{ height: 1, background: '#ccc', my: 1 }} />
+                    </TableCell>
+                  </TableRow>
+                );
+              }
+
+              return (
+                <TableRow key={rowNo}>
+                  {rowItems.map((item) => {
+                    const itemIndex = localItems.indexOf(item);
+
+                    if (item.field_merged && item.fm_range) {
+                      const span = colSpanFromRange(
+                        item.question_cell,
+                        item.fm_range
+                      );
+                      return (
+                        <TableCell
+                          key={itemIndex}
+                          colSpan={span}
+                          sx={{
+                            ...border,
+                            fontWeight: 700,
+                            background: '#f5f5f5',
+                          }}
+                        >
+                          {item.field}
+                        </TableCell>
+                      );
+                    }
+
                     return (
-                      <TableCell
-                        key={itemIndex}
-                        colSpan={span}
-                        sx={{
-                          ...border,
-                          fontWeight: 700,
-                          background: '#f5f5f5',
-                        }}
-                      >
-                        {item.field}
-                      </TableCell>
+                      <React.Fragment key={itemIndex}>
+                        <TableCell sx={border}>{item.field}</TableCell>
+                        {renderValue(item, itemIndex)}
+                      </React.Fragment>
                     );
-                  }
-
-                  return (
-                    <React.Fragment key={itemIndex}>
-                      <TableCell sx={border}>{item.field}</TableCell>
-                      {renderValue(item, itemIndex)}
-                    </React.Fragment>
-                  );
-                })}
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+                  })}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  };
 
   /* ---------------- ADD MANUFACTURER ---------------- */
   const handleAddManufacturer = () => {
