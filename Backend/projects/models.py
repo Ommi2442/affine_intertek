@@ -74,3 +74,9 @@ class FinalizeReportPayload(BaseModel):
     projectId: str
     reportType: str  # "TRF" or "CDR"
     data: dict       # FULL FINAL JSON
+
+
+
+class letter_urls(BaseModel):
+    project_id:str
+    urls:list

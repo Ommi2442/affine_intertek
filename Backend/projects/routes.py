@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
 from pathlib import Path
 from azure.core.exceptions import ResourceNotFoundError
-from queue_worker import update_project_progress_CDR
+from queue_worker import update_project_progress_CDR,update_project_progress_Letter
 from fastapi import APIRouter, HTTPException, Depends, Body, Form, UploadFile, File, Query, logger, BackgroundTasks, status
 import traceback
 from azure.storage.blob import ContainerClient
@@ -15,7 +15,7 @@ from fastapi import Depends
 from api.auth.jwt_auth.utils import get_current_user
 from db.database import *
 from db.database import COSMOS_DB_project_Container, COSMOS_DB_URI,COSMOS_DB_KEY,COSMOS_DB_DATABASE,COSMOS_DB_project_TRF_Container,COSMOS_DB_project_CDR_Container
-from projects.models import Project,ProjectCreate,ProjectFilter,FinalizeReportPayload
+from projects.models import Project,ProjectCreate,ProjectFilter,FinalizeReportPayload,letter_urls
 from azure.cosmos import exceptions
 from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueClient
@@ -33,6 +33,8 @@ from projects.helpers import *
 from utility.cdr_report.CDR_Pipelines.main import main2
 from utility.cdr_report.CDR_Pipelines.compiler import fill_excel_from_json
 
+from utility.letter_report.deploymentV1.letter_ingestor import main
+from utility.letter_report.deploymentV1.letter_generator import ingest_letter_pipeline
 from utility.cdr_report.CDR_Pipelines.configs import OUTPUT_EXCEL_AI_FINAL_PATH
 
 
@@ -1433,6 +1435,88 @@ async def finalize_reports(payload: FinalizeReportPayload):
             status_code=500,
             detail=f"Unhandled error: {str(e)}"
         )
+
+
+# Letter implementation
+@router.get("/letter-generation"):
+async def letter_implementation(projectId:str,letter_urls:list):
+    try:
+        if not projectId:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="projectId is required"
+            )
+        urls=letter_urls
+        project_id=projectId
+        query = "SELECT * FROM c WHERE c.Project_Id = @pid"
+        params = [{"name": "@pid", "value": project_id}]        
+        items = list(
+            COSMOS_DB_project_Container.query_items(
+                query=query,
+                parameters=params,
+                enable_cross_partition_query=True
+            )
+        )
+        letter_progress = items[0].get("Letter_Project_Progress") or {}
+        print(letter_progress,"------ ",type(letter_progress))
+
+        letter_percentage = letter_progress.get("letter_percentage", 0)
+        print(letter_percentage,"------ ",type(letter_percentage))
+        if letter_percentage < 100:
+            query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
+            docs = list(
+                projects_container.query_items(
+                    query=query,
+                    enable_cross_partition_query=True,
+                )
+            )
+
+            if not docs:
+                print(f" Project not found: {project_id}")
+                return True
+
+            project_doc = docs[0]
+            update_project_progress_Letter(
+                project_doc,
+                letter_stage="steps in Progress",
+                letter_percentage=10,
+                letter_step="Starting runnig CDR",
+                letter_completed=False
+            )
+            f=main(urls)
+            if f:
+                from dotenv import load_dotenv
+                load_dotenv()
+                BLOB_CONTAINER_NAME = os.getenv("BLOB_CONTAINER_NAME")
+                BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
+                DATA_DIR = BASE_DIR / "data"
+                DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+                letter_docx_file = DATA_DIR / f"iec_output_letter_{projectId}.docx"
+                
+                ingest_letter_pipeline(
+                blob_urls=urls,
+                container_name=BLOB_CONTAINER_NAME,
+                src_files_dir="src_files",
+                letter_json_path="letter_old.json",
+                letter_header_json_path="letter_header_old.json",
+                letter_template_docx="Letter_Template.docx",
+                output_letter_docx=letter_docx_file )
+            
+                return  {
+                    "status":"success"
+                    
+                    "Letter_url":""
+                }
+    
+    except Exception as e:
+        print(traceback.format_exc())
+        return {
+            "status":"Failed",
+            "Message":"Letter Generation Code Failed"
+        }
+
+
 
 
 def delete_by_project_id(container, project_id):
