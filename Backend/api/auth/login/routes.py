@@ -11,6 +11,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
+from azure.cosmos import CosmosClient
 from utility.trf_utils import create_db_and_container
 from dotenv import load_dotenv
 
