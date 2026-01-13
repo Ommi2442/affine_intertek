@@ -113,7 +113,7 @@ def run_formatter():
                              "similarity_score": None,
                              "text": None,
                              "url": c1_utils.clean_value(row.get("source_doc"))}],
-            "confidence": c1_utils.clean_value(row.get("confidence_score"))
+            "confidence": int(c1_utils.clean_value((row.get("confidence_score"))*100))
         }
 
         items.append(item)
