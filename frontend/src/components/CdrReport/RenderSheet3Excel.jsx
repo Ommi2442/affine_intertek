@@ -3,46 +3,112 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, TextField, Button, IconButton } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
+/* ================= HELPERS ================= */
+
+const fileToBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+const getCellRow = (cell) => parseInt(cell?.replace(/[A-Z]/g, '') || 0, 10);
+const getCellCol = (cell) => (cell ? cell.replace(/[0-9]/g, '') : 'A');
+const makeCell = (col, row) => `${col}${row}`;
+
+/* ================= COMPONENT ================= */
+
 const RenderSheet3Excel = ({ sheet, editMode, isFinalised, onChange }) => {
   if (!sheet || !Array.isArray(sheet.Items)) return null;
 
   const [items, setItems] = useState(sheet.Items);
 
-  // keep local state in sync
   useEffect(() => {
-    setItems(sheet.Items);
+    setItems(sheet.Items.map((i) => ({ ...i })));
   }, [sheet.Items]);
+
+  /* -------- Find next question_cell & answer_cell -------- */
+  const getNextCells = () => {
+    let lastQ = 0;
+    let lastA = 0;
+    let colQ = 'A';
+    let colA = 'A';
+
+    items.forEach((it) => {
+      if (it.question_cell) {
+        lastQ = Math.max(lastQ, getCellRow(it.question_cell));
+        colQ = getCellCol(it.question_cell);
+      }
+      if (it.answer_cell) {
+        lastA = Math.max(lastA, getCellRow(it.answer_cell));
+        colA = getCellCol(it.answer_cell);
+      }
+    });
+
+    return {
+      question_cell: makeCell(colQ, lastQ + 8),
+      answer_cell: makeCell(colA, lastA + 8),
+    };
+  };
 
   /* ---------- UPDATE FIELD ---------- */
   const handleFieldChange = (idx, value) => {
     if (!editMode || isFinalised) return;
 
-    const updated = [...items];
-    updated[idx] = { ...updated[idx], field: value };
+    const updated = items.map((it, i) =>
+      i === idx ? { ...it, field: value, is_user_edited: true } : it
+    );
+
     setItems(updated);
     onChange?.(updated);
   };
 
   /* ---------- ADD IMAGE ---------- */
-  const handleAddImage = (e) => {
+  const handleAddImage = async (e) => {
     if (!editMode || isFinalised) return;
 
     const file = e.target.files[0];
     if (!file) return;
 
-    const imageUrl = URL.createObjectURL(file);
+    const base64 = await fileToBase64(file);
+    const { question_cell, answer_cell } = getNextCells();
 
     const newItem = {
-      question_cell: null,
+      question_cell,
+      answer_cell,
       prefix: 'Product',
-      field: '',
-      photo_path: imageUrl,
+      field: 'Photo',
+      photo_path: base64, // ✅ BASE64 stored
+      field_merged: false,
+      fm_range: null,
+      value_merged: false,
+      vm_range: null,
       task_type: 'photo',
       user_editable: true,
-      ai_fillable: false,
+      ai_fillable: true,
+      accuracy_level: false,
+      is_user_edited: true,
     };
 
     const updated = [...items, newItem];
+    setItems(updated);
+    onChange?.(updated);
+  };
+
+  /* ---------- REPLACE IMAGE ---------- */
+  const handleReplaceImage = async (idx, e) => {
+    if (!editMode || isFinalised) return;
+
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const base64 = await fileToBase64(file);
+
+    const updated = items.map((it, i) =>
+      i === idx ? { ...it, photo_path: base64, is_user_edited: true } : it
+    );
+
     setItems(updated);
     onChange?.(updated);
   };
@@ -52,25 +118,6 @@ const RenderSheet3Excel = ({ sheet, editMode, isFinalised, onChange }) => {
     if (!editMode || isFinalised) return;
 
     const updated = items.filter((_, i) => i !== idx);
-    setItems(updated);
-    onChange?.(updated);
-  };
-
-  /* ---------- REPLACE IMAGE ---------- */
-  const handleReplaceImage = (idx, e) => {
-    if (!editMode || isFinalised) return;
-
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const imageUrl = URL.createObjectURL(file);
-
-    const updated = [...items];
-    updated[idx] = {
-      ...updated[idx],
-      photo_path: imageUrl,
-    };
-
     setItems(updated);
     onChange?.(updated);
   };
@@ -118,16 +165,11 @@ const RenderSheet3Excel = ({ sheet, editMode, isFinalised, onChange }) => {
                     gap: 0.5,
                   }}
                 >
-                  {/* BROWSE / REPLACE */}
                   <Button
                     variant="contained"
                     size="small"
                     component="label"
-                    sx={{
-                      minWidth: 'auto',
-                      px: 1,
-                      fontSize: 12,
-                    }}
+                    sx={{ minWidth: 'auto', px: 1, fontSize: 12 }}
                   >
                     Browse
                     <input
@@ -138,13 +180,10 @@ const RenderSheet3Excel = ({ sheet, editMode, isFinalised, onChange }) => {
                     />
                   </Button>
 
-                  {/* DELETE */}
                   <IconButton
                     size="small"
                     onClick={() => handleDeleteImage(idx)}
-                    sx={{
-                      background: 'rgba(255,255,255,0.9)',
-                    }}
+                    sx={{ background: 'rgba(255,255,255,0.9)' }}
                   >
                     <DeleteOutlineIcon color="error" fontSize="small" />
                   </IconButton>
