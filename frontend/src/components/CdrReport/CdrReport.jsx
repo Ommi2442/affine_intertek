@@ -122,6 +122,7 @@ const CdrReport = forwardRef(
     //   });
     // };
     const handleApprove = async (sheet_no, itemIndex) => {
+      let didPromote = false;
       let updatedJson = null;
 
       setFullJson((prev) => {
@@ -135,26 +136,30 @@ const CdrReport = forwardRef(
         if (!item || item.is_user_approved) return prev;
 
         const c = Number(item.confidence);
+        const normalized = c <= 1 ? Math.round(c * 100) : Math.round(c);
 
-        const shouldPromote =
-          item.accuracy_level === true && !Number.isNaN(c) && c < 100;
+        const isMediumOrLow = !Number.isNaN(normalized) && normalized < 75;
 
         sheet.Items[itemIndex] = {
           ...item,
           is_user_approved: true,
-          confidence: shouldPromote ? 100 : item.confidence,
+          confidence: isMediumOrLow ? 100 : item.confidence,
         };
 
-        updatedJson = next; //  store for IndexedDB write
+        if (isMediumOrLow) didPromote = true;
+
+        updatedJson = next;
         return next;
       });
 
-      /*  THIS is what was missing in CDR */
       if (updatedJson) {
         await idb_set(storageKey, updatedJson, STORES.CDR);
       }
 
-      onConfidenceChange?.();
+      // Recalculate ONLY if confidence changed (Medium/Low → High)
+      if (didPromote) {
+        onConfidenceChange?.();
+      }
     };
 
     /* -------- UPDATE FIELD -------- */
@@ -169,16 +174,16 @@ const CdrReport = forwardRef(
         );
         if (!item) return prev;
 
-        // mark user modification only if value changed
         const isModified = item.value !== value;
 
         item.value = value;
-        if (isModified) {
-          item.is_user_modified = true;
+
+        if (isModified && item.is_user_edited !== true) {
+          item.is_user_edited = true; //  ONLY typing sets this
+          onConfidenceChange?.(); //  realtime user-edited
         }
 
         persist(next);
-        onConfidenceChange?.(); // realtime update
         return next;
       });
     };
