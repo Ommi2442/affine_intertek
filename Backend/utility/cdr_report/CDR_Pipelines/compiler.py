@@ -47,10 +47,32 @@ def merge_if_needed(ws, start_cell, end_cell):
         ws.merge_cells(f"{start_cell}:{end_cell}")
 
 
-def download_image(url):
+import base64
+import requests
+from io import BytesIO
+from PIL import Image
+
+def download_image(url: str) -> Image.Image:
+    """
+    Supports:
+    - http / https URLs
+    - data:image/...;base64,...
+    """
+
+    if not url:
+        raise ValueError("Empty image path")
+
+    # ---------- Base64 data URI ----------
+    if url.startswith("data:image"):
+        header, encoded = url.split(",", 1)
+        image_bytes = base64.b64decode(encoded)
+        return Image.open(BytesIO(image_bytes))
+
+    # ---------- Normal URL ----------
     resp = requests.get(url, timeout=30)
     resp.raise_for_status()
-    return Image(BytesIO(resp.content))
+    return Image.open(BytesIO(resp.content))
+
 
 def clear_sheet_from_row(ws, start_row=3):
     """
@@ -78,15 +100,27 @@ def set_uniform_row_height_px(ws, start_row, height_px):
         ws.row_dimensions[r].height = height_points
 
 
-def resize_image_keep_ratio(img, target_height_px):
-    """
-    Resize image to target_height_px while preserving aspect ratio.
-    """
-    ratio = target_height_px / img.height
-    img.height = int(target_height_px)
-    img.width = int(img.width * ratio)
+# def resize_image_keep_ratio(img, target_height_px):
+#     """
+#     Resize image to target_height_px while preserving aspect ratio.
+#     """
+#     ratio = target_height_px / img.height
+#     img.height = int(target_height_px)
+#     img.width = int(img.width * ratio)
 
-    
+from PIL import Image as PILImage
+
+def resize_image_keep_ratio(img: PILImage.Image, target_height_px: int) -> PILImage.Image:
+    """
+    Resize a PIL image to target height while preserving aspect ratio.
+    Returns a NEW PIL image.
+    """
+    w, h = img.size
+    ratio = target_height_px / h
+    new_w = int(w * ratio)
+
+    return img.resize((new_w, target_height_px), PILImage.LANCZOS)
+
 
 
 def unmerge_from_row(ws, start_row=3):
@@ -387,44 +421,65 @@ def handle_sheet_2(ws, items):
 
 
 
+from io import BytesIO
+from openpyxl.drawing.image import Image as XLImage
+
 def handle_sheet_3(ws, items):
     """
-    Sheet 3 – FINAL (pixel-correct)
-    - Clear content from A3 downward
-    - Set row height = 32px
-    - Insert images resized to 224px height
+    Sheet 3 – FINAL
+    - Clears content from row 2 downward
+    - Sets uniform row height
+    - Inserts resized images safely
     """
 
     # ---------- 1. Clear existing content ----------
     unmerge_from_row(ws, start_row=2)
     clear_sheet_from_row(ws, start_row=2)
 
-    # ---------- 2. Set row heights (32px) ----------
+    # ---------- 2. Set row heights ----------
     set_uniform_row_height_px(ws, start_row=3, height_px=64)
 
     # ---------- 3. Rebuild from JSON ----------
     for item in items:
+        # ---- Question text ----
         question_cell = item.get("question_cell")
         if question_cell:
-            field = item.get("field")
-            ws[question_cell].value = field
-            
-            val_cell = ws[question_cell]
-            val_cell.value = field
-            val_cell.font = BLUE_FONT_BOLD
+            ws[question_cell].value = item.get("field")
+            ws[question_cell].font = BLUE_FONT_BOLD
 
+        # ---- Image insertion ----
         photo_path = item.get("photo_path")
         answer_cell = item.get("answer_cell")
 
-        if photo_path and answer_cell:
-            img = download_image(photo_path)
+        if not (photo_path and answer_cell):
+            continue
 
-            # Resize image to 224px height (keep ratio)
-            resize_image_keep_ratio(img, target_height_px=448)
+        try:
+            # 1️⃣ Load image (PIL)
+            pil_img = download_image(photo_path)
 
-            img.anchor = answer_cell
-            ws.add_image(img)
+            # 2️⃣ Resize using PIL
+            pil_img = resize_image_keep_ratio(
+                pil_img,
+                target_height_px=448
+            )
 
+            # 3️⃣ Convert PIL → OpenPyXL Image
+            buf = BytesIO()
+            pil_img.save(buf, format="PNG")
+            buf.seek(0)
+
+            xl_img = XLImage(buf)
+            xl_img.anchor = answer_cell
+
+            # 4️⃣ Insert into worksheet
+            ws.add_image(xl_img)
+
+        except Exception as e:
+            print(
+                f"⚠ Sheet 3 image skipped | "
+                f"cell={answer_cell} | error={e}"
+            )
 
 
 
