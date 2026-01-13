@@ -381,47 +381,37 @@ def delete_local_project_folder(project_id: str) -> bool:
 
 
 
-
-
 @router.delete("/{project_id}")
 async def delete_project(project_id: str):
     try:
-        props = COSMOS_DB_project_Container.read()
-        pk_path = props["partitionKey"]["paths"][0]
-        pk_name = pk_path.lstrip("/")
+        deleted_project = delete_by_project_id(
+            COSMOS_DB_project_Container, project_id
+        )
+        if deleted_project == 0:
+            raise HTTPException(
+                status_code=404,
+                detail="Project not found in Project container"
+            )
+        deleted_trf = delete_by_project_id(
+            COSMOS_DB_project_TRF_Container, project_id
+        )
 
-        query = "SELECT * FROM c WHERE c.Project_Id = @pid"
-        params = [{"name": "@pid", "value": project_id}]
+        deleted_cdr = delete_by_project_id(
+            COSMOS_DB_project_CDR_Container, project_id
+        )
 
-        items = list(COSMOS_DB_project_Container.query_items(
-            query=query,
-            parameters=params,
-            enable_cross_partition_query=True ))
-
-        if not items:
-            raise HTTPException(status_code=404, detail="Project not found")
-
-        item = items[0]
-        COSMOS_DB_project_Container.delete_item(
-            item=item["id"],
-            partition_key=item[pk_name])
-
-        base_path = f"Documents/{project_id}"
-        delete_blob_folder(base_path)
-
-        # -------------------------------
-        # Local filesystem delete
-        # -------------------------------
-        local_deleted = delete_local_project_folder(project_id)
+        delete_blob_folder(f"Documents/{project_id}")
+        delete_local_project_folder(project_id)
 
         return {
             "status": "success",
             "message": "Project and related documents deleted successfully"
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 
 @router.get("/fetch-trf-reports")
@@ -1443,3 +1433,31 @@ async def finalize_reports(payload: FinalizeReportPayload):
             status_code=500,
             detail=f"Unhandled error: {str(e)}"
         )
+
+
+def delete_by_project_id(container, project_id):
+    props = container.read()
+    pk_path = props["partitionKey"]["paths"][0]
+    pk_name = pk_path.lstrip("/")
+
+    query = """
+    SELECT * FROM c
+    WHERE c.project_id = @pid OR c.Project_Id = @pid
+    """
+    params = [{"name": "@pid", "value": project_id}]
+
+    items = list(container.query_items(
+        query=query,
+        parameters=params,
+        enable_cross_partition_query=True
+    ))
+
+    if not items:
+        return 0
+
+    for item in items:
+        container.delete_item(
+            item=item["id"],
+            partition_key=item[pk_name]
+        )
+    return len(items)
