@@ -32,6 +32,7 @@ export function DownloadMissingFieldsExcel(jsonData, projectID, reportType) {
         if (isMissing) {
           rows.push({
             Field: item?.field ?? '',
+            Clause: item?.clause ?? '',
             Page: item?.page_no ?? '',
             Value: value ?? '',
           });
