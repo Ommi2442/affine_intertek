@@ -1042,9 +1042,18 @@ const ReportPage = () => {
                         variant="contained"
                         className="generate-btn"
                         style={{
-                          background: isDisabledStyle ? '#A9A9A9' : '#417581', // grey out
-                          cursor: isDisabledStyle ? 'not-allowed' : 'pointer',
-                          opacity: isDisabledStyle ? 0.7 : 1,
+                          background: !isFinalJsonLoaded
+                            ? '#A9A9A9'
+                            : trfEditMode
+                              ? '#A9A9A9'
+                              : '#417581', // grey out
+                          cursor: !isFinalJsonLoaded
+                            ? 'not-allowed'
+                            : 'pointer',
+                          opacity: !isFinalJsonLoaded ? 0.7 : 1,
+                          // background: '#417581', // grey out
+                          // cursor: 'pointer',
+                          // opacity: 1,
                         }}
                         onClick={() => {
                           //if (!isFinalise) return;

@@ -181,7 +181,11 @@ const DataTable = forwardRef(
       if (item.user_editable !== true) return false;
 
       // Remark / Verdict → editable only in edit mode
-      if (item.task_type === 'remark' || item.task_type === 'verdict') {
+      if (
+        item.task_type === 'remark' ||
+        item.task_type === 'verdict' ||
+        item.task_type === 'verdict_dependency'
+      ) {
         return editMode;
       }
 
@@ -563,28 +567,33 @@ const DataTable = forwardRef(
     //   }, 0);
     // };
 
-    const handleApprove = (tIdx, iIdx) => {
+    const handleApprove = async (tIdx, iIdx) => {
+      let updatedTables = null;
+
       setTables((prev) => {
         const next = prev.map((tbl) => ({ ...tbl, Items: [...tbl.Items] }));
         const item = next[tIdx].Items[iIdx];
 
         if (!item || item.is_user_approved) return prev;
 
-        // 1️⃣ Mark clicked remark / verdict
+        //  If medium / low → promote to HIGH
+        const shouldPromote =
+          item.accuracy_level === true && Number(item.confidence) < 100;
+
         next[tIdx].Items[iIdx] = {
           ...item,
           is_user_approved: true,
-          is_user_edited: true,
-          is_user_modified: true,
-          confidence: 100,
+          confidence: shouldPromote ? 100 : item.confidence, // do NOT touch user_edited
         };
 
-        // 2️⃣ PAGE 9+ → mark clause row (task_type === null)
-        if (item.task_type === 'remark' || item.task_type === 'verdict') {
+        // 🔥 Clause row promotion (page 9+)
+        if (
+          item.task_type === 'remark' ||
+          item.task_type === 'verdict' ||
+          item.task_type === 'verdict_dependency'
+        ) {
           const clauseRow = item.clause_row;
           const questionRow = item.question_row;
-
-          let clauseMatched = false;
 
           next[tIdx].Items = next[tIdx].Items.map((row) => {
             if (
@@ -592,22 +601,25 @@ const DataTable = forwardRef(
               row.clause_row === clauseRow &&
               row.question_row === questionRow
             ) {
-              clauseMatched = true;
               return {
                 ...row,
-                is_user_edited: true,
-                is_user_modified: true,
-                confidence: 100,
+                confidence: 100, // promote clause too
               };
             }
             return row;
           });
         }
 
+        updatedTables = next;
         return next;
       });
 
-      //  realtime confidence
+      // 🔥 THIS IS THE CRITICAL PART
+      if (updatedTables) {
+        await idb_set('tables', updatedTables); // <-- update IndexedDB immediately
+      }
+
+      // 🔥 Now confidence score recalculates correctly
       onConfidenceChange?.();
     };
 
@@ -1861,7 +1873,10 @@ const DataTable = forwardRef(
             __t: item.__t,
             __i: item.__i,
           };
-        } else if (item.task_type === 'verdict') {
+        } else if (
+          item.task_type === 'verdict' ||
+          item.task_type === 'verdict_dependency'
+        ) {
           groupsByRow[key].verdictRef = {
             __t: item.__t,
             __i: item.__i,
@@ -1923,7 +1938,11 @@ const DataTable = forwardRef(
         const comment = item._comment;
 
         // Not user editable → plain text always
-        if (item.task_type !== 'remark' && item.task_type !== 'verdict') {
+        if (
+          item.task_type !== 'remark' &&
+          item.task_type !== 'verdict' &&
+          item.task_type !== 'verdict_dependency'
+        ) {
           return (
             <div className="dt-value-column dt-relative">
               <Typography sx={{ whiteSpace: 'pre-wrap' }}>{value}</Typography>

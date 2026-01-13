@@ -956,9 +956,12 @@ def generate_cdr(projectId: str):
                 enable_cross_partition_query=True
             )
         )
-        cdr_percent=items[0].get('CDR_Project_Progress',None)
-        
-        if cdr_percent.get("cdr_percentage")<100:
+        cdr_progress = items[0].get("CDR_Project_Progress") or {}
+        print(cdr_progress,"------ ",type(cdr_progress))
+
+        cdr_percentage = cdr_progress.get("cdr_percentage", 0)
+        print(cdr_percentage,"------ ",type(cdr_percentage))
+        if cdr_percentage < 100:
             query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
             docs = list(
                 projects_container.query_items(
@@ -1092,7 +1095,7 @@ def generate_cdr(projectId: str):
                 "projectId": projectId,
                 "data": result
             }
-        if cdr_percent.get("cdr_percentage")==100:
+        if cdr_percentage==100:
             print("----CDR is already generated-----")
             BASE_DIR = Path(__file__).resolve().parents[1] 
             DATA_DIR = BASE_DIR / "data"
@@ -1101,19 +1104,18 @@ def generate_cdr(projectId: str):
             with open(output_json_path, "r", encoding="utf-8") as f:
                 cdr_output = json.load(f)
             
-
             return {
                 "message": "CDR Report Already Generated ",
                 "projectId": projectId,
                 "data": cdr_output
             }
-            
-
 
     except HTTPException:
         raise
 
     except Exception as e:
+        h=traceback.format_exc()
+        print(h)
         logger.exception("Unhandled error in generate_cdr API")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
