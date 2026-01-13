@@ -205,54 +205,81 @@ const RenderSheet1Excel = ({
     );
   };
 
+  const isBlankRow = (items) =>
+    items.every((i) => i.task_type === 'blank' || i.field === null);
+
   /* ---------------- GENERIC TABLE ---------------- */
-  const renderTable = (filterFn) => (
-    <TableContainer component={Paper} sx={{ width: '100%' }}>
-      <Table size="small" sx={{ borderCollapse: 'collapse' }}>
-        <TableBody>
-          {sortedRows.map((rowNo) => {
-            const rowItems = rows[rowNo].filter(filterFn);
-            if (!rowItems.length) return null;
+  const renderTable = (filterFn) => {
+    let lastWasBlank = false; // ✅ must be here
 
-            return (
-              <TableRow key={rowNo}>
-                {rowItems.map((item) => {
-                  const itemIndex = localItems.indexOf(item);
+    return (
+      <TableContainer component={Paper} sx={{ width: '100%' }}>
+        <Table size="small" sx={{ borderCollapse: 'collapse' }}>
+          <TableBody>
+            {sortedRows.map((rowNo) => {
+              const rowItems = rows[rowNo].filter(filterFn);
+              if (!rowItems.length) return null;
 
-                  if (item.field_merged && item.fm_range) {
-                    const span = colSpanFromRange(
-                      item.question_cell,
-                      item.fm_range
-                    );
+              const blank = isBlankRow(rowItems);
+
+              // Skip consecutive blank rows
+              if (blank && lastWasBlank) {
+                return null;
+              }
+
+              lastWasBlank = blank;
+
+              // Render a divider instead of empty rows
+              if (blank) {
+                return (
+                  <TableRow key={rowNo}>
+                    <TableCell colSpan={6} sx={{ p: 0 }}>
+                      <Box sx={{ height: 1, background: '#ccc', my: 1 }} />
+                    </TableCell>
+                  </TableRow>
+                );
+              }
+
+              return (
+                <TableRow key={rowNo}>
+                  {rowItems.map((item) => {
+                    const itemIndex = localItems.indexOf(item);
+
+                    if (item.field_merged && item.fm_range) {
+                      const span = colSpanFromRange(
+                        item.question_cell,
+                        item.fm_range
+                      );
+                      return (
+                        <TableCell
+                          key={itemIndex}
+                          colSpan={span}
+                          sx={{
+                            ...border,
+                            fontWeight: 700,
+                            background: '#f5f5f5',
+                          }}
+                        >
+                          {item.field}
+                        </TableCell>
+                      );
+                    }
+
                     return (
-                      <TableCell
-                        key={itemIndex}
-                        colSpan={span}
-                        sx={{
-                          ...border,
-                          fontWeight: 700,
-                          background: '#f5f5f5',
-                        }}
-                      >
-                        {item.field}
-                      </TableCell>
+                      <React.Fragment key={itemIndex}>
+                        <TableCell sx={border}>{item.field}</TableCell>
+                        {renderValue(item, itemIndex)}
+                      </React.Fragment>
                     );
-                  }
-
-                  return (
-                    <React.Fragment key={itemIndex}>
-                      <TableCell sx={border}>{item.field}</TableCell>
-                      {renderValue(item, itemIndex)}
-                    </React.Fragment>
-                  );
-                })}
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+                  })}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  };
 
   /* ---------------- ADD MANUFACTURER ---------------- */
   const handleAddManufacturer = () => {
