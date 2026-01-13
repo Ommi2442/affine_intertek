@@ -215,23 +215,22 @@ def main3(input_json_file,output_excel_path, progress_callback=None):
     
     utils.ingest_to_cosmos_parallel(vs, chunks_uuid, batch_size=10, max_workers=10)
     # ingest_chunks(vs, chunks, max_workers=5, batch_size=10)
-    
-    print("\n[SUCCESS] Image ingestion completed.\n")
 
     # print("text_chunks_ingested": len(chunks_uuid),"images_ingested": len(docs_image_uuid),"pdf_pages_extracted": len(image_page_metadata))
 
-    step += 1; progress(step, TOTAL, "Building TRF ref + generating template/description")
+    step += 1; progress(step, TOTAL, "Building TRF refS")
     #with open("1614_pta.json", "r", encoding="utf-8") as f:
     #    trf_filled = json.load(f)
-        
     trf_filled = input_json_file
-    # print("trf_filled:\n\n{trf_filled}")
-
+    print("trf_filled:\n\n{trf_filled}")
     ref = build_ref(trf_filled)
-
+    
+    step += 1; progress(step, TOTAL, "Generating References")
     template = references_main(vs, ref)
+    
+    step += 1; progress(step, TOTAL, "Generating Description")
     product_info = description_main(vs, ref)
-    description = build_product_section_items(product_info)
+    description = build_product_section_items(product_info, trf_blob_url)
 
     step += 1; progress(step, TOTAL, "Running Features extraction")
     print('-------running features---------')

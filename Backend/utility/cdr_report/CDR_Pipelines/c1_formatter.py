@@ -11,6 +11,40 @@ def build_field_text(photo_no, image_reason):
         return f"Photo {photo_no} - {short}"
     return f"Photo {photo_no}"
 
+
+def build_text_support_list(sheet_name, source_doc):
+    """
+    Builds a list of text_support dicts.
+    Handles pipe-separated filenames / URLs correctly.
+    """
+
+    def split(v):
+        if not v:
+            return []
+        return [x.strip() for x in str(v).split("|")]
+
+    filenames = split(sheet_name)
+    urls = split(source_doc)
+
+    max_len = max(len(filenames), len(urls))
+
+    supports = []
+
+    for i in range(max_len):
+        filename = filenames[i] if i < len(filenames) else None
+        url = urls[i] if i < len(urls) else None
+
+        supports.append({
+            "filename": filename,
+            "page": filename,   # ← your expected behavior
+            "similarity_score": None,
+            "text": None,
+            "url": url
+        })
+
+    return supports
+
+
 def run_formatter():
     configs.require_runtime()
 
@@ -108,11 +142,11 @@ def run_formatter():
                                 else None
                             ),
 
-            "text_support": [{"filename": c1_utils.clean_value(row.get("sheet_name")),
-                             "page": c1_utils.clean_value(row.get("sheet_name")),
-                             "similarity_score": None,
-                             "text": None,
-                             "url": c1_utils.clean_value(row.get("source_doc"))}],
+            "text_support": build_text_support_list(
+                                                        c1_utils.clean_value(row.get("sheet_name")),
+                                                        c1_utils.clean_value(row.get("source_doc"))
+                                                    ),
+
             "confidence": int(float(c1_utils.clean_value(row.get("confidence_score")) or 0) * 100)
         }
 
@@ -176,3 +210,4 @@ def run_formatter():
 
     print("✔ Photo metadata JSON created")
     print("✔ Output file:", configs.OUTPUT_JSON_METADATA)
+ 
