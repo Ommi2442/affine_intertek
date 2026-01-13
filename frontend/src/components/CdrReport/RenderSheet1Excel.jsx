@@ -82,7 +82,7 @@ const RenderSheet1Excel = ({
 
   useEffect(() => {
     setLocalItems(sheet.Items.map((i) => ({ ...i })));
-  }, [sheet.sheet_no]);
+  }, [sheet.Items]);
 
   const toBackendContact = (value) => {
     if (typeof value !== 'string') return value;

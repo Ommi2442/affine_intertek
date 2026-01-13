@@ -16,7 +16,8 @@ const getConfidenceColor = (
   if (aiFillable !== true || accuracyLevel !== true) return null;
 
   // 🧑‍💻 User override → neutral
-  if (isUserEdited === true) return 'grey';
+  if (isUserEdited === true && normalizeConfidence(confidence) < 75)
+    return 'grey';
 
   const c = normalizeConfidence(confidence);
   if (c === null) return null;
