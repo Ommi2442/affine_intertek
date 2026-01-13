@@ -44,4 +44,4 @@ PyPDF2
 xlrd
 extract-msg
 numpy
-
+pdfplumber
