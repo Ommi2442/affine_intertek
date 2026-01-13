@@ -362,7 +362,58 @@ def safe_download_blob_file(conn_str, container, blob_name, local_path):
         return False, f"General download error: {e}"
 
 
-def create_db_and_container(client,DB_NAME,VECTOR_PATH,EMBED_DIM,CONT_NAME):
+# def create_db_and_container(client,DB_NAME,VECTOR_PATH,EMBED_DIM,CONT_NAME):
+#     print("→ Ensuring database...")
+#     db = client.create_database_if_not_exists(DB_NAME)
+#     print("✔ Database ready:", DB_NAME)
+
+#     vector_embedding_policy = {
+#         "vectorEmbeddings": [
+#             {
+#                 "path": VECTOR_PATH,
+#                 "dataType": "float32",
+#                 "dimensions": EMBED_DIM,
+#                 "distanceFunction": "cosine",
+#             }
+#         ]
+#     }
+
+#     indexing_policy = {
+#         "includedPaths": [{"path": "/*"}],
+#         "excludedPaths": [{"path": "/\"_etag\"/?"}, {"path": f"{VECTOR_PATH}/*"}],
+#         "vectorIndexes": [{"path": VECTOR_PATH, "type": "quantizedFlat"}],
+#     }
+
+#     print("→ Removing old container if exists (to avoid schema conflicts)...")
+#     try:
+#         c_old = db.get_container_client(CONT_NAME)
+#         c_old.read()  # will throw if not found
+#         db.delete_container(CONT_NAME)
+#         print("✔ Old container deleted")
+#     except exceptions.CosmosResourceNotFoundError:
+#         print(" ℹ No old container")
+
+#     print("→ Creating container with vector policy...")
+#     try:
+#         container = db.create_container(
+#             id=CONT_NAME,
+#             partition_key=PartitionKey(path="/id"),
+#             indexing_policy=indexing_policy,
+#             vector_embedding_policy=vector_embedding_policy,
+#             # If your account requires explicit RU: uncomment next line
+#             # offer_throughput=400,
+#         )
+#         print("✔ Container created:", CONT_NAME)
+#         return container
+#     except exceptions.CosmosHttpResponseError as e:
+#         print("❌ Failed to create container")
+#         print("StatusCode:", getattr(e, "status_code", None))
+#         print("Message:", getattr(e, "message", str(e)))
+#         raise
+
+
+
+def create_db_and_container(client, DB_NAME, VECTOR_PATH, EMBED_DIM, CONT_NAME):
     print("→ Ensuring database...")
     db = client.create_database_if_not_exists(DB_NAME)
     print("✔ Database ready:", DB_NAME)
@@ -384,32 +435,33 @@ def create_db_and_container(client,DB_NAME,VECTOR_PATH,EMBED_DIM,CONT_NAME):
         "vectorIndexes": [{"path": VECTOR_PATH, "type": "quantizedFlat"}],
     }
 
-    print("→ Removing old container if exists (to avoid schema conflicts)...")
-    try:
-        c_old = db.get_container_client(CONT_NAME)
-        c_old.read()  # will throw if not found
-        db.delete_container(CONT_NAME)
-        print("✔ Old container deleted")
-    except exceptions.CosmosResourceNotFoundError:
-        print(" ℹ No old container")
+    print("→ Ensuring container exists (no deletion)...")
 
-    print("→ Creating container with vector policy...")
     try:
-        container = db.create_container(
-            id=CONT_NAME,
-            partition_key=PartitionKey(path="/id"),
-            indexing_policy=indexing_policy,
-            vector_embedding_policy=vector_embedding_policy,
-            # If your account requires explicit RU: uncomment next line
-            # offer_throughput=400,
-        )
-        print("✔ Container created:", CONT_NAME)
+        container = db.get_container_client(CONT_NAME)
+        container.read()   # check if exists
+        print("✔ Container already exists:", CONT_NAME)
         return container
-    except exceptions.CosmosHttpResponseError as e:
-        print("❌ Failed to create container")
-        print("StatusCode:", getattr(e, "status_code", None))
-        print("Message:", getattr(e, "message", str(e)))
-        raise
+
+    except exceptions.CosmosResourceNotFoundError:
+        print("→ Creating container with vector policy...")
+
+        try:
+            container = db.create_container(
+                id=CONT_NAME,
+                partition_key=PartitionKey(path="/id"),
+                indexing_policy=indexing_policy,
+                vector_embedding_policy=vector_embedding_policy,
+                # offer_throughput=400,  # enable if required
+            )
+            print("✔ Container created:", CONT_NAME)
+            return container
+
+        except exceptions.CosmosHttpResponseError as e:
+            print("❌ Failed to create container")
+            print("StatusCode:", getattr(e, "status_code", None))
+            print("Message:", getattr(e, "message", str(e)))
+            raise
 
 
 # Builders

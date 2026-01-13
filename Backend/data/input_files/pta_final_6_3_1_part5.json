@@ -16,8 +16,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 35
         },
@@ -30,7 +30,7 @@
           "field": "All fluids specified by manufacturer considered",
           "answer_row": 764,
           "answer_column": 2,
-          "custom_prompt": "Verify that all fluids specified by the manufacturer are considered in the assessment of protection against hazards from fluids and solid foreign objects.",
+          "custom_prompt": "Verify if the manufacturer mentioned a fluid anywhere in the documentation, the equipment must be safe when exposed to that fluid.Mention 'No fluid considered' incase there is no mention of any fluids by the manufacturer in the documentation.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -48,7 +48,7 @@
           "field": "All fluids specified by manufacturer considered",
           "answer_row": 764,
           "answer_column": 3,
-          "custom_prompt": "Verify that all fluids specified by the manufacturer are considered in the assessment of protection against hazards from fluids and solid foreign objects.",
+          "custom_prompt": "Verify if the manufacturer mentioned a fluid anywhere in the documentation, the equipment must be safe when exposed to that fluid.",
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
@@ -172,11 +172,9 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            769
-          ],
+          "dependency_rows": [769],
           "page_no": 35
         },
         {
@@ -193,9 +191,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            769
-          ],
+          "dependency_rows": [769],
           "page_no": 35
         },
         {
@@ -207,12 +203,12 @@
           "field": "Battery electrolyte leakage presents no hazard",
           "answer_row": 769,
           "answer_column": 2,
-          "custom_prompt": "Verify that battery electrolyte leakage presents no hazard.",
+          "custom_prompt": "Verify incase there are battery electrolytes the leakage presents no hazard.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 35
         },
@@ -228,8 +224,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 35
         },
@@ -247,12 +243,7 @@
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            771,
-            774,
-            784,
-            789
-          ],
+          "dependency_rows": [771, 774, 784, 789],
           "page_no": 35
         },
         {
@@ -269,12 +260,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            771,
-            774,
-            784,
-            789
-          ],
+          "dependency_rows": [771, 774, 784, 789],
           "page_no": 35
         },
         {
@@ -291,10 +277,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            772,
-            773
-          ],
+          "dependency_rows": [772, 773],
           "page_no": 36
         },
         {
@@ -311,10 +294,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            772,
-            773
-          ],
+          "dependency_rows": [772, 773],
           "page_no": 36
         },
         {
@@ -326,7 +306,7 @@
           "field": "Equipment marked with IP code\t:",
           "answer_row": 772,
           "answer_column": 2,
-          "custom_prompt": "Verify that equipment marked with an IP code meets the required degree of ingress protection.",
+          "custom_prompt": "Verify and mention the degree of Ingress Protection (IP code) rated for the equipment for solid foreign objects and liquids as per IEC 60529.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -361,7 +341,7 @@
           "field": "Conditions specified in the documentation",
           "answer_row": 773,
           "answer_column": 2,
-          "custom_prompt": "Verify that equipment rated with an IP code meets the conditions specified in the documentation.",
+          "custom_prompt": "Verify that equipment rated with an IP code for foreign objects and liquids as per IEC 60529 and the conditions are specified in the documentation.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -380,7 +360,7 @@
           "answer_row": 773,
           "answer_column": 3,
           "value": null,
-          "custom_prompt": "Verify that equipment rated with an IP code meets the conditions specified in the documentation.",
+          "custom_prompt": "Verify that equipment rated with an IP code for foreign objects and liquids as per IEC 60529 and the conditions are specified in the documentation.",
           "task_type": "verdict",
           "user_editable": true,
           "ai_fillable": true,
@@ -402,17 +382,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            775,
-            776,
-            777,
-            778,
-            779,
-            780,
-            781,
-            782,
-            783
-          ],
+          "dependency_rows": [775, 776, 777, 778, 779, 780, 781, 782, 783],
           "page_no": 36
         },
         {
@@ -429,17 +399,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            775,
-            776,
-            777,
-            778,
-            779,
-            780,
-            781,
-            782,
-            783
-          ],
+          "dependency_rows": [775, 776, 777, 778, 779, 780, 781, 782, 783],
           "page_no": 36
         },
         {
@@ -451,7 +411,7 @@
           "field": "Equipment in clean and new condition, all parts in place and mounted as specified by manufacturer",
           "answer_row": 775,
           "answer_column": 2,
-          "custom_prompt": "Verify that equipment rated with an IP code is tested in clean, new condition with all parts in place and mounted as specified by the manufacturer.",
+          "custom_prompt": "Verify that equipment is in new condition with all parts in place and mounted as specified by the manufacturer.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -486,7 +446,7 @@
           "field": "Complete equipment tested, or",
           "answer_row": 776,
           "answer_column": 2,
-          "custom_prompt": "Verify that equipment rated with an IP (ingress protection) code is tested under the required conditions using the complete equipment or as specified.",
+          "custom_prompt": "Verify complete testing of the equipment related to solid foreign objects and liquids if applicable.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -521,7 +481,7 @@
           "field": "representative parts tested",
           "answer_row": 777,
           "answer_column": 2,
-          "custom_prompt": "Verify that equipment rated with an ingress protection (IP) code is tested under the specified conditions using representative parts.",
+          "custom_prompt": "Verify representative parts testing of the equipment related to solid foreign objects and liquids if applicable.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -556,7 +516,7 @@
           "field": "hand-held equipment and portable equipment placed in least favourable position of normal use",
           "answer_row": 778,
           "answer_column": 2,
-          "custom_prompt": "Verify that equipment rated with an IP code is tested under conditions where hand-held and portable equipment are placed in the least favourable position of normal use.",
+          "custom_prompt": "Verify the testing related to solid foreign objects and liquids for hand-held and portable equipment placed in the least favourable position of normal use.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -591,7 +551,7 @@
           "field": "Other equipment positioned or installed as specified",
           "answer_row": 779,
           "answer_column": 2,
-          "custom_prompt": "Verify that equipment rated with an IP code is positioned or installed as specified for the ingress protection test.",
+          "custom_prompt": "Verify the testing related to solid foreign objects and liquids for equipments other than hand-held and portable equipment positioned or installed as specified.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -626,7 +586,7 @@
           "field": "terminals provided with protective cap or cover, are installed as specified by manufacturer",
           "answer_row": 780,
           "answer_column": 2,
-          "custom_prompt": "Verify that for equipment rated with an IP code, terminals provided with a protective cap or cover are installed as specified by the manufacturer.",
+          "custom_prompt": "Verify that the terminals provided with a protective cap or cover are installed as specified by the manufacturer.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -665,7 +625,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 36
@@ -696,7 +656,7 @@
           "field": "If manufacturer specifies degrees of protection for non-operating (de-energized) equipment, or",
           "answer_row": 782,
           "answer_column": 2,
-          "custom_prompt": "Verify that IP code testing is performed with the equipment energized, except when the manufacturer specifies degrees of protection for non-operating equipment.",
+          "custom_prompt": "Verify that the equipment is operating during the treatment except if the manufacturer specifies degrees of protection for non-operating equipment.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -731,7 +691,7 @@
           "field": "Equipment is operating or non-operating during the treatment with does not affect the test results",
           "answer_row": 783,
           "answer_column": 2,
-          "custom_prompt": "Verify that equipment rated with an IP code is tested under the required conditions, allowing it to operate or remain non-operating during treatment when this does not affect the test results.",
+          "custom_prompt": "Verify that equipment is operating or non-operating during the treatment which does not affect the test results",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -771,12 +731,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            785,
-            786,
-            787,
-            788
-          ],
+          "dependency_rows": [785, 786, 787, 788],
           "page_no": 36
         },
         {
@@ -793,12 +748,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            785,
-            786,
-            787,
-            788
-          ],
+          "dependency_rows": [785, 786, 787, 788],
           "page_no": 36
         },
         {
@@ -884,7 +834,8 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 36
+          "page_no": 36,
+          "custom_prompt": "Verify results by additional inspection that no deposit on insulation parts that could lead to a hazard."
         },
         {
           "clause_row": 787,
@@ -918,7 +869,8 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 36
+          "page_no": 36,
+          "custom_prompt": "Verify results by additional inspection that no created accumulations that have the potential to cause spread of fire."
         },
         {
           "clause_row": 788,
@@ -951,14 +903,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            790,
-            791,
-            792,
-            793,
-            794,
-            795
-          ],
+          "dependency_rows": [790, 791, 792, 793, 794, 795],
           "page_no": 36
         },
         {
@@ -975,14 +920,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            790,
-            791,
-            792,
-            793,
-            794,
-            795
-          ],
+          "dependency_rows": [790, 791, 792, 793, 794, 795],
           "page_no": 36
         },
         {
@@ -1065,10 +1003,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 36
+          "page_no": 36,
+          "custom_prompt": "Verify results from protection against water tests that no deposit on insulation parts that could lead to a hazard"
         },
         {
           "clause_row": 792,
@@ -1102,7 +1041,8 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 36
+          "page_no": 36,
+          "custom_prompt": "Verify results from protection against water tests that water has not reached hazardous live parts or windings which are not designed to operate when wet."
         },
         {
           "clause_row": 793,
@@ -1136,7 +1076,8 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 36
+          "page_no": 36,
+          "custom_prompt": "Verify results from protection against water tests that no accumulations near the end of cable nor enter the cable where it could cause a hazard"
         },
         {
           "clause_row": 794,
@@ -1170,7 +1111,8 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 36
+          "page_no": 36,
+          "custom_prompt": "Verify results from protection against water tests that no accumulations where it could lead to a hazard taking in consideration movement of the equipment"
         },
         {
           "clause_row": 795,
@@ -1203,12 +1145,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            797,
-            799,
-            805,
-            806
-          ],
+          "dependency_rows": [797, 799, 805, 806],
           "page_no": 37
         },
         {
@@ -1225,12 +1162,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            797,
-            799,
-            805,
-            806
-          ],
+          "dependency_rows": [797, 799, 805, 806],
           "page_no": 37
         },
         {
@@ -1242,9 +1174,9 @@
           "field": "Maximum pressure",
           "answer_row": 797,
           "answer_column": 2,
-          "value": null,
+          "value": "(see Form A.31)",
           "task_type": "remark",
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
@@ -1259,9 +1191,9 @@
           "field": "Maximum pressure",
           "answer_row": 797,
           "answer_column": 3,
-          "value": null,
+          "value": "—",
           "task_type": "verdict",
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
@@ -1276,7 +1208,7 @@
           "field": "Maximum pressure of any part does not exceed Prated",
           "answer_row": 798,
           "answer_column": 2,
-          "custom_prompt": "Verify that the maximum pressure of any part does not exceed Prated.",
+          "custom_prompt": "Verify that the maximum pressure of any part does not exceed rated pressure.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -1316,13 +1248,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            800,
-            801,
-            802,
-            803,
-            804
-          ],
+          "dependency_rows": [800, 801, 802, 803, 804],
           "page_no": 37
         },
         {
@@ -1339,13 +1265,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            800,
-            801,
-            802,
-            803,
-            804
-          ],
+          "dependency_rows": [800, 801, 802, 803, 804],
           "page_no": 37
         },
         {
@@ -1461,7 +1381,7 @@
           "field": "Safety evidence established by calculation in acc. to national authorities (e.g. Pressure Equipment Directive 2014/68/EU)",
           "answer_row": 803,
           "answer_column": 2,
-          "custom_prompt": "Verify that fluid-containing parts are inspected, or if a hazard could arise and pressure exceeds 50 kPa, are subjected to a hydraulic test, with safety evidence established by calculation according to national authorities (e.g., Pressure Equipment Directive 2014/68/EU).",
+          "custom_prompt": "Verify that safety evidence established by calculation according to national authorities (e.g., Pressure Equipment Directive 2014/68/EU).",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
@@ -1493,7 +1413,7 @@
           "clause": null,
           "question_row": 804,
           "question_column": 1,
-          "field": "Parts of refrigerating systems meets pressure-related requirements of EN 378-2 or IEC 60335-2-89 as applicable",
+          "field": "Parts of refrigerating systems meets pressure-related requirements of EN 378-2 or IEC 60335-2-89 as applicable.",
           "answer_row": 804,
           "answer_column": 2,
           "value": null,
@@ -1502,7 +1422,8 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 37
+          "page_no": 37,
+          "custom_prompt": "Verify that Parts of refrigerating systems meets pressure-related requirements of EN 378-2 or IEC 60335-2-89 as applicable."
         },
         {
           "clause_row": 804,
@@ -1568,18 +1489,9 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            807,
-            808,
-            809,
-            810,
-            811,
-            812,
-            813,
-            814
-          ],
+          "dependency_rows": [807, 808, 809, 810, 811, 812, 813, 814],
           "page_no": 37
         },
         {
@@ -1592,20 +1504,11 @@
           "answer_row": 806,
           "answer_column": 3,
           "value": null,
-          "task_type": "verdict",
+          "task_type": "verdict_dependency",
           "user_editable": true,
           "ai_fillable": false,
-          "accuracy_level": false,
-          "dependency_rows": [
-            807,
-            808,
-            809,
-            810,
-            811,
-            812,
-            813,
-            814
-          ],
+          "accuracy_level": true,
+          "dependency_rows": [807, 808, 809, 810, 811, 812, 813, 814],
           "page_no": 37
         },
         {
@@ -1617,12 +1520,12 @@
           "field": "Does not operate in normal use",
           "answer_row": 807,
           "answer_column": 2,
-          "custom_prompt": "Verify that the overpressure safety device does not operate in normal use.",
+          "custom_prompt": "Verify that incase there is an overpressure safety device in the equipment it does not operate in normal use.Mention 'No overpressure safety device' incase the equipment does not have an overpressure safety device.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 37
         },
@@ -1638,8 +1541,27 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "dependency_rows": null,
+          "page_no": 37,
+          "custom_prompt": "Verify that incase there is an overpressure safety device in the equipment it does not operate in normal use."
+        },
+        {
+          "clause_row": 808,
+          "clause_column": 0,
+          "clause": null,
+          "question_row": 808,
+          "question_column": 1,
+          "field": "Connected as close as possible to parts intended to be protected",
+          "answer_row": 808,
+          "answer_column": 2,
+          "custom_prompt": "Verify that incase there is an overpressure safety device in the equipment it is connected as close as possible to parts intended to be protected.Mention 'No overpressure safety device' incase the equipment does not have an overpressure safety device.",
+          "value": null,
+          "task_type": "remark",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 37
         },
@@ -1651,32 +1573,15 @@
           "question_column": 1,
           "field": "Connected as close as possible to parts intended to be protected",
           "answer_row": 808,
-          "answer_column": 2,
-          "custom_prompt": "Verify that the overpressure safety device does not operate in normal use and is connected as close as possible to the parts intended to be protected.",
-          "value": null,
-          "task_type": "remark",
-          "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": false,
-          "dependency_rows": null,
-          "page_no": 37
-        },
-        {
-          "clause_row": 808,
-          "clause_column": 0,
-          "clause": null,
-          "question_row": 808,
-          "question_column": 1,
-          "field": "Connected as close as possible to parts intended to be protected",
-          "answer_row": 808,
           "answer_column": 3,
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 37
+          "page_no": 37,
+          "custom_prompt": "Verify that incase there is an overpressure safety device in the equipment it is connected as close as possible to parts intended to be protected."
         },
         {
           "clause_row": 809,
@@ -1687,12 +1592,12 @@
           "field": "Easy access for inspection, maintenance and repair",
           "answer_row": 809,
           "answer_column": 2,
-          "custom_prompt": "Verify that the overpressure safety device does not operate in normal use and provides easy access for inspection, maintenance, and repair.",
+          "custom_prompt": "Verify that incase there is an overpressure safety device in the equipment it has easy access for inspection, maintenance and repair.Mention 'No overpressure safety device' incase the equipment does not have an overpressure safety device.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 37
         },
@@ -1708,8 +1613,27 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "dependency_rows": null,
+          "page_no": 37,
+          "custom_prompt": "Verify that incase there is an overpressure safety device in the equipment it has easy access for inspection, maintenance and repair."
+        },
+        {
+          "clause_row": 810,
+          "clause_column": 0,
+          "clause": null,
+          "question_row": 810,
+          "question_column": 1,
+          "field": "Adjustment only with tool",
+          "answer_row": 810,
+          "answer_column": 2,
+          "custom_prompt": "Verify that incase there is an overpressure safety device in the equipment it can only be adjusted with a tool.Mention 'No overpressure safety device' incase the equipment does not have an overpressure safety device.",
+          "value": null,
+          "task_type": "remark",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 37
         },
@@ -1721,32 +1645,15 @@
           "question_column": 1,
           "field": "Adjustment only with tool",
           "answer_row": 810,
-          "answer_column": 2,
-          "custom_prompt": "Verify that the overpressure safety device does not operate in normal use and can only be adjusted with a tool.",
-          "value": null,
-          "task_type": "remark",
-          "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": false,
-          "dependency_rows": null,
-          "page_no": 37
-        },
-        {
-          "clause_row": 810,
-          "clause_column": 0,
-          "clause": null,
-          "question_row": 810,
-          "question_column": 1,
-          "field": "Adjustment only with tool",
-          "answer_row": 810,
           "answer_column": 3,
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 37
+          "page_no": 37,
+          "custom_prompt": "Verify that incase there is an overpressure safety device in the equipment it can only be adjusted with a tool."
         },
         {
           "clause_row": 811,
@@ -1757,12 +1664,12 @@
           "field": "No discharge towards person",
           "answer_row": 811,
           "answer_column": 2,
-          "custom_prompt": "Verify that the overpressure safety device does not operate in normal use and that there is no discharge toward the person.",
+          "custom_prompt": "Verify that incase there is an overpressure safety device in the equipment there is no discharge towards the person.Mention 'No overpressure safety device' incase the equipment does not have an overpressure safety device.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 37
         },
@@ -1778,8 +1685,27 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "dependency_rows": null,
+          "page_no": 37,
+          "custom_prompt": "Verify that incase there is an overpressure safety device in the equipment there is no discharge towards the person."
+        },
+        {
+          "clause_row": 812,
+          "clause_column": 0,
+          "clause": null,
+          "question_row": 812,
+          "question_column": 1,
+          "field": "No hazard from deposit of discharged material",
+          "answer_row": 812,
+          "answer_column": 2,
+          "custom_prompt": "Verify that incase there is an overpressure safety device in the equipment there is no hazard from deposit of discharged material.Mention 'No overpressure safety device' incase the equipment does not have an overpressure safety device.",
+          "value": null,
+          "task_type": "remark",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 37
         },
@@ -1791,32 +1717,15 @@
           "question_column": 1,
           "field": "No hazard from deposit of discharged material",
           "answer_row": 812,
-          "answer_column": 2,
-          "custom_prompt": "Verify that the overpressure safety device does not operate in normal use and that no hazard arises from any deposited discharged material.",
-          "value": null,
-          "task_type": "remark",
-          "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": false,
-          "dependency_rows": null,
-          "page_no": 37
-        },
-        {
-          "clause_row": 812,
-          "clause_column": 0,
-          "clause": null,
-          "question_row": 812,
-          "question_column": 1,
-          "field": "No hazard from deposit of discharged material",
-          "answer_row": 812,
           "answer_column": 3,
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 37
+          "page_no": 37,
+          "custom_prompt": "Verify that incase there is an overpressure safety device in the equipment there is no hazard from deposit of discharged material."
         },
         {
           "clause_row": 813,
@@ -1827,12 +1736,12 @@
           "field": "Adequate discharge capacity",
           "answer_row": 813,
           "answer_column": 2,
-          "custom_prompt": "Verify that the overpressure safety device does not operate in normal use and has adequate discharge capacity.",
+          "custom_prompt": "Verify that incase there is an overpressure safety device in the equipment it has adequate discharge capacity.Mention 'No overpressure safety device' incase the equipment does not have an overpressure safety device.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 37
         },
@@ -1848,10 +1757,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 37
+          "page_no": 37,
+          "custom_prompt": "Verify that incase there is an overpressure safety device in the equipment it has adequate discharge capacity."
         },
         {
           "clause_row": 814,
@@ -1862,12 +1772,12 @@
           "field": "No shut-off valve between overpressure safety device and protected parts",
           "answer_row": 814,
           "answer_column": 2,
-          "custom_prompt": "Verify that the overpressure safety device does not operate in normal use and that no shut-off valve is installed between the overpressure safety device and the protected parts.",
+          "custom_prompt": "Verify that incase there is an overpressure safety device in the equipment there is no shut-off valve between overpressure safety device and protected parts.Mention 'No overpressure safety device' incase the equipment does not have an overpressure safety device.",
           "value": null,
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 37
         },
@@ -1883,10 +1793,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 37
+          "page_no": 37,
+          "custom_prompt": "Verify that incase there is an overpressure safety device in the equipment there is no shut-off valve between overpressure safety device and protected parts."
         },
         {
           "clause_row": 816,
@@ -1902,14 +1813,7 @@
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            817,
-            819,
-            837,
-            844,
-            846,
-            861
-          ],
+          "dependency_rows": [817, 819, 837, 844, 846, 861],
           "page_no": 37
         },
         {
@@ -1926,14 +1830,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            817,
-            819,
-            837,
-            844,
-            846,
-            861
-          ],
+          "dependency_rows": [817, 819, 837, 844, 846, 861],
           "page_no": 37
         },
         {
@@ -1950,9 +1847,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            818
-          ],
+          "dependency_rows": [818],
           "page_no": 37
         },
         {
@@ -1969,9 +1864,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            818
-          ],
+          "dependency_rows": [818],
           "page_no": 37
         },
         {
@@ -1986,7 +1879,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 37,
@@ -2023,10 +1916,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            820,
-            835
-          ],
+          "dependency_rows": [820, 835],
           "page_no": 37
         },
         {
@@ -2043,10 +1933,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            820,
-            835
-          ],
+          "dependency_rows": [820, 835],
           "page_no": 37
         },
         {
@@ -2063,11 +1950,7 @@
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            821,
-            826,
-            833
-          ],
+          "dependency_rows": [821, 826, 833],
           "page_no": 37
         },
         {
@@ -2084,11 +1967,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            821,
-            826,
-            833
-          ],
+          "dependency_rows": [821, 826, 833],
           "page_no": 37
         },
         {
@@ -2105,12 +1984,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            822,
-            823,
-            824,
-            825
-          ],
+          "dependency_rows": [822, 823, 824, 825],
           "page_no": 37
         },
         {
@@ -2127,12 +2001,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            822,
-            823,
-            824,
-            825
-          ],
+          "dependency_rows": [822, 823, 824, 825],
           "page_no": 37
         },
         {
@@ -2181,7 +2050,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 37,
@@ -2216,10 +2085,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 38
+          "page_no": 38,
+          "custom_prompt": "Verify if equipment is intended to emit radiation it is tested, classified and marked in accordance to IEC 62598."
         },
         {
           "clause_row": 824,
@@ -2250,7 +2120,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 38,
@@ -2287,14 +2157,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            827,
-            828,
-            829,
-            830,
-            831,
-            832
-          ],
+          "dependency_rows": [827, 828, 829, 830, 831, 832],
           "page_no": 38
         },
         {
@@ -2311,14 +2174,7 @@
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            827,
-            828,
-            829,
-            830,
-            831,
-            832
-          ],
+          "dependency_rows": [827, 828, 829, 830, 831, 832],
           "page_no": 38
         },
         {
@@ -2333,7 +2189,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 38,
@@ -2368,7 +2224,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 38,
@@ -2404,10 +2260,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 38,
-          "custom_prompt": "Verify that if the ionizing radiation dose rate exceeds 5 µSv/h, the equipment is marked with symbol 17 (ISO 361)."
+          "custom_prompt": "Verify that if the equipment is intended to emit radiation and dose rate exceeds 5 µSv/h, the equipment is marked with symbol 17 (ISO 361). Mention 'No Ionizing radiation' incase the equipment does not produce ionizing radiation."
         },
         {
           "clause_row": 829,
@@ -2421,10 +2277,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 38
+          "page_no": 38,
+          "custom_prompt": "Verify that if the equipment is intended to emit radiation and dose rate exceeds 5 µSv/h, the equipment is marked with symbol 17 (ISO 361)."
         },
         {
           "clause_row": 830,
@@ -2439,10 +2296,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 38,
-          "custom_prompt": "Verify that if the ionizing radiation dose rate exceeds 5 µSv/h, the equipment is marked with the abbreviations of the radionuclides."
+          "custom_prompt": "Verify that if the equipment is intended to emit radiation and dose rate exceeds 5 µSv/h, the equipment is marked with abbreviations of the radionuclides. Mention 'No Ionizing radiation' incase the equipment does not produce ionizing radiation."
         },
         {
           "clause_row": 830,
@@ -2474,10 +2331,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 38,
-          "custom_prompt": "Verify that if the dose rate of ionizing radiation exceeds 5 µSv/h, the equipment is marked with the maximum dose at 1 m."
+          "custom_prompt": "Verify that if the equipment is intended to emit radiation and dose rate exceeds 5 µSv/h, the equipment is marked with maximum dose at 1 m.Mention 'No Ionizing radiation' incase the equipment does not produce ionizing radiation."
         },
         {
           "clause_row": 831,
@@ -2509,10 +2366,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 38,
-          "custom_prompt": "Verify that equipment producing ionizing radiation exceeding 5 µSv/h is marked with the maximum dose at 1 m, or if the dose rate is between 1 µSv/h and 5 µSv/h, it is marked with the dose rate value in µSv/h."
+          "custom_prompt": "Verify that if the equipment is intended to emit radiation and dose rate exceeds 5 µSv/h, the equipment is marked with dose rate value between 1 µSv/h and 5 µSv/h in m.Mention 'No Ionizing radiation' incase the equipment does not produce ionizing radiation."
         },
         {
           "clause_row": 832,
@@ -2557,9 +2414,9 @@
           "field": "Equipment not intended to emit radiation",
           "answer_row": 833,
           "answer_column": 3,
-          "value": null,
+          "value": "—",
           "task_type": "verdict",
-          "user_editable": true,
+          "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
@@ -2581,7 +2438,7 @@
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 38,
-          "custom_prompt": "Verify that equipment not intended to emit ionizing radiation maintains unintended stray radiation below 1 µSv/h at any easily accessible point."
+          "custom_prompt": "Verify that equipment not intended to emit ionizing radiation maintains unintended stray radiation below 1 µSv/h at any easily reached point kept."
         },
         {
           "clause_row": 834,
@@ -2613,12 +2470,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
-          "dependency_rows": [
-            836
-          ],
+          "accuracy_level": true,
+          "dependency_rows": [836],
           "page_no": 38,
-          "custom_prompt": "Verify protection measures for equipment producing ionizing radiation, including systems using accelerated electrons."
+          "custom_prompt": "Verify incase electrons are accelerated by electric fields to produce ioning radiations in the equipment. Mention 'No Ionizing radiation' incase the equipment does not produce ionizing radiation."
         },
         {
           "clause_row": 835,
@@ -2632,12 +2487,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
-          "dependency_rows": [
-            836
-          ],
-          "page_no": 38
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "dependency_rows": [836],
+          "page_no": 38,
+          "custom_prompt": "Verify incase electrons are accelerated by electric fields to produce ioning radiations in the equipment."
         },
         {
           "clause_row": 836,
@@ -2652,10 +2506,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 38,
-          "custom_prompt": "Verify that equipment producing ionizing radiation from accelerated electrons has compartments that can only be opened using a tool."
+          "custom_prompt": "Verify incase electrons are accelerated by electric fields to produce ioning radiations in the equipment the compartments can be opened only by the use of a tool. Mention 'No Ionizing radiation' incase the equipment does not produce ionizing radiation."
         },
         {
           "clause_row": 836,
@@ -2669,8 +2523,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 38
         },
@@ -2688,14 +2542,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            838,
-            839,
-            840,
-            841,
-            842,
-            843
-          ],
+          "dependency_rows": [838, 839, 840, 841, 842, 843],
           "page_no": 38
         },
         {
@@ -2712,14 +2559,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            838,
-            839,
-            840,
-            841,
-            842,
-            843
-          ],
+          "dependency_rows": [838, 839, 840, 841, 842, 843],
           "page_no": 38
         },
         {
@@ -2871,7 +2711,7 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 38,
           "custom_prompt": "Verify that there is no unintentional hazardous escape of optical radiation (UV, visible, or infrared), including from LEDs, and confirm that if labeling is impractical, the lamp or lamp system is marked with symbol 14."
@@ -2888,8 +2728,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 38,
           "custom_prompt": "Verify that there is no unintentional hazardous escape of optical radiation (UV, visible, or infrared), including from LEDs, and confirm that if labeling is impractical, the lamp or lamp system is marked with symbol 14."
@@ -2910,7 +2750,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 38,
-          "custom_prompt": "Verify that no unintentional hazardous escape of optical radiation (UV, visible, or infrared, including LEDs) occurs, and confirm that protective measures, use restrictions, operating instructions, and applicable conditions of use from Table 23 are provided."
+          "custom_prompt": "Verify that incase the equipment is intended to produce any optical radiation then protective measures, use restrictions, operating instructions, and applicable conditions of use from Table 23 are provided. Mention 'No Optical radiations' incase the equipment is not intended to produce optical radiations."
         },
         {
           "clause_row": 843,
@@ -2928,7 +2768,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 38,
-          "custom_prompt": "Verify that no unintentional hazardous escape of optical radiation (UV, visible, or infrared, including LEDs) occurs, and confirm that protective measures, use restrictions, operating instructions, and applicable conditions of use from Table 23 are provided."
+          "custom_prompt": "Verify that incase the equipment is intended to produce any optical radiation then protective measures, use restrictions, operating instructions, and applicable conditions of use from Table 23 are provided."
         },
         {
           "clause_row": 844,
@@ -2944,9 +2784,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            845
-          ],
+          "dependency_rows": [845],
           "page_no": 38
         },
         {
@@ -2963,9 +2801,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            845
-          ],
+          "dependency_rows": [845],
           "page_no": 38
         },
         {
@@ -2984,7 +2820,7 @@
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 38,
-          "custom_prompt": "Verify that the power density does not exceed 10 W/m² for protection against radiation, including laser sources and microwave radiation."
+          "custom_prompt": "Verify that the power density does not exceed 10 W/m² for microwave radiation."
         },
         {
           "clause_row": 845,
@@ -3017,10 +2853,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            847,
-            851
-          ],
+          "dependency_rows": [847, 851],
           "page_no": 38
         },
         {
@@ -3037,10 +2870,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            847,
-            851
-          ],
+          "dependency_rows": [847, 851],
           "page_no": 38
         },
         {
@@ -3057,11 +2887,7 @@
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            848,
-            849,
-            850
-          ],
+          "dependency_rows": [848, 849, 850],
           "page_no": 38
         },
         {
@@ -3078,11 +2904,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            848,
-            849,
-            850
-          ],
+          "dependency_rows": [848, 849, 850],
           "page_no": 38
         },
         {
@@ -3101,7 +2923,7 @@
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 38,
-          "custom_prompt": "Verify that sonic and ultrasonic pressure levels do not produce hazardous sound emissions."
+          "custom_prompt": "Verify that the equipment does not produce hazardous sound emissions."
         },
         {
           "clause_row": 848,
@@ -3132,10 +2954,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 38
+          "page_no": 38,
+          "custom_prompt": "Verify maximum sound pressure level measured and calculated for maximum sound power level as specified in ISO 3746 or ISO 9614-1"
         },
         {
           "clause_row": 849,
@@ -3167,10 +2990,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 39,
-          "custom_prompt": "Verify that the sound level is within safe limits and that the instructions describe appropriate protection measures against sonic and ultrasonic pressure."
+          "custom_prompt": "Verify that incase the equipment produces sound emissions then the instructions describes measures of protection.Mention 'No sound emissions' incase the equipment is not intended to produce sound emissions."
         },
         {
           "clause_row": 850,
@@ -3187,7 +3010,8 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 39
+          "page_no": 39,
+          "custom_prompt": "Verify that incase the equipment produces sound emissions then the instructions describes measures of protection."
         },
         {
           "clause_row": 851,
@@ -3203,17 +3027,7 @@
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            852,
-            853,
-            854,
-            855,
-            856,
-            857,
-            858,
-            859,
-            860
-          ],
+          "dependency_rows": [852, 853, 854, 855, 856, 857, 858, 859, 860],
           "page_no": 39
         },
         {
@@ -3230,17 +3044,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            852,
-            853,
-            854,
-            855,
-            856,
-            857,
-            858,
-            859,
-            860
-          ],
+          "dependency_rows": [852, 853, 854, 855, 856, 857, 858, 859, 860],
           "page_no": 39
         },
         {
@@ -3290,7 +3094,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 39,
@@ -3360,7 +3164,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 39,
@@ -3396,10 +3200,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 39,
-          "custom_prompt": "Verify that if ultrasonic pressure inside the useful beam exceeds allowable values, the equipment is marked with symbol 14 from Table 1."
+          "custom_prompt": "Verify that if the equipment emits ultrasonic emissions and the ultrasonic pressure levels exceed the specified safe limits, the equipment must be marked with Warning Symbol 14 (from Table 1).Mention 'No ultrasonic emissions' incase the equipment does not produce ultrasonic emissions."
         },
         {
           "clause_row": 856,
@@ -3413,10 +3217,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 39
+          "page_no": 39,
+          "custom_prompt": "Verify that if the equipment emits ultrasonic emissions and the ultrasonic pressure levels exceed the specified safe limits, the equipment must be marked with Warning Symbol 14 (from Table 1)."
         },
         {
           "clause_row": 857,
@@ -3430,7 +3235,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 39,
@@ -3469,7 +3274,7 @@
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 39,
-          "custom_prompt": "Verify that if ultrasonic pressure inside the useful beam exceeds allowable limits, the equipment is marked with symbol 14 of Table 1 and the documentation includes the dimensions of the useful beam."
+          "custom_prompt": "Verify that if the equipment emits ultrasonic emissions and the ultrasonic pressure levels exceed the specified safe limits, dimesnions of useful beam are mentioned in the documentation.Mention 'No ultrasonic emissions' incase the equipment does not produce ultrasonic emissions."
         },
         {
           "clause_row": 858,
@@ -3483,10 +3288,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 39
+          "page_no": 39,
+          "custom_prompt": "Verify that if the equipment emits ultrasonic emissions and the ultrasonic pressure levels exceed the specified safe limits, dimesnions of useful beam are mentioned in the documentation."
         },
         {
           "clause_row": 859,
@@ -3501,10 +3307,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 39,
-          "custom_prompt": "Verify that if ultrasonic pressure inside the useful beam exceeds allowable values, the equipment is marked with symbol 14 and the documentation identifies the area where ultrasonic pressure exceeds 110 dB."
+          "custom_prompt": "Verify that if the equipment emits ultrasonic emissions and the ultrasonic pressure levels exceed the specified safe limits then area where ultrasonic pressure exceed 110 dB is mentioned in the documentation.Mention 'No ultrasonic emissions' incase the equipment does not produce ultrasonic emissions."
         },
         {
           "clause_row": 859,
@@ -3518,10 +3324,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 39
+          "page_no": 39,
+          "custom_prompt": "Verify that if the equipment emits ultrasonic emissions and the ultrasonic pressure levels exceed the specified safe limits then area where ultrasonic pressure exceed 110 dB is mentioned in the documentation."
         },
         {
           "clause_row": 860,
@@ -3536,10 +3343,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 39,
-          "custom_prompt": "Verify that if ultrasonic pressure inside the useful beam exceeds allowable limits, the equipment is marked with symbol 14 of Table 1 and the documentation specifies the maximum sound pressure inside the beam area."
+          "custom_prompt": "Verify that if the equipment emits ultrasonic emissions and the ultrasonic pressure levels exceed the specified safe limits then maximum sound pressure inside beam area is mentioned in the documentation.Mention 'No ultrasonic emissions' incase the equipment does not produce ultrasonic emissions."
         },
         {
           "clause_row": 860,
@@ -3553,10 +3360,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 39
+          "page_no": 39,
+          "custom_prompt": "Verify that if the equipment emits ultrasonic emissions and the ultrasonic pressure levels exceed the specified safe limits then maximum sound pressure inside beam area is mentioned in the documentation."
         },
         {
           "clause_row": 861,
@@ -3572,9 +3380,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            862
-          ],
+          "dependency_rows": [862],
           "page_no": 39
         },
         {
@@ -3591,9 +3397,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            862
-          ],
+          "dependency_rows": [862],
           "page_no": 39
         },
         {
@@ -3608,10 +3412,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 39
+          "page_no": 39,
+          "custom_prompt": "Verify incase there are any laser sources in the equipment then it meets requirements of IEC 60825-1. Mention 'No Laser sources' incase the equipment does not have any laser sources."
         },
         {
           "clause_row": 862,
@@ -3625,10 +3430,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 39
+          "page_no": 39,
+          "custom_prompt": "Verify incase there are any laser sources in the equipment then it meets requirements of IEC 60825-1."
         },
         {
           "clause_row": 864,
@@ -3644,10 +3450,7 @@
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            865,
-            871
-          ],
+          "dependency_rows": [865, 871],
           "page_no": 39
         },
         {
@@ -3664,10 +3467,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            865,
-            871
-          ],
+          "dependency_rows": [865, 871],
           "page_no": 39
         },
         {
@@ -3684,13 +3484,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            866,
-            867,
-            868,
-            869,
-            870
-          ],
+          "dependency_rows": [866, 867, 868, 869, 870],
           "page_no": 39
         },
         {
@@ -3707,13 +3501,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            866,
-            867,
-            868,
-            869,
-            870
-          ],
+          "dependency_rows": [866, 867, 868, 869, 870],
           "page_no": 39
         },
         {
@@ -3729,7 +3517,7 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 39,
           "custom_prompt": "Verify that no hazardous gases or substances are liberated in normal condition or single fault condition."
@@ -3746,8 +3534,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 39,
           "custom_prompt": "Verify that no hazardous gases or substances are liberated in normal condition or single fault condition."
@@ -3798,10 +3586,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 39
+          "page_no": 39,
+          "custom_prompt": "Verify if potentially-hazardous poisonous or injurious are liberated Operator is not directly exposed to a quantity of the substance that could cause harm."
         },
         {
           "clause_row": 868,
@@ -3832,10 +3621,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 39
+          "page_no": 39,
+          "custom_prompt": "Verify if potentially-hazardous poisonous or injurious are liberated then requirements to discharge of hazardous substances during normal operation in accordance to manufacturer’s instructions not considered as liberation"
         },
         {
           "clause_row": 869,
@@ -3866,10 +3656,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
+          "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 39
+          "page_no": 39,
+          "custom_prompt": "Verify if potentially-hazardous poisonous or injurious are liberated then data/test reports are attached to demonstrate conformity "
         },
         {
           "clause_row": 870,
@@ -3902,11 +3693,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            872,
-            879,
-            893
-          ],
+          "dependency_rows": [872, 879, 893],
           "page_no": 39
         },
         {
@@ -3923,11 +3710,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            872,
-            879,
-            893
-          ],
+          "dependency_rows": [872, 879, 893],
           "page_no": 39
         },
         {
@@ -3944,14 +3727,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            873,
-            874,
-            875,
-            876,
-            877,
-            878
-          ],
+          "dependency_rows": [873, 874, 875, 876, 877, 878],
           "page_no": 39
         },
         {
@@ -3968,14 +3744,7 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [
-            873,
-            874,
-            875,
-            876,
-            877,
-            878
-          ],
+          "dependency_rows": [873, 874, 875, 876, 877, 878],
           "page_no": 39
         },
         {
@@ -4028,7 +3797,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 39,
-          "custom_prompt": "Verify that components liable to explode are provided with an appropriate pressure release device."
+          "custom_prompt": "Verify that incase the equipment contains components that can build up internal pressure and are liable to explode then a pressure release device is provided.Mention 'No such components' incase there are no components which are liable to explode in the equipment."
         },
         {
           "clause_row": 874,
@@ -4046,7 +3815,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 39,
-          "custom_prompt": "Verify that components liable to explode are provided with an appropriate pressure release device."
+          "custom_prompt": "Verify that incase the equipment contains components that can build up internal pressure and are liable to explode then a pressure release device is provided."
         },
         {
           "clause_row": 875,
@@ -4064,7 +3833,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 39,
-          "custom_prompt": "Verify that components liable to explode are provided with appropriate operator protection as required, including compliance with section 7.7."
+          "custom_prompt": "Verify that incase the equipment contains components that can build up internal pressure and are liable to explode then the equipment includes design features that protects the operator from injury.Mention 'No such components' incase there are no components which are liable to explode in the equipment."
         },
         {
           "clause_row": 875,
@@ -4082,7 +3851,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 39,
-          "custom_prompt": "Verify that components liable to explode are provided with appropriate operator protection as required, including compliance with section 7.7."
+          "custom_prompt": "Verify that incase the equipment contains components that can build up internal pressure and are liable to explode then the equipment includes design features that protects the operator from injury."
         },
         {
           "clause_row": 876,
@@ -4134,7 +3903,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 39,
-          "custom_prompt": "Verify that components with explosion or implosion risk are equipped with a pressure release device that discharges safely without danger."
+          "custom_prompt": "Verify that incase a pressure release device is provided in the equipment then the pressure can be discharged without danger.Mention 'No Pressure Release Device' incase the equipment does not have a pressure release device."
         },
         {
           "clause_row": 877,
@@ -4152,7 +3921,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 39,
-          "custom_prompt": "Verify that components with explosion or implosion risk are equipped with a pressure release device that discharges safely without danger."
+          "custom_prompt": "Verify that incase a pressure release device is provided in the equipment then the pressure can be discharged without danger."
         },
         {
           "clause_row": 878,
@@ -4170,7 +3939,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 39,
-          "custom_prompt": "Verify that components related to explosion and implosion protection cannot be obstructed."
+          "custom_prompt": "Verify that incase a pressure release device is provided in the equipment then the device is not obstructed.Mention 'No Pressure Release Device' incase the equipment does not have a pressure release device."
         },
         {
           "clause_row": 878,
@@ -4188,7 +3957,7 @@
           "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 39,
-          "custom_prompt": "Verify that components related to explosion and implosion protection cannot be obstructed."
+          "custom_prompt": "Verify that incase a pressure release device is provided in the equipment then the device is not obstructed."
         },
         {
           "clause_row": 879,
@@ -4205,19 +3974,7 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": [
-            880,
-            881,
-            882,
-            883,
-            884,
-            885,
-            886,
-            887,
-            888,
-            889,
-            890,
-            891,
-            892
+            880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892
           ],
           "page_no": 39
         },
@@ -4236,19 +3993,7 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": [
-            880,
-            881,
-            882,
-            883,
-            884,
-            885,
-            886,
-            887,
-            888,
-            889,
-            890,
-            891,
-            892
+            880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892
           ],
           "page_no": 39
         },
@@ -4299,10 +4044,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 39,
-          "custom_prompt": "Verify that if explosion or fire hazards could occur due to batteries or battery charging, appropriate protection is incorporated in the equipment."
+          "custom_prompt": "Verify that incase the equipment contains batteries or battery-charging functions then Protection against explosion, fire or other battery hazards is built into the equipment itself.Mention 'No Batteries' incase the equipment does not contain batteries or battery-charging functions."
         },
         {
           "clause_row": 881,
@@ -4316,10 +4061,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 39
+          "page_no": 39,
+          "custom_prompt": "Verify that incase the equipment contains batteries or battery-charging functions then Protection against explosion, fire or other battery hazards is built into the equipment itself."
         },
         {
           "clause_row": 882,
@@ -4334,10 +4080,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 40,
-          "custom_prompt": "Verify that if an explosion or fire hazard could occur from batteries or battery charging, the instructions specify the use of batteries with built-in protection."
+          "custom_prompt": "Verify that incase the equipment contains batteries or battery-charging functions then instructions with built-in protection against explosion, fire or other battery hazards is provided.Mention 'No Batteries' incase the equipment does not contain batteries or battery-charging functions."
         },
         {
           "clause_row": 882,
@@ -4351,10 +4097,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify that incase the equipment contains batteries or battery-charging functions then instructions with built-in protection against explosion, fire or other battery hazards is provided."
         },
         {
           "clause_row": 883,
@@ -4368,7 +4115,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 40,
@@ -4404,10 +4151,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 40,
-          "custom_prompt": "Verify that if the wrong type of battery is used, the equipment does not present a hazard."
+          "custom_prompt": "Verify that incase the equipment contains batteries or battery-charging functions then no hazard can be caused incase wrong type of battery is used.Mention 'No Batteries' incase the equipment does not contain batteries or battery-charging functions."
         },
         {
           "clause_row": 884,
@@ -4421,10 +4168,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify that incase the equipment contains batteries or battery-charging functions then no hazard can be caused incase wrong type of battery is used."
         },
         {
           "clause_row": 885,
@@ -4439,10 +4187,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 40,
-          "custom_prompt": "Verify that if the wrong type of battery may be used, appropriate warnings are provided through marking and in the instructions."
+          "custom_prompt": "Verify that incase the equipment contains batteries or battery-charging functions and warning marking and instructions are provided incase wrong type of battery is used.Mention 'No Batteries' incase the equipment does not contain batteries or battery-charging functions."
         },
         {
           "clause_row": 885,
@@ -4456,10 +4204,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify that incase the equipment contains batteries or battery-charging functions and warning marking and instructions are provided incase wrong type of battery is used."
         },
         {
           "clause_row": 886,
@@ -4473,7 +4222,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 40,
@@ -4509,10 +4258,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 40,
-          "custom_prompt": "Verify that equipment with rechargeable battery charging capability includes a warning against charging non-rechargeable batteries."
+          "custom_prompt": "Verify that incase the equipment has means to charge rechargeable batteries then Warning against the charging of non-rechargeable batteries are provided.Mention 'No Rechargeable batteries' incase the equipment does not have means to charge rechargeable batteries."
         },
         {
           "clause_row": 887,
@@ -4526,10 +4275,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify that incase the equipment has means to charge rechargeable batteries then Warning against the charging of non-rechargeable batteries are provided."
         },
         {
           "clause_row": 888,
@@ -4544,10 +4294,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 40,
-          "custom_prompt": "Verify that equipment with means to charge rechargeable batteries indicates the type of rechargeable battery."
+          "custom_prompt": "Verify that incase the equipment has means to charge rechargeable batteries then type of rechargeable battery is indicated.Mention 'No Rechargeable batteries' incase the equipment does not have means to charge rechargeable batteries."
         },
         {
           "clause_row": 888,
@@ -4561,10 +4311,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify that incase the equipment has means to charge rechargeable batteries then type of rechargeable battery is indicated."
         },
         {
           "clause_row": 889,
@@ -4579,10 +4330,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 40,
-          "custom_prompt": "Verify that equipment with means to charge rechargeable batteries complies with explosion and implosion protection requirements and is marked with symbol 14."
+          "custom_prompt": "Verify that incase the equipment has means to charge rechargeable batteries then Symbol 14 is used.Mention 'No Rechargeable batteries' incase the equipment does not have means to charge rechargeable batteries."
         },
         {
           "clause_row": 889,
@@ -4596,10 +4347,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify that incase the equipment has means to charge rechargeable batteries then Symbol 14 is used."
         },
         {
           "clause_row": 890,
@@ -4720,14 +4472,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            894,
-            895,
-            896,
-            897,
-            898,
-            899
-          ],
+          "dependency_rows": [894, 895, 896, 897, 898, 899],
           "page_no": 40
         },
         {
@@ -4744,14 +4489,7 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [
-            894,
-            895,
-            896,
-            897,
-            898,
-            899
-          ],
+          "dependency_rows": [894, 895, 896, 897, 898, 899],
           "page_no": 40
         },
         {
@@ -4766,8 +4504,8 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 40
         },
@@ -4803,7 +4541,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has cathode ray tube then it is intrinsically protected and correctly mounted.Mention 'No cathode ray tube' incase the equipment does not have cathode ray tube."
         },
         {
           "clause_row": 895,
@@ -4820,7 +4559,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has cathode ray tube then it is intrinsically protected and correctly mounted."
         },
         {
           "clause_row": 896,
@@ -4837,7 +4577,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has cathode ray tube then the enclosure provides protection to the cathode ray tube.Mention 'No cathode ray tube' incase the equipment does not have cathode ray tube."
         },
         {
           "clause_row": 896,
@@ -4854,7 +4595,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has cathode ray tube then the enclosure provides protection to the cathode ray tube."
         },
         {
           "clause_row": 897,
@@ -4905,7 +4647,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has cathode ray tube and it is non-intrinscally protected then the screen is not removable without tool.Mention 'No cathode ray tube' incase the equipment does not have cathode ray tube."
         },
         {
           "clause_row": 898,
@@ -4922,7 +4665,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has cathode ray tube and it is non-intrinscally protected then the screen is not removable without tool."
         },
         {
           "clause_row": 899,
@@ -4939,7 +4683,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has cathode ray tube and it is non-intrinscally protected then the glass screen is not in contact with surface of tube.Mention 'No cathode ray tube' incase the equipment does not have cathode ray tube."
         },
         {
           "clause_row": 899,
@@ -4956,7 +4701,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has cathode ray tube and it is non-intrinscally protected then the glass screen is not in contact with surface of tube."
         },
         {
           "clause_row": 901,
@@ -4972,16 +4718,7 @@
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            902,
-            904,
-            910,
-            916,
-            918,
-            920,
-            921,
-            925
-          ],
+          "dependency_rows": [902, 904, 910, 916, 918, 920, 921, 925],
           "page_no": 40
         },
         {
@@ -4998,16 +4735,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            902,
-            904,
-            910,
-            916,
-            918,
-            920,
-            921,
-            925
-          ],
+          "dependency_rows": [902, 904, 910, 916, 918, 920, 921, 925],
           "page_no": 40
         },
         {
@@ -5024,9 +4752,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            903
-          ],
+          "dependency_rows": [903],
           "page_no": 40
         },
         {
@@ -5043,9 +4769,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            903
-          ],
+          "dependency_rows": [903],
           "page_no": 40
         },
         {
@@ -5094,12 +4818,9 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            905,
-            908
-          ],
+          "dependency_rows": [905, 908],
           "page_no": 40
         },
         {
@@ -5116,10 +4837,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            905,
-            908
-          ],
+          "dependency_rows": [905, 908],
           "page_no": 40
         },
         {
@@ -5136,10 +4854,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            906,
-            907
-          ],
+          "dependency_rows": [906, 907],
           "page_no": 40
         },
         {
@@ -5156,10 +4871,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            906,
-            907
-          ],
+          "dependency_rows": [906, 907],
           "page_no": 40
         },
         {
@@ -5244,10 +4956,9 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": true,
-          "dependency_rows": [
-            909
-          ],
-          "page_no": 40
+          "dependency_rows": [909],
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has series excitation motors.Mention 'No series excitattion Motors' incase the equipment does not have series excitation motors."
         },
         {
           "clause_row": 908,
@@ -5262,10 +4973,8 @@
           "task_type": "verdict_dependency",
           "user_editable": true,
           "ai_fillable": false,
-          "accuracy_level": false,
-          "dependency_rows": [
-            909
-          ],
+          "accuracy_level": true,
+          "dependency_rows": [909],
           "page_no": 40
         },
         {
@@ -5283,7 +4992,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has series excitation motors it is connected direct to device when overspeeding causes a hazard.Mention 'No series excitattion Motors' incase the equipment does not have series excitation motors."
         },
         {
           "clause_row": 909,
@@ -5300,7 +5010,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has series excitation motors it is connected direct to device when overspeeding causes a hazard."
         },
         {
           "clause_row": 910,
@@ -5316,13 +5027,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            911,
-            912,
-            913,
-            914,
-            915
-          ],
+          "dependency_rows": [911, 912, 913, 914, 915],
           "page_no": 40
         },
         {
@@ -5339,13 +5044,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            911,
-            912,
-            913,
-            914,
-            915
-          ],
+          "dependency_rows": [911, 912, 913, 914, 915],
           "page_no": 40
         },
         {
@@ -5395,9 +5094,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has overtemperature protection devices then reliable function is ensured.Mention 'No overtemperature protecting device' incase the equipment does not have overtemperature protecting devices."
         },
         {
           "clause_row": 912,
@@ -5411,10 +5111,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has overtemperature protection devices then reliable function is ensured."
         },
         {
           "clause_row": 913,
@@ -5429,9 +5130,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has overtemperature protection devices then it is rated to interrupt maximum current and voltage.Mention 'No overtemperature protecting device' incase the equipment does not have overtemperature protecting devices."
         },
         {
           "clause_row": 913,
@@ -5445,10 +5147,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has overtemperature protection devices then it is rated to interrupt maximum current and voltage."
         },
         {
           "clause_row": 914,
@@ -5463,9 +5166,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has overtemperature protection devices then it does not operate in normal use.Mention 'No overtemperature protecting device' incase the equipment does not have overtemperature protecting devices."
         },
         {
           "clause_row": 914,
@@ -5479,10 +5183,11 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 40
+          "page_no": 40,
+          "custom_prompt": "Verify incase the equipment has overtemperature protection devices then it does not operate in normal use."
         },
         {
           "clause_row": 915,
@@ -5499,7 +5204,8 @@
           "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 41
+          "page_no": 41,
+          "custom_prompt": "Verify incase the equipment has self-resetting device used to prevent a hazard, protected part requires intervention before restarting."
         },
         {
           "clause_row": 915,
@@ -5532,9 +5238,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            917
-          ],
+          "dependency_rows": [917],
           "page_no": 41
         },
         {
@@ -5551,9 +5255,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            917
-          ],
+          "dependency_rows": [917],
           "page_no": 41
         },
         {
@@ -5569,9 +5271,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 41
+          "page_no": 41,
+          "custom_prompt": "Verify that fuse holders does not give access to hazardous live parts."
         },
         {
           "clause_row": 917,
@@ -5585,8 +5288,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 41
         },
@@ -5604,9 +5307,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            919
-          ],
+          "dependency_rows": [919],
           "page_no": 41
         },
         {
@@ -5623,9 +5324,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            919
-          ],
+          "dependency_rows": [919],
           "page_no": 41
         },
         {
@@ -5641,9 +5340,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 41
+          "page_no": 41,
+          "custom_prompt": "Verify that accidental change is not possible in mains voltage selecting devices."
         },
         {
           "clause_row": 919,
@@ -5657,8 +5357,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 41
         },
@@ -5710,11 +5410,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            922,
-            923,
-            924
-          ],
+          "dependency_rows": [922, 923, 924],
           "page_no": 41
         },
         {
@@ -5731,11 +5427,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            922,
-            923,
-            924
-          ],
+          "dependency_rows": [922, 923, 924],
           "page_no": 41
         },
         {
@@ -5854,13 +5546,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            926,
-            927,
-            928,
-            929,
-            930
-          ],
+          "dependency_rows": [926, 927, 928, 929, 930],
           "page_no": 41
         },
         {
@@ -5877,13 +5563,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            926,
-            927,
-            928,
-            929,
-            930
-          ],
+          "dependency_rows": [926, 927, 928, 929, 930],
           "page_no": 41
         },
         {
@@ -5932,7 +5612,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 41
@@ -5969,7 +5649,8 @@
           "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 41
+          "page_no": 41,
+          "custom_prompt": "Verify for circuits used to limit transient overvoltages Test conducted between each pair of mains supply terminals causes no ignition."
         },
         {
           "clause_row": 928,
@@ -6003,7 +5684,8 @@
           "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 41
+          "page_no": 41,
+          "custom_prompt": "Verify for circuits used to limit transient overvoltages Test conducted between each pair of mains supply terminals causes no heat to other parts above the self-ignition points."
         },
         {
           "clause_row": 929,
@@ -6037,7 +5719,8 @@
           "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 41
+          "page_no": 41,
+          "custom_prompt": "Verify for circuits used to limit transient overvoltages Test conducted between each pair of mains supply terminals Safely suppresses and properly functional after applied tests"
         },
         {
           "clause_row": 930,
@@ -6070,11 +5753,7 @@
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            933,
-            935,
-            936
-          ],
+          "dependency_rows": [933, 935, 936],
           "page_no": 41
         },
         {
@@ -6091,11 +5770,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            933,
-            935,
-            936
-          ],
+          "dependency_rows": [933, 935, 936],
           "page_no": 41
         },
         {
@@ -6112,9 +5787,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            934
-          ],
+          "dependency_rows": [934],
           "page_no": 41
         },
         {
@@ -6131,9 +5804,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            934
-          ],
+          "dependency_rows": [934],
           "page_no": 41
         },
         {
@@ -6185,7 +5856,8 @@
           "ai_fillable": true,
           "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 41
+          "page_no": 41,
+          "custom_prompt": "Verify design of prevention of reactivation of interlocks in the equipment"
         },
         {
           "clause_row": 935,
@@ -6218,10 +5890,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            937,
-            938
-          ],
+          "dependency_rows": [937, 938],
           "page_no": 41
         },
         {
@@ -6238,10 +5907,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            937,
-            938
-          ],
+          "dependency_rows": [937, 938],
           "page_no": 41
         },
         {
@@ -6256,7 +5922,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 41
@@ -6290,7 +5956,7 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 41
@@ -6326,10 +5992,7 @@
           "user_editable": false,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            941,
-            944
-          ],
+          "dependency_rows": [941, 944],
           "page_no": 41
         },
         {
@@ -6344,12 +6007,9 @@
           "value": null,
           "task_type": "verdict_dependency",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            941,
-            944
-          ],
+          "dependency_rows": [941, 944],
           "page_no": 41
         },
         {
@@ -6366,10 +6026,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            942,
-            943
-          ],
+          "dependency_rows": [942, 943],
           "page_no": 41
         },
         {
@@ -6384,30 +6041,28 @@
           "value": null,
           "task_type": "verdict_dependency",
           "user_editable": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
+          "dependency_rows": [942, 943],
+          "page_no": 41
+        },
+        {
+          "clause_row": 942,
+          "clause_column": 0,
+          "clause": null,
+          "question_row": 942,
+          "question_column": 1,
+          "field": "No hazards arising from settings not intended and not described in the instructions",
+          "answer_row": 942,
+          "answer_column": 2,
+          "value": null,
+          "task_type": "remark",
+          "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": false,
-          "dependency_rows": [
-            942,
-            943
-          ],
-          "page_no": 41
-        },
-        {
-          "clause_row": 942,
-          "clause_column": 0,
-          "clause": null,
-          "question_row": 942,
-          "question_column": 1,
-          "field": "No hazards arising from settings not intended and not described in the instructions",
-          "answer_row": 942,
-          "answer_column": 2,
-          "value": null,
-          "task_type": "remark",
-          "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 41
+          "page_no": 41,
+          "custom_prompt": "Verify that no hazards arise from settings not intended and not described in the instructions."
         },
         {
           "clause_row": 942,
@@ -6421,8 +6076,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 41
         },
@@ -6439,9 +6094,10 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": true,
+          "accuracy_level": false,
           "dependency_rows": null,
-          "page_no": 41
+          "page_no": 41,
+          "custom_prompt": "Verify other cases of REASONABLY FORESEEABLE MISUSE addressed by RISK assessment."
         },
         {
           "clause_row": 943,
@@ -6455,8 +6111,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 41
         },
@@ -6474,13 +6130,7 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            945,
-            946,
-            947,
-            948,
-            949
-          ],
+          "dependency_rows": [945, 946, 947, 948, 949],
           "page_no": 41
         },
         {
@@ -6495,15 +6145,9 @@
           "value": null,
           "task_type": "verdict_dependency",
           "user_editable": true,
-          "ai_fillable": true,
+          "ai_fillable": false,
           "accuracy_level": false,
-          "dependency_rows": [
-            945,
-            946,
-            947,
-            948,
-            949
-          ],
+          "dependency_rows": [945, 946, 947, 948, 949],
           "page_no": 41
         },
         {
@@ -6518,8 +6162,8 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 41
         },
@@ -6555,7 +6199,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify whether the risk assessment explicitly considers the physical limits of the human body. Mention 'Not Applicable' incase risk assessment based on body dimensions is not required for the equipment."
         },
         {
           "clause_row": 946,
@@ -6572,7 +6217,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify whether the risk assessment explicitly considers the physical limits of the human body."
         },
         {
           "clause_row": 947,
@@ -6589,7 +6235,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify whether the risk assessment explicitly considers hazards arising from displays and indicators provided on the equipment. Mention 'Not Applicable' incase risk assessment based on displays and indicators is not required for the equipment."
         },
         {
           "clause_row": 947,
@@ -6606,7 +6253,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify whether the risk assessment explicitly considers hazards arising from displays and indicators provided on the equipment."
         },
         {
           "clause_row": 948,
@@ -6623,7 +6271,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify whether the risk assessment explicitly considers hazards arising from accessibility and conventions of controls of the equipment. Mention 'Not Applicable' incase risk assessment based on accessibility and conventions of controls is not required for the equipment."
         },
         {
           "clause_row": 948,
@@ -6640,7 +6289,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify whether the risk assessment explicitly considers hazards arising from accessibility and conventions of controls of the equipment."
         },
         {
           "clause_row": 949,
@@ -6657,7 +6307,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify whether the risk assessment explicitly considers hazards arising from arrangement of terminals of the equipment. Mention 'Not Applicable' incase risk assessment based on arrangement of terminals is not required for the equipment."
         },
         {
           "clause_row": 949,
@@ -6674,7 +6325,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify whether the risk assessment explicitly considers hazards arising from arrangement of terminals of the equipment."
         },
         {
           "clause_row": 951,
@@ -6691,24 +6343,8 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": [
-            952,
-            953,
-            954,
-            955,
-            956,
-            957,
-            958,
-            959,
-            960,
-            961,
-            962,
-            963,
-            964,
-            965,
-            966,
-            967,
-            968,
-            969
+            952, 953, 954, 955, 956, 957, 958, 959, 960, 961, 962, 963, 964,
+            965, 966, 967, 968, 969
           ],
           "page_no": 42
         },
@@ -6727,24 +6363,8 @@
           "ai_fillable": false,
           "accuracy_level": false,
           "dependency_rows": [
-            952,
-            953,
-            954,
-            955,
-            956,
-            957,
-            958,
-            959,
-            960,
-            961,
-            962,
-            963,
-            964,
-            965,
-            966,
-            967,
-            968,
-            969
+            952, 953, 954, 955, 956, 957, 958, 959, 960, 961, 962, 963, 964,
+            965, 966, 967, 968, 969
           ],
           "page_no": 42
         },
@@ -6845,8 +6465,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 42
         },
@@ -6865,7 +6485,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify that the risk assessment process documented identifies hazards and estimates the associated risks."
         },
         {
           "clause_row": 955,
@@ -6882,7 +6503,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify that the risk assessment process documented identifies hazards and estimates the associated risks"
         },
         {
           "clause_row": 956,
@@ -6913,8 +6535,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 42
         },
@@ -6933,7 +6555,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify that the risk assessment process documented identifies plan to judge acceptability of resulting risk level based on the estimated severity and likelihood of a risk."
         },
         {
           "clause_row": 957,
@@ -6950,7 +6573,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify that the risk assessment process documented identifies plan to judge acceptability of resulting risk level based on the estimated severity and likelihood of a risk."
         },
         {
           "clause_row": 958,
@@ -6981,8 +6605,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 42
         },
@@ -7001,7 +6625,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify that the risk assessment process includes the initial risk reduced by counter measures."
         },
         {
           "clause_row": 959,
@@ -7018,7 +6643,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify that the risk assessment process includes the initial risk reduced by counter measures."
         },
         {
           "clause_row": 960,
@@ -7035,7 +6661,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify that the risk assessment process includes the repeated risk evaluation without new risks introduced."
         },
         {
           "clause_row": 960,
@@ -7052,7 +6679,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify that the risk assessment process includes the repeated risk evaluation without new risks introduced."
         },
         {
           "clause_row": 961,
@@ -7100,10 +6728,11 @@
           "value": null,
           "task_type": "remark",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify that the risk assessment process includes the information on how to mitigate the risks remaining after risk assessment"
         },
         {
           "clause_row": 962,
@@ -7120,7 +6749,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify that the risk assessment process includes the information on how to mitigate the risks remaining after risk assessment"
         },
         {
           "clause_row": 963,
@@ -7171,7 +6801,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify the risk assessment process includes risks eliminated or reduced as far as possible."
         },
         {
           "clause_row": 964,
@@ -7188,7 +6819,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify the risk assessment process includes risks eliminated or reduced as far as possible."
         },
         {
           "clause_row": 965,
@@ -7205,7 +6837,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify the risk assessment process includes protective measures taken for risks that cannot be eliminated."
         },
         {
           "clause_row": 965,
@@ -7222,7 +6855,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify the risk assessment process includes protective measures taken for risks that cannot be eliminated."
         },
         {
           "clause_row": 966,
@@ -7239,7 +6873,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify the risk assessment process includes user information about residual risk due to any defect of the protective measures."
         },
         {
           "clause_row": 966,
@@ -7256,7 +6891,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify the risk assessment process includes user information about residual risk due to any defect of the protective measures."
         },
         {
           "clause_row": 967,
@@ -7273,7 +6909,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify the risk assessment process includes indication of particular training is required"
         },
         {
           "clause_row": 967,
@@ -7290,7 +6927,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify the risk assessment process includes indication of particular training is required."
         },
         {
           "clause_row": 968,
@@ -7307,7 +6945,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify the risk assessment process includes specification of the need for personal protective equipment."
         },
         {
           "clause_row": 968,
@@ -7324,7 +6963,8 @@
           "ai_fillable": true,
           "accuracy_level": true,
           "dependency_rows": null,
-          "page_no": 42
+          "page_no": 42,
+          "custom_prompt": "Verify the risk assessment process includes specification of the need for personal protective equipment."
         },
         {
           "clause_row": 969,
