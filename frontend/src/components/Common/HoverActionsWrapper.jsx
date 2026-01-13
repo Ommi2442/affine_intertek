@@ -14,20 +14,26 @@ const HoverActionWrapper = ({ show, onApprove, onComment, onBookmark }) => {
 
   return (
     <div className="dt-hover-actions">
-      {/* ✅ APPROVE */}
-      <IconButton size="small" onClick={onApprove} disabled={!onApprove}>
-        <CheckCircleIcon className="dt-icon-approve" />
-      </IconButton>
+      {/* APPROVE → render ONLY when allowed */}
+      {typeof onApprove === 'function' && (
+        <IconButton size="small" onClick={onApprove}>
+          <CheckCircleIcon className="dt-icon-approve" />
+        </IconButton>
+      )}
 
-      {/* 💬 COMMENT */}
-      <IconButton size="small" onClick={onComment} disabled={!onComment}>
-        <ChatBubbleOutlineOutlinedIcon className="dt-icon-comment" />
-      </IconButton>
+      {/*  COMMENT */}
+      {typeof onComment === 'function' && (
+        <IconButton size="small" onClick={onComment}>
+          <ChatBubbleOutlineOutlinedIcon className="dt-icon-comment" />
+        </IconButton>
+      )}
 
-      {/* 🔖 BOOKMARK */}
-      <IconButton size="small" onClick={onBookmark} disabled={!onBookmark}>
-        <MenuBookOutlinedIcon className="dt-icon-bookmark" />
-      </IconButton>
+      {/*  BOOKMARK */}
+      {typeof onBookmark === 'function' && (
+        <IconButton size="small" onClick={onBookmark}>
+          <MenuBookOutlinedIcon className="dt-icon-bookmark" />
+        </IconButton>
+      )}
     </div>
   );
 };
