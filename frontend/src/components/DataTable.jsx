@@ -181,7 +181,11 @@ const DataTable = forwardRef(
       if (item.user_editable !== true) return false;
 
       // Remark / Verdict → editable only in edit mode
-      if (item.task_type === 'remark' || item.task_type === 'verdict') {
+      if (
+        item.task_type === 'remark' ||
+        item.task_type === 'verdict' ||
+        item.task_type === 'verdict_dependency'
+      ) {
         return editMode;
       }
 
@@ -580,7 +584,11 @@ const DataTable = forwardRef(
         };
 
         // 2️⃣ PAGE 9+ → mark clause row (task_type === null)
-        if (item.task_type === 'remark' || item.task_type === 'verdict') {
+        if (
+          item.task_type === 'remark' ||
+          item.task_type === 'verdict' ||
+          item.task_type === 'verdict_dependency'
+        ) {
           const clauseRow = item.clause_row;
           const questionRow = item.question_row;
 
@@ -1861,7 +1869,10 @@ const DataTable = forwardRef(
             __t: item.__t,
             __i: item.__i,
           };
-        } else if (item.task_type === 'verdict') {
+        } else if (
+          item.task_type === 'verdict' ||
+          item.task_type === 'verdict_dependency'
+        ) {
           groupsByRow[key].verdictRef = {
             __t: item.__t,
             __i: item.__i,
@@ -1923,7 +1934,11 @@ const DataTable = forwardRef(
         const comment = item._comment;
 
         // Not user editable → plain text always
-        if (item.task_type !== 'remark' && item.task_type !== 'verdict') {
+        if (
+          item.task_type !== 'remark' &&
+          item.task_type !== 'verdict' &&
+          item.task_type !== 'verdict_dependency'
+        ) {
           return (
             <div className="dt-value-column dt-relative">
               <Typography sx={{ whiteSpace: 'pre-wrap' }}>{value}</Typography>
