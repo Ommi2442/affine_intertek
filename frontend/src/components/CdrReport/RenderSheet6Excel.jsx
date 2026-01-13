@@ -25,7 +25,7 @@ const RenderSheet6Excel = ({
   // Sync only when sheet changes (NOT on every keystroke)
   useEffect(() => {
     setLocalItems(sheet.Items.map((i) => ({ ...i })));
-  }, [sheet.sheet_no]);
+  }, [sheet.Items]);
 
   const [hovered, setHovered] = useState({ i: null });
 

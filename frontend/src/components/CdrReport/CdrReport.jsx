@@ -93,8 +93,40 @@ const CdrReport = forwardRef(
       idb_set(storageKey, next, STORES.CDR).catch(() => {});
 
     //handleapprove for approving ai confidence score
-    const handleApprove = (sheet_no, itemIndex) => {
+    // const handleApprove = (sheet_no, itemIndex) => {
+    //   setFullJson((prev) => {
+    //     const next = JSON.parse(JSON.stringify(prev));
+    //     const sheet = next.Sheets.find((s) => s.sheet_no === sheet_no);
+    //     if (!sheet) return prev;
+
+    //     const item = sheet.Items[itemIndex];
+    //     if (!item || item.is_user_approved) return prev;
+
+    //     const c = Number(item.confidence);
+
+    //     // CASE 1: Edited + approve → User Edited
+    //     if (item.is_user_modified === true) {
+    //       item.is_user_approved = true;
+    //       item.is_user_edited = true;
+    //       item.confidence = 100;
+    //     }
+    //     // CASE 2: Medium / Low + approve → Promote to High
+    //     else if (!Number.isNaN(c) && c < 75) {
+    //       item.is_user_approved = true;
+    //       item.confidence = 100;
+    //     }
+
+    //     persist(next);
+    //     onConfidenceChange?.();
+    //     return next;
+    //   });
+    // };
+    const handleApprove = async (sheet_no, itemIndex) => {
+      let updatedJson = null;
+
       setFullJson((prev) => {
+        if (!prev) return prev;
+
         const next = JSON.parse(JSON.stringify(prev));
         const sheet = next.Sheets.find((s) => s.sheet_no === sheet_no);
         if (!sheet) return prev;
@@ -104,22 +136,25 @@ const CdrReport = forwardRef(
 
         const c = Number(item.confidence);
 
-        // CASE 1: Edited + approve → User Edited
-        if (item.is_user_modified === true) {
-          item.is_user_approved = true;
-          item.is_user_edited = true;
-          item.confidence = 100;
-        }
-        // CASE 2: Medium / Low + approve → Promote to High
-        else if (!Number.isNaN(c) && c < 75) {
-          item.is_user_approved = true;
-          item.confidence = 100;
-        }
+        const shouldPromote =
+          item.accuracy_level === true && !Number.isNaN(c) && c < 100;
 
-        persist(next);
-        onConfidenceChange?.();
+        sheet.Items[itemIndex] = {
+          ...item,
+          is_user_approved: true,
+          confidence: shouldPromote ? 100 : item.confidence,
+        };
+
+        updatedJson = next; //  store for IndexedDB write
         return next;
       });
+
+      /*  THIS is what was missing in CDR */
+      if (updatedJson) {
+        await idb_set(storageKey, updatedJson, STORES.CDR);
+      }
+
+      onConfidenceChange?.();
     };
 
     /* -------- UPDATE FIELD -------- */
