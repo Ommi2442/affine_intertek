@@ -166,7 +166,7 @@ def main3(input_json_file,output_excel_path, progress_callback=None):
 
     step += 1; progress(step, TOTAL, "Listing blob URLs")
     prefix = f"Documents/{configs.runtime.project_id}/source_documents"
-    trf_blob_url = get_trf_blob_url(conn_str, configs.container, f"Documents/{configs.runtime.project_id}/Generated_trf_report/final_output_{configs.runtime.project_id}.docx")
+    trf_blob_url = get_trf_blob_url(conn_str, configs.container, f"Documents/{configs.runtime.project_id}/Generated_trf_Report/final_output_{configs.runtime.project_id}.docx")
 
 
     step += 1; progress(step, TOTAL, "Processing blobs (extracting text/images/pdfs)")
