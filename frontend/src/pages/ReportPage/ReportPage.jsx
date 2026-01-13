@@ -481,7 +481,9 @@ const ReportPage = () => {
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   const handleDownload = (projectId) => {
-    window.open(`${BASE_URL}/projects/download-file?project_id=${projectId}`);
+    window.open(
+      `${BASE_URL}/projects/download-file?project_id=${projectId}&report_type=trf`
+    );
     //dispatch(downloadReportRequest(projectId));
   };
 
