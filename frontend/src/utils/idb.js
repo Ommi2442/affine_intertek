@@ -2,7 +2,7 @@
 // TRF_DB with two stores: TRF_STORE and CDR_STORE
 
 const DB_NAME = 'TRF_DB';
-const DB_VERSION = 2; // IMPORTANT: bumped to 2 so new store gets created
+const DB_VERSION = 3; // IMPORTANT: bumped to 2 so new store gets created
 
 const DEFAULT_STORE = 'TRF_STORE';
 const CDR_STORE = 'CDR_STORE';
@@ -237,7 +237,6 @@ export const idb_clear_all = () =>
     // req2.onsuccess = () => resolve(true);
     // req2.onerror = () => reject(req2.error);
   });
-
 
 export const STORES = {
   TRF: DEFAULT_STORE,

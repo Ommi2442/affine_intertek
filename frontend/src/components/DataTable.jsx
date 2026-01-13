@@ -79,7 +79,6 @@ const DataTable = forwardRef(
     //  - item.user_editable === true
     //  - editMode === true (user clicked Edit/Refine)
     //  - item.is_textbox !== false (textbox allowed)
-
     const normalizeToArray = (v) => {
       // already correct format
       if (Array.isArray(v)) return v;
@@ -325,6 +324,50 @@ const DataTable = forwardRef(
       });
     }, [jsonData]);
 
+    // useEffect(() => {
+    //   if (!jsonData?.Tables) return;
+    //   //console.log('hhh', jsonData);
+    //   // If IndexedDB already loaded (refresh), NEVER override it
+    //   if (isRefreshRef.current) return;
+
+    //   // Only initial load from backend
+    //   setTables(jsonData.Tables);
+    //   setVisiblePages(1);
+    //   setCurrentPageIndex(0);
+    // }, [jsonData]);
+
+    // Load from IndexedDB ONLY on hard refresh (mount)
+    // useEffect(() => {
+    //   const navEntry =
+    //     performance.getEntriesByType &&
+    //     performance.getEntriesByType('navigation') &&
+    //     performance.getEntriesByType('navigation')[0];
+
+    //   const isRefresh =
+    //     (performance.navigation && performance.navigation.type === 1) ||
+    //     navEntry?.type === 'reload' ||
+    //     false;
+
+    //   isRefreshRef.current = !!isRefresh;
+
+    //   if (isRefreshRef.current) {
+    //     idb_get('tables', 'trf').then((saved) => {
+    //       if (saved) {
+    //         setTables(saved);
+    //         setVisiblePages(1);
+    //         setCurrentPageIndex(0);
+    //       }
+    //     });
+    //   }
+    // }, []);
+
+    // Save to IndexedDB whenever tables change
+    // useEffect(() => {
+    //   if (tables && tables.length > 0) {
+    //     idb_set('tables', tables);
+    //   }
+    // }, [tables]);
+
     // FLATTEN ITEMS (hide disable_text: true in UI)
     const allItems = useMemo(() => {
       const arr = [];
@@ -438,6 +481,7 @@ const DataTable = forwardRef(
         const next = prev.map((tbl) => ({ ...tbl, Items: [...tbl.Items] }));
         const item = next[t].Items[i];
 
+        // 🔹 only mark modified if value ACTUALLY changed
         const isModified = item.value !== val;
         if (!isModified) return prev;
 
@@ -838,8 +882,6 @@ const DataTable = forwardRef(
                                     sx={{
                                       fontSize: 14,
                                       whiteSpace: 'pre-wrap',
-                                      fontWeight:
-                                        col.is_bold === true ? 700 : 400,
                                     }}
                                   >
                                     {label}
@@ -1443,8 +1485,6 @@ const DataTable = forwardRef(
                                       fontSize: 14,
                                       whiteSpace: 'pre-wrap',
                                       wordBreak: 'break-word',
-                                      fontWeight:
-                                        first.is_bold === true ? 700 : 400,
                                     }}
                                   >
                                     {fieldLabel}
@@ -1770,6 +1810,7 @@ const DataTable = forwardRef(
         'Requirement + Test',
         'Result - Remark',
         'Verdict',
+        'IEC 61010-1',
       ]);
 
       const items = pageItems.filter((i) => {
@@ -1895,8 +1936,7 @@ const DataTable = forwardRef(
           );
         }
 
-        //  user_editable === true → ALWAYS show textarea
-        //  disabled until editMode is ON
+        // else user_editable === true -> show textarea (disabled until editMode and other checks)
         return (
           <div
             className={`dt-value-column dt-relative ${
@@ -1910,7 +1950,7 @@ const DataTable = forwardRef(
                 className="dt-textarea dt-textarea-with-actions"
                 value={value}
                 rows={rows}
-                disabled={!editMode} // KEY LINE
+                disabled={!editMode}
                 style={{ marginRight: '10px' }}
                 onChange={(e) => {
                   if (!editMode) return;

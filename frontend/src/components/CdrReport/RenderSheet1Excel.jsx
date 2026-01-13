@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Typography,
   TextField,
@@ -30,20 +30,22 @@ const colSpanFromRange = (startCell, endCell) => {
 const rowNumberFromCell = (cell = '') =>
   Number(cell.replace(/[A-Z]/g, '')) || 0;
 
-/* ---------------- STATIC FIELDS ---------------- */
-const MANUFACTURER_FIELDS = [
-  'Manufacturer',
-  'Address',
-  'Country',
-  'Contact',
-  'Phone',
-  'FAX',
-  'Email',
-];
-
 /* ---------------- PREFIX HELPERS ---------------- */
 const isApplicant = (item) => item.prefix === 'Applicant';
 const isManufacturer1 = (item) => item.prefix === 'Manufacturer 1';
+
+const isManufacturer2Plus = (item) =>
+  typeof item.prefix === 'string' &&
+  item.prefix.startsWith('Manufacturer ') &&
+  item.prefix !== 'Manufacturer 1';
+
+const isAnyManufacturer = (item) =>
+  typeof item.prefix === 'string' && item.prefix.startsWith('Manufacturer');
+
+const getManufacturerIndex = (prefix = '') => {
+  const n = parseInt(prefix.replace('Manufacturer ', ''), 10);
+  return isNaN(n) ? 0 : n;
+};
 
 /* ---------------- COMPONENT ---------------- */
 const RenderSheet1Excel = ({
@@ -53,10 +55,11 @@ const RenderSheet1Excel = ({
   handleApprove,
   onBookmarkClick,
 }) => {
-  if (!sheet || !Array.isArray(sheet.Items)) return null;
+  const [localItems, setLocalItems] = useState(sheet.Items);
+
+  if (!sheet || !Array.isArray(localItems)) return null;
 
   const [hovered, setHovered] = useState({ i: null });
-  const [extraManufacturers, setExtraManufacturers] = useState([]);
 
   const {
     isCommentOpen,
@@ -72,7 +75,25 @@ const RenderSheet1Excel = ({
 
   /* ---------------- GROUP ITEMS BY ROW ---------------- */
   const rows = {};
-  sheet.Items.forEach((item) => {
+  const toUiContact = (value) => {
+    if (typeof value !== 'string') return value;
+    return value.replace(/\n+/g, ', ');
+  };
+
+  useEffect(() => {
+    setLocalItems(sheet.Items.map((i) => ({ ...i })));
+  }, [sheet.sheet_no]);
+
+  const toBackendContact = (value) => {
+    if (typeof value !== 'string') return value;
+    return value
+      .split(',')
+      .map((v) => v.trim())
+      .filter(Boolean)
+      .join('\n');
+  };
+
+  localItems.forEach((item) => {
     const row =
       rowNumberFromCell(item.question_cell) ||
       rowNumberFromCell(item.answer_cell);
@@ -86,9 +107,12 @@ const RenderSheet1Excel = ({
     .map(Number)
     .sort((a, b) => a - b);
 
-  /* ---------------- VALUE CELL (UNCHANGED) ---------------- */
+  /* ---------------- VALUE CELL ---------------- */
   const renderValue = (item, itemIndex, colSpan = 1) => {
     const isEditable = editMode && item.user_editable;
+    const isContactField =
+      typeof item.field === 'string' &&
+      item.field.toLowerCase().includes('contact');
 
     return (
       <TableCell
@@ -97,18 +121,30 @@ const RenderSheet1Excel = ({
         onMouseEnter={() => setHovered({ i: itemIndex })}
         onMouseLeave={() => setHovered({ i: null })}
       >
-        <div style={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex' }}>
           <TextField
             size="small"
             fullWidth
-            value={item.value ?? ''}
+            value={
+              isContactField
+                ? toUiContact(item.value ?? '')
+                : (item.value ?? '')
+            }
             InputProps={{ readOnly: !isEditable }}
             onChange={(e) => {
               if (!isEditable) return;
-              updateField(
-                sheet.sheet_no,
-                item.answer_cell ?? item.field,
-                e.target.value
+
+              const uiValue = e.target.value;
+              const backendValue = isContactField
+                ? toBackendContact(uiValue)
+                : uiValue;
+
+              setLocalItems((prev) =>
+                prev.map((it, idx) =>
+                  idx === itemIndex
+                    ? { ...it, value: backendValue, is_user_edited: true }
+                    : it
+                )
               );
             }}
             sx={{
@@ -120,7 +156,17 @@ const RenderSheet1Excel = ({
           <Box sx={{ position: 'relative', zIndex: 2 }}>
             <HoverActionWrapper
               show={hovered.i === itemIndex}
-              onApprove={() => handleApprove?.(itemIndex)}
+              onApprove={() => {
+                const item = localItems[itemIndex];
+
+                updateField(
+                  sheet.sheet_no,
+                  item.answer_cell ?? item.field,
+                  item.value
+                );
+
+                handleApprove?.(itemIndex);
+              }}
               onComment={() => openComment(sheet.sheet_no, itemIndex)}
               onBookmark={() => onBookmarkClick?.(item)}
             />
@@ -128,13 +174,18 @@ const RenderSheet1Excel = ({
 
           {item.ai_fillable &&
             item.accuracy_level &&
-            renderConfidenceColor(item.confidence, item.is_user_edited)}
-        </div>
+            renderConfidenceColor(
+              item.confidence,
+              item.is_user_edited,
+              item.ai_fillable,
+              item.accuracy_level
+            )}
+        </Box>
       </TableCell>
     );
   };
 
-  /* ---------------- GENERIC TABLE RENDER ---------------- */
+  /* ---------------- GENERIC TABLE ---------------- */
   const renderTable = (filterFn) => (
     <TableContainer component={Paper} sx={{ width: '100%' }}>
       <Table size="small" sx={{ borderCollapse: 'collapse' }}>
@@ -146,7 +197,7 @@ const RenderSheet1Excel = ({
             return (
               <TableRow key={rowNo}>
                 {rowItems.map((item) => {
-                  const itemIndex = sheet.Items.indexOf(item);
+                  const itemIndex = localItems.indexOf(item);
 
                   if (item.field_merged && item.fm_range) {
                     const span = colSpanFromRange(
@@ -171,7 +222,7 @@ const RenderSheet1Excel = ({
                   return (
                     <React.Fragment key={itemIndex}>
                       <TableCell sx={border}>{item.field}</TableCell>
-                      {renderValue(item, itemIndex, 1)}
+                      {renderValue(item, itemIndex)}
                     </React.Fragment>
                   );
                 })}
@@ -183,65 +234,116 @@ const RenderSheet1Excel = ({
     </TableContainer>
   );
 
-  /* ---------------- EMPTY MANUFACTURER (WITH DELETE) ---------------- */
-  const renderEmptyManufacturer = (idx) => (
-    <TableContainer component={Paper} sx={{ width: '100%' }}>
-      <Table size="small" sx={{ borderCollapse: 'collapse' }}>
-        <TableBody>
-          <TableRow>
-            <TableCell
-              colSpan={2}
-              sx={{
-                ...border,
-                fontWeight: 700,
-                background: '#f5f5f5',
-                position: 'relative',
-              }}
-            >
-              Manufacturer {idx + 2}
-              {/* ❌ DELETE BUTTON */}
-              <IconButton
-                size="small"
-                sx={{ position: 'absolute', right: 4, top: 4 }}
-                onClick={() =>
-                  setExtraManufacturers((prev) =>
-                    prev.filter((_, i) => i !== idx)
-                  )
-                }
-              >
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            </TableCell>
-          </TableRow>
+  /* ---------------- ADD MANUFACTURER ---------------- */
+  const handleAddManufacturer = () => {
+    const base = localItems.filter(isManufacturer1);
+    if (!base.length) return;
 
-          {MANUFACTURER_FIELDS.map((field) => (
-            <TableRow key={field}>
-              <TableCell sx={border}>{field}</TableCell>
-              <TableCell sx={border}>
-                <TextField
-                  size="small"
-                  fullWidth
-                  value={extraManufacturers[idx]?.[field] ?? ''}
-                  onChange={(e) => {
-                    const copy = [...extraManufacturers];
-                    copy[idx] = { ...copy[idx], [field]: e.target.value };
-                    setExtraManufacturers(copy);
-                  }}
-                />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+    let max = 1;
+    localItems.forEach((it) => {
+      if (it.prefix?.startsWith('Manufacturer ')) {
+        const n = parseInt(it.prefix.replace('Manufacturer ', ''), 10);
+        if (!isNaN(n)) max = Math.max(max, n);
+      }
+    });
 
+    const nextPrefix = `Manufacturer ${max + 1}`;
+
+    const clones = base.map((it) => ({
+      ...JSON.parse(JSON.stringify(it)),
+      prefix: nextPrefix,
+      value: null,
+      is_user_modified: false,
+      is_user_approved: false,
+      is_user_edited: false,
+    }));
+
+    setLocalItems((prev) => [...prev, ...clones]);
+  };
+
+  /* ---------------- MANUFACTURER BLOCK ---------------- */
+  const manufacturer2Plus = localItems.filter(isManufacturer2Plus);
+
+  const manufacturerGroups = {};
+  manufacturer2Plus.forEach((item) => {
+    if (!manufacturerGroups[item.prefix]) {
+      manufacturerGroups[item.prefix] = [];
+    }
+    manufacturerGroups[item.prefix].push(item);
+  });
+
+  const manufacturerBlocks = Object.values(manufacturerGroups);
+
+  const renderManufacturerBlock = (items) => {
+    if (!items.length) return null;
+    const prefix = items[0].prefix;
+    const manufacturerNo = getManufacturerIndex(prefix);
+
+    const localRows = {};
+    items.forEach((item) => {
+      const row =
+        rowNumberFromCell(item.question_cell) ||
+        rowNumberFromCell(item.answer_cell);
+      if (!localRows[row]) localRows[row] = [];
+      localRows[row].push(item);
+    });
+
+    const sorted = Object.keys(localRows)
+      .map(Number)
+      .sort((a, b) => a - b);
+
+    const handleDelete = () => {
+      setLocalItems((prev) => prev.filter((i) => i.prefix !== prefix));
+    };
+
+    return (
+      <TableContainer component={Paper} sx={{ width: '100%' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            px: 1,
+            py: 0.5,
+            borderBottom: '1px solid #ccc',
+            background: '#f5f5f5',
+            fontWeight: 600,
+          }}
+        >
+          <Typography>Manufacturer {manufacturerNo}</Typography>
+          {editMode && (
+            <IconButton size="small" onClick={handleDelete}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          )}
+        </Box>
+
+        <Table size="small">
+          <TableBody>
+            {sorted.map((rowNo) => (
+              <TableRow key={rowNo}>
+                {localRows[rowNo].map((item) => {
+                  const itemIndex = localItems.indexOf(item);
+                  return (
+                    <React.Fragment key={itemIndex}>
+                      <TableCell sx={border}>{item.field}</TableCell>
+                      {renderValue(item, itemIndex)}
+                    </React.Fragment>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  };
+
+  /* ---------------- RENDER ---------------- */
   return (
     <>
-      {/* ===== TOP DATA ===== */}
-      {renderTable((item) => !isApplicant(item) && !isManufacturer1(item))}
+      {renderTable((item) => !isApplicant(item) && !isAnyManufacturer(item))}
 
-      {/* ===== APPLICANT + MANUFACTURER 1 ===== */}
       <Box
         sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mt: 2 }}
       >
@@ -249,14 +351,12 @@ const RenderSheet1Excel = ({
         {renderTable(isManufacturer1)}
       </Box>
 
-      {/* ===== EXTRA MANUFACTURERS ===== */}
       <Box mt={3}>
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-          {extraManufacturers.map((_, idx) => (
-            <Box key={idx}>{renderEmptyManufacturer(idx)}</Box>
+          {manufacturerBlocks.map((block, idx) => (
+            <Box key={idx}>{renderManufacturerBlock(block)}</Box>
           ))}
 
-          {/* ➕ ADD BUTTON */}
           <Box
             sx={{
               border: '1px dashed #999',
@@ -266,7 +366,7 @@ const RenderSheet1Excel = ({
               justifyContent: 'center',
               cursor: 'pointer',
             }}
-            onClick={() => setExtraManufacturers((m) => [...m, {}])}
+            onClick={() => editMode && handleAddManufacturer()}
           >
             <Typography fontWeight={600}>+ Add Manufacturer</Typography>
           </Box>
