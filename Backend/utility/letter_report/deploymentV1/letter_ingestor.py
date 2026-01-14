@@ -3,10 +3,11 @@ from azure.cosmos import CosmosClient, ConsistencyLevel
 from openai import AzureOpenAI
 
 # Core helpers (DO NOT MODIFY)
-from core import *
+
+from utility.letter_report.deploymentV1.core import *
 
 # Config (all secrets & variables come from here)
-from config import *
+from utility.letter_report.deploymentV1.config import *
 
 
 def main(blob_urls):
@@ -212,30 +213,3 @@ def main(blob_urls):
     print("✅ INGESTION PIPELINE COMPLETED")
     print("==============================\n")
     return True
-# blob_urls ----- Payload
-
-blob_urls =[]
-
-main(blob_urls)
-# -------------------------------------------------------
-# CLI Runner
-# -------------------------------------------------------
-
-# if __name__ == "__main__":
-
-    # blob_urls = [
-    #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Project%20Summary%20Report.pdf',
-    #         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-001_TRF.doc',
-    #         # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-002_TRF.doc',
-    #         "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Lewco_CiS.pdf" ,
-    #         "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01414060-2.pdf"
-    #     ]
-    
-    # blob_urls =['https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01390131-0.pdf',
-    # # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-002_TRF.doc',
-    # "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105581614MPK-001A_CR.docx",
-    # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf']
-
-    # main(blob_urls)
-
-

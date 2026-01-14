@@ -8,8 +8,8 @@ from azure.cosmos import CosmosClient
 from langchain_openai import AzureChatOpenAI
 from openai import AzureOpenAI
 
-from core import *
-from config import *
+from utility.letter_report.deploymentV1.core import *
+from utility.letter_report.deploymentV1.config import *
 
 import re
 import tempfile
@@ -25,13 +25,13 @@ import io
 import openpyxl
 import xlrd
 #from utils import *
-from config import *
-from core import *
+from utility.letter_report.deploymentV1.config import *
+from utility.letter_report.deploymentV1.core import *
 from azure.storage.blob import BlobClient
 from azure.core.exceptions import ResourceNotFoundError, AzureError
 # from templates import *
-from trf_essential import *
-from trf_utils import *
+from utility.letter_report.deploymentV1.trf_essential import *
+from utility.letter_report.deploymentV1.trf_utils import *
 import pandas as pd
 import math
 import copy
@@ -64,13 +64,26 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from azure.core.exceptions import HttpResponseError
 import time
 from langchain_community.callbacks import get_openai_callback
-from ocr_image_processor import load_and_process_images
+from utility.letter_report.deploymentV1.ocr_image_processor import load_and_process_images
 
 import requests
 from openai import AzureOpenAI
 from azure.storage.blob import BlobServiceClient
 
 from azure.storage.blob import ContainerClient
+from dotenv import load_dotenv
+load_dotenv()
+DS_AOAI_ENDPOINT = os.getenv("DS_DS_AOAI_ENDPOINT")
+DS_AOAI_KEY = os.getenv("DS_AOAI_KEY")
+DS_API_VERSION = os.getenv("DS_API_VERSION")
+DS_EMBED_DEPLOY = os.getenv("DS_EMBED_DEPLOY")
+DS_COSMOS_URL = os.getenv("DS_COSMOS_URL")
+DS_COSMOS_KEY = os.getenv("DS_COSMOS_KEY")
+DS_DB_NAME=os.getenv("DS_DB_NAME")
+DS_CONT_NAME=os.getenv("DS_CONT_NAME")
+DS_DB_NAME_IMG=os.getenv("DS_DB_NAME_IMG")
+DS_CONT_NAME_IMG=os.getenv("DS_CONT_NAME_IMG")
+DS_CHAT_DEPLOY=os.getenv("DS_CHAT_DEPLOY")
 
 
 
@@ -1070,9 +1083,9 @@ OUTPUT (STRICT JSON ARRAY):
 Return [] if no non-conformances exist.
 """
     client = AzureOpenAI(
-        api_key=AOAI_KEY,
-        api_version=API_VERSION,
-        azure_endpoint=AOAI_ENDPOINT
+        api_key=DS_AOAI_KEY,
+        api_version=DS_API_VERSION,
+        azure_endpoint=DS_AOAI_ENDPOINT
     )
 
     response = client.chat.completions.create(
@@ -1304,12 +1317,12 @@ def identify_iec61010_non_conforming_images_batch(
     """
 
     client = AzureOpenAI(
-        api_key=AOAI_KEY,
-        api_version=API_VERSION,
-        azure_endpoint=AOAI_ENDPOINT
+        api_key=DS_AOAI_KEY,
+        api_version=DS_API_VERSION,
+        azure_endpoint=DS_AOAI_ENDPOINT
     )
 
-    deployment = CHAT_DEPLOY
+    deployment = DS_CHAT_DEPLOY
 
     results = []
 
@@ -1448,76 +1461,6 @@ def insert_photos_before_section_6_table(
 
 
 import os
-
-# def orchestrate_iec61010_image_compliance_pipeline(
-#     blob_file_list,
-#     local_download_dir,
-#     source_docx_name,
-#     output_docx_path,
-#     connection_string,
-#     container_name
-# ):
-#     """
-#     End-to-end orchestration:
-#     1. Download files from blob
-#     2. Extract images from DOCX and XLS/XLSX
-#     3. List extracted images
-#     4. Identify IEC 61010 non-conforming images
-#     5. Insert non-conforming images into DOCX before Section 6 table
-#     """
-
-#     # ---------------------------------------------------------
-#     # 1. Download files from blob
-#     # ---------------------------------------------------------
-#     print("⬇️ Downloading files from blob...")
-#     downloaded_files = download_files_from_blob(
-#         blob_file_list=blob_file_list,
-#         download_dir=local_download_dir,
-#         connection_string=connection_string,
-#         container_name=container_name
-#     )
-
-#     # ---------------------------------------------------------
-#     # 2. Extract images from DOCX and Excel
-#     # ---------------------------------------------------------
-#     print("🖼️ Extracting images from documents...")
-#     extracted_images = []
-
-#     for file_path in downloaded_files:
-#         file_lower = file_path.lower()
-
-#         if file_lower.endswith(".docx"):
-#             images,count = extract_images_from_docx(file_path)
-#             extracted_images.extend(images)
-
-#         elif file_lower.endswith((".xls", ".xlsx")):
-#             images = extract_images_from_excel(file_path)
-#             extracted_images.extend(images)
-
-#     # ---------------------------------------------------------
-#     # 3. List images extracted in current working directory
-#     # ---------------------------------------------------------
-#     print("\n📂 Extracted Images:")
-#     for img in extracted_images:
-#         print(" -", os.path.abspath(img))
-
-#     # ---------------------------------------------------------
-#     # 4. Identify IEC 61010 non-conforming images
-#     # ---------------------------------------------------------
-#     print("\n🔍 Checking IEC 61010 compliance...")
-#     results = identify_iec61010_non_conforming_images_batch(extracted_images)
-
-#     non_conforming_images = []
-
-#     print("\n🚨 Non-Conforming Images:")
-#     for r in results:
-#         if r["result"]["image_verdict"] == "NON_CONFORMING":
-#             print("❌ NON-CONFORMING:", r["image_path"])
-#             non_conforming_images.append(r["image_path"])
-
-#     if not non_conforming_images:
-#         print("✅ No non-conforming images found.")
-#         return
 
 def orchestrate_iec61010_image_compliance_pipeline(
     blob_file_list,
@@ -1692,32 +1635,33 @@ def ingest_letter_pipeline(
     # -------------------------------------------------------
     # VECTOR DATABASE CONNECTION
     # -------------------------------------------------------
+    
 
-    embeddings = build_embeddings(AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY)
+    embeddings = build_embeddings(DS_AOAI_ENDPOINT, DS_AOAI_KEY, DS_API_VERSION, DS_EMBED_DEPLOY)
 
     vs = build_vectorstore(
         embeddings,
-        COSMOS_URL,
-        COSMOS_KEY,
-        DB_NAME,
-        CONT_NAME
+        DS_COSMOS_URL,
+        DS_COSMOS_KEY,
+        DS_DB_NAME,
+        DS_CONT_NAME
     )
 
     vs2 = build_vectorstore2(
         embeddings,
-        COSMOS_URL,
-        COSMOS_KEY,
-        DB_NAME_IMG,
-        CONT_NAME_IMG
+        DS_COSMOS_URL,
+        DS_COSMOS_KEY,
+        DS_DB_NAME_IMG,
+        DS_CONT_NAME_IMG
     )
 
     retriever = vs.as_retriever(search_kwargs={"k": 5})
 
     llm = AzureChatOpenAI(
-        azure_endpoint=AOAI_ENDPOINT,
-        api_key=AOAI_KEY,
-        openai_api_version=API_VERSION,
-        azure_deployment=CHAT_DEPLOY,
+        azure_endpoint=DS_AOAI_ENDPOINT,
+        api_key=DS_AOAI_KEY,
+        openai_api_version=DS_API_VERSION,
+        azure_deployment=DS_CHAT_DEPLOY,
         temperature=0.1,
     ).with_config({"response_format": "json_object"})
 
@@ -1865,7 +1809,7 @@ def ingest_letter_pipeline(
 
     df_9_nonpass = extract_iec61010_non_conformances_full_doc(
         document_text=text,
-        deployment_name=CHAT_DEPLOY
+        deployment_name=DS_CHAT_DEPLOY
     )
     print('######'*5)
     print(df_9_nonpass)

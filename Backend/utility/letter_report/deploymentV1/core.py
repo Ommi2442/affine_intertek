@@ -19,8 +19,8 @@ from fuzzywuzzy import fuzz
 from azure.storage.blob import BlobClient
 from azure.core.exceptions import ResourceNotFoundError, AzureError
 # from templates import *
-from trf_essential import *
-from trf_utils import *
+from utility.letter_report.deploymentV1.trf_essential import *
+from utility.letter_report.deploymentV1.trf_utils import *
 import pandas as pd
 import math
 import copy
@@ -56,7 +56,7 @@ from langchain_community.callbacks import get_openai_callback
 pd.set_option('display.max_colwidth', None)  # Don't truncate cell text
 pd.set_option('display.max_rows', None)      # Show all rows (optional)
 pd.set_option('display.max_columns', None)
-from config import *
+from utility.letter_report.deploymentV1.config import *
 ## CAD and Schematic Support::: Stringent for Images- use This
 
 # Each rule independently catches a different type of engineering drawing:

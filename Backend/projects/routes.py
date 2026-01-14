@@ -34,7 +34,7 @@ from utility.cdr_report.CDR_Pipelines.main import main2
 from utility.cdr_report.CDR_Pipelines.compiler import fill_excel_from_json
 
 from utility.letter_report.deploymentV1.letter_ingestor import main
-from utility.letter_report.deploymentV1.letter_generator import ingest_letter_pipeline
+from utility.letter_report.deploymentV1.letter_generator import *
 from utility.cdr_report.CDR_Pipelines.configs import OUTPUT_EXCEL_AI_FINAL_PATH
 
 
@@ -1438,7 +1438,7 @@ async def finalize_reports(payload: FinalizeReportPayload):
 
 
 # Letter implementation
-@router.get("/letter-generation"):
+@router.get("/letter-generation")
 async def letter_implementation(projectId:str,letter_urls:list):
     try:
         if not projectId:
@@ -1483,31 +1483,36 @@ async def letter_implementation(projectId:str,letter_urls:list):
                 letter_step="Starting runnig CDR",
                 letter_completed=False
             )
-            f=main(urls)
-            if f:
-                from dotenv import load_dotenv
-                load_dotenv()
-                BLOB_CONTAINER_NAME = os.getenv("BLOB_CONTAINER_NAME")
-                BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
-                DATA_DIR = BASE_DIR / "data"
-                DATA_DIR.mkdir(parents=True, exist_ok=True)
+            blob_urls =['https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01390131-0.pdf',
+    "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105581614MPK-001A_CR.docx",
+    'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf']
 
-                letter_docx_file = DATA_DIR / f"iec_output_letter_{projectId}.docx"
+            f=main(blob_urls)
+            print("Letter Generation Completed----")
+            # if f:
+            #     from dotenv import load_dotenv
+            #     load_dotenv()
+            #     BLOB_CONTAINER_NAME = os.getenv("BLOB_CONTAINER_NAME")
+            #     BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
+            #     DATA_DIR = BASE_DIR / "data"
+            #     DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+            #     letter_docx_file = DATA_DIR / f"iec_output_letter_{projectId}.docx"
                 
-                ingest_letter_pipeline(
-                blob_urls=urls,
-                container_name=BLOB_CONTAINER_NAME,
-                src_files_dir="src_files",
-                letter_json_path="letter_old.json",
-                letter_header_json_path="letter_header_old.json",
-                letter_template_docx="Letter_Template.docx",
-                output_letter_docx=letter_docx_file )
+            #     ingest_letter_pipeline(
+            #     blob_urls=urls,
+            #     container_name=BLOB_CONTAINER_NAME,
+            #     src_files_dir="src_files",
+            #     letter_json_path="letter_old.json",
+            #     letter_header_json_path="letter_header_old.json",
+            #     letter_template_docx="Letter_Template.docx",
+            #     output_letter_docx=letter_docx_file )
             
-                return  {
-                    "status":"success"
+            #     return  {
+            #         "status":"success",
                     
-                    "Letter_url":""
-                }
+            #         "Letter_url":""
+            #     }
     
     except Exception as e:
         print(traceback.format_exc())

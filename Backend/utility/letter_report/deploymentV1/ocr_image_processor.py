@@ -5,7 +5,7 @@ import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from langchain_core.documents import Document
 from openai import AzureOpenAI
-from config import *
+from utility.letter_report.deploymentV1.config import *
 
 client = AzureOpenAI(
     api_key=AOAI_KEY,
