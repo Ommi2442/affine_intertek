@@ -1,5 +1,5 @@
 # utils.py
-
+from langchain_core.documents import Document as LCDocument
 import uuid
 import os
 import re
@@ -610,7 +610,7 @@ def add_ids_to_chunks(chunks):
     docs = []
     for ch in chunks:
         docs.append(
-            Document(
+            LCDocument(
                 page_content=ch.page_content,
                 metadata={
                     **ch.metadata,
@@ -1114,11 +1114,13 @@ import json
 from urllib.parse import urlparse, quote
 
 def make_blob_url(container_sas_url: str, filename: str) -> str:
+    configs.require_runtime()
     u = urlparse(container_sas_url)
     container_base = f"{u.scheme}://{u.netloc}{u.path}".rstrip("/")
     sas_query = u.query
     encoded = quote(filename, safe="")
-    return f"{container_base}/{encoded}?{sas_query}" if sas_query else f"{container_base}/{encoded}"
+    return f"{container_base}/Documents/{configs.runtime.project_id}/source_documents/{encoded}?{sas_query}" if sas_query else f"{container_base}/{encoded}"
+
 
 def add_urls_sheet_1_and_6(payload: dict, container_sas_url: str):
     """
@@ -1128,6 +1130,7 @@ def add_urls_sheet_1_and_6(payload: dict, container_sas_url: str):
     Updates ONLY:
       Sheets where sheet_no in (1, 6)
     """
+    configs.require_runtime()
     updated = 0
 
     def walk(node):
