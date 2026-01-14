@@ -1059,7 +1059,9 @@ const ReportPage = () => {
                         }}
                         onClick={() => {
                           //if (!isFinalise) return;
-                          if (reportClick === 'trf' && !trfFinalised) return;
+                          if (reportClick === 'trf' && !isFinalJsonLoaded)
+                            return;
+                          if (label === 'Letter') return;
                           // still prevent action
                           if (label === 'CDR') {
                             //console.log('cddddd');
