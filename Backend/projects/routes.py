@@ -1041,14 +1041,15 @@ def generate_cdr(projectId: str):
             response.raise_for_status()
             trf_filled = response.json()
 
-            # ------------------ PATH SETUP ------------------
             BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
             DATA_DIR = BASE_DIR / "data"
             DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-            output_json_path = DATA_DIR / f"iec_output_cdr_{projectId}.json"
-            output_excel_path = DATA_DIR / f"iec_output_sheet_{projectId}.xlsx"
+            project_dir = DATA_DIR / projectId
+            project_dir.mkdir(parents=True, exist_ok=True)
 
+            output_json_path = project_dir / f"iec_output_cdr_{projectId}.json"
+            output_excel_path = project_dir / f"iec_output_sheet_{projectId}.xlsx"
             # ------------------ PIPELINE ------------------
             result = main2(project_id,
                 trf_filled,
@@ -1087,10 +1088,14 @@ def generate_cdr(projectId: str):
             }
         if cdr_percentage==100:
             print("----CDR is already generated-----")
-            BASE_DIR = Path(__file__).resolve().parents[1] 
+            BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
             DATA_DIR = BASE_DIR / "data"
             DATA_DIR.mkdir(parents=True, exist_ok=True)
-            output_json_path = DATA_DIR / f"iec_output_cdr_{projectId}.json"
+
+            project_dir = DATA_DIR / projectId
+            project_dir.mkdir(parents=True, exist_ok=True)
+
+            output_json_path = project_dir / f"iec_output_cdr_{projectId}.json"
             with open(output_json_path, "r", encoding="utf-8") as f:
                 cdr_output = json.load(f)
             
