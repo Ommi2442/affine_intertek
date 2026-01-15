@@ -1,4 +1,4 @@
-# phototag.py
+# c1_tagger.py
 import pandas as pd
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor
@@ -18,7 +18,7 @@ def embed_text(text):
     """
     if not text or not isinstance(text, str) or not text.strip():
         return None
-        
+
     try:
         return c1_utils.openai_client.embeddings.create(
             model=configs.EMBED_MODEL,
@@ -33,7 +33,7 @@ def embed_text(text):
 
 def get_image_urls_from_container_sas():
     configs.require_runtime()
-    project_id = configs.runtime.project_id
+    project_id = configs._runtime.project_id
 
     device_prefix = f"Documents/{project_id}/source_documents/device_images/"
 
@@ -126,14 +126,14 @@ def calculate_cosine_distances_matrix(comp_embeddings, img_embeddings):
     # Normalize vectors
     norm_A = np.linalg.norm(A, axis=1, keepdims=True)
     norm_B = np.linalg.norm(B, axis=1, keepdims=True)
-    
+
     # Avoid division by zero
     norm_A[norm_A == 0] = 1e-9
     norm_B[norm_B == 0] = 1e-9
 
     # Cosine Similarity
     similarity = np.dot(A, B.T) / (norm_A @ norm_B.T)
-    
+
     # Cosine Distance
     return 1 - similarity
 
@@ -142,7 +142,7 @@ def run_phototagging():
     configs.require_runtime()
 
     print("Starting Phototagging (Optimized)...")
-    
+
     # STEP 0: LOAD ORIGINAL & FILTER CRITICAL
     df_all = pd.read_excel(configs.OUTPUT_PATH_FINAL, dtype=str)
 
@@ -166,7 +166,7 @@ def run_phototagging():
         return
 
     critical_df.to_excel(configs.CRITICAL_ONLY_EXCEL, index=False)
-    
+
     # STEP 1: RELOAD CRITICAL-ONLY FILE
     df = pd.read_excel(configs.CRITICAL_ONLY_EXCEL, dtype=str)
     print("Working rows (critical only):", len(df))
@@ -174,6 +174,12 @@ def run_phototagging():
     # STEP 2: IMAGE DISCOVERY + DESCRIPTION (PARALLEL)
     image_urls = get_image_urls_from_container_sas()
     print(f"Image URLs supplied: {len(image_urls)}")
+    # SAVE ALL IMAGE URLS FOR FORMATTER
+    pd.Series(image_urls, name="image_url").to_csv(
+        configs.ALL_IMAGE_URLS_CSV,
+        index=False
+    )
+   
     has_images = len(image_urls) > 0
 
 
@@ -216,7 +222,7 @@ def run_phototagging():
     # STEP 4: COMPONENT EMBEDDINGS (ONLY IF IMAGES EXIST)
     if has_images:
         print("...Generating Component Embeddings (Parallel)...")
-        
+
         df["component_text"] = df.apply(
             lambda r: f"{r.get('Component Name','')} {r.get('Description','')}",
             axis=1

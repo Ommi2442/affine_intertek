@@ -572,3 +572,8 @@ async def queue_listener_cdr():
 async def start_worker():
     asyncio.create_task(queue_listener())
     # asyncio.create_task(queue_listener_cdr())
+    queue_client.send_message(json.dumps({
+            "projectId": "CDR_FIX",
+            "action": "embed_generatetrf",
+            "timestamp": datetime.utcnow().isoformat()
+        }))

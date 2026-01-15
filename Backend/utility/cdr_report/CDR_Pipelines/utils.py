@@ -48,7 +48,7 @@ from openai import RateLimitError
 
 _EMBED_SEMAPHORE = threading.Semaphore(1)  # 👈 HARD GATE
 
-from utility.cdr_report.CDR_Pipelines. configs import (
+from utility.cdr_report.CDR_Pipelines.configs import (
     container,
     IMAGE_EXTS,
     AZURE_CONN_STRING,
@@ -209,7 +209,7 @@ def get_blob_urls(conn_str: str, container: str) -> list[str]:
     """
 
     configs.require_runtime()
-    project_id = configs.runtime.project_id
+    project_id = configs._runtime.project_id
 
     service_client = BlobServiceClient.from_connection_string(conn_str)
     container_client = service_client.get_container_client(container)
@@ -1006,7 +1006,7 @@ def get_image_urls_from_container_sas() -> list[str]:
     """
     import utility.cdr_report.CDR_Pipelines.configs as configs
     configs.require_runtime()
-    project_id = configs.runtime.project_id
+    project_id = configs._runtime.project_id
     
     blob_service = BlobServiceClient.from_connection_string(
         configs.AZURE_BLOB_CONNECTION_STRING
@@ -1042,7 +1042,7 @@ def move_device_images_in_blob(
 ) -> list[str]:
     
     configs.require_runtime()
-    project_id = configs.runtime.project_id
+    project_id = configs._runtime.project_id
     device_prefix = f"Documents/{project_id}/source_documents/device_images/"
 
 
@@ -1119,7 +1119,7 @@ def make_blob_url(container_sas_url: str, filename: str) -> str:
     container_base = f"{u.scheme}://{u.netloc}{u.path}".rstrip("/")
     sas_query = u.query
     encoded = quote(filename, safe="")
-    return f"{container_base}/Documents/{configs.runtime.project_id}/source_documents/{encoded}?{sas_query}" if sas_query else f"{container_base}/{encoded}"
+    return f"{container_base}/Documents/{configs._runtime.project_id}/source_documents/{encoded}?{sas_query}" if sas_query else f"{container_base}/{encoded}"
 
 
 def add_urls_sheet_1_and_6(payload: dict, container_sas_url: str):

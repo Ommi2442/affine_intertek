@@ -1,4 +1,4 @@
-# formatter.py
+# c1_formatter.py
 import pandas as pd
 import json
 import utility.cdr_report.CDR_Pipelines.configs as configs
@@ -10,6 +10,13 @@ def build_field_text(photo_no, image_reason):
         short = image_reason.split(".")[0].strip().lower()
         return f"Photo {photo_no} - {short}"
     return f"Photo {photo_no}"
+
+import os
+from urllib.parse import urlparse, unquote
+
+def image_name_no_ext(url):
+    filename = os.path.basename(unquote(urlparse(url).path))
+    return os.path.splitext(filename)[0]
 
 
 def build_text_support_list(sheet_name, source_doc):
@@ -49,7 +56,7 @@ def run_formatter():
     configs.require_runtime()
 
     print("Starting Formatting...")
-    
+
     # ===================== PART 1: COMPONENT JSON =====================
     START_ROW = 3
     START_COLUMN = "A"
@@ -97,7 +104,7 @@ def run_formatter():
         by=["photo_no", "Description"],
         ascending=[True, True]
     ).reset_index(drop=True)
-    
+
     final_df = pd.concat(
     [matched_df, unmatched_df],
     ignore_index=True
@@ -163,11 +170,11 @@ def run_formatter():
 
     # ===================== PART 2: PHOTO METADATA JSON =====================
     ROW_GAP = 8
-    
+
     # Reload to ensure we have the photo_no column we just saved
     # (Though we can use matched_df, logic in notebook reloads or uses similar logic)
     # We will use matched_df since it's already in memory and sorted/numbered.
-    
+
     # Unique photos (No regeneration)
     photo_df = (
         matched_df
@@ -176,6 +183,16 @@ def run_formatter():
         .reset_index(drop=True)
     )
     
+    # ---------------- FIND UNMATCHED IMAGES ----------------
+
+    used_images = set(matched_df["image_url"].dropna())
+
+    all_images = set(
+        pd.read_csv(configs.ALL_IMAGE_URLS_CSV)["image_url"]
+    )
+
+    remaining_images = all_images - used_images
+
     items_meta = []
     current_row_meta = START_ROW
 
@@ -205,9 +222,34 @@ def run_formatter():
         items_meta.append(item)
         current_row_meta += ROW_GAP
 
+    # ---------------- ADD UNMATCHED IMAGES ----------------
+
+    for img_url in sorted(remaining_images):
+        question_cell = f"{START_COLUMN}{current_row_meta}"
+        answer_cell = f"{START_COLUMN}{current_row_meta + 1}"
+
+        items_meta.append({
+            "question_cell": question_cell,
+            "prefix": "Product",
+            "field": image_name_no_ext(img_url),   # filename without extension
+            "answer_cell": answer_cell,
+            "photo_path": img_url,
+            "field_merged": False,
+            "fm_range": None,
+            "value_merged": False,
+            "vm_range": None,
+            "task_type": "photo",
+            "user_editable": True,
+            "ai_fillable": True,
+            "accuracy_level": False
+        })
+
+        current_row_meta += ROW_GAP
+
+
+
     with open(configs.OUTPUT_JSON_METADATA, "w", encoding="utf-8") as f:
         json.dump({"Items": items_meta}, f, indent=4)
 
     print("✔ Photo metadata JSON created")
-    print("✔ Output file:", configs.OUTPUT_JSON_METADATA)
- 
+    print("✔ Output file:", configs.OUTPUT_JSON_METADATA) 

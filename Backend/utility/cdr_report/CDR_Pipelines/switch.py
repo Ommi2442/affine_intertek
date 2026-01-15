@@ -21,7 +21,11 @@ BOM_COLUMNS = {
     "name",
     "description",
     "manufacturer",
-    "manufacturer part number"
+    "manufacturer part number",
+    "mfg"
+    "mfr"
+    "mpn"
+    "mfr-pn"
 }
 
 # ===================== HELPERS =====================
@@ -69,7 +73,7 @@ def is_bom_excel(excel_bytes: bytes) -> bool:
                 if cell and str(cell).strip()
             }
 
-            if len(BOM_COLUMNS & found) >= int(0.28 * len(BOM_COLUMNS)):
+            if len(BOM_COLUMNS & found) >= int(0.2727272727 * len(BOM_COLUMNS)):
                 return True
 
     except Exception:
@@ -148,7 +152,7 @@ def find_bom_blob_url() -> list[dict]:
     """
     
     configs.require_runtime()
-    project_id = configs.runtime.project_id
+    project_id = configs._runtime.project_id
 
     blob_service_client = BlobServiceClient.from_connection_string(
         AZURE_CONNECTION_STRING
@@ -206,3 +210,4 @@ def find_bom_blob_url() -> list[dict]:
 
     return excel_results + bom_pdfs
 
+ 

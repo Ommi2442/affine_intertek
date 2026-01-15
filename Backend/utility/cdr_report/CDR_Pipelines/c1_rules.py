@@ -20,6 +20,13 @@ Rules:
 7. Relied upon for safe abnormal operation
 8. Other hazard may occur if item is changed or deleted
 
+
+Exlusions from critical : The below listed and related parts are not critical
+- fasteners
+- adhesives
+- accessories
+
+
 Return STRICT JSON ARRAY in SAME ORDER:
 
 [

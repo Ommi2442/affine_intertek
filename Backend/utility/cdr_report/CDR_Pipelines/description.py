@@ -44,7 +44,7 @@ def build_product_section_items(product_info: dict, trf_blob_url):
             "accuracy_level": True,
             "text_support": [
                                 {
-                                    "filename": f"final_output_{configs.runtime.project_id}.docx",
+                                    "filename": f"final_output_{configs._runtime.project_id}.docx",
                                     "page": "7" if field == "Description" else "2",
                                     "similarity_score": None,
                                     "text": None,

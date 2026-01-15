@@ -27,7 +27,9 @@ from pathlib import Path
 from datetime import datetime
 import uuid
 import mimetypes
-
+import os
+from azure.storage.blob import BlobServiceClient
+from pathlib import Path
 from fastapi import HTTPException
 
 
@@ -326,19 +328,6 @@ def load_trf_json_from_blob(project_id):
         "filename": item["filename"],
         "data": json_data
     }
-
-
-
-import os
-from azure.storage.blob import BlobServiceClient
-from pathlib import Path
-
-# ---------- Global configuration ----------
-AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net'
-blob_service = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
-blob_container = 'stintertekesusdev-blob'
-
-
 
 
 

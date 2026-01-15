@@ -1,7 +1,5 @@
 import platform
 import subprocess
-import pythoncom
-from docx2pdf import convert
 from pathlib import Path
 from docx import Document
 from docx.shared import Pt
@@ -25,6 +23,8 @@ def convert_docx_to_pdf(docx_path: str, pdf_path: str):
 
     # ---------- WINDOWS (MS WORD via COM) ----------
     if system == "windows":
+        import pythoncom
+        from docx2pdf import convert
         pythoncom.CoInitialize()     # ✅ REQUIRED
         try:
             convert(docx_path, pdf_path)

@@ -120,7 +120,8 @@
           "user_editable": true,
           "ai_fillable": false,
           "accuracy_level": false,
-          "page_no": 1
+          "page_no": 1,
+          "single_row": true
         },
         {
           "question_row": 11,
