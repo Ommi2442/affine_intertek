@@ -1,171 +1,81 @@
-# configs.py
- 
 import os
 from pathlib import Path
+from dataclasses import dataclass
+from threading import RLock
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
+
 from azure.cosmos import CosmosClient
+from azure.storage.blob import BlobServiceClient, generate_container_sas, ContainerSasPermissions
 from langchain_openai import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
 
-
-# =======================
-# RUNTIME CONTEXT
-# =======================
-
-from dataclasses import dataclass
-
-@dataclass
-class RuntimeContext:
-    project_id: str | None = None
-    _initialized: bool = False
-
-
-runtime = RuntimeContext()
-
-
-def init_runtime(*, project_id: str) -> None:
-    """
-    Initialize runtime context exactly once.
-    Must be called before any pipeline logic.
-    """
-    if runtime._initialized:
-        raise RuntimeError(
-            "RuntimeContext already initialized. "
-            "Multiple initializations are not allowed."
-        )
-
-    if not project_id or not isinstance(project_id, str):
-        raise ValueError("Valid project_id is required to initialize runtime")
-
-    runtime.project_id = project_id
-    runtime._initialized = True
-
-
-def require_runtime() -> None:
-    """
-    Guard to ensure runtime context is initialized.
-    """
-    if not runtime._initialized or not runtime.project_id:
-        raise RuntimeError(
-            "RuntimeContext not initialized. "
-            "Call configs.init_runtime(project_id=...) before execution."
-        )
-
-from azure.storage.blob import (
-    BlobServiceClient,
-    generate_container_sas,
-    ContainerSasPermissions
-)
-from datetime import datetime, timedelta
-
-
-def build_container_sas_url(
-    connection_string: str,
-    container_name: str,
-    expiry_hours: int = 24,
-    read_only: bool = True,
-):
-    """
-    Returns a SAS URL for an entire container.
-    """
-
-    blob_service_client = BlobServiceClient.from_connection_string(
-        connection_string
-    )
-
-    account_name = blob_service_client.account_name
-    account_key = blob_service_client.credential.account_key
-
-    permissions = (
-        ContainerSasPermissions(read=True, list=True)
-        if read_only
-        else ContainerSasPermissions(read=True, list=True, write=True, create=True)
-    )
-
-    sas_token = generate_container_sas(
-        account_name=account_name,
-        container_name=container_name,
-        account_key=account_key,
-        permission=permissions,
-        expiry=datetime.utcnow() + timedelta(hours=expiry_hours),
-    )
-
-    return (
-        f"https://{account_name}.blob.core.windows.net/"
-        f"{container_name}?{sas_token}"
-    )
-
-
-# =======================
-# CONFIGURATIONS
-# =======================
-
+# ============================================================
+# LOAD ENV
+# ============================================================
 
 load_dotenv()
 
+AOAI_ENDPOINT = os.getenv("AOAI_ENDPOINT")
+AOAI_KEY = os.getenv("AOAI_KEY")
+API_VERSION = os.getenv("API_VERSION")
+EMBED_DEPLOY = os.getenv("EMBED_DEPLOY")
+CHAT_DEPLOY = os.getenv("CHAT_DEPLOY")
 
-# Load environment variables
-AOAI_ENDPOINT      = os.getenv("AOAI_ENDPOINT")
-AOAI_KEY           = os.getenv("AOAI_KEY")
-API_VERSION        = os.getenv("API_VERSION")
-EMBED_DEPLOY       = os.getenv("EMBED_DEPLOY")
-COSMOS_DB_TEXT     = os.getenv("COSMOS_DB_TEXT")
-COSMOS_CONT_TEXT   = os.getenv("COSMOS_CONT_TEXT")
-AZURE_CONN_STRING  = os.getenv("AZURE_CONN_STRING")
-BLOB_CONTAINER     = os.getenv("BLOB_CONTAINER")
-COSMOS_URL         = os.getenv("COSMOS_URL")
-COSMOS_KEY         = os.getenv("COSMOS_KEY")
-CHAT_DEPLOY        = os.getenv("CHAT_DEPLOY")
-BLOB_CONT_NAME     = os.getenv("BLOB_CONT_NAME")
-COSMOS_DB_IMAGE    = os.getenv("COSMOS_DB_IMAGE")
-COSMOS_CONT_IMAGE  = os.getenv("COSMOS_CONT_IMAGE")
-ENABLE_CAD_SCHEMATICS  = os.getenv("ENABLE_CAD_SCHEMATICS")
-SAS_URL                = os.getenv("SAS_URL")
+COSMOS_DB_TEXT = os.getenv("COSMOS_DB_TEXT")
+COSMOS_CONT_TEXT = os.getenv("COSMOS_CONT_TEXT")
+COSMOS_DB_IMAGE = os.getenv("COSMOS_DB_IMAGE")
+COSMOS_CONT_IMAGE = os.getenv("COSMOS_CONT_IMAGE")
+
+COSMOS_URL = os.getenv("COSMOS_URL")
+COSMOS_ENDPOINT = COSMOS_URL
+COSMOS_KEY = os.getenv("COSMOS_KEY")
+
+AZURE_CONN_STRING = os.getenv("AZURE_CONN_STRING")
+BLOB_CONTAINER = os.getenv("BLOB_CONTAINER")
+BLOB_CONT_NAME = os.getenv("BLOB_CONT_NAME")
+SAS_URL = os.getenv("SAS_URL")
+ENABLE_CAD_SCHEMATICS = os.getenv("ENABLE_CAD_SCHEMATICS")
 
 
+# ============================================================
+# LEGACY VARIABLE COMPATIBILITY
+# ============================================================
 
-#container = "3and4"
+COSMOS_DB = COSMOS_DB_TEXT
+COSMOS_CONT = COSMOS_CONT_TEXT
+
+DB_NAME = COSMOS_DB
+CONT_NAME = COSMOS_CONT
+COSMOS_DB_NAME = COSMOS_DB
+COSMOS_CONTAINER_NAME = COSMOS_CONT
+
+AZURE_OPENAI_ENDPOINT = AOAI_ENDPOINT
+AZURE_OPENAI_KEY = AOAI_KEY
+AZURE_OPENAI_API_VERSION = API_VERSION
+
+AZURE_BLOB_CONNECTION_STRING = AZURE_CONN_STRING
+BLOB_CONTAINER_NAME = BLOB_CONTAINER
 container = BLOB_CONTAINER
+AZURE_CONTAINER_NAME = BLOB_CONTAINER
 
-IMAGE_EXTS = {"jpg", "jpeg", "png", "gif", "bmp", "tiff", "tif", "webp", "svg"}
-# AZURE_CONN_STRING = "BlobEndpoint=https://stintertekesusdev.blob.core.windows.net/;QueueEndpoint=https://stintertekesusdev.queue.core.windows.net/;FileEndpoint=https://stintertekesusdev.file.core.windows.net/;TableEndpoint=https://stintertekesusdev.table.core.windows.net/;SharedAccessSignature=sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-12-28T15:11:45Z&st=2025-12-13T06:56:45Z&spr=https,http&sig=EZbXjVsN%2FFYp1%2BTbv4CmvDTKDHORkLvuIPLbfKw%2F%2BJo%3D%22
-# AZURE_CONN_STRING ="BlobEndpoint=https://stintertekesusdev.blob.core.windows.net/;QueueEndpoint=https://stintertekesusdev.queue.core.windows.net/;FileEndpoint=https://stintertekesusdev.file.core.windows.net/;TableEndpoint=https://stintertekesusdev.table.core.windows.net/;SharedAccessSignature=sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-12-28T15:11:45Z&st=2025-12-13T06:56:45Z&spr=https,http&sig=EZbXjVsN%2FFYp1%2BTbv4CmvDTKDHORkLvuIPLbfKw%2F%2BJo%3D%22
-#AZURE_CONN_STRING = "BlobEndpoint=https://stintertekesusdev.blob.core.windows.net/;QueueEndpoint=https://stintertekesusdev.queue.core.windows.net/;FileEndpoint=https://stintertekesusdev.file.core.windows.net/;TableEndpoint=https://stintertekesusdev.table.core.windows.net/;SharedAccessSignature=sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-12-28T15:11:45Z&st=2025-12-13T06:56:45Z&spr=https,http&sig=EZbXjVsN%2FFYp1%2BTbv4CmvDTKDHORkLvuIPLbfKw%2F%2BJo%3D%22%2FN8wstTCJs8FiY%3D"
-#AZURE_CONN_STRING = "BlobEndpoint=https://stintertekesusdev.blob.core.windows.net/;QueueEndpoint=https://stintertekesusdev.queue.core.windows.net/;FileEndpoint=https://stintertekesusdev.file.core.windows.net/;TableEndpoint=https://stintertekesusdev.table.core.windows.net/;SharedAccessSignature=sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2027-01-01T17:24:00Z&st=2026-01-05T09:09:00Z&spr=https,http&sig=HizD5Onismg%2BPLykgFqZNTmjJ7A5Ee%2FDdJAcpBkFacQ%3D"
+AZURE_BLOB_CONTAINER_SAS_URL = SAS_URL
+AZURE_BLOB_CONTAINER_NAME_SAS_URL = SAS_URL
 
-
-# AOAI_ENDPOINT = "https://oai-intertek-esus2-dev.openai.azure.com/"
-# AOAI_KEY      = "4v5aVQDu1ZzGxEDldBahCMXEW3vDF4CUj4tNETLtP4VqeoCwEnTkJQQJ99BKACYeBjFXJ3w3AAABACOGrI05"
-# API_VERSION   = "2024-12-01-preview"
-# EMBED_DEPLOY  = "text-embedding-ada-002"
-# CHAT_DEPLOY   = "gpt-4.1"
-# COSMOS_URL    = "https://csdb-intertek-esus-dev.documents.azure.com:443/"
-# COSMOS_KEY    = "azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00MFDbK88ApotACDbODLFXA=="
-# COSMOS_DB     = "csdb-intertek-esus-dev"
-# COSMOS_CONT   = "vectorstorecontainer"
-
-COSMOS_DB     = COSMOS_DB_TEXT
-COSMOS_CONT   = COSMOS_CONT_TEXT
-CHUNK_SIZE    = 1200
-CHUNK_OVERLAP = 150
-TOP_K         = 5
-DB_NAME     = COSMOS_DB
-CONT_NAME   = COSMOS_CONT
- 
-EMBED_DIM   = 1536
 VECTOR_PATH = "/vector"
 PARTITION_KEY = "/id"
-AZURE_OPENAI_ENDPOINT = AOAI_ENDPOINT
-AZURE_OPENAI_API_KEY      = AOAI_KEY
-AZURE_OPENAI_API_VERSION   = API_VERSION
+
+
+# ============================================================
+# CLIENTS (GLOBAL SAFE)
+# ============================================================
+
 cosmos_client = CosmosClient(url=COSMOS_URL, credential=COSMOS_KEY)
- 
- 
- 
- 
+blob_service = BlobServiceClient.from_connection_string(AZURE_CONN_STRING)
+
 llm = AzureChatOpenAI(
     azure_endpoint=AOAI_ENDPOINT,
     api_key=AOAI_KEY,
@@ -181,124 +91,178 @@ llm2 = AzureChatOpenAI(
     azure_deployment=CHAT_DEPLOY,
     temperature=0.0,
 )
- 
+
 score_llm = AzureChatOpenAI(
     azure_endpoint=AOAI_ENDPOINT,
     api_key=AOAI_KEY,
     openai_api_version=API_VERSION,
     azure_deployment=CHAT_DEPLOY,
-    temperature=0.0,   # important for stable scoring
+    temperature=0.0,
 )
- 
- 
- 
-# ==================== API CONFIGURATION ====================
- 
-AZURE_OPENAI_ENDPOINT = AOAI_ENDPOINT
-AZURE_OPENAI_KEY = AOAI_KEY
-AZURE_OPENAI_API_VERSION = API_VERSION
- 
-COSMOS_ENDPOINT = COSMOS_URL
-COSMOS_KEY = COSMOS_KEY
-COSMOS_DB_NAME = COSMOS_DB
-COSMOS_CONTAINER_NAME = COSMOS_CONT
- 
-AZURE_BLOB_CONNECTION_STRING = AZURE_CONN_STRING
-BLOB_CONTAINER_NAME = container
-AZURE_BLOB_CONTAINER_SAS_URL = SAS_URL
-#AZURE_BLOB_CONTAINER_SAS_URL = "https://stintertekesusdev.blob.core.windows.net/cdr-test?sp=r&st=2025-12-17T13:00:21Z&se=2040-12-30T21:15:21Z&sv=2024-11-04&sr=c&sig=IvefAZb2x6KvlYtb22W5VK9DoQ2PDosWYtmtZO1pPCM%3D%22"
-#AZURE_BLOB_CONTAINER_SAS_URL = "https://stintertekesusdev.blob.core.windows.net/3and4?sp=r&st=2026-01-05T09:07:03Z&se=2027-01-01T17:22:03Z&sv=2024-11-04&sr=c&sig=OQz72jtNDk%2Fp3BI3HHCAxULnfFjsS8XKz3USwZQryms%3D"
-# AZURE_BLOB_CONTAINER_SAS_URL = build_container_sas_url(
-#     AZURE_CONN_STRING,
-#     container,
-#     expiry_hours=120
-# )
 
-#print(container_sas_url)
+
+# ============================================================
+# PROJECT RUNTIME (SAFE)
+# ============================================================
+
+@dataclass
+class RuntimeContext:
+    project_id: str
+    base_dir: Path
+
+_runtime_registry: dict[str, RuntimeContext] = {}
+
+# ---------------- LEGACY RUNTIME PROXY ----------------
+class _LegacyRuntimeProxy:
+    @property
+    def project_id(self):
+        if not _runtime_registry:
+            return None
+        return next(reversed(_runtime_registry.values())).project_id
+
+# expose legacy name expected by old code
+_runtime = _LegacyRuntimeProxy()
+
+_lock = RLock()
+
+def init_runtime(project_id: str):
+    with _lock:
+        if project_id not in _runtime_registry:
+            base = Path(__file__).resolve().parents[3] / "data" / "cdr_files" / project_id
+            base.mkdir(parents=True, exist_ok=True)
+            _runtime_registry[project_id] = RuntimeContext(project_id, base)
+
+def get_runtime(project_id: str):
+    return _runtime_registry[project_id]
+
+def clear_runtime(project_id: str):
+    _runtime_registry.pop(project_id, None)
+
+def require_runtime():
+    if not _runtime_registry:
+        raise RuntimeError("Runtime not initialized")
+
+
+# ============================================================
+# PROJECT PATHS
+# ============================================================
+
+def project_paths(project_id: str):
+    base = get_runtime(project_id).base_dir
+    return {
+        "BASE": base,
+        "SRC": base / "src_files",
+        "S3": base.parent / "s3.json",
+        "S4": base.parent / "s4.json",
+        "CDR_PAYLOAD": base.parent / "cdr_payload.json",
+        "FINAL_JSON": base / "cdr_payload_v5_updated.json",
+        "AI_RAW": base / "CDR_Report_AI.xlsx",
+        "AI_FINAL": base / "CDR_Final_Report_AI.xlsx",
+    }
+
+
+# ============================================================
+# LEGACY GLOBAL FILE PATHS (PROJECT SAFE)
+# ============================================================
+
+class _DynamicPath:
+    def __init__(self, resolver):
+        self._resolver = resolver
+
+    def __getattr__(self, name):
+        return getattr(self._resolver(), name)
+
+    def __fspath__(self):
+        return str(self._resolver())
+
+    def __str__(self):
+        return str(self._resolver())
+
+    def __truediv__(self, other):
+        return self._resolver() / other
+
+
+
+def _cur():
+    if not _runtime_registry:
+        raise RuntimeError("Runtime not initialized")
+    return next(reversed(_runtime_registry.values())).base_dir
+
+
+TEMPLATE_PATH = _DynamicPath(lambda: _cur().parent / "cdr_payload.json")
+CDR_PAYLOAD_PATH = TEMPLATE_PATH
+
+EXCEL_TEMPLATE = _DynamicPath(lambda: _cur().parent / "CDR_template.xlsx")
+
+OUTPUT_JSON_S3 = _DynamicPath(lambda: _cur().parent / "s3.json")
+OUTPUT_JSON_S4 = _DynamicPath(lambda: _cur().parent / "s4.json")
+OUTPUT_JSON_COMPONENTS = _DynamicPath(lambda: _cur().parent / "s4.json")
+OUTPUT_JSON_METADATA = _DynamicPath(lambda: _cur().parent / "s3.json")
+
+BASE_DIR = _DynamicPath(lambda: _cur())
+SRC_FILES_DIR = _DynamicPath(lambda: _cur() / "src_files")
+DOWNLOAD_DIR = _DynamicPath(lambda: _cur() / "downloaded_guides")
+
+OUTPUT_CDR_PATH = _DynamicPath(lambda: _cur() / "cdr_payload_v5_updated.json")
+EXTRACTED_TXT_PATH = _DynamicPath(lambda: _cur() / "extracted.txt")
+
+SRC_ROOT = _DynamicPath(lambda: _cur() / "src_files")
+FLAT_ROOT = _DynamicPath(lambda: _cur() / "flattened_pdfs")
+IMG_ROOT = _DynamicPath(lambda: _cur() / "page_images")
+
+OUTPUT_EXCEL_AI_GEN_PATH = _DynamicPath(lambda: _cur() / "CDR_Report_AI.xlsx")
+OUTPUT_EXCEL_AI_FINAL_PATH = _DynamicPath(lambda: _cur() / "CDR_Final_Report_AI.xlsx")
+
+MASTER_SHEET_PATH = _DynamicPath(lambda: _cur() / "master_bom.xlsx")
+OUTPUT_PATH_FINAL = _DynamicPath(lambda: _cur() / "s4c1_cc_raw.xlsx")
+CRITICAL_ONLY_EXCEL = _DynamicPath(lambda: _cur() / "s4c1_cc_filtered.xlsx")
+FINAL_OUTPUT_WITH_EVIDENCE = _DynamicPath(lambda: _cur() / "s4c1_cc_final.xlsx")
+ALL_IMAGE_URLS_CSV = _DynamicPath(lambda: _cur() / "all_device_images.csv")
  
+
+OUTPUT_EXCEL_RAW = _DynamicPath(lambda: _cur() / "s4c2_cc_raw.xlsx")
+OUTPUT_EXCEL_CLASSIFIED = _DynamicPath(lambda: _cur() / "s4c2_cc_filtered.xlsx")
+OUTPUT_EXCEL_DEDUPED = _DynamicPath(lambda: _cur() / "s4c2_cc_final.xlsx")
+
+
+
+# ============================================================
+# BLOB HELPERS
+# ============================================================
+
+def build_container_sas_url(container: str, expiry_hours=48):
+    sas = generate_container_sas(
+        blob_service.account_name,
+        container,
+        blob_service.credential.account_key,
+        ContainerSasPermissions(read=True, list=True, write=True),
+        datetime.utcnow() + timedelta(hours=expiry_hours),
+    )
+    return f"https://{blob_service.account_name}.blob.core.windows.net/{container}?{sas}"
+
+
+# ============================================================
+# CONSTANTS
+# ============================================================
+
+IMAGE_EXTS = {"jpg","jpeg","png","gif","bmp","tiff","tif","webp","svg"}
+CHUNK_SIZE = 1200
+CHUNK_OVERLAP = 150
+TOP_K = 5
+EMBED_DIM = 1536
+MAX_WORKERS = 4
+IMAGE_BATCH_SIZE = 4
+BATCH_SIZE = 15
+CLASSIFICATION_BATCH_SIZE = 5
+
 # ==================== MODEL CONFIG ====================
 VISION_MODEL = CHAT_DEPLOY
 EMBED_MODEL = EMBED_DEPLOY
 CLASSIFICATION_MODEL = VISION_MODEL
 LLM_CONTEXT_MODEL = VISION_MODEL
- 
-# ==================== FILE PATHS ====================
- 
-# TEMPLATE_PATH = Path("cdr_payload.json")  # your uploaded template
- 
-# #c1
-# MASTER_SHEET_PATH = "master_bom.xlsx"
-# OUTPUT_PATH_FINAL = "s4c1_cc_raw.xlsx"
-# CRITICAL_ONLY_EXCEL = "s4c1_cc_filtered.xlsx"
-# FINAL_OUTPUT_WITH_EVIDENCE = "s4c1_cc_final.xlsx"
-# OUTPUT_JSON_COMPONENTS = "s4.json"
-# OUTPUT_JSON_METADATA = "s3.json"
- 
-# #c2
-# OUTPUT_EXCEL_RAW = "s4c2_cc_raw.xlsx"
-# OUTPUT_EXCEL_CLASSIFIED = "s4c2_cc_filtered.xlsx"
-# OUTPUT_EXCEL_DEDUPED = "s4c2_cc_final.xlsx"
-# OUTPUT_JSON_S4 = "s4.json"
-# OUTPUT_JSON_S3 = "s3.json"
-# DOWNLOAD_DIR = "downloaded_guides"
- 
-# ==================== SETTINGS ====================
-MAX_WORKERS = 4
-IMAGE_BATCH_SIZE = 4
-BATCH_SIZE = 15
-CLASSIFICATION_BATCH_SIZE = 5
- 
- 
+
 GUIDE_KEYWORDS = [
-    "user guide", "user-guide", "manual", "operation manual",
-    "operating manual", "instruction", "instructions"
+    "user guide", "user-guide", "manual",
+    "operation manual", "operating manual",
+    "instruction", "instructions"
 ]
- 
- 
- 
- 
- 
- 
-#hari changes
-from pathlib import Path
- 
-# Base directory of this file (CDR_Pipelines)
-BASE_DIR = Path(__file__).resolve().parent
- 
-# Templates / JSON
-TEMPLATE_PATH = BASE_DIR / "cdr_payload.json"
-OUTPUT_JSON_S4 = BASE_DIR / "s4.json"
-OUTPUT_JSON_S3 = BASE_DIR / "s3.json"
-OUTPUT_JSON_COMPONENTS = BASE_DIR / "s4.json"
-OUTPUT_JSON_METADATA = BASE_DIR / "s3.json"
-
- 
-# Excel / sheets
-MASTER_SHEET_PATH = BASE_DIR / "master_bom.xlsx"
-OUTPUT_PATH_FINAL = BASE_DIR / "s4c1_cc_raw.xlsx"
-CRITICAL_ONLY_EXCEL = BASE_DIR / "s4c1_cc_filtered.xlsx"
-FINAL_OUTPUT_WITH_EVIDENCE = BASE_DIR / "s4c1_cc_final.xlsx"
- 
-OUTPUT_EXCEL_RAW = BASE_DIR / "s4c2_cc_raw.xlsx"
-OUTPUT_EXCEL_CLASSIFIED = BASE_DIR / "s4c2_cc_filtered.xlsx"
-OUTPUT_EXCEL_DEDUPED = BASE_DIR / "s4c2_cc_final.xlsx"
-# report generation paths
-OUTPUT_EXCEL_AI_GEN_PATH = BASE_DIR / "CDR_Report_AI.xlsx"
-OUTPUT_EXCEL_AI_FINAL_PATH = BASE_DIR / "CDR_Final_Report_AI.xlsx"
- 
- 
-# Directories
-DOWNLOAD_DIR = BASE_DIR / "downloaded_guides"
-SRC_FILES_DIR = BASE_DIR / "src_files"
-
-
-# main.py paths
-PIPELINE_DIR = Path(__file__).resolve().parent
-
-EXTRACTED_TXT_PATH = PIPELINE_DIR / "extracted.txt"
-CDR_PAYLOAD_PATH = PIPELINE_DIR / "cdr_payload.json"
-OUTPUT_CDR_PATH = PIPELINE_DIR / "cdr_payload_v5_updated.json"
-
-SRC_ROOT = PIPELINE_DIR / "src_files"
-FLAT_ROOT = PIPELINE_DIR / "flattened_pdfs"
-IMG_ROOT = PIPELINE_DIR / "page_images"

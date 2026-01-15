@@ -47,7 +47,7 @@ def track_usage(resp):
 # ===================== BLOB & FILE UTILS =====================
 def get_image_urls_from_container_sas():
     configs.require_runtime()
-    project_id = configs.runtime.project_id
+    project_id = configs._runtime.project_id
 
     prefix = f"Documents/{project_id}/source_documents/device_images/"
 
@@ -60,7 +60,7 @@ def get_image_urls_from_container_sas():
 
     blob_names = sorted([
         blob.name
-        for blob in container_client.list_blobs(name_starts_with=device_prefix)
+        for blob in container_client.list_blobs(name_starts_with=prefix)
         if blob.name.lower().endswith((".jpg", ".jpeg", ".png"))
     ])
 
@@ -82,7 +82,7 @@ from urllib.parse import quote
 
 def find_user_guide_blob():
     configs.require_runtime()
-    project_id = configs.runtime.project_id
+    project_id = configs._runtime.project_id
 
     prefix = f"Documents/{project_id}/"
 

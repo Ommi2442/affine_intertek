@@ -16,19 +16,19 @@ from pathlib import Path
 # Azure Config
 # --------------------------
 # CONNECTION_STRING = os.getenv("AZURE_CONNECTION_STRING")
-# CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net"
-# print('CONNECTION_STRING', CONNECTION_STRING)
+CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net"
+print('CONNECTION_STRING', CONNECTION_STRING)
 # QUEUE_CONN_STR = os.getenv("AZURE_QUEUE_CONNECTION_STRING")
-QUEUE_CONN_STR = "DefaultEndpointsProtocol=https;AccountName=stintertekesusstage;AccountKey=X3xxXc+G6VT3GNShGEIO+boKEbI2jLbh0U9wg5/U2UME328bFHPVdeJDgp9fyKfs7IW/MoJnpi5Q+ASti9+IlA==;EndpointSuffix=core.windows.net"
+QUEUE_CONN_STR = "DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net"
 # BLOB_CONTAINER = os.getenv("AZURE_CONTAINER_NAME")
-BLOB_CONTAINER = "stintertekesusstage-blob"
+BLOB_CONTAINER = "stintertekesusdev-blob"
 # QUEUE_NAME = os.getenv("AZURE_QUEUE_NAME")
-QUEUE_NAME = "stintertekesus-stage-queue"
-CDR_QUEUE_NAME = "stintertekesus-stage-queue-cdr"
+QUEUE_NAME = "stintertekesus-dev-queue"
+CDR_QUEUE_NAME = "stintertekesus-dev-queue-cdr"
 
-COSMOS_DB_URI="https://csdb-intertek-esus-stage.documents.azure.com:443/"
-COSMOS_DB_KEY="HpRV1o6cIgx2jae8eh2XF6hSLUobpnUOg5F2ElDq4SeP1p4OPxf9QEWQko5lVFyQQtvCAOuejS55ACDbKGjKow=="
-COSMOS_DB_DATABASE="intertek_poc_stage"
+COSMOS_DB_URI="https://csdb-intertek-esus-dev.documents.azure.com:443/"
+COSMOS_DB_KEY="azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00MFDbK88ApotACDbODLFXA=="
+COSMOS_DB_DATABASE="intertek_poc_dev"
 COSMOS_PROJECT_CONTAINER="projects"
 
 
@@ -572,3 +572,8 @@ async def queue_listener_cdr():
 async def start_worker():
     asyncio.create_task(queue_listener())
     # asyncio.create_task(queue_listener_cdr())
+    queue_client.send_message(json.dumps({
+            "projectId": "CDR_FIX",
+            "action": "embed_generatetrf",
+            "timestamp": datetime.utcnow().isoformat()
+        }))

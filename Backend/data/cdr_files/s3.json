@@ -1,0 +1,19 @@
+{
+    "Items": [
+        {
+            "question_cell": "A3",
+            "prefix": "Product",
+            "field": null,
+            "answer_cell": "A4",
+            "photo_path": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "photo",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": false
+        }
+    ]
+}
