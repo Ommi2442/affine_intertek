@@ -73,17 +73,19 @@ from azure.storage.blob import BlobServiceClient
 from azure.storage.blob import ContainerClient
 from dotenv import load_dotenv
 load_dotenv()
-DS_AOAI_ENDPOINT = os.getenv("DS_DS_AOAI_ENDPOINT")
-DS_AOAI_KEY = os.getenv("DS_AOAI_KEY")
-DS_API_VERSION = os.getenv("DS_API_VERSION")
-DS_EMBED_DEPLOY = os.getenv("DS_EMBED_DEPLOY")
-DS_COSMOS_URL = os.getenv("DS_COSMOS_URL")
-DS_COSMOS_KEY = os.getenv("DS_COSMOS_KEY")
-DS_DB_NAME=os.getenv("DS_DB_NAME")
-DS_CONT_NAME=os.getenv("DS_CONT_NAME")
-DS_DB_NAME_IMG=os.getenv("DS_DB_NAME_IMG")
-DS_CONT_NAME_IMG=os.getenv("DS_CONT_NAME_IMG")
-DS_CHAT_DEPLOY=os.getenv("DS_CHAT_DEPLOY")
+
+AOAI_ENDPOINT = os.getenv("DS_DS_AOAI_ENDPOINT")
+AOAI_KEY = os.getenv("DS_AOAI_KEY")
+API_VERSION = os.getenv("DS_API_VERSION")
+EMBED_DEPLOY = os.getenv("DS_EMBED_DEPLOY")
+COSMOS_URL = os.getenv("DS_COSMOS_URL")
+COSMOS_KEY = os.getenv("DS_COSMOS_KEY")
+DB_NAME=os.getenv("DS_DB_NAME")
+CONT_NAME=os.getenv("DS_CONT_NAME")
+DB_NAME_IMG=os.getenv("DB_NAME_IMG")
+CONT_NAME_IMG=os.getenv("DS_CONT_NAME_IMG")
+CHAT_DEPLOY=os.getenv("DS_CHAT_DEPLOY")
+
 
 
 
