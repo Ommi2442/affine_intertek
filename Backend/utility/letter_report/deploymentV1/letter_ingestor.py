@@ -5,9 +5,48 @@ from openai import AzureOpenAI
 # Core helpers (DO NOT MODIFY)
 
 from utility.letter_report.deploymentV1.core import *
+# from core import *
 
-# Config (all secrets & variables come from here)
-from utility.letter_report.deploymentV1.config import *
+
+from dotenv import load_dotenv
+
+load_dotenv()
+import os
+
+AZURE_CONN_STRING = os.getenv("LT_AZURE_CONN_STRING")
+DB_NAME_IMG = os.getenv("LT_DB_NAME_IMG")
+CONT_NAME_IMG = os.getenv("LT_CONT_NAME_IMG")
+CHUNK_SIZE = int(os.getenv("LT_CHUNK_SIZE"))
+CHUNK_OVERLAP = int(os.getenv("LT_CHUNK_OVERLAP"))
+TOP_K = int(os.getenv("LT_TOP_K"))
+EMBED_DIM = int(os.getenv("LT_EMBED_DIM"))
+VECTOR_PATH = os.getenv("LT_VECTOR_PATH")
+
+BLOB_CONTAINER_NAME = os.getenv("LT_BLOB_CONTAINER_NAME")
+CONN_STR = os.getenv("LT_conn_str")
+
+IMAGE_EXTS = os.getenv("LT_IMAGE_EXTS")
+
+AOAI_ENDPOINT = os.getenv("LT_AOAI_ENDPOINT")
+AOAI_KEY = os.getenv("LT_AOAI_KEY")
+API_VERSION = os.getenv("LT_API_VERSION")
+EMBED_DEPLOY = os.getenv("LT_EMBED_DEPLOY")
+CHAT_DEPLOY = os.getenv("LT_CHAT_DEPLOY")
+
+COSMOS_URL = os.getenv("LT_COSMOS_URL")
+COSMOS_KEY = os.getenv("LT_COSMOS_KEY")
+COSMOS_DB = os.getenv("LT_COSMOS_DB")
+COSMOS_CONT = os.getenv("LT_COSMOS_CONT")
+
+DB_NAME = os.getenv("LT_DB_NAME")
+CONT_NAME = os.getenv("LT_CONT_NAME")
+
+MAX_THREADS = int(os.getenv("LT_MAX_THREADS"))
+MAX_RETRIES = int(os.getenv("LT_MAX_RETRIES"))
+INITIAL_BACKOFF = int(os.getenv("LT_INITIAL_BACKOFF"))
+ 
+
+
 
 
 def main(blob_urls):
@@ -34,11 +73,11 @@ def main(blob_urls):
         consistency_level=ConsistencyLevel.Eventual
     )
 
-    container = cosmos_client.get_database_client(DB_NAME).get_container_client(CONT_NAME)
+    # container = cosmos_client.get_database_client(DB_NAME).get_container_client(CONT_NAME)
 
-    items = container.read_all_items()
-    for item in items:
-        container.delete_item(item=item, partition_key=item["id"])
+    # items = container.read_all_items()
+    # for item in items:
+    #     container.delete_item(item=item, partition_key=item["id"])
 
     print("[SUCCESS] All existing documents deleted.\n")
 
@@ -67,13 +106,13 @@ def main(blob_urls):
 
     print("\n[INFO] Creating Vector DB for TEXT...")
 
-    container = create_db_and_container(
-        cosmos_client,
-        DB_NAME,
-        VECTOR_PATH,
-        EMBED_DIM,
-        CONT_NAME
-    )
+    # container = create_db_and_container(
+    #     cosmos_client,
+    #     DB_NAME,
+    #     VECTOR_PATH,
+    #     EMBED_DIM,
+    #     CONT_NAME
+    # )
 
     embeddings = build_embeddings(
         AOAI_ENDPOINT,
@@ -144,13 +183,13 @@ def main(blob_urls):
         consistency_level=ConsistencyLevel.Eventual
     )
 
-    container_IMG = create_db_and_container(
-        cosmos_client,
-        DB_NAME_IMG,
-        VECTOR_PATH,
-        EMBED_DIM,
-        CONT_NAME_IMG
-    )
+    # container_IMG = create_db_and_container(
+    #     cosmos_client,
+    #     DB_NAME_IMG,
+    #     VECTOR_PATH,
+    #     EMBED_DIM,
+    #     CONT_NAME_IMG
+    # )
 
     embeddings = build_embeddings(
         AOAI_ENDPOINT,
@@ -213,3 +252,4 @@ def main(blob_urls):
     print("✅ INGESTION PIPELINE COMPLETED")
     print("==============================\n")
     return True
+

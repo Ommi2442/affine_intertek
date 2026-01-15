@@ -15,7 +15,7 @@ from fastapi import Depends
 from api.auth.jwt_auth.utils import get_current_user
 from db.database import *
 from db.database import COSMOS_DB_project_Container, COSMOS_DB_URI,COSMOS_DB_KEY,COSMOS_DB_DATABASE,COSMOS_DB_project_TRF_Container,COSMOS_DB_project_CDR_Container
-from projects.models import Project,ProjectCreate,ProjectFilter,FinalizeReportPayload,letter_urls
+from projects.models import Project,ProjectCreate,ProjectFilter,FinalizeReportPayload,LetterGeneration
 from azure.cosmos import exceptions
 from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueClient
@@ -44,8 +44,9 @@ from pathlib import Path
 import asyncio
 import threading
 import traceback
-
-
+from dotenv import load_dotenv
+load_dotenv()
+BLOB_CONTAINER_NAME = os.getenv("LT_BLOB_CONTAINER_NAME")
 
 router = APIRouter()
 
@@ -1436,20 +1437,37 @@ async def finalize_reports(payload: FinalizeReportPayload):
             detail=f"Unhandled error: {str(e)}"
         )
 
-
-# Letter implementation
-@router.get("/letter-generation")
-async def letter_implementation(projectId:str):
+@router.post("/letter-generation")
+async def letter_implementation(payload: LetterGeneration):
     try:
+        projectId = payload.projectId
+        trf_urls = payload.trf_urls
+        cdr_urls = payload.cdr_urls
+        other_urls = payload.other_urls
+
+        # Build blob_urls list
+        blob_urls = [
+            trf_urls,
+            cdr_urls,
+            other_urls
+        ]
+
+        print("Project ID for Letter Generation:", projectId,type(projectId))
+        print("All URLs for Letter Generation:", blob_urls)
+
         if not projectId:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="projectId is required"
             )
-        
-        project_id=projectId
+
+        # ----------------------------------
+        # Cosmos DB query
+        # ----------------------------------
+        project_id = projectId
         query = "SELECT * FROM c WHERE c.Project_Id = @pid"
-        params = [{"name": "@pid", "value": project_id}]        
+        params = [{"name": "@pid", "value": project_id}]
+
         items = list(
             COSMOS_DB_project_Container.query_items(
                 query=query,
@@ -1457,11 +1475,16 @@ async def letter_implementation(projectId:str):
                 enable_cross_partition_query=True
             )
         )
-        letter_progress = items[0].get("Letter_Project_Progress") or {}
-        print(letter_progress,"------ ",type(letter_progress))
 
+        if not items:
+            raise HTTPException(
+                status_code=404,
+                detail="Project not found"
+            )
+
+        letter_progress = items[0].get("Letter_Project_Progress") or {}
         letter_percentage = letter_progress.get("letter_percentage", 0)
-        print(letter_percentage,"------ ",type(letter_percentage))
+
         if letter_percentage < 100:
             query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
             docs = list(
@@ -1472,36 +1495,31 @@ async def letter_implementation(projectId:str):
             )
 
             if not docs:
-                print(f" Project not found: {project_id}")
-                return True
+                raise HTTPException(
+                    status_code=404,
+                    detail="Project document not found"
+                )
 
             project_doc = docs[0]
+
             update_project_progress_Letter(
                 project_doc,
                 letter_stage="steps in Progress",
                 letter_percentage=10,
-                letter_step="Starting runnig CDR",
+                letter_step="Starting running CDR",
                 letter_completed=False
             )
-            blob_urls =['https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01390131-0.pdf',
-    "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105581614MPK-001A_CR.docx",
-    'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf']
-
             f=main(blob_urls)
-            print("Letter INGATION Completed----")
+            
             if f:
-                from dotenv import load_dotenv
-                load_dotenv()
-                BLOB_CONTAINER_NAME = os.getenv("BLOB_CONTAINER_NAME")
-                BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
+                BASE_DIR = Path(__file__).resolve().parents[1]
                 DATA_DIR = BASE_DIR / "data"
-                DATA_DIR.mkdir(parents=True, exist_ok=True)
+                project_dir = DATA_DIR / projectId
+                project_dir.mkdir(parents=True, exist_ok=True)
+                letter_json1 = project_dir / f"letter_header_iec_output_{projectId}.json"
+                letter_json2 = project_dir / f"letter_body_iec_output_{projectId}.json"
+                letter_docx_file = project_dir / f"letter_iec_output_{projectId}.docx"
 
-                letter_docx_file = DATA_DIR / f"letter_iec_output_{projectId}.docx"
-                letter_json1 = DATA_DIR / f"letter_header_iec_output_{projectId}.json"
-                letter_json2 = DATA_DIR / f"letter_body_iec_output_{projectId}.json"
-
-                
                 intter_returned_data=ingest_letter_pipeline(
                 blob_urls=blob_urls,
                 container_name=BLOB_CONTAINER_NAME,
@@ -1509,9 +1527,10 @@ async def letter_implementation(projectId:str):
                 letter_json_path="letter_old.json",
                 letter_header_json_path="letter_header_old.json",
                 letter_template_docx="Letter_Template.docx",
-                output_letter_docx=letter_docx_file )
-                print(intter_returned_data)
-                print("Letter Pipeline Executed----")
+                output_letter_docx=letter_docx_file,
+                output_letter_json=letter_json1,
+                output_letter_header_json=letter_json2, )
+
                 print("----- Saving Letter JSON and DOCX to Blob and CosmosDB -----")
                 
                 save_local_jsons_and_docx_to_blob_and_cosmos_for_letter(
@@ -1520,6 +1539,12 @@ async def letter_implementation(projectId:str):
                                     str(letter_docx_file),
                                     project_id=project_id
                                     )
+                update_project_progress_Letter(
+                project_doc,
+                letter_stage="Completed",
+                letter_percentage=100,
+                letter_step="Letter generated and stored",
+                letter_completed=True)
                 
                 with open(letter_json1, "r", encoding="utf-8") as f:
                     letter_json_data = json.load(f)
@@ -1532,11 +1557,35 @@ async def letter_implementation(projectId:str):
                     "project_Id":project_id,
                     "Message":"Letter Generated Successfully",
                     "Data":{
-                        "Letter_json":letter_json_data,
+                        "Letter_json_body":letter_json_data,
                         "Letter_header_json":letter_header_json_data
                     }
                 }
-    
+
+        if letter_percentage == 100:
+            BASE_DIR = Path(__file__).resolve().parents[1]
+            DATA_DIR = BASE_DIR / "data"
+            project_dir = DATA_DIR / projectId
+            project_dir.mkdir(parents=True, exist_ok=True)
+            letter_json1 = project_dir / f"letter_header_iec_output_{projectId}.json"
+            letter_json2 = project_dir / f"letter_body_iec_output_{projectId}.json"
+            letter_docx_file = project_dir / f"letter_iec_output_{projectId}.docx"
+
+            with open(letter_json2, "r", encoding="utf-8") as f:
+                letter_json_data = json.load(f)
+            
+            with open(letter_json1, "r", encoding="utf-8") as f:
+                letter_header_json_data = json.load(f)
+            return {
+                "status":"success",
+                "project_Id":project_id,
+                "Message":"Letter Already Generated",
+                "Data":{
+                        "Letter_json_body":letter_json_data,
+                        "Letter_header_json":letter_header_json_data
+                    }
+            }   
+            
     except Exception as e:
         print(traceback.format_exc())
         return {

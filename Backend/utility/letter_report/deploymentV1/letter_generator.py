@@ -8,8 +8,6 @@ from azure.cosmos import CosmosClient
 from langchain_openai import AzureChatOpenAI
 from openai import AzureOpenAI
 
-from utility.letter_report.deploymentV1.core import *
-from utility.letter_report.deploymentV1.config import *
 
 import re
 import tempfile
@@ -24,9 +22,10 @@ from langchain_core.documents import Document
 import io
 import openpyxl
 import xlrd
-#from utils import *
-from utility.letter_report.deploymentV1.config import *
+
+
 from utility.letter_report.deploymentV1.core import *
+# from core import */
 from azure.storage.blob import BlobClient
 from azure.core.exceptions import ResourceNotFoundError, AzureError
 # from templates import *
@@ -65,28 +64,51 @@ from azure.core.exceptions import HttpResponseError
 import time
 from langchain_community.callbacks import get_openai_callback
 from utility.letter_report.deploymentV1.ocr_image_processor import load_and_process_images
+# from ocr_image_processor import load_and_process_images
 
 import requests
 from openai import AzureOpenAI
 from azure.storage.blob import BlobServiceClient
 
 from azure.storage.blob import ContainerClient
+
 from dotenv import load_dotenv
+
 load_dotenv()
+import os
 
-AOAI_ENDPOINT = os.getenv("DS_DS_AOAI_ENDPOINT")
-AOAI_KEY = os.getenv("DS_AOAI_KEY")
-API_VERSION = os.getenv("DS_API_VERSION")
-EMBED_DEPLOY = os.getenv("DS_EMBED_DEPLOY")
-COSMOS_URL = os.getenv("DS_COSMOS_URL")
-COSMOS_KEY = os.getenv("DS_COSMOS_KEY")
-DB_NAME=os.getenv("DS_DB_NAME")
-CONT_NAME=os.getenv("DS_CONT_NAME")
-DB_NAME_IMG=os.getenv("DB_NAME_IMG")
-CONT_NAME_IMG=os.getenv("DS_CONT_NAME_IMG")
-CHAT_DEPLOY=os.getenv("DS_CHAT_DEPLOY")
+AZURE_CONN_STRING = os.getenv("LT_AZURE_CONN_STRING")
+DB_NAME_IMG = os.getenv("LT_DB_NAME_IMG")
+CONT_NAME_IMG = os.getenv("LT_CONT_NAME_IMG")
+CHUNK_SIZE = int(os.getenv("LT_CHUNK_SIZE"))
+CHUNK_OVERLAP = int(os.getenv("LT_CHUNK_OVERLAP"))
+TOP_K = int(os.getenv("LT_TOP_K"))
+EMBED_DIM = int(os.getenv("LT_EMBED_DIM"))
+VECTOR_PATH = os.getenv("LT_VECTOR_PATH")
 
+BLOB_CONTAINER_NAME = os.getenv("LT_BLOB_CONTAINER_NAME")
+CONN_STR = os.getenv("LT_conn_str")
 
+IMAGE_EXTS = os.getenv("LT_IMAGE_EXTS")
+
+AOAI_ENDPOINT = os.getenv("LT_AOAI_ENDPOINT")
+AOAI_KEY = os.getenv("LT_AOAI_KEY")
+API_VERSION = os.getenv("LT_API_VERSION")
+EMBED_DEPLOY = os.getenv("LT_EMBED_DEPLOY")
+CHAT_DEPLOY = os.getenv("LT_CHAT_DEPLOY")
+
+COSMOS_URL = os.getenv("LT_COSMOS_URL")
+COSMOS_KEY = os.getenv("LT_COSMOS_KEY")
+COSMOS_DB = os.getenv("LT_COSMOS_DB")
+COSMOS_CONT = os.getenv("LT_COSMOS_CONT")
+
+DB_NAME = os.getenv("LT_DB_NAME")
+CONT_NAME = os.getenv("LT_CONT_NAME")
+
+MAX_THREADS = int(os.getenv("LT_MAX_THREADS"))
+MAX_RETRIES = int(os.getenv("LT_MAX_RETRIES"))
+INITIAL_BACKOFF = int(os.getenv("LT_INITIAL_BACKOFF"))
+ 
 
 
 # ============================================================
@@ -777,20 +799,9 @@ def merge_quote_and_cis_data(folder_path: str, min_threshold_for_strong_match=70
 def fill_letter_json(
     src_dir: str,
     letter_json_path: str,
-    output_path: str = "letter.json"
+    output_path: str = "letter@@@@++.json"
 ):
-    """
-    Fill letter.json values using data extracted from source directory
-    and save to a new file.
-
-    Args:
-        src_dir: Path to source files directory
-        letter_json_path: Path to the input letter.json file
-        output_path: Output file path (default = letter_f1.json)
-
-    Returns:
-        Updated JSON dict
-    """
+    
 
     # --------------------------------------------------
     # Step 1: Run merge pipeline internally
@@ -803,7 +814,19 @@ def fill_letter_json(
     # --------------------------------------------------
     # Step 2: Load letter JSON
     # --------------------------------------------------
-    with open(letter_json_path, "r", encoding="utf-8") as f:
+    import os
+    f = os.getcwd()
+    print("Current at this place",f)
+    from pathlib import Path
+    PIPELINE_DIR = Path(__file__).resolve().parent
+    letter_json_path_old= PIPELINE_DIR / "letter_old.json"
+    letter_header_json_path_old= PIPELINE_DIR / "letter_header_old.json"
+    print("Letter json path is",letter_json_path_old)
+    print("Letter header json path is",letter_header_json_path_old)
+    letter_template_docx = PIPELINE_DIR / "Letter_Template.docx"
+    import time;time.sleep(10)
+
+    with open(letter_json_path_old, "r", encoding="utf-8") as f:
         letter_json = json.load(f)
 
     # --------------------------------------------------
@@ -1085,9 +1108,9 @@ OUTPUT (STRICT JSON ARRAY):
 Return [] if no non-conformances exist.
 """
     client = AzureOpenAI(
-        api_key=DS_AOAI_KEY,
-        api_version=DS_API_VERSION,
-        azure_endpoint=DS_AOAI_ENDPOINT
+        api_key=AOAI_KEY,
+        api_version=API_VERSION,
+        azure_endpoint=AOAI_ENDPOINT
     )
 
     response = client.chat.completions.create(
@@ -1123,6 +1146,84 @@ FULL TRF DOCUMENT:
 # extract_images_from_docx
 # extract_images_from_excel
 # identify_iec61010_non_conforming_images_batch
+# def download_files_from_blob(
+#     blob_file_list,
+#     download_dir,
+#     connection_string,
+#     container_name
+# ):
+#     """
+#     Downloads files from Azure Blob Storage.
+#     Supports full blob URLs and validates container name.
+#     """
+
+#     # ----------------------------------------
+#     # Validate & normalize container name
+#     # ----------------------------------------
+#     if not isinstance(container_name, str):
+#         raise ValueError(f"container_name must be string. Got: {type(container_name)}")
+
+#     container_name = container_name.strip()
+
+#     if container_name.startswith("http"):
+#         parsed = urlparse(container_name)
+#         container_name = parsed.path.strip("/").split("/")[0]
+
+#     if not container_name:
+#         raise ValueError("container_name is empty after normalization")
+
+#     print(f"📦 Using container: {container_name}")
+
+#     os.makedirs(download_dir, exist_ok=True)
+
+#     blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+#     container_client = blob_service_client.get_container_client(container_name)
+
+#     downloaded_files = []
+
+#     for blob_item in blob_file_list:
+
+#         # -----------------------------------
+#         # Handle full blob URL or blob name
+#         # -----------------------------------
+#         if blob_item.startswith("http"):
+#             parsed = urlparse(blob_item)
+#             path_parts = parsed.path.strip("/").split("/")
+#             blob_name = "/".join(path_parts[1:])   # remove container part
+#         else:
+#             blob_name = blob_item
+
+#         local_path = os.path.join(download_dir, os.path.basename(blob_name))
+#         print("---------   local_path  ---------------------")
+#         print(f"⬇️ Downloading blob: {blob_name}")
+
+#         blob_client = container_client.get_blob_client(blob_name)
+
+#         with open(local_path, "wb") as f:
+#             f.write(blob_client.download_blob().readall())
+
+#         downloaded_files.append(local_path)
+
+#     return downloaded_files
+
+
+
+import os
+import re
+from urllib.parse import urlparse
+from azure.storage.blob import BlobServiceClient
+
+
+def sanitize_filename(name: str) -> str:
+    """
+    Make filename safe for Windows filesystem.
+    """
+    # Replace illegal Windows characters
+    name = re.sub(r'[<>:"/\\|?*]', '_', name)
+    # Remove trailing dots and spaces
+    return name.rstrip('. ')
+
+
 def download_files_from_blob(
     blob_file_list,
     download_dir,
@@ -1151,6 +1252,7 @@ def download_files_from_blob(
 
     print(f"📦 Using container: {container_name}")
 
+    # Ensure base download directory exists
     os.makedirs(download_dir, exist_ok=True)
 
     blob_service_client = BlobServiceClient.from_connection_string(connection_string)
@@ -1166,15 +1268,23 @@ def download_files_from_blob(
         if blob_item.startswith("http"):
             parsed = urlparse(blob_item)
             path_parts = parsed.path.strip("/").split("/")
-            blob_name = "/".join(path_parts[1:])   # remove container part
+            blob_name = "/".join(path_parts[1:])  # remove container name
         else:
             blob_name = blob_item
 
-        local_path = os.path.join(download_dir, os.path.basename(blob_name))
+        # Extract and sanitize filename
+        original_filename = os.path.basename(blob_name)
+        safe_filename = sanitize_filename(original_filename)
 
-        print(f"⬇️ Downloading blob: {blob_name}")
+        local_path = os.path.join(download_dir, safe_filename)
+
+        print("⬇️ Downloading blob:", blob_name)
+        print("➡️ Saving to:", repr(local_path))
 
         blob_client = container_client.get_blob_client(blob_name)
+
+        # Ensure directory exists (extra safety)
+        os.makedirs(os.path.dirname(local_path), exist_ok=True)
 
         with open(local_path, "wb") as f:
             f.write(blob_client.download_blob().readall())
@@ -1319,12 +1429,12 @@ def identify_iec61010_non_conforming_images_batch(
     """
 
     client = AzureOpenAI(
-        api_key=DS_AOAI_KEY,
-        api_version=DS_API_VERSION,
-        azure_endpoint=DS_AOAI_ENDPOINT
+        api_key=AOAI_KEY,
+        api_version=API_VERSION,
+        azure_endpoint=AOAI_ENDPOINT
     )
 
-    deployment = DS_CHAT_DEPLOY
+    deployment = CHAT_DEPLOY
 
     results = []
 
@@ -1463,6 +1573,76 @@ def insert_photos_before_section_6_table(
 
 
 import os
+
+# def orchestrate_iec61010_image_compliance_pipeline(
+#     blob_file_list,
+#     local_download_dir,
+#     source_docx_name,
+#     output_docx_path,
+#     connection_string,
+#     container_name
+# ):
+#     """
+#     End-to-end orchestration:
+#     1. Download files from blob
+#     2. Extract images from DOCX and XLS/XLSX
+#     3. List extracted images
+#     4. Identify IEC 61010 non-conforming images
+#     5. Insert non-conforming images into DOCX before Section 6 table
+#     """
+
+#     # ---------------------------------------------------------
+#     # 1. Download files from blob
+#     # ---------------------------------------------------------
+#     print("⬇️ Downloading files from blob...")
+#     downloaded_files = download_files_from_blob(
+#         blob_file_list=blob_file_list,
+#         download_dir=local_download_dir,
+#         connection_string=connection_string,
+#         container_name=container_name
+#     )
+
+#     # ---------------------------------------------------------
+#     # 2. Extract images from DOCX and Excel
+#     # ---------------------------------------------------------
+#     print("🖼️ Extracting images from documents...")
+#     extracted_images = []
+
+#     for file_path in downloaded_files:
+#         file_lower = file_path.lower()
+
+#         if file_lower.endswith(".docx"):
+#             images,count = extract_images_from_docx(file_path)
+#             extracted_images.extend(images)
+
+#         elif file_lower.endswith((".xls", ".xlsx")):
+#             images = extract_images_from_excel(file_path)
+#             extracted_images.extend(images)
+
+#     # ---------------------------------------------------------
+#     # 3. List images extracted in current working directory
+#     # ---------------------------------------------------------
+#     print("\n📂 Extracted Images:")
+#     for img in extracted_images:
+#         print(" -", os.path.abspath(img))
+
+#     # ---------------------------------------------------------
+#     # 4. Identify IEC 61010 non-conforming images
+#     # ---------------------------------------------------------
+#     print("\n🔍 Checking IEC 61010 compliance...")
+#     results = identify_iec61010_non_conforming_images_batch(extracted_images)
+
+#     non_conforming_images = []
+
+#     print("\n🚨 Non-Conforming Images:")
+#     for r in results:
+#         if r["result"]["image_verdict"] == "NON_CONFORMING":
+#             print("❌ NON-CONFORMING:", r["image_path"])
+#             non_conforming_images.append(r["image_path"])
+
+#     if not non_conforming_images:
+#         print("✅ No non-conforming images found.")
+#         return
 
 def orchestrate_iec61010_image_compliance_pipeline(
     blob_file_list,
@@ -1624,7 +1804,9 @@ def ingest_letter_pipeline(
     letter_json_path,
     letter_header_json_path,
     letter_template_docx,
-    output_letter_docx
+    output_letter_docx,
+    output_letter_json,
+    output_letter_header_json
 ):
     """
     Single entry function for full letter generation pipeline.
@@ -1637,33 +1819,32 @@ def ingest_letter_pipeline(
     # -------------------------------------------------------
     # VECTOR DATABASE CONNECTION
     # -------------------------------------------------------
-    
 
-    embeddings = build_embeddings(DS_AOAI_ENDPOINT, DS_AOAI_KEY, DS_API_VERSION, DS_EMBED_DEPLOY)
+    embeddings = build_embeddings(AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY)
 
     vs = build_vectorstore(
         embeddings,
-        DS_COSMOS_URL,
-        DS_COSMOS_KEY,
-        DS_DB_NAME,
-        DS_CONT_NAME
+        COSMOS_URL,
+        COSMOS_KEY,
+        DB_NAME,
+        CONT_NAME
     )
 
     vs2 = build_vectorstore2(
         embeddings,
-        DS_COSMOS_URL,
-        DS_COSMOS_KEY,
-        DS_DB_NAME_IMG,
-        DS_CONT_NAME_IMG
+        COSMOS_URL,
+        COSMOS_KEY,
+        DB_NAME_IMG,
+        CONT_NAME_IMG
     )
 
     retriever = vs.as_retriever(search_kwargs={"k": 5})
 
     llm = AzureChatOpenAI(
-        azure_endpoint=DS_AOAI_ENDPOINT,
-        api_key=DS_AOAI_KEY,
-        openai_api_version=DS_API_VERSION,
-        azure_deployment=DS_CHAT_DEPLOY,
+        azure_endpoint=AOAI_ENDPOINT,
+        api_key=AOAI_KEY,
+        openai_api_version=API_VERSION,
+        azure_deployment=CHAT_DEPLOY,
         temperature=0.1,
     ).with_config({"response_format": "json_object"})
 
@@ -1685,6 +1866,9 @@ def ingest_letter_pipeline(
 
     find_and_extract_cis("src_files")
     result = process_quote_from_folder("src_files")
+    print("Letter JSON Path:",letter_json_path)
+    print("Letter Header JSON Path:",letter_header_json_path)
+    print("\n\n\n",)
 
     fill_letter_json(
         src_dir=src_files_dir,
@@ -1748,6 +1932,10 @@ def ingest_letter_pipeline(
     # -------------------------------------------------------
     # STEP 4 — Update Letter DOCX
     # -------------------------------------------------------
+    
+    from pathlib import Path
+    PIPELINE_DIR = Path(__file__).resolve().parent
+    letter_template_docx = PIPELINE_DIR / "Letter_Template.docx"
 
     replace_keys_with_values_no_format_change_v2(
         input_docx=letter_template_docx,
@@ -1811,7 +1999,7 @@ def ingest_letter_pipeline(
 
     df_9_nonpass = extract_iec61010_non_conformances_full_doc(
         document_text=text,
-        deployment_name=DS_CHAT_DEPLOY
+        deployment_name=CHAT_DEPLOY
     )
     print('######'*5)
     print(df_9_nonpass)
@@ -1840,10 +2028,10 @@ def ingest_letter_pipeline(
     # STEP 8 — Save Outputs
     # -------------------------------------------------------
 
-    with open("letter_output.json", "w", encoding="utf-8") as f:
+    with open(output_letter_json, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    with open("letter_header_output.json", "w", encoding="utf-8") as f:
+    with open(output_letter_header_json, "w", encoding="utf-8") as f:
         json.dump(data_header, f, indent=2, ensure_ascii=False)
 
     print("\n==============================")
@@ -1856,33 +2044,42 @@ def ingest_letter_pipeline(
         "letter_docx": output_letter_docx
     }
 
+    # ingest_letter_pipeline(
+    #     blob_urls=blob_urls,
+    #     container_name=BLOB_CONTAINER_NAME,
+    #     src_files_dir="src_files",
+    #     letter_json_path="letter_old.json",
+    #     letter_header_json_path="letter_header_old.json",
+    #     letter_template_docx="Letter_Template.docx",
+    #     output_letter_docx="letter.docx"
+    # )
 
-# ============================================================
-# CLI RUNNER
-# ============================================================
+# # ============================================================
+# # CLI RUNNER
+# # ============================================================
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    # blob_urls = [
-    #     # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Project%20Summary%20Report.pdf',
-    #         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-001_TRF.doc',
-    #         # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-002_TRF.doc',
-    #         # "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Lewco_CiS.pdf" ,
-    #         # "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01414060-2.pdf"
-    #     ]
-    blob_urls =['https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01390131-0.pdf',
-    # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-002_TRF.doc',
-    "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105581614MPK-001A_CR.docx",
-    'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf']
+#     # blob_urls = [
+#     #     # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Project%20Summary%20Report.pdf',
+#     #         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-001_TRF.doc',
+#     #         # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-002_TRF.doc',
+#     #         # "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Lewco_CiS.pdf" ,
+#     #         # "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01414060-2.pdf"
+#     #     ]
+#     blob_urls =['https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01390131-0.pdf',
+#     # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-002_TRF.doc',
+#     "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105581614MPK-001A_CR.docx",
+#     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf']
 
 
 
-    ingest_letter_pipeline(
-        blob_urls=blob_urls,
-        container_name=BLOB_CONTAINER_NAME,
-        src_files_dir="src_files",
-        letter_json_path="letter_old.json",
-        letter_header_json_path="letter_header_old.json",
-        letter_template_docx="Letter_Template.docx",
-        output_letter_docx="letter.docx"# final report
-    )
+#     ingest_letter_pipeline(
+#         blob_urls=blob_urls,
+#         container_name=BLOB_CONTAINER_NAME,
+#         src_files_dir="src_files",
+#         letter_json_path="letter_old.json",
+#         letter_header_json_path="letter_header_old.json",
+#         letter_template_docx="Letter_Template.docx",
+#         output_letter_docx="letter.docx"
+#     )

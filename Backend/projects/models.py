@@ -76,7 +76,8 @@ class FinalizeReportPayload(BaseModel):
     data: dict       # FULL FINAL JSON
 
 
-
-class letter_urls(BaseModel):
-    project_id:str
-    urls:list
+class LetterGeneration(BaseModel):
+    projectId: str
+    trf_urls: str
+    cdr_urls: str
+    other_urls: str
