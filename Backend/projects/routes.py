@@ -522,7 +522,7 @@ def process_citation_documents(
     SOURCE_PREFIX = f"Documents/{project_id}/source_documents/"
     TARGET_PREFIX = f"Documents/{project_id}/Citation_docs/"
 
-    print("▶ Citation processing started:", project_id)
+    
 
     container_client = blob_service.get_container_client(container_name)
 
@@ -1599,8 +1599,6 @@ async def letter_implementation(payload: LetterGeneration):
         }
 
 
-
-
 def delete_by_project_id(container, project_id):
     props = container.read()
     pk_path = props["partitionKey"]["paths"][0]
@@ -1627,3 +1625,163 @@ def delete_by_project_id(container, project_id):
             partition_key=item[pk_name]
         )
     return len(items)
+
+
+@router.post("/upload_trf")
+async def upload_files(
+    background_tasks: BackgroundTasks,
+    projectId: str = Form(...),
+    files: list[UploadFile] = File(...),
+):
+    uploaded_urls = []
+    folder_path = f"{BLOB_PREFIX}/{projectId}/user_uploaded_TRF_file"
+ 
+    # Upload files to Blob Storage
+    for file in files:
+        filename = os.path.basename(file.filename)
+        blob_path = f"{folder_path}/{filename}"
+        blob_client = container_client.get_blob_client(blob_path)
+ 
+        data = await file.read()
+        blob_client.upload_blob(data, overwrite=True)
+ 
+        uploaded_urls.append({
+            "filename": filename,
+            "blob_url": blob_client.url
+        })
+ 
+    if not uploaded_urls:
+        raise HTTPException(status_code=400, detail="No files uploaded")
+ 
+    # Fetch project document
+    query = f"SELECT * FROM c WHERE c.Project_Id = '{projectId}'"
+    docs = list(
+        COSMOS_DB_project_Container.query_items(
+            query=query,
+            enable_cross_partition_query=True
+        )
+    )
+ 
+    if not docs:
+        raise HTTPException(status_code=404, detail="Project not found")
+ 
+    project_doc = docs[0]
+ 
+    # Ensure User_uploaded_trf exists
+    if "User_uploaded_trf" not in project_doc or project_doc["User_uploaded_trf"] is None:
+        project_doc["User_uploaded_trf"] = []
+ 
+    now = datetime.utcnow().isoformat()
+ 
+    # Soft-delete existing active records
+    for record in project_doc["User_uploaded_trf"]:
+        if record.get("Deleted_At") is None:
+            record["Deleted_At"] = now
+ 
+    # Insert new uploads as active records
+    for item in uploaded_urls:
+        project_doc["User_uploaded_trf"].append({
+            "filename": item["filename"],
+            "url": item["blob_url"],
+            "uploaded_at": now,
+            "Deleted_At": None
+        })
+ 
+    COSMOS_DB_project_Container.upsert_item(project_doc)
+ 
+    background_tasks.add_task(
+        process_citation_documents,
+        projectId,
+        blob_service,
+        CONTAINER_NAME
+    )
+ 
+    first_file = uploaded_urls[0]
+ 
+    return {
+        "status": "success",
+        "message": "Files uploaded successfully for TRF",
+        "filename": first_file["filename"],
+        "blob_url": first_file["blob_url"]
+    }
+
+
+@router.post("/upload_cdr")
+async def upload_files(
+    background_tasks: BackgroundTasks,
+    projectId: str = Form(...),
+    files: list[UploadFile] = File(...),
+):
+    uploaded_urls = []
+    folder_path = f"{BLOB_PREFIX}/{projectId}/user_uploaded_CDR_file"
+ 
+    # Upload files to Blob Storage
+    for file in files:
+        filename = os.path.basename(file.filename)
+        blob_path = f"{folder_path}/{filename}"
+        blob_client = container_client.get_blob_client(blob_path)
+ 
+        data = await file.read()
+        blob_client.upload_blob(data, overwrite=True)
+ 
+        uploaded_urls.append({
+            "filename": filename,
+            "blob_url": blob_client.url
+        })
+ 
+    if not uploaded_urls:
+        raise HTTPException(status_code=400, detail="No files uploaded")
+ 
+    # Fetch project document
+    query = f"SELECT * FROM c WHERE c.Project_Id = '{projectId}'"
+    docs = list(
+        COSMOS_DB_project_Container.query_items(
+            query=query,
+            enable_cross_partition_query=True
+        )
+    )
+ 
+    if not docs:
+        raise HTTPException(status_code=404, detail="Project not found")
+ 
+    project_doc = docs[0]
+ 
+    # Ensure User_uploaded_cdr exists
+    if "User_uploaded_cdr" not in project_doc or project_doc["User_uploaded_cdr"] is None:
+        project_doc["User_uploaded_cdr"] = []
+ 
+    now = datetime.utcnow().isoformat()
+ 
+    # Soft-delete existing active records
+    for record in project_doc["User_uploaded_cdr"]:
+        if record.get("Deleted_At") is None:
+            record["Deleted_At"] = now
+ 
+    # Insert new uploads as active records
+    for item in uploaded_urls:
+        project_doc["User_uploaded_cdr"].append({
+            "filename": item["filename"],
+            "url": item["blob_url"],
+            "uploaded_at": now,
+            "Deleted_At": None
+        })
+ 
+    # Save back to Cosmos DB
+    COSMOS_DB_project_Container.upsert_item(project_doc)
+ 
+    # Background processing
+    background_tasks.add_task(
+        process_citation_documents,
+        projectId,
+        blob_service,
+        CONTAINER_NAME
+    )
+ 
+    first_file = uploaded_urls[0]
+ 
+    return {
+        "status": "success",
+        "message": "Files uploaded successfully for CDR ",
+        "filename": first_file["filename"],
+        "blob_url": first_file["blob_url"]
+    }
