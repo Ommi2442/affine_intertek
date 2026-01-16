@@ -1,0 +1,724 @@
+{
+  "pages": [
+    {
+      "page_number": 1,
+      "items": [
+        {
+          "key": "CUSTOMER NAME",
+          "value": "Gener8 LLC",
+          "question": "What is the customer name?",
+          "custom_prompt": "What is the name of the client?",
+          "ai_fillable": true
+        },
+        {
+          "key": "KEY1",
+          "value": "cETLus/CB certification and report for CellFE Infinity MTx - Safety",
+          "question": "Specify the type of testing being conducted",
+          "custom_prompt": "Specify the type of testing being conducted (e.g., 'Safety Testing', 'EMC Testing', 'Performance Testing') followed by the product type and list up to 3 model numbers. Format: 'Testing Type - Product Type - Model1, Model2, Model3'",
+          "ai_fillable": true
+        },
+        {
+          "key": "XXXXXXXXXXXXXXXXXXXXXXXX",
+          "value": "105581614MPK-001A",
+          "question": "What's the REPORT NUMBER",
+          "custom_prompt": "What's the REPORT NUMBER",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 1,
+              "similarity_score": 0.768063167773128,
+              "preview_text": "Page 2 of 51   \n \n \n \n \n \nDeliverables: \n \n105581614MPK-001A (Letter report) \n \nDraft IEC 61010-1 Report shared  \n \n \nDeliverable  Listing  LPC  NC Rpt  CB  TRF  Letter  Data Only"
+            },
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 49,
+              "similarity_score": 0.755110129595855,
+              "preview_text": "Page 50 of 51  \nIEC 61010-1 \nClause Requirement + Test Result - Remark Verdict \n \n \n \n \n \n4.1.2 TABLE: Critical components information  \nObject / part No. Manufacturer/ \ntrademark \nType / model Technical data Standard Mark(s) of \nconformity1) \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \nSupplementary information: \n1) Provided evidence ensures the agreed level of compliance. See OD"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7518118586738233,
+              "preview_text": "CLIENT INFORMATION SHEET (CIS) \nETL Certification and Follow‐Up Services \n \nSFT‐ETL‐OP‐19c  545 E. Algonquin Road, \n  Arlington Heights, IL 60005  Rev: June 28, 2018 \nApplicant:       (Company who owns the rights to the Listing Report and will appear on Intertek’s website) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nDBA (if applicable):  ____________________________________________________________ _____________ \n \nStreet Address:  ________"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 10,
+              "similarity_score": 0.7505415476811199,
+              "preview_text": "by any means as confidential by the disclosing party at the time of such disclosure; and/or (ii) is information, howsoever disclosed, which would reasonably be \nconsidered to be confidential by the receiving party.\n(d) Intellectual Property Right(s) means copyrights, trademarks (registered or unregistered), patents, patent applications (including the right to apply for a patent), \nservice marks, design rights (registered or unregistered), trade secrets and other like\nrights howsoever existing.\n("
+            },
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 47,
+              "similarity_score": 0.7501979383528034,
+              "preview_text": "Page 48 of 51  \nIEC 61010-1 \nClause Requirement + Test Result - Remark Verdict \n \n \n \n \n \n \nPHOTO OF EQUIPMENT DESCRIPTION \n4.  \n \n \nRight view of the CellFe Infinity MTx \n \n5. \n \n \nTop internal view of the CellFe Infinity MTx \n \n \n6.  \n \n \nRight side internal view of the CellFe \nInfinity MTx"
+            }
+          ],
+          "image_support": [],
+          "evidence_type": "text",
+          "confidence": 95
+        },
+        {
+          "key": "KEY3",
+          "value": "September 8, 2023",
+          "question": "What's the Issue Date",
+          "custom_prompt": "What's the Issue Date?",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7711108686500717,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nEstimated Production Date:  ____________________________________ _____________________________________ \n \nLabeling Method:            Purchased from Intertek                  Obtained from another source (Direct Imprint) \n \nCompleted By: ____________________________________________________ Date: ______________________"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 9,
+              "similarity_score": 0.7598896807437764,
+              "preview_text": "Name Printed\nBeing an authorized representative of:\n__________________________________________________________ \nLegally Registered Business name of the Company who is authorizing commencement of this quotation\n_________________________  ___________________________     ____________________ \nAcceptance Date Preferred Project Start Date    Purchase Order #\nThank you for choosing Intertek!\nSincerely,\nCharlotte Johnson\nSales Representative\n1365 Adams Court\nMenlo Park, California 94025\nUnited States\n1"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7567978368230908,
+              "preview_text": "CLIENT INFORMATION SHEET (CIS) \nETL Certification and Follow‐Up Services \n \nSFT‐ETL‐OP‐19c  545 E. Algonquin Road, \n  Arlington Heights, IL 60005  Rev: June 28, 2018 \nApplicant:       (Company who owns the rights to the Listing Report and will appear on Intertek’s website) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nDBA (if applicable):  ____________________________________________________________ _____________ \n \nStreet Address:  ________"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 11,
+              "similarity_score": 0.7484834417550021,
+              "preview_text": "charged on a time and material basis.\n5.5 Intertek shall invoice the Client for the Charges and expenses, if any. The Client shall pay each invoice within thirty (30) days of receiving it.\n5.6 If any invoice is not paid on the due date for payment, Intertek shall have the right to charge, and the Client shall pay, reasonable collection costs and interest on \nthe unpaid amount, calculated from the due date of the invoice to the date of receipt of the amount in full at a rate equivalent to 3% per"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7428295832671609,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            }
+          ],
+          "image_support": [],
+          "evidence_type": "text",
+          "confidence": 100
+        },
+        {
+          "key": "[DD-mmmm-yyyy]",
+          "value": "June 28, 2018",
+          "question": "What's the revised Date?",
+          "custom_prompt": "What's the revised Date?",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7594898846586537,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nEstimated Production Date:  ____________________________________ _____________________________________ \n \nLabeling Method:            Purchased from Intertek                  Obtained from another source (Direct Imprint) \n \nCompleted By: ____________________________________________________ Date: ______________________"
+            },
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 49,
+              "similarity_score": 0.7507650222672126,
+              "preview_text": "Page 50 of 51  \nIEC 61010-1 \nClause Requirement + Test Result - Remark Verdict \n \n \n \n \n \n4.1.2 TABLE: Critical components information  \nObject / part No. Manufacturer/ \ntrademark \nType / model Technical data Standard Mark(s) of \nconformity1) \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \nSupplementary information: \n1) Provided evidence ensures the agreed level of compliance. See OD"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7469796582855178,
+              "preview_text": "CLIENT INFORMATION SHEET (CIS) \nETL Certification and Follow‐Up Services \n \nSFT‐ETL‐OP‐19c  545 E. Algonquin Road, \n  Arlington Heights, IL 60005  Rev: June 28, 2018 \nApplicant:       (Company who owns the rights to the Listing Report and will appear on Intertek’s website) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nDBA (if applicable):  ____________________________________________________________ _____________ \n \nStreet Address:  ________"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 6,
+              "similarity_score": 0.7384103916989696,
+              "preview_text": "Quote No:  Qu-01390131-0\n7 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nProject Conditions:\nUnless outlined in the Project Summary, the following conditions apply to this project:\nDecision Rule:\nUnless otherwise specified by the standard, specification or program, instruments used in the evaluation \nare of sufficient accuracy to accept measured values in the determination of compliance.  No further \nconsideration of measurement uncertainty is needed.  Should th"
+            },
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 42,
+              "similarity_score": 0.7382565634565253,
+              "preview_text": "Page 43 of 51  \n \n \n \nIEC 61010-1 \nClause Requirement + Test Result - Remark Verdict \n    \n  Repeated RISK evaluation without new RISKS \n introduced \n  \n RISKS remaining after RISK assessment addressed in \ninstructions to RESPONSIBLE BODY: \n — \n Information contained how to mitigate these RISKS   \n Following principles in methods of RISK reduction \napplied by manufacturer in given order: \n — \n 1) RISKS eliminated or reduced as far as possible   \n 2) Protective measures taken for RISKS that canno"
+            }
+          ],
+          "image_support": [],
+          "evidence_type": "text",
+          "confidence": 100
+        },
+        {
+          "key": "pages",
+          "value": "",
+          "question": "",
+          "custom_prompt": "Enter the total number of pages in this report (numeric value only, e.g., '7' or '12')",
+          "ai_fillable": false
+        }
+      ]
+    },
+    {
+      "page_number": 2,
+      "items": [
+        {
+          "key": "«IssuedDate»",
+          "value": "September 8, 2023",
+          "question": "What's the Issue Date?",
+          "custom_prompt": "What's the Issue Date",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7632442275062371,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nEstimated Production Date:  ____________________________________ _____________________________________ \n \nLabeling Method:            Purchased from Intertek                  Obtained from another source (Direct Imprint) \n \nCompleted By: ____________________________________________________ Date: ______________________"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 9,
+              "similarity_score": 0.7581203301387741,
+              "preview_text": "Name Printed\nBeing an authorized representative of:\n__________________________________________________________ \nLegally Registered Business name of the Company who is authorizing commencement of this quotation\n_________________________  ___________________________     ____________________ \nAcceptance Date Preferred Project Start Date    Purchase Order #\nThank you for choosing Intertek!\nSincerely,\nCharlotte Johnson\nSales Representative\n1365 Adams Court\nMenlo Park, California 94025\nUnited States\n1"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7542647905124502,
+              "preview_text": "CLIENT INFORMATION SHEET (CIS) \nETL Certification and Follow‐Up Services \n \nSFT‐ETL‐OP‐19c  545 E. Algonquin Road, \n  Arlington Heights, IL 60005  Rev: June 28, 2018 \nApplicant:       (Company who owns the rights to the Listing Report and will appear on Intertek’s website) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nDBA (if applicable):  ____________________________________________________________ _____________ \n \nStreet Address:  ________"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 11,
+              "similarity_score": 0.750252297612653,
+              "preview_text": "charged on a time and material basis.\n5.5 Intertek shall invoice the Client for the Charges and expenses, if any. The Client shall pay each invoice within thirty (30) days of receiving it.\n5.6 If any invoice is not paid on the due date for payment, Intertek shall have the right to charge, and the Client shall pay, reasonable collection costs and interest on \nthe unpaid amount, calculated from the due date of the invoice to the date of receipt of the amount in full at a rate equivalent to 3% per"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 6,
+              "similarity_score": 0.7433320895587563,
+              "preview_text": "Quote No:  Qu-01390131-0\n7 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nProject Conditions:\nUnless outlined in the Project Summary, the following conditions apply to this project:\nDecision Rule:\nUnless otherwise specified by the standard, specification or program, instruments used in the evaluation \nare of sufficient accuracy to accept measured values in the determination of compliance.  No further \nconsideration of measurement uncertainty is needed.  Should th"
+            }
+          ],
+          "image_support": [],
+          "evidence_type": "text",
+          "confidence": 100
+        },
+        {
+          "key": "«ReportNumber»",
+          "value": "105581614MPK-001A",
+          "question": "What's the REPORT NUMBER",
+          "custom_prompt": "What's the REPORT NUMBER? If not found, give the response as 'Not Found' ",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 6,
+              "similarity_score": 0.7594437128744332,
+              "preview_text": "No such document provided \nwith equipment \nF \n Safety documentation for service personnel authorized \nby the manufacturer \n  \n Documentation necessary for safe operation is \nprovided in printed media or \n  \n in electronic media if available at any time   \n Documentation includes:  — \n a) Intended use None provided F \n b) Technical specification None provided F \n c) Name and address of manufacturer or supplier Provided on page 1 of the IFU \n(IFU-001 Rev. A) as follows:  \nCellFE Biotech, Inc.  \n98"
+            },
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 1,
+              "similarity_score": 0.7480285239896334,
+              "preview_text": "Page 2 of 51   \n \n \n \n \n \nDeliverables: \n \n105581614MPK-001A (Letter report) \n \nDraft IEC 61010-1 Report shared  \n \n \nDeliverable  Listing  LPC  NC Rpt  CB  TRF  Letter  Data Only"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7452809466886091,
+              "preview_text": "CLIENT INFORMATION SHEET (CIS) \nETL Certification and Follow‐Up Services \n \nSFT‐ETL‐OP‐19c  545 E. Algonquin Road, \n  Arlington Heights, IL 60005  Rev: June 28, 2018 \nApplicant:       (Company who owns the rights to the Listing Report and will appear on Intertek’s website) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nDBA (if applicable):  ____________________________________________________________ _____________ \n \nStreet Address:  ________"
+            },
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 49,
+              "similarity_score": 0.74381287627805,
+              "preview_text": "Page 50 of 51  \nIEC 61010-1 \nClause Requirement + Test Result - Remark Verdict \n \n \n \n \n \n4.1.2 TABLE: Critical components information  \nObject / part No. Manufacturer/ \ntrademark \nType / model Technical data Standard Mark(s) of \nconformity1) \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \nSupplementary information: \n1) Provided evidence ensures the agreed level of compliance. See OD"
+            },
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 7,
+              "similarity_score": 0.7425340393379337,
+              "preview_text": "Page 8 of 51  \n \n \n \nIEC 61010-1 \nClause Requirement + Test Result - Remark Verdict \n    \n g) Guidance provided to check correct function of \nthe equipment, if incorrect reading may cause a \nHAZARD from harmful or corrosive substances of \nHAZARDOUS live parts \n  \n h) Instructions for lifting and carrying No instructions for lifting or \ncarrying \nF \n Warning statements and a clear explanation of \nwarning symbols: \n — \n – provided in the documentation; or   \n – information is marked on the equipme"
+            }
+          ],
+          "image_support": [],
+          "evidence_type": "text",
+          "confidence": 95
+        },
+        {
+          "key": "«ProjectNumber»",
+          "value": "G01390131-0",
+          "question": "What's the Project Number?",
+          "custom_prompt": "What's the Project Number? Remove anything after 'MPK' including 'MPK'and append a 'G' in the start",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 9,
+              "similarity_score": 0.7506696852384902,
+              "preview_text": "Name Printed\nBeing an authorized representative of:\n__________________________________________________________ \nLegally Registered Business name of the Company who is authorizing commencement of this quotation\n_________________________  ___________________________     ____________________ \nAcceptance Date Preferred Project Start Date    Purchase Order #\nThank you for choosing Intertek!\nSincerely,\nCharlotte Johnson\nSales Representative\n1365 Adams Court\nMenlo Park, California 94025\nUnited States\n1"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 1,
+              "similarity_score": 0.7278891736970464,
+              "preview_text": "Quote No:  Qu-01390131-0\n2 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nSeptember 8, 2023\nShivam Patel\nGener8 LLC\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nDear Shivam,\nIt’s our pleasure to present you this proposal which has been carefully prepared based upon the \ninformation provided by Gener8 LLC.\nAfter reviewing the proposal, please complete the following steps to initiate the project:\n•Complete the Project Authorization Page and return the proposal to accep"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 7,
+              "similarity_score": 0.7179159787460401,
+              "preview_text": "are not established, project will be considered pre-pay and customer will receive a deposit invoice for \namount to be prepaid. Receipt of payment is required before work can begin on the project. \nPlease issue purchase order to Intertek Testing Services NA, Inc.\nSamples and Documentation:\nThe following is required prior to starting your evaluation:\n•One complete and fully operational sample of each product to be evaluated.  Please consult \nwith your Intertek project manager for approval of repre"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 8,
+              "similarity_score": 0.7165741712797626,
+              "preview_text": "Report Delivery:  We are proud to offer you complete electronic Test Report delivery, management, \nand archiving via a secure customer portal at no additional cost to you. To login, register, or find more \ndetails visit www.intertek.com/client-portals.\nProject Cancellations: Postponements or cancellations will be accepted if sufficient written notice is \ngiven to Intertek.  In the event of a cancellation within two business days of your scheduled project start \ndate, a $1,500.00 cancellation fee"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 0,
+              "similarity_score": 0.7157098192022305,
+              "preview_text": "INTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nPROJECT PROPOSAL\nGENER8 LLC\nShivam Patel\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nQUOTE NO\nQu-01390131-0\nPROJECT NAME\ncETLus/CB certification and report for CellFE Infinity MTx - Safety\nCOMPILED BY\nCharlotte Johnson\nDATE\nSeptember 8, 2023"
+            }
+          ],
+          "image_support": [],
+          "evidence_type": "text",
+          "confidence": 100
+        },
+        {
+          "key": "«AppContactName»",
+          "value": "Shivam Patel",
+          "question": "What's the name of the contact person  of the Client",
+          "custom_prompt": "What's the name of the contact person of the Client. Incase there is no answer, return 'Not Found' ",
+          "ai_fillable": true
+        },
+        {
+          "key": "«AppPhone»",
+          "value": "(650) 940-9898",
+          "question": "",
+          "custom_prompt": "Enter the phone number of the applicant contact person including area code (e.g., '(555) 123-4567' or '+1-555-123-4567'). Incase there is no answer, return 'Not Found' ",
+          "ai_fillable": true
+        },
+        {
+          "key": "«AppCOMPANYNAME»",
+          "value": "Gener8 LLC",
+          "question": "",
+          "custom_prompt": "Enter the full legal name of the applicant/client company (e.g., 'ABC Technologies Inc.' or 'XYZ Manufacturing Corporation')",
+          "ai_fillable": true
+        },
+        {
+          "key": "«AppFax»",
+          "value": "Not Found",
+          "question": "",
+          "custom_prompt": "Enter the fax number of the applicant contact person including area code (e.g., '(555) 123-4568'). Incase there is no answer, return 'Not Found' ",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7767705937513432,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7713017725322487,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7639097004281509,
+              "preview_text": "CLIENT INFORMATION SHEET (CIS) \nETL Certification and Follow‐Up Services \n \nSFT‐ETL‐OP‐19c  545 E. Algonquin Road, \n  Arlington Heights, IL 60005  Rev: June 28, 2018 \nApplicant:       (Company who owns the rights to the Listing Report and will appear on Intertek’s website) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nDBA (if applicable):  ____________________________________________________________ _____________ \n \nStreet Address:  ________"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 9,
+              "similarity_score": 0.7601102657590425,
+              "preview_text": "Name Printed\nBeing an authorized representative of:\n__________________________________________________________ \nLegally Registered Business name of the Company who is authorizing commencement of this quotation\n_________________________  ___________________________     ____________________ \nAcceptance Date Preferred Project Start Date    Purchase Order #\nThank you for choosing Intertek!\nSincerely,\nCharlotte Johnson\nSales Representative\n1365 Adams Court\nMenlo Park, California 94025\nUnited States\n1"
+            },
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 6,
+              "similarity_score": 0.759650322783527,
+              "preview_text": "No such document provided \nwith equipment \nF \n Safety documentation for service personnel authorized \nby the manufacturer \n  \n Documentation necessary for safe operation is \nprovided in printed media or \n  \n in electronic media if available at any time   \n Documentation includes:  — \n a) Intended use None provided F \n b) Technical specification None provided F \n c) Name and address of manufacturer or supplier Provided on page 1 of the IFU \n(IFU-001 Rev. A) as follows:  \nCellFE Biotech, Inc.  \n98"
+            }
+          ],
+          "image_support": [],
+          "evidence_type": "text",
+          "confidence": 100
+        },
+        {
+          "key": "«AppStreetAddress»",
+          "value": "2560 Junction Ave, San Jose, CA 95134",
+          "question": "What's the City, State and Zip of the Client's Address?",
+          "custom_prompt": "What's the Street Address of the Client",
+          "ai_fillable": true
+        },
+        {
+          "key": "«AppEmail»",
+          "value": "spatel@gener8.net",
+          "question": "",
+          "custom_prompt": "Enter the email address of the applicant contact person (e.g., 'john.smith@company.com'). Incase there is no answer, return 'Not Found'",
+          "ai_fillable": true
+        },
+        {
+          "key": "«AppCityStZip»",
+          "value": "95134",
+          "question": "",
+          "custom_prompt": "Enter the city, state/province, and ZIP/postal code of the applicant company (e.g., 'Plano, TX 75074' or 'Toronto, ON M5H 2N2')",
+          "ai_fillable": true
+        },
+        {
+          "key": "<ETL Listing/CB/Other Evaluation>",
+          "value": "cETLus/CB certification and report for CellFE Infinity MTx - Safety",
+          "question": "",
+          "custom_prompt": "Specify the type of evaluation being conducted. Choose one: 'ETL Listing' for North American certification, 'CB' for international CB scheme certification, or specify another evaluation type (e.g., 'Field Evaluation', 'Special Inspection')",
+          "ai_fillable": true
+        },
+        {
+          "key": "«ProductType»",
+          "value": "No specific product type identified in provided text",
+          "question": "",
+          "custom_prompt": "Enter the general product type or category being evaluated (e.g., 'Industrial Control Panel', 'Heating Equipment', 'Power Supply', 'Temperature Controller')",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 2,
+              "similarity_score": 0.8010051880654985,
+              "preview_text": "documents\n•Assumes single model to be tested based on determination of worst case sample. Additional \ntesting across multiple model versions may result in a change order.\n•Assumes Equipment/Product is not relied upon or critical for safety (i.e., is not relied upon to \nperform actions such as shutdown upstream or downstream processes, etc.)\n•Assumes all critical components including off the shelf power supplies are approved for their \nintended markets and used within their intended ratings. Comp"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 6,
+              "similarity_score": 0.7956917591598691,
+              "preview_text": "for the desired countries of entry will be determined. \nShould your product be found in compliance, a CB Test Certificate and Report will be issued. These \ndocuments can then be presented to any National Certification Body (NCB) as an application to apply \ntheir respective Certification Mark. If non-compliances are found, a formal report of our findings will be \nissued to assist you in making corrective actions. Please note that NCB Application Procedures can vary \nand the issuance of their \"lic"
+            },
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 3,
+              "similarity_score": 0.7862647972123576,
+              "preview_text": "equipment.  \nF \n Equipment is marked as follows:  — \n a) Nature of supply:  — \n 1) a.c. RATED MAINS frequency or range of \nfrequencies ................................................... : \nNo electrical ratings on \nequipment.  — \n 2) d.c. with symbol 1 ......................................... :  — \n b) RATED supply voltage(s) or range ........................ : No electrical ratings on \nequipment.  \n— \n c) Max. RATED power (W or VA) or input current ...... : No electrical ratings on \nequipment"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 6,
+              "similarity_score": 0.7853998984119841,
+              "preview_text": "each factory.\nCENELEC EN Test Reports for the European Union  \nYour product will be evaluated to determine compliance with the applicable requirements of the safety \nstandards referenced in this proposal. Should the product be found in compliance, a European Test \nReport will be issued which can be incorporated into your Technical File in order to support your CE \nMarking effort. If non-compliances are found, additional fees may apply, and a formal report will be \nissued in order to assist you i"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 6,
+              "similarity_score": 0.7839586096123677,
+              "preview_text": "Conformity in order to apply the CE Mark to your product. Please note, these test reports provide no \ncertification for the European Union.\nETL Listing Certification for North America:\nIntertek will evaluate your product(s) to the applicable requirements of the US and Canadian standards \nreferenced in this proposal. If your product(s) are found to be in compliance an ETL Listing Report will be \nissued. If non-compliances are found, we will issue format report to assist you with making corrective"
+            }
+          ],
+          "image_support": [],
+          "evidence_type": "text",
+          "confidence": 10
+        },
+        {
+          "key": "«ProductCovModels»",
+          "value": "CellFe Infinity MTx",
+          "question": "",
+          "custom_prompt": "List all model numbers covered by this evaluation, separated by commas (e.g., 'Model ABC-100, ABC-200, ABC-300')",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 2,
+              "similarity_score": 0.7898152791909433,
+              "preview_text": "documents\n•Assumes single model to be tested based on determination of worst case sample. Additional \ntesting across multiple model versions may result in a change order.\n•Assumes Equipment/Product is not relied upon or critical for safety (i.e., is not relied upon to \nperform actions such as shutdown upstream or downstream processes, etc.)\n•Assumes all critical components including off the shelf power supplies are approved for their \nintended markets and used within their intended ratings. Comp"
+            },
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 49,
+              "similarity_score": 0.7624492477007621,
+              "preview_text": "Page 50 of 51  \nIEC 61010-1 \nClause Requirement + Test Result - Remark Verdict \n \n \n \n \n \n4.1.2 TABLE: Critical components information  \nObject / part No. Manufacturer/ \ntrademark \nType / model Technical data Standard Mark(s) of \nconformity1) \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \nSupplementary information: \n1) Provided evidence ensures the agreed level of compliance. See OD"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 3,
+              "similarity_score": 0.7578803890306097,
+              "preview_text": "Quote No:  Qu-01390131-0\n4 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nSamples and Documentation Required: \nPlease provide the following prior the commencement of your evaluation. To avoid unnecessary delays, \nplease mark quote number Qu-01390131-0 on the outside of shipping materials containing samples or \ndocumentation.\nSamples:\n•1 fully functional sample (2 preferred), with any associated equipment/configurations for \nmaximum heat rise (generally assumed to"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 6,
+              "similarity_score": 0.7539790435320826,
+              "preview_text": "for the desired countries of entry will be determined. \nShould your product be found in compliance, a CB Test Certificate and Report will be issued. These \ndocuments can then be presented to any National Certification Body (NCB) as an application to apply \ntheir respective Certification Mark. If non-compliances are found, a formal report of our findings will be \nissued to assist you in making corrective actions. Please note that NCB Application Procedures can vary \nand the issuance of their \"lic"
+            },
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 46,
+              "similarity_score": 0.7513632568692925,
+              "preview_text": "Page 47 of 51  \nIEC 61010-1 \nClause Requirement + Test Result - Remark Verdict \n \n \n \n \n \nPHOTO OF EQUIPMENT DESCRIPTION \n1.  \n \n \n \nFront view of the CellFe Infinity MTx \n2.  \n \n \n \nRear view of the CellFe Infinity MTx \n3.  \n \n \n \nLeft view of the CellFe Infinity MTx"
+            }
+          ],
+          "image_support": [],
+          "evidence_type": "text",
+          "confidence": 95
+        },
+        {
+          "key": "«AppContactName»",
+          "value": "Shivam Patel",
+          "question": "Enter the full name of the primary contact person at the applicant/client company (e.g., 'John Smith' or 'Sarah Johnson')",
+          "custom_prompt": "Enter the full name of the primary contact person at the applicant/client company (e.g., 'John Smith' or 'Sarah Johnson')",
+          "ai_fillable": true
+        },
+        {
+          "key": "«StandardTitleNoEdDate»",
+          "value": "",
+          "question": "",
+          "custom_prompt": "Enter the complete standard reference(s) used for this evaluation including title, number, edition, and date. Format: 'Standard Number: Standard Title, Edition/Date' (e.g., 'UL 508A: Industrial Control Panels, 3rd Edition 2013' or 'IEC 60950-1: Information Technology Equipment - Safety, 2nd Edition 2005'). If multiple standards, list each on a new line",
+          "ai_fillable": false
+        },
+        {
+          "key": "evaluation (Stage 1) or/and testing (Stage 2)",
+          "value": "",
+          "question": "",
+          "custom_prompt": "Specify which stage(s) of the evaluation process identified the non-conformances. Choose: 'during our evaluation (Stage 1)', 'during our testing (Stage 2)', or 'during our evaluation (Stage 1) and testing (Stage 2)'",
+          "ai_fillable": false
+        },
+        {
+          "key": "<CB Test Report/ETL CDR/Deliverable>",
+          "value": "",
+          "question": "",
+          "custom_prompt": "Specify the type of deliverable document that will be provided. Choose: 'CB Test Report' for CB scheme, 'ETL CDR' (Construction Details Report) for ETL listing, or specify another deliverable type (e.g., 'Field Evaluation Report', 'Technical Assessment')",
+          "ai_fillable": false
+        },
+        {
+          "key": "<will be sent under separate cover/attached to this letter>",
+          "value": "",
+          "question": "",
+          "custom_prompt": "Specify how the draft deliverable will be provided. Choose: 'will be sent under separate cover' if sending separately, or 'attached to this letter' if including with this letter report",
+          "ai_fillable": false
+        },
+        {
+          "key": "<product(s)/system/etc>",
+          "value": "",
+          "question": "",
+          "custom_prompt": "Specify what is being evaluated. Choose the most appropriate: 'product' for a single item, 'products' for multiple items, 'system' for an integrated system, or specify another appropriate term (e.g., 'equipment', 'assembly', 'installation')",
+          "ai_fillable": false
+        }
+      ]
+    },
+    {
+      "page_number": 3,
+      "items": [
+        {
+          "key": "<additional/modified>",
+          "value": "",
+          "question": "",
+          "custom_prompt": "Specify what type of samples or documentation are needed. Choose: 'additional' if new samples/documents are required, 'modified' if changes to existing samples/documents are needed, or 'additional/modified' if both may apply",
+          "ai_fillable": false
+        },
+        {
+          "key": "Initial Documentation Review",
+          "value": "",
+          "question": "",
+          "custom_prompt": "Specify when the non-conformances were identified. If found during initial documentation review, keep as 'Initial Documentation Review'. If found during another phase, replace with the appropriate phase name (e.g., 'Physical Inspection', 'Performance Testing', 'Final Evaluation')",
+          "ai_fillable": false
+        }
+      ]
+    },
+    {
+      "page_number": 5,
+      "items": [
+        {
+          "key": "«ProjectNumber»",
+          "value": "Qu-01390131-0",
+          "question": "",
+          "custom_prompt": "Extract the project number from the document. This is typically found in the header or introductory section and follows a format like 'Project No. XXXXX'",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 9,
+              "similarity_score": 0.7626741586466249,
+              "preview_text": "Name Printed\nBeing an authorized representative of:\n__________________________________________________________ \nLegally Registered Business name of the Company who is authorizing commencement of this quotation\n_________________________  ___________________________     ____________________ \nAcceptance Date Preferred Project Start Date    Purchase Order #\nThank you for choosing Intertek!\nSincerely,\nCharlotte Johnson\nSales Representative\n1365 Adams Court\nMenlo Park, California 94025\nUnited States\n1"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7507597564675337,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7436632010445773,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nEstimated Production Date:  ____________________________________ _____________________________________ \n \nLabeling Method:            Purchased from Intertek                  Obtained from another source (Direct Imprint) \n \nCompleted By: ____________________________________________________ Date: ______________________"
+            },
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 6,
+              "similarity_score": 0.7408968307534676,
+              "preview_text": "No such document provided \nwith equipment \nF \n Safety documentation for service personnel authorized \nby the manufacturer \n  \n Documentation necessary for safe operation is \nprovided in printed media or \n  \n in electronic media if available at any time   \n Documentation includes:  — \n a) Intended use None provided F \n b) Technical specification None provided F \n c) Name and address of manufacturer or supplier Provided on page 1 of the IFU \n(IFU-001 Rev. A) as follows:  \nCellFE Biotech, Inc.  \n98"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 7,
+              "similarity_score": 0.7396536031050206,
+              "preview_text": "are not established, project will be considered pre-pay and customer will receive a deposit invoice for \namount to be prepaid. Receipt of payment is required before work can begin on the project. \nPlease issue purchase order to Intertek Testing Services NA, Inc.\nSamples and Documentation:\nThe following is required prior to starting your evaluation:\n•One complete and fully operational sample of each product to be evaluated.  Please consult \nwith your Intertek project manager for approval of repre"
+            }
+          ],
+          "image_support": [],
+          "evidence_type": "text",
+          "confidence": 95
+        },
+        {
+          "key": "<and conduct repeat testing, if required>",
+          "value": "",
+          "question": "",
+          "custom_prompt": "Determine if repeat testing is required based on the evaluation results. Fill with 'and conduct repeat testing, if required' if testing issues were identified, otherwise leave blank",
+          "ai_fillable": false
+        },
+        {
+          "key": "<will/will not>",
+          "value": "",
+          "question": "",
+          "custom_prompt": "Select 'will' if modified samples or additional documentation WILL be required for follow-up project based on the non-conformances identified",
+          "ai_fillable": false
+        },
+        {
+          "key": "<page no.>",
+          "value": "",
+          "question": "Insert page number reference '4' or current page number where this section appears",
+          "custom_prompt": "Insert page number reference '4' or current page number where this section appears",
+          "ai_fillable": false
+        },
+        {
+          "key": "Theresa Reinhardt via theresa.reinhardt@intertek.com",
+          "value": "",
+          "question": "Extract the Project Manager's name and email from the document. Format as: 'Name via email@domain.com'. Look for contact information in the document header or signature sections",
+          "custom_prompt": "Extract the Project Manager's name and email from the document. Format as: 'Name via email@domain.com'. Look for contact information in the document header or signature sections",
+          "ai_fillable": false
+        },
+        {
+          "key": "Completed By",
+          "value": "No name found in provided TRF text.",
+          "question": "Completed By",
+          "custom_prompt": "Mention name of the person in the field 'Tested by (name, function, signature):'",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 1,
+              "similarity_score": 0.7631869790723624,
+              "preview_text": "delivering innovative Assurance, Testing, Inspection and Certification solutions for our customers’ \noperations and supply chains. Our unmatched expertise in Total Quality Assurance enables our \ncustomers to power ahead safely.\nPlease let me know if you have any questions regarding this proposal or the testing and certification \nprocess. We thank you for the opportunity to be of service and hope to work with you soon.\nYours sincerely,\nCharlotte Johnson\nSales Representative"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 9,
+              "similarity_score": 0.7556001394580588,
+              "preview_text": "Name Printed\nBeing an authorized representative of:\n__________________________________________________________ \nLegally Registered Business name of the Company who is authorizing commencement of this quotation\n_________________________  ___________________________     ____________________ \nAcceptance Date Preferred Project Start Date    Purchase Order #\nThank you for choosing Intertek!\nSincerely,\nCharlotte Johnson\nSales Representative\n1365 Adams Court\nMenlo Park, California 94025\nUnited States\n1"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 7,
+              "similarity_score": 0.7443199910053676,
+              "preview_text": "Sample Disposition:\nIf testing is to take place at an Intertek location, please indicate how you would like any test samples not\nconsumed during testing to be handled:\n[ ] Dispose of Sample(s):  If required, sample disposal fees will be invoiced in addition to quoted fees."
+            },
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 49,
+              "similarity_score": 0.7420767671338478,
+              "preview_text": "Page 50 of 51  \nIEC 61010-1 \nClause Requirement + Test Result - Remark Verdict \n \n \n \n \n \n4.1.2 TABLE: Critical components information  \nObject / part No. Manufacturer/ \ntrademark \nType / model Technical data Standard Mark(s) of \nconformity1) \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \nSupplementary information: \n1) Provided evidence ensures the agreed level of compliance. See OD"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.738404820357411,
+              "preview_text": "CLIENT INFORMATION SHEET (CIS) \nETL Certification and Follow‐Up Services \n \nSFT‐ETL‐OP‐19c  545 E. Algonquin Road, \n  Arlington Heights, IL 60005  Rev: June 28, 2018 \nApplicant:       (Company who owns the rights to the Listing Report and will appear on Intertek’s website) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nDBA (if applicable):  ____________________________________________________________ _____________ \n \nStreet Address:  ________"
+            }
+          ],
+          "image_support": [],
+          "evidence_type": "text",
+          "confidence": 10
+        },
+        {
+          "key": "«Reviewer»",
+          "value": "Reviewer name not found in provided text.",
+          "question": "What is the name of the reviewer?",
+          "custom_prompt": "Extract the name of the person who reviewed this evaluation report. Look for reviewer information in signature sections or document metadata",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7885523797592885,
+              "preview_text": "CLIENT INFORMATION SHEET (CIS) \nETL Certification and Follow‐Up Services \n \nSFT‐ETL‐OP‐19c  545 E. Algonquin Road, \n  Arlington Heights, IL 60005  Rev: June 28, 2018 \nApplicant:       (Company who owns the rights to the Listing Report and will appear on Intertek’s website) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nDBA (if applicable):  ____________________________________________________________ _____________ \n \nStreet Address:  ________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7793576647215615,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7770017291977528,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 49,
+              "similarity_score": 0.7660747963483835,
+              "preview_text": "Page 50 of 51  \nIEC 61010-1 \nClause Requirement + Test Result - Remark Verdict \n \n \n \n \n \n4.1.2 TABLE: Critical components information  \nObject / part No. Manufacturer/ \ntrademark \nType / model Technical data Standard Mark(s) of \nconformity1) \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \nSupplementary information: \n1) Provided evidence ensures the agreed level of compliance. See OD"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 9,
+              "similarity_score": 0.7651183675980329,
+              "preview_text": "Name Printed\nBeing an authorized representative of:\n__________________________________________________________ \nLegally Registered Business name of the Company who is authorizing commencement of this quotation\n_________________________  ___________________________     ____________________ \nAcceptance Date Preferred Project Start Date    Purchase Order #\nThank you for choosing Intertek!\nSincerely,\nCharlotte Johnson\nSales Representative\n1365 Adams Court\nMenlo Park, California 94025\nUnited States\n1"
+            }
+          ],
+          "image_support": [],
+          "evidence_type": "text",
+          "confidence": 10
+        },
+        {
+          "key": "«ReviewerTitle»",
+          "value": "Sales Representative",
+          "question": "Extract the title/role of the reviewer from the document. Common titles include 'Senior Engineer', 'Project Manager', 'Technical Reviewer', etc.",
+          "custom_prompt": "Extract the title/role of the reviewer from the document. Common titles include 'Senior Engineer', 'Project Manager', 'Technical Reviewer', etc.",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7637295791348733,
+              "preview_text": "CLIENT INFORMATION SHEET (CIS) \nETL Certification and Follow‐Up Services \n \nSFT‐ETL‐OP‐19c  545 E. Algonquin Road, \n  Arlington Heights, IL 60005  Rev: June 28, 2018 \nApplicant:       (Company who owns the rights to the Listing Report and will appear on Intertek’s website) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nDBA (if applicable):  ____________________________________________________________ _____________ \n \nStreet Address:  ________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7629821414190758,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7574492324210744,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 9,
+              "similarity_score": 0.7540245241130061,
+              "preview_text": "Name Printed\nBeing an authorized representative of:\n__________________________________________________________ \nLegally Registered Business name of the Company who is authorizing commencement of this quotation\n_________________________  ___________________________     ____________________ \nAcceptance Date Preferred Project Start Date    Purchase Order #\nThank you for choosing Intertek!\nSincerely,\nCharlotte Johnson\nSales Representative\n1365 Adams Court\nMenlo Park, California 94025\nUnited States\n1"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 1,
+              "similarity_score": 0.7497948943937148,
+              "preview_text": "delivering innovative Assurance, Testing, Inspection and Certification solutions for our customers’ \noperations and supply chains. Our unmatched expertise in Total Quality Assurance enables our \ncustomers to power ahead safely.\nPlease let me know if you have any questions regarding this proposal or the testing and certification \nprocess. We thank you for the opportunity to be of service and hope to work with you soon.\nYours sincerely,\nCharlotte Johnson\nSales Representative"
+            }
+          ],
+          "image_support": [],
+          "evidence_type": "text",
+          "confidence": 100
+        }
+      ]
+    }
+  ]
+}

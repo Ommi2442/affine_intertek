@@ -1,0 +1,23 @@
+{
+  "pages": [
+    {
+      "page_number": 3,
+      "items": [
+        {
+          "key": "«AppCOMPANYNAME»",
+          "value": "Gener8 LLC",
+          "question": "",
+          "custom_prompt": "Enter the full legal name of the applicant/client company (e.g., 'ABC Technologies Inc.' or 'XYZ Manufacturing Corporation')",
+          "ai_fillable": true
+        },
+        {
+          "key": "Intertek Report: No:",
+          "value": "",
+          "question": "",
+          "custom_prompt": "What's the REPORT NUMBER",
+          "ai_fillable": true
+        }
+      ]
+    }
+  ]
+}
