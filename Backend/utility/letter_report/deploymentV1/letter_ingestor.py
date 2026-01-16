@@ -5,7 +5,7 @@ from openai import AzureOpenAI
 # Core helpers (DO NOT MODIFY)
 
 from utility.letter_report.deploymentV1.core import *
-# from core import *
+
 
 
 from dotenv import load_dotenv
@@ -85,7 +85,7 @@ def main(blob_urls):
     # STEP 2 — Download + extract blob files
     # -------------------------------------------------------
 
-    container_blob = BLOB_CONTAINER_NAME  # from config.py
+    container_blob = BLOB_CONTAINER_NAME  
 
     print("[INFO] Downloading and extracting blob files...\n")
 
