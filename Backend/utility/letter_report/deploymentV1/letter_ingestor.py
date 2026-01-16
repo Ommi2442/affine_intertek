@@ -13,38 +13,32 @@ from dotenv import load_dotenv
 load_dotenv()
 import os
 
-AZURE_CONN_STRING = os.getenv("LT_AZURE_CONN_STRING")
-DB_NAME_IMG = os.getenv("LT_DB_NAME_IMG")
-CONT_NAME_IMG = os.getenv("LT_CONT_NAME_IMG")
-CHUNK_SIZE = int(os.getenv("LT_CHUNK_SIZE"))
-CHUNK_OVERLAP = int(os.getenv("LT_CHUNK_OVERLAP"))
-TOP_K = int(os.getenv("LT_TOP_K"))
-EMBED_DIM = int(os.getenv("LT_EMBED_DIM"))
-VECTOR_PATH = os.getenv("LT_VECTOR_PATH")
-
-BLOB_CONTAINER_NAME = os.getenv("LT_BLOB_CONTAINER_NAME")
-CONN_STR = os.getenv("LT_conn_str")
-
-IMAGE_EXTS = os.getenv("LT_IMAGE_EXTS")
-
-AOAI_ENDPOINT = os.getenv("LT_AOAI_ENDPOINT")
-AOAI_KEY = os.getenv("LT_AOAI_KEY")
-API_VERSION = os.getenv("LT_API_VERSION")
-EMBED_DEPLOY = os.getenv("LT_EMBED_DEPLOY")
-CHAT_DEPLOY = os.getenv("LT_CHAT_DEPLOY")
-
-COSMOS_URL = os.getenv("LT_COSMOS_URL")
-COSMOS_KEY = os.getenv("LT_COSMOS_KEY")
-COSMOS_DB = os.getenv("LT_COSMOS_DB")
-COSMOS_CONT = os.getenv("LT_COSMOS_CONT")
-
-DB_NAME = os.getenv("LT_DB_NAME")
-CONT_NAME = os.getenv("LT_CONT_NAME")
-
-MAX_THREADS = int(os.getenv("LT_MAX_THREADS"))
-MAX_RETRIES = int(os.getenv("LT_MAX_RETRIES"))
-INITIAL_BACKOFF = int(os.getenv("LT_INITIAL_BACKOFF"))
- 
+AZURE_CONN_STRING = os.getenv("AZURE_CONN_STRING")
+DB_NAME_IMG = os.getenv("DB_NAME_IMG")
+CONT_NAME_IMG = os.getenv("COSMOS_CONT_IMAGE")
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE"))
+CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP"))
+TOP_K = int(os.getenv("TOP_K"))
+EMBED_DIM = int(os.getenv("EMBED_DIM"))
+VECTOR_PATH = os.getenv("VECTOR_PATH")
+BLOB_CONTAINER_NAME = os.getenv("BLOB_CONTAINER_NAME")
+CONN_STR = os.getenv("conn_str")
+IMAGE_EXTS = os.getenv("IMAGE_EXTS")
+AOAI_ENDPOINT = os.getenv("AOAI_ENDPOINT")
+AOAI_KEY = os.getenv("AOAI_KEY")
+API_VERSION = os.getenv("API_VERSION")
+EMBED_DEPLOY = os.getenv("EMBED_DEPLOY")
+CHAT_DEPLOY = os.getenv("CHAT_DEPLOY")
+COSMOS_URL = os.getenv("COSMOS_URL")
+COSMOS_KEY = os.getenv("COSMOS_KEY")
+COSMOS_DB = os.getenv("COSMOS_DB")
+COSMOS_CONT = os.getenv("COSMOS_CONT")
+DB_NAME = os.getenv("DB_NAME")
+CONT_NAME = os.getenv("CONT_NAME")
+MAX_THREADS = int(os.getenv("MAX_THREADS"))
+MAX_RETRIES = int(os.getenv("MAX_RETRIES"))
+INITIAL_BACKOFF = int(os.getenv("INITIAL_BACKOFF"))
+  
 
 
 

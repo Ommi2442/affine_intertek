@@ -34,7 +34,7 @@ import os
 from azure.storage.blob import BlobServiceClient
 from pathlib import Path
 
-from db.database import COSMOS_DB_project_LETTER_Container,COSMOS_DB_project_TRF_Container,COSMOS_PROJECT_CDR_CONTAINER
+from db.database import COSMOS_DB_project_LETTER_Container,COSMOS_DB_project_TRF_Container,COSMOS_DB_project_CDR_Container
 
 from fastapi import HTTPException
 from dotenv import load_dotenv
@@ -51,7 +51,7 @@ COSMOS_DB_DATABASE=os.getenv("COSMOS_DB_DATABASE")
 cosmos_client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
 database  = cosmos_client.get_database_client(COSMOS_DB_DATABASE)
 trf_container = COSMOS_DB_project_TRF_Container
-cdr_container = COSMOS_PROJECT_CDR_CONTAINER
+cdr_container = COSMOS_DB_project_CDR_Container
 
 
 def save_local_json_to_blob_and_cosmos(
