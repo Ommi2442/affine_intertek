@@ -14,7 +14,7 @@ load_dotenv()
 import os
 
 AZURE_CONN_STRING = os.getenv("AZURE_CONN_STRING")
-DB_NAME_IMG = os.getenv("DB_NAME_IMG")
+DB_NAME_IMG = os.getenv("COSMOS_DB_IMAGE")
 CONT_NAME_IMG = os.getenv("COSMOS_CONT_IMAGE")
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE"))
 CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP"))
