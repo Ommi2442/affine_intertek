@@ -134,7 +134,7 @@ ENABLE_CAD_SCHEMATICS  = os.getenv("ENABLE_CAD_SCHEMATICS")
 
 
 
-def build_vectorstore_text():
+def build_vectorstore_text(textDB_container_name):
     cosmos_client = CosmosClient(
         url=COSMOS_URL,
         credential=COSMOS_KEY
@@ -144,7 +144,7 @@ def build_vectorstore_text():
         cosmos_client=cosmos_client,
         embedding=build_embeddings(AOAI_ENDPOINT,AOAI_KEY,API_VERSION,EMBED_DEPLOY),
         database_name=COSMOS_DB_TEXT,
-        container_name=COSMOS_CONT_TEXT,
+        container_name=textDB_container_name,
 
         vector_embedding_policy={
             "vectorEmbeddings": [{
@@ -168,7 +168,7 @@ def build_vectorstore_text():
         }
     )
 
-def build_vectorstore_image():
+def build_vectorstore_image(imageDB_container_name):
     cosmos_client = CosmosClient(
         url=COSMOS_URL,
         credential=COSMOS_KEY
@@ -178,7 +178,7 @@ def build_vectorstore_image():
         cosmos_client=cosmos_client,
         embedding=build_embeddings(AOAI_ENDPOINT,AOAI_KEY,API_VERSION,EMBED_DEPLOY),
         database_name=COSMOS_DB_IMAGE,
-        container_name=COSMOS_CONT_IMAGE,
+        container_name=imageDB_container_name,
 
         vector_embedding_policy={
             "vectorEmbeddings": [{
@@ -785,28 +785,28 @@ def build_rag_image_pipeline_grey(
 
 
 
-def build_embeddings(AOAI_ENDPOINT,AOAI_KEY,API_VERSION,EMBED_DEPLOY):
-    return AzureOpenAIEmbeddings(
-        azure_endpoint=AOAI_ENDPOINT,
-        api_key=AOAI_KEY,
-        openai_api_version=API_VERSION,
-        azure_deployment=EMBED_DEPLOY,
-    )
+# def build_embeddings(AOAI_ENDPOINT,AOAI_KEY,API_VERSION,EMBED_DEPLOY):
+#     return AzureOpenAIEmbeddings(
+#         azure_endpoint=AOAI_ENDPOINT,
+#         api_key=AOAI_KEY,
+#         openai_api_version=API_VERSION,
+#         azure_deployment=EMBED_DEPLOY,
+#     )
 
-vs=build_vectorstore_text()
-vs2=build_vectorstore_image()
+# vs=build_vectorstore_text()
+# vs2=build_vectorstore_image()
 
-retriever = vs.as_retriever(search_kwargs={"k": 5})
-image_retriever_agent = vs2.as_retriever(search_kwargs={"k": 5})
+# retriever = vs.as_retriever(search_kwargs={"k": 5})
+# image_retriever_agent = vs2.as_retriever(search_kwargs={"k": 5})
 
-# Build the final RAG pipeline
-rag_image = build_rag_image_pipeline_grey(
-    retriever,
-    llm,
-    build_vision_message_grey,
-    attach_supporting_refs_grey,
-    vs
-)
+# # Build the final RAG pipeline
+# rag_image = build_rag_image_pipeline_grey(
+#     retriever,
+#     llm,
+#     build_vision_message_grey,
+#     attach_supporting_refs_grey,
+#     vs
+# )
 
 
 # =============================================================================
@@ -1177,9 +1177,12 @@ def generator_evaluator_agent(rag_image):
     return run_single_task_tool
 
 
-run_single_task_tool = generator_evaluator_agent(rag_image)
+# run_single_task_tool = generator_evaluator_agent(rag_image)
 
-def generator_evaluator_agent_tool(task):
+# def generator_evaluator_agent_tool(task):
+#     return run_single_task_tool.invoke({"task": task})
+
+def generator_evaluator_agent_tool(run_single_task_tool, task):
     return run_single_task_tool.invoke({"task": task})
 
 
@@ -1194,6 +1197,7 @@ def process_tasks_with_batches_parallel_grey(
         item_refs,
         rag_image,
         vs,
+        run_single_task_tool,
         batch_size=150,
         cooldown_sec=15,
         max_workers=6,
@@ -1290,7 +1294,8 @@ def process_tasks_with_batches_parallel_grey(
                 if stats:
                     fut = exe.submit(run_single_task_stats, task, rag_image)
                 else:
-                    fut = exe.submit(generator_evaluator_agent_tool, task)
+                    # fut = exe.submit(generator_evaluator_agent_tool, task)
+                    fut = exe.submit(generator_evaluator_agent_tool, run_single_task_tool, task)
 
                 futures[fut] = idx
 
@@ -1968,7 +1973,7 @@ def fetch_marking_plate_via_vs2(
 import requests
 from pathlib import Path
 
-def download_marking_images_from_json_new(json_data: dict):
+def download_marking_images_from_json_new(json_data: dict, project_data_dir):
     """
     Downloads ONLY the URLs present in JSON.marking_urls.
     Returns local image paths IN THE SAME ORDER.
@@ -1989,7 +1994,7 @@ def download_marking_images_from_json_new(json_data: dict):
                 if not url:
                     continue
 
-                filename = f"marking_{img_id}.png"
+                filename = project_data_dir / f"marking_{img_id}.png"
                 path = Path(filename)
 
                 try:
@@ -2160,166 +2165,170 @@ def fetch_marking_plate_urls_and_update_json_new(
 #   MAIN PIPELINE: run_trf_generator
 # =============================================================================
 
-def run_trf_generator(
-    blob_urls: list,
-    input_json_path: str,
-    input_docx_path: str,
-    output_json_path: str,
-    output_docx_path: str,
-    excel_output_path: str,
-    batch_size=150,
-    cooldown_sec=15,
-    max_workers=6
-):
-    """
-    FULL TRF REPORT GENERATION PIPELINE
-    ------------------------------------
-    Uses EXACT notebook logic but wrapped in a single callable function.
-    Generates ONLY:
-        - 1 final JSON
-        - 1 final DOCX
-        - 1 Excel
+# def run_trf_generator(
+#     blob_urls: list,
+#     input_json_path: str,
+#     input_docx_path: str,
+#     output_json_path: str,
+#     output_docx_path: str,
+#     excel_output_path: str,
+#     batch_size=150,
+#     cooldown_sec=15,
+#     max_workers=6
+# ):
+#     """
+#     FULL TRF REPORT GENERATION PIPELINE
+#     ------------------------------------
+#     Uses EXACT notebook logic but wrapped in a single callable function.
+#     Generates ONLY:
+#         - 1 final JSON
+#         - 1 final DOCX
+#         - 1 Excel
 
-    No temporary Word files created.
-    """
+#     No temporary Word files created.
+#     """
+    
+#     vs=build_vectorstore_text()
+#     vs2=build_vectorstore_image()
 
-    print("\n===============================================")
-    print("       STEP 1 — LOAD INPUT JSON")
-    print("===============================================")
+#     print("\n===============================================")
+#     print("       STEP 1 — LOAD INPUT JSON")
+#     print("===============================================")
 
-    with open(input_json_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+#     with open(input_json_path, "r", encoding="utf-8") as f:
+#         data = json.load(f)
 
-    # ---------------------------------------------------------
-    # Build tasks from JSON (grey logic included)
-    # ---------------------------------------------------------
-    print("\n===============================================")
-    print("       STEP 2 — BUILD TASKS")
-    print("===============================================")
+#     # ---------------------------------------------------------
+#     # Build tasks from JSON (grey logic included)
+#     # ---------------------------------------------------------
+#     print("\n===============================================")
+#     print("       STEP 2 — BUILD TASKS")
+#     print("===============================================")
 
-    tasks, item_refs = build_tasks_with_custom_prompt_grey(data, blob_urls)
+#     tasks, item_refs = build_tasks_with_custom_prompt_grey(data, blob_urls)
 
-    # ---------------------------------------------------------
-    # Build retriever from vs2 for image top-5 suggestions
-    # ---------------------------------------------------------
-    print("\n===============================================")
-    print("       STEP 3 — COMPUTE TOP-5 IMAGE HINTS")
-    print("===============================================")
+#     # ---------------------------------------------------------
+#     # Build retriever from vs2 for image top-5 suggestions
+#     # ---------------------------------------------------------
+#     print("\n===============================================")
+#     print("       STEP 3 — COMPUTE TOP-5 IMAGE HINTS")
+#     print("===============================================")
 
-    image_retriever_agent = vs2.as_retriever(search_kwargs={"k": 5})
-    tasks = update_tasks_with_top5_images(tasks, image_retriever_agent)
+#     image_retriever_agent = vs2.as_retriever(search_kwargs={"k": 5})
+#     tasks = update_tasks_with_top5_images(tasks, image_retriever_agent)
 
-    # tasks=tasks[:30]
-    # item_refs=item_refs[:30]
+#     # tasks=tasks[:30]
+#     # item_refs=item_refs[:30]
 
-    # ---------------------------------------------------------
-    # Batch processing with LLM / Grey mode
-    # ---------------------------------------------------------
-    print("\n===============================================")
-    print("       STEP 4 — RUN LLM PIPELINE")
-    print("===============================================")
+#     # ---------------------------------------------------------
+#     # Batch processing with LLM / Grey mode
+#     # ---------------------------------------------------------
+#     print("\n===============================================")
+#     print("       STEP 4 — RUN LLM PIPELINE")
+#     print("===============================================")
+    
 
-    results = process_tasks_with_batches_parallel_grey(
-        tasks,
-        item_refs,
-        rag_image,
-        vs,
-        batch_size=batch_size,
-        cooldown_sec=cooldown_sec,
-        max_workers=max_workers,
-        use_llm_inGrey=False,
-        stats=True
-    )
+#     results = process_tasks_with_batches_parallel_grey(
+#         tasks,
+#         item_refs,
+#         rag_image,
+#         vs,
+#         batch_size=batch_size,
+#         cooldown_sec=cooldown_sec,
+#         max_workers=max_workers,
+#         use_llm_inGrey=False,
+#         stats=True
+#     )
 
-    # Convert to DataFrame
-    df = results_to_dataframe(results["results"])
+#     # Convert to DataFrame
+#     df = results_to_dataframe(results["results"])
 
-    print("\n===============================================")
-    print("       STEP 5 — EXPORT EXCEL")
-    print("===============================================")
+#     print("\n===============================================")
+#     print("       STEP 5 — EXPORT EXCEL")
+#     print("===============================================")
 
-    export_results_to_excel(df, excel_output_path)
+#     export_results_to_excel(df, excel_output_path)
 
-    # ---------------------------------------------------------
-    # Apply post-process rules
-    # ---------------------------------------------------------
-    print("\n===============================================")
-    print("       STEP 6 — APPLY POST-PROCESSING")
-    print("===============================================")
+#     # ---------------------------------------------------------
+#     # Apply post-process rules
+#     # ---------------------------------------------------------
+#     print("\n===============================================")
+#     print("       STEP 6 — APPLY POST-PROCESSING")
+#     print("===============================================")
 
-    update_verdict_dependencies(data)
+#     update_verdict_dependencies(data)
 
-    targets = [
-        "General product information and other remarks:\nDescription of unit:\n",
-        "Description of model differences:\n",
-        "Description of special features:\n(HV circuits, high pressure systems etc.)\n"
-    ]
-    data = apply_prefixes_to_items(data, targets)
-    data = prefix_summary_of_compliance(data)
+#     targets = [
+#         "General product information and other remarks:\nDescription of unit:\n",
+#         "Description of model differences:\n",
+#         "Description of special features:\n(HV circuits, high pressure systems etc.)\n"
+#     ]
+#     data = apply_prefixes_to_items(data, targets)
+#     data = prefix_summary_of_compliance(data)
 
-    # Attach blob URLs for evidence support
-    data = attach_blob_urls_to_text_support(data, blob_urls)
-    data = attach_blob_urls_to_image_support(data, blob_urls)
+#     # Attach blob URLs for evidence support
+#     data = attach_blob_urls_to_text_support(data, blob_urls)
+#     data = attach_blob_urls_to_image_support(data, blob_urls)
 
-    print("\n===============================================")
-    print("       STEP 7 — SAVE FINAL JSON")
-    print("===============================================")
+#     print("\n===============================================")
+#     print("       STEP 7 — SAVE FINAL JSON")
+#     print("===============================================")
 
-    export_results_to_json(data, output_json_path)
+#     export_results_to_json(data, output_json_path)
 
-    # ---------------------------------------------------------
-    # Update Word DOCX with JSON values
-    # ---------------------------------------------------------
-    print("\n===============================================")
-    print("       STEP 8 — UPDATE DOCX (VALUES + Arial 10)")
-    print("===============================================")
+#     # ---------------------------------------------------------
+#     # Update Word DOCX with JSON values
+#     # ---------------------------------------------------------
+#     print("\n===============================================")
+#     print("       STEP 8 — UPDATE DOCX (VALUES + Arial 10)")
+#     print("===============================================")
 
-    update_docx_tables_from_json_arial(
-        docx_path=input_docx_path,
-        json_path=output_json_path,
-        output_path=output_docx_path
-    )
+#     update_docx_tables_from_json_arial(
+#         docx_path=input_docx_path,
+#         json_path=output_json_path,
+#         output_path=output_docx_path
+#     )
 
-    # ---------------------------------------------------------
-    # Insert checkbox at designated position
-    # ---------------------------------------------------------
-    print("\n===============================================")
-    print("       STEP 9 — FINAL DOCX CHECKBOX UPDATE")
-    print("===============================================")
+#     # ---------------------------------------------------------
+#     # Insert checkbox at designated position
+#     # ---------------------------------------------------------
+#     print("\n===============================================")
+#     print("       STEP 9 — FINAL DOCX CHECKBOX UPDATE")
+#     print("===============================================")
 
-    insert_legacy_checkbox_with_text(
-        docx_path=output_docx_path,     # update in-place
-        output_path=output_docx_path,   # overwrite same file
-        sentence='The product fulfils the requirements of IEC 61010-1:2010, IEC 61010-1:2010/AMD1:2016',
-        table_index=5,
-        row=12,
-        col=0,
-        new_lines=5
-    )
+#     insert_legacy_checkbox_with_text(
+#         docx_path=output_docx_path,     # update in-place
+#         output_path=output_docx_path,   # overwrite same file
+#         sentence='The product fulfils the requirements of IEC 61010-1:2010, IEC 61010-1:2010/AMD1:2016',
+#         table_index=5,
+#         row=12,
+#         col=0,
+#         new_lines=5
+#     )
 
-    print("\n===============================================")
-    print("       STEP 9 — UPDATING MARKING PLATE")
-    print("===============================================")
+#     print("\n===============================================")
+#     print("       STEP 9 — UPDATING MARKING PLATE")
+#     print("===============================================")
 
-    fetch_marking_plate_urls_and_update_json_new(
-        retriever=image_retriever_agent,
-        docx_path=output_docx_path,
-        output_path=output_docx_path,
-        table_index=6,
-        row=0,
-        col=0,
-        width_inches=5,
-        filename="identified_marking_plate.png"
-    )
+#     fetch_marking_plate_urls_and_update_json_new(
+#         retriever=image_retriever_agent,
+#         docx_path=output_docx_path,
+#         output_path=output_docx_path,
+#         table_index=6,
+#         row=0,
+#         col=0,
+#         width_inches=5,
+#         filename="identified_marking_plate.png"
+#     )
 
    
 
 
-    return {
-        "json": output_json_path,
-        "docx": output_docx_path,
-        "excel": excel_output_path
-    }
+#     return {
+#         "json": output_json_path,
+#         "docx": output_docx_path,
+#         "excel": excel_output_path
+#     }
 
 
 import json
@@ -2447,12 +2456,47 @@ def update_pta_with_multiple_iec(
     return final_data
 
 
+
+def delete_cosmos_container(
+    endpoint: str,
+    key: str,
+    database_name: str,
+    container_name: str
+):
+    """
+    Deletes a Cosmos DB container.
+    """
+
+    client = CosmosClient(endpoint, credential=key)
+
+    try:
+        database = client.get_database_client(database_name)
+        database.delete_container(container_name)
+        
+        print("\n===============================================")
+        print(f"       STEP 12 — DELETING THE VECTOR COSMOS DB Container '{container_name}'")
+        print("===============================================")
+
+        print(f"Container '{container_name}' deleted successfully.")
+
+
+    except ResourceNotFoundError:
+        print(f"Container '{container_name}' or database '{database_name}' not found.")
+
+    except Exception as e:
+        raise RuntimeError(f"Failed to delete container: {e}")
+
+
 # =============================================================================
 #   MAIN PIPELINE: run_trf_generator
 # =============================================================================
 
 def trf_gen_partwise(
     blob_urls: list,
+    vs,
+    vs2,
+    rag_image,
+    run_single_task_tool,
     input_json_path: str,
     output_json_path: str,
     excel_output_path: str,
@@ -2519,6 +2563,7 @@ def trf_gen_partwise(
         item_refs,
         rag_image,
         vs,
+        run_single_task_tool,
         batch_size=batch_size,
         cooldown_sec=cooldown_sec,
         max_workers=max_workers,
@@ -2549,6 +2594,8 @@ def trf_gen_partwise(
 
 def run_trf_generation(
     blob_urls: list,
+    textDB_container_name,
+    imageDB_container_name,
     input_docx_path: str,
     output_docx_path: str,
     base_pta_path: str,
@@ -2562,6 +2609,31 @@ def run_trf_generation(
 ):
     iec_paths = []
     first_event_fired = False
+
+    def build_embeddings(AOAI_ENDPOINT,AOAI_KEY,API_VERSION,EMBED_DEPLOY):
+        return AzureOpenAIEmbeddings(
+            azure_endpoint=AOAI_ENDPOINT,
+            api_key=AOAI_KEY,
+            openai_api_version=API_VERSION,
+            azure_deployment=EMBED_DEPLOY,
+        )
+
+    vs=build_vectorstore_text(textDB_container_name)
+    vs2=build_vectorstore_image(imageDB_container_name)
+
+    retriever = vs.as_retriever(search_kwargs={"k": 5})
+    image_retriever_agent = vs2.as_retriever(search_kwargs={"k": 5})
+
+    # Build the final RAG pipeline
+    rag_image = build_rag_image_pipeline_grey(
+        retriever,
+        llm,
+        build_vision_message_grey,
+        attach_supporting_refs_grey,
+        vs
+    )
+
+    run_single_task_tool = generator_evaluator_agent(rag_image)
 
     # ---------------------------------------------------------
     # STEP 1–6 — PARTWISE JSON GENERATION
@@ -2579,6 +2651,10 @@ def run_trf_generation(
 
         result = trf_gen_partwise(
             blob_urls=blob_urls,
+            vs=vs,
+            vs2=vs2,
+            rag_image=rag_image,
+            run_single_task_tool=run_single_task_tool,
             input_json_path=str(input_json_path),
             output_json_path=str(output_json_path),
             excel_output_path=str(excel_output_path),
@@ -2694,7 +2770,7 @@ def run_trf_generation(
         top_k=1
     )
 
-    image_paths = download_marking_images_from_json_new(data)
+    image_paths = download_marking_images_from_json_new(data, project_data_dir)
 
     export_results_to_json(data, final_output_path)
 
@@ -2714,9 +2790,21 @@ def run_trf_generation(
         json_data=data
     )
 
+    delete_cosmos_container(
+    endpoint=COSMOS_URL,
+    key=COSMOS_KEY,
+    database_name=COSMOS_DB_TEXT,
+    container_name=textDB_container_name
+    )
+
+    delete_cosmos_container(
+    endpoint=COSMOS_URL,
+    key=COSMOS_KEY,
+    database_name=COSMOS_DB_IMAGE,
+    container_name=imageDB_container_name
+    )
 
     print("\n✅ TRF GENERATION COMPLETED SUCCESSFULLY")
-
 
 
 

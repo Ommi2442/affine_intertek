@@ -61,6 +61,8 @@ from dotenv import load_dotenv
 from pathlib import Path
 from openai import AzureOpenAI
 from pypdf import PdfReader
+from azure.cosmos.exceptions import CosmosResourceNotFoundError
+import shutil
 
 
 load_dotenv()
@@ -85,7 +87,7 @@ BLOB_CONTAINER     = os.getenv("BLOB_CONTAINER")
 COSMOS_URL         = os.getenv("COSMOS_URL")
 COSMOS_KEY         = os.getenv("COSMOS_KEY")
 CHAT_DEPLOY        = os.getenv("CHAT_DEPLOY")
-BLOB_CONT_NAME     = os.getenv("BLOB_CONT_NAME")
+BLOB_CONTAINER     = os.getenv("BLOB_CONTAINER")
 COSMOS_DB_IMAGE    = os.getenv("COSMOS_DB_IMAGE")
 COSMOS_CONT_IMAGE  = os.getenv("COSMOS_CONT_IMAGE")
 ENABLE_CAD_SCHEMATICS  = os.getenv("ENABLE_CAD_SCHEMATICS")
@@ -123,7 +125,7 @@ def build_embeddings():
 # ----------------------------------------------------------------------------------------
 
 
-def build_vectorstore_text():
+def build_vectorstore_text(textDB_container_name):
     cosmos_client = CosmosClient(
         url=COSMOS_URL,
         credential=COSMOS_KEY
@@ -133,7 +135,7 @@ def build_vectorstore_text():
         cosmos_client=cosmos_client,
         embedding=build_embeddings(),
         database_name=COSMOS_DB_TEXT,
-        container_name=COSMOS_CONT_TEXT,
+        container_name=textDB_container_name,
 
         vector_embedding_policy={
             "vectorEmbeddings": [{
@@ -162,7 +164,7 @@ def build_vectorstore_text():
 # Vector Store Builder (for IMAGES)
 # EXACT logic from notebook (not altered)
 # ----------------------------------------------------------------------------------------
-def build_vectorstore_image():
+def build_vectorstore_image(imageDB_container_name):
     cosmos_client = CosmosClient(
         url=COSMOS_URL,
         credential=COSMOS_KEY
@@ -172,7 +174,7 @@ def build_vectorstore_image():
         cosmos_client=cosmos_client,
         embedding=build_embeddings(),
         database_name=COSMOS_DB_IMAGE,
-        container_name=COSMOS_CONT_IMAGE,
+        container_name=imageDB_container_name,
 
         vector_embedding_policy={
             "vectorEmbeddings": [{
@@ -935,10 +937,441 @@ def clear_cosmos_container(database_name, container_name):
 
 
 
-def ingest_files_from_blob_urls_create_embeddings(download_dir,blob_urls: list, project_id: str, keep_files: bool = True, verbose: bool = True):
+
+def get_or_create_vector_container_serverless(
+    client: CosmosClient,
+    DB_NAME: str,
+    CONT_NAME: str,
+    VECTOR_PATH: str,
+    EMBED_DIM: int,
+):
+    """
+    Serverless-safe Cosmos vector container creator.
+    - Database must already exist
+    - Creates container only if missing
+    - Does NOT delete existing container
+    - Does NOT set throughput (serverless limitation)
+    """
+
+    print("→ Using existing database:", DB_NAME)
+    db = client.get_database_client(DB_NAME)
+
+    try:
+        db.read()
+    except exceptions.CosmosResourceNotFoundError:
+        raise RuntimeError(f"[FATAL] Database does not exist: {DB_NAME}")
+
+    # ---- Vector embedding policy ----
+    vector_embedding_policy = {
+        "vectorEmbeddings": [
+            {
+                "path": VECTOR_PATH,
+                "dataType": "float32",
+                "dimensions": EMBED_DIM,
+                "distanceFunction": "cosine",
+            }
+        ]
+    }
+
+    # ---- Indexing policy ----
+    indexing_policy = {
+        "includedPaths": [{"path": "/*"}],
+        "excludedPaths": [
+            {"path": "/\"_etag\"/?"},
+            {"path": f"{VECTOR_PATH}/*"}
+        ],
+        "vectorIndexes": [
+            {
+                "path": VECTOR_PATH,
+                "type": "quantizedFlat"
+            }
+        ],
+    }
+
+    # ---- Check container ----
+    try:
+        container = db.get_container_client(CONT_NAME)
+        container.read()
+        print("✔ Container exists:", CONT_NAME)
+        return container
+
+    except exceptions.CosmosResourceNotFoundError:
+        print("→ Creating vector container (serverless-safe):", CONT_NAME)
+
+        container = db.create_container(
+            id=CONT_NAME,
+            partition_key=PartitionKey(path="/id"),
+            indexing_policy=indexing_policy,
+            vector_embedding_policy=vector_embedding_policy
+        )
+
+        print("✔ Vector container created:", CONT_NAME)
+        return container
+
+
+
+
+def _resolve_indirect(obj):
+    if isinstance(obj, IndirectObject):
+        return obj.get_object()
+    return obj
+
+
+def _has_freetext_annotations(reader: PdfReader, max_pages: int = 3) -> bool:
+    """Return True if any of the first `max_pages` pages contain /FreeText annotations.
+
+    Many "editable"-looking PDFs (Fill & Sign / typewriter tools) store user-entered
+    text as /FreeText annotations under each page's /Annots array. These are NOT
+    AcroForm/XFA fields, so they won't appear under /Root -> /AcroForm.
+    """
+
+    try:
+        pages = reader.pages
+        n = min(len(pages), max_pages)
+
+        for i in range(n):
+            page = pages[i]
+            annots = page.get("/Annots")
+            annots = _resolve_indirect(annots) or []
+
+            for a in annots:
+                aobj = _resolve_indirect(a)
+                subtype = aobj.get("/Subtype")
+                # subtype is usually a NameObject like '/FreeText'
+                if subtype and str(subtype) == "/FreeText":
+                    return True
+        return False
+    except Exception:
+        return False
+        
+def is_editable_form_pdf(path: Path) -> bool:
+    """
+    Return True if the PDF appears to contain *editable* content:
+      - AcroForm fields (/Root -> /AcroForm -> /Fields)
+      - XFA forms (/Root -> /AcroForm -> /XFA)
+      - FreeText annotations (/Annots -> /Subtype /FreeText)
+
+    Note: FreeText annotations are NOT form fields; they are an annotation layer.
+    Ensures the file handle is closed (important on Windows) by using a 'with' block.
+    """
+    try:
+        # Open the file explicitly so it gets closed after we're done
+        with open(path, "rb") as f:
+            reader = PdfReader(f)
+
+            root = _resolve_indirect(reader.trailer.get("/Root"))
+            if not root:
+                return False
+
+            acroform = root.get("/AcroForm")
+            # If there's no AcroForm, it still may be "editable" via FreeText annotations.
+            if not acroform:
+                return _has_freetext_annotations(reader)
+
+            acroform = _resolve_indirect(acroform)
+
+            fields = acroform.get("/Fields")
+            if isinstance(fields, IndirectObject):
+                fields = fields.get_object()
+
+            # If we have any form fields, it's editable
+            if fields and len(fields) > 0:
+                return True
+
+            # Check for XFA forms as well
+            xfa = acroform.get("/XFA")
+            if isinstance(xfa, IndirectObject):
+                xfa = xfa.get_object()
+
+            if xfa:
+                return True
+
+            # No fields/XFA found. Fall back to FreeText annotations.
+            return _has_freetext_annotations(reader)
+    except Exception:
+        return False
+
+def flatten_and_get_images(input_path: str, output_path: str, dpi: int = 200):
+    """
+    Flattens the PDF AND returns a list of page images (pixmaps).
+    Uses context managers so files are always closed, even on errors.
+    """
+    zoom = dpi / 72.0
+    mat = fitz.Matrix(zoom, zoom)
+    pixmaps = []
+
+    # Ensure both documents are closed reliably
+    with fitz.open(input_path) as src_doc, fitz.open() as out_doc:
+        for page in src_doc:
+            pix = page.get_pixmap(matrix=mat)
+            pixmaps.append(pix)
+
+            new_page = out_doc.new_page(width=pix.width, height=pix.height)
+            new_page.insert_image(new_page.rect, pixmap=pix)
+
+        out_doc.save(output_path)
+
+    return pixmaps
+
+# ============================
+# 3) Convert pixmaps to PNG paths
+# ============================
+
+def save_pixmaps_to_images(pixmaps: List[fitz.Pixmap], out_dir: Path, stem: str):
+    out_dir.mkdir(parents=True, exist_ok=True)
+    image_paths = []
+
+    for i, pix in enumerate(pixmaps, start=1):
+        img_path = out_dir / f"{stem}_page{i}.png"
+        pix.save(str(img_path))
+        image_paths.append(img_path)
+
+    return image_paths
+
+
+prompt_lm = """
+You are reading a scanned "Client Information Sheet".
+
+Extract ALL fields into a STRICT JSON object with this exact shape:
+
+{
+  "Applicant": {
+    "Legal Entity Name": string or null,
+    "DBA": string or null,
+    "Street Address": string or null,
+    "City, State, Postal Code, Country": string or null,
+    "Phone Number": string or null,
+    "Email": string or null,
+    "Contacts": [
+      {
+        "Name": string or null,
+        "Role": string or null,
+        "Phone Number": string or null,
+        "Email": string or null
+      }
+    ]
+  },
+  "Bill-To": {
+    "Legal Entity Name": string or null,
+    "Street Address": string or null,
+    "City, State, Postal Code, Country": string or null,
+    "Accounts Payable Contact": string or null,
+    "Phone Number": string or null,
+    "Email": string or null
+  },
+  "Manufacturer": {
+    "Legal Entity Name": string or null,
+    "Street Address": string or null,
+    "City, State, Postal Code, Country": string or null,
+    "Contacts": [
+      {
+        "Name": string or null,
+        "Role": string or null,
+        "Phone Number": string or null,
+        "Email": string or null
+      }
+    ],
+    "Estimated Production Date": string or null,
+    "Labeling Method": string or null
+  },
+  "Completed By": string or null,
+  "Dates": {
+    "Form Completion": string or null
+  },
+  "Signatures": string or null
+}
+
+Rules:
+- DO NOT put fields like "Legal Entity Name" at the root.
+- All applicant fields must be inside "Applicant".
+- All bill-to fields must be inside "Bill-To".
+- All manufacturer/production facility fields must be inside "Manufacturer".
+- Use null if something is missing or unreadable.
+- Return ONLY JSON, no extra text.
+"""
+
+
+def image_to_data_uri(path: Path) -> str:
+    b = path.read_bytes()
+    b64 = base64.b64encode(b).decode("utf-8")
+    return f"data:image/png;base64,{b64}"
+
+
+def extract_page_with_llm(img_path: Path) -> str:
+    """
+    Sends a single PNG page to GPT-4.1 (vision-enabled)
+    and extracts structured JSON from the form.
+    """
+    data_uri = image_to_data_uri(img_path)
+
+    prompt = prompt_lm
+
+    response = aoai_client.chat.completions.create(
+        model="gpt-4.1",
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt},
+                    {"type": "image_url", "image_url": {"url": data_uri}},
+                ],
+            }
+        ]
+    )
+
+    return response.choices[0].message.content
+
+
+
+
+def process_pdfs(
+    src_root: str = "src_files",
+    images_root: str = "page_images",
+    dpi: int = 200,
+) -> Dict[str, Any]:
+
+    src_root = Path(src_root)
+    images_root = Path(images_root)
+
+    images_root.mkdir(exist_ok=True)
+
+    results: Dict[str, Any] = {}
+
+    print(f"Scanning {src_root.resolve()} ...")
+
+    for pdf_path in src_root.glob("*.pdf"):
+        if not pdf_path.is_file():
+            continue
+
+        print(f"\nChecking {pdf_path.name}...")
+
+        if not is_editable_form_pdf(pdf_path):
+            print(" → Not editable. Skipping.")
+            continue
+
+        print(" → Editable PDF detected.")
+
+        # Extract images directly from original PDF
+        pixmaps = []
+
+        with fitz.open(pdf_path) as doc:
+            zoom = dpi / 72.0
+            mat = fitz.Matrix(zoom, zoom)
+
+            for page in doc:
+                pix = page.get_pixmap(matrix=mat)
+                pixmaps.append(pix)
+
+        # Save images
+        img_dir = images_root / pdf_path.stem
+        img_paths = save_pixmaps_to_images(pixmaps, img_dir, pdf_path.stem)
+
+        # OCR / LLM extraction
+        llm_outputs = []
+        for img_path in img_paths:
+            print(f"   → Sending {img_path.name} to GPT-4.1...")
+            output = extract_page_with_llm(img_path)
+            llm_outputs.append(output)
+
+        # results[pdf_path.name] = {
+        #     "original": pdf_path,
+        #     "images": img_paths,
+        #     "extracted": llm_outputs,
+        # }
+        results[pdf_path.name] = {
+            "original": pdf_path,
+            "images": img_paths,
+            "extracted": llm_outputs,
+            "is_editable": True
+        }
+
+
+    return results
+
+
+def extract_cis(src_root, images_root):
+    results = process_pdfs(
+        src_root=src_root,
+        images_root=images_root,
+        dpi=200
+    )
+
+    all_cis = []
+    editable_pdfs = []
+
+    for pdfs in results.keys():
+        dic_cis = {}
+        dic_cis['filename'] = pdfs
+        dic_cis['text'] = results[pdfs]['extracted'][0]
+        all_cis.append(dic_cis)
+
+        editable_pdfs.append(pdfs)
+
+    return all_cis, editable_pdfs
+
+# with open("src_files\\all_cis_info.txt", "w", encoding="utf-8") as f:
+#     json.dump(all_cis, f, indent=4, default=str)
+
+def copy_extracted_images_to_src(page_images_root: str, src_root: str):
+    """
+    Copies all extracted page images into src_files directory
+    so they get ingested like normal uploaded images.
+    """
+
+    page_images_root = Path(page_images_root)
+    src_root = Path(src_root)
+
+    src_root.mkdir(exist_ok=True)
+
+    copied = 0
+
+    for subdir in page_images_root.iterdir():
+        if not subdir.is_dir():
+            continue
+
+        for img in subdir.glob("*.png"):
+            dest = src_root / img.name
+
+            # avoid overwrite
+            if dest.exists():
+                continue
+
+            shutil.copy2(img, dest)
+            copied += 1
+
+    print(f"✅ Copied {copied} extracted page images into {src_root}")
+
+
+def append_cis_images_to_image_metadata(images_root: str, image_page_metadata: list):
+    """
+    Adds CIS extracted page images into CAD schematic image pipeline
+    so they get uploaded + OCR + embedded exactly the same way.
+    """
+
+    images_root = Path(images_root)
+
+    for subdir in images_root.iterdir():
+        if not subdir.is_dir():
+            continue
+
+        pdf_name = subdir.name + ".pdf"   # fake source name for metadata consistency
+
+        for img in subdir.glob("*.png"):
+            image_page_metadata.append({
+                "pdf_file": pdf_name,
+                "page": None,
+                "local_image_path": str(img),
+                "reason": "editable_pdf_page"
+            })
+
+
+
+
+def ingest_files_from_blob_urls_create_embeddings(download_dir,blob_urls: list, project_id: str,
+textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose: bool = True):
     """
     Single-call function that performs the full notebook ingestion pipeline.
-    - blob_urls: list of full blob URLs
+    - blob_urls: list of full blob URLs 
     - download_dir: local directory to store downloads and converted pdfs
     - keep_files: whether to keep local downloaded files
     - verbose: print progress
@@ -947,9 +1380,19 @@ def ingest_files_from_blob_urls_create_embeddings(download_dir,blob_urls: list, 
     """
 
     # 1) Cosmos client and container
-    client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY, consistency_level=ConsistencyLevel.Eventual)
-    db_client = client.get_database_client(COSMOS_DB_TEXT)
-    container_client = db_client.get_container_client(COSMOS_CONT_TEXT)
+    # client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY, consistency_level=ConsistencyLevel.Eventual)
+    # db_client = client.get_database_client(COSMOS_DB_TEXT)
+    # container_client = db_client.get_container_client(textDB_container_name)
+
+    client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY)
+
+    container_client = get_or_create_vector_container_serverless(
+        client=client,
+        DB_NAME=COSMOS_DB_TEXT,
+        CONT_NAME=textDB_container_name,
+        VECTOR_PATH=VECTOR_PATH,
+        EMBED_DIM=EMBED_DIM
+    )
 
     # 2) Delete all items (not reversible)
     try:
@@ -963,8 +1406,9 @@ def ingest_files_from_blob_urls_create_embeddings(download_dir,blob_urls: list, 
     except Exception as e:
         print(f"[WARN] Could not enumerate/delete items: {e}")
 
-    BASE_DIR = Path(__file__).resolve().parent
-    DOWNLOAD_DIR = BASE_DIR  / "src_files"
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    DOWNLOAD_DIR = BASE_DIR / "data" / project_id / "src_files"
+    IMAGES_ROOT = BASE_DIR / "data" / project_id / "image_files"
 
     # 3) Process blob URLs (download/convert/extract)
     extracted_texts, image_urls_raw, downloaded_pdf_paths, converted_pdf_paths = process_blob_urls_2(
@@ -977,6 +1421,24 @@ def ingest_files_from_blob_urls_create_embeddings(download_dir,blob_urls: list, 
     print(f"[INFO] Extracted text files: {len(extracted_texts)}")
     print(f"[INFO] Initial image URLs: {len(image_urls_raw)}")
     print(f"[INFO] Total PDFs: {len(pdf_paths)}\n")
+
+    cis_info, editable_pdfs = extract_cis(src_root=DOWNLOAD_DIR,images_root=IMAGES_ROOT)
+
+    # ✅ Remove editable PDFs from PDF ingestion list (they are handled via OCR images)
+    pdf_paths = [
+        p for p in pdf_paths
+        if os.path.basename(p) not in editable_pdfs
+    ]
+    
+    copy_extracted_images_to_src(
+    page_images_root=IMAGES_ROOT,
+    src_root=DOWNLOAD_DIR)
+    
+    extracted_texts += cis_info
+
+    print("###################### CIS INFO ##################################")
+    print(cis_info)
+    print("###################################################################")
 
 
     print("\n======================================")
@@ -994,15 +1456,21 @@ def ingest_files_from_blob_urls_create_embeddings(download_dir,blob_urls: list, 
     print(f"[INFO] Total text chunks produced: {len(chunks)}")
     print(f"[INFO] CAD/Schematic pages extracted: {len(image_page_metadata)}\n")
 
+    # ✅ Add CIS extracted images into CAD schematic pipeline
+    append_cis_images_to_image_metadata(
+        images_root=IMAGES_ROOT,
+        image_page_metadata=image_page_metadata
+    )
+
 
     print("\n======================================")
     print("   STEP 3 — CREATE TEXT VECTOR STORE   ")
     print("======================================\n")
 
     # Clear DB (EXACT notebook logic)
-    clear_cosmos_container(COSMOS_DB_TEXT, COSMOS_CONT_TEXT)
+    clear_cosmos_container(COSMOS_DB_TEXT, textDB_container_name)
 
-    vectorstore_text = build_vectorstore_text()
+    vectorstore_text = build_vectorstore_text(textDB_container_name)
 
     # Assign UUIDs to each chunk
     chunks_uuid = add_ids_to_chunks(chunks)
@@ -1017,11 +1485,21 @@ def ingest_files_from_blob_urls_create_embeddings(download_dir,blob_urls: list, 
     print("   STEP 4 — UPLOAD CAD/SCHEMATIC PAGE IMAGES         ")
     print("=====================================================\n")
 
+    # Deduplicate local image paths
+    seen = set()
+    unique_metadata = []
+
+    for item in image_page_metadata:
+        key = item["local_image_path"]
+        if key not in seen:
+            seen.add(key)
+            unique_metadata.append(item)
+
     image_urls = upload_pdf_images_and_append_urls(
         image_page_metadata=image_page_metadata,
         image_urls=image_urls_raw,
         conn_str=AZURE_CONN_STRING,
-        container=BLOB_CONT_NAME,   # same notebook container
+        container=BLOB_CONTAINER,   # same notebook container
     )
 
     # Turn into flat list
@@ -1043,10 +1521,20 @@ def ingest_files_from_blob_urls_create_embeddings(download_dir,blob_urls: list, 
     print("   STEP 6 — CREATE IMAGE VECTOR STORE          ")
     print("==============================================\n")
 
-    # Clear DB (EXACT notebook logic)
-    clear_cosmos_container(COSMOS_DB_IMAGE, COSMOS_CONT_IMAGE)
+    image_client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY)
 
-    vectorstore_image = build_vectorstore_image()
+    container_client_image = get_or_create_vector_container_serverless(
+        client=image_client,
+        DB_NAME=COSMOS_DB_IMAGE,
+        CONT_NAME=imageDB_container_name,
+        VECTOR_PATH=VECTOR_PATH,
+        EMBED_DIM=EMBED_DIM
+    )
+
+    # Clear DB (EXACT notebook logic)
+    clear_cosmos_container(COSMOS_DB_IMAGE, imageDB_container_name)
+
+    vectorstore_image = build_vectorstore_image(imageDB_container_name)
 
     # Assign UUIDs to image docs
     docs_image_uuid = add_ids_to_chunks(docs_image)

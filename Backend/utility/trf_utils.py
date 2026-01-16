@@ -413,55 +413,26 @@ def safe_download_blob_file(conn_str, container, blob_name, local_path):
 
 
 
-def create_db_and_container(client, DB_NAME, VECTOR_PATH, EMBED_DIM, CONT_NAME):
+def ensure_cosmos_database(client, DB_NAME):
+    """
+    Ensures Cosmos DB database exists.
+    - If exists → do nothing
+    - If missing → create it
+    """
+
     print("→ Ensuring database...")
-    db = client.create_database_if_not_exists(DB_NAME)
-    print("✔ Database ready:", DB_NAME)
-
-    vector_embedding_policy = {
-        "vectorEmbeddings": [
-            {
-                "path": VECTOR_PATH,
-                "dataType": "float32",
-                "dimensions": EMBED_DIM,
-                "distanceFunction": "cosine",
-            }
-        ]
-    }
-
-    indexing_policy = {
-        "includedPaths": [{"path": "/*"}],
-        "excludedPaths": [{"path": "/\"_etag\"/?"}, {"path": f"{VECTOR_PATH}/*"}],
-        "vectorIndexes": [{"path": VECTOR_PATH, "type": "quantizedFlat"}],
-    }
-
-    print("→ Ensuring container exists (no deletion)...")
 
     try:
-        container = db.get_container_client(CONT_NAME)
-        container.read()   # check if exists
-        print("✔ Container already exists:", CONT_NAME)
-        return container
+        db = client.get_database_client(DB_NAME)
+        db.read()
+        print("✔ Database exists:", DB_NAME)
+        return db
 
     except exceptions.CosmosResourceNotFoundError:
-        print("→ Creating container with vector policy...")
+        db = client.create_database(DB_NAME)
+        print("✔ Database created:", DB_NAME)
+        return db
 
-        try:
-            container = db.create_container(
-                id=CONT_NAME,
-                partition_key=PartitionKey(path="/id"),
-                indexing_policy=indexing_policy,
-                vector_embedding_policy=vector_embedding_policy,
-                # offer_throughput=400,  # enable if required
-            )
-            print("✔ Container created:", CONT_NAME)
-            return container
-
-        except exceptions.CosmosHttpResponseError as e:
-            print("❌ Failed to create container")
-            print("StatusCode:", getattr(e, "status_code", None))
-            print("Message:", getattr(e, "message", str(e)))
-            raise
 
 
 # Builders
@@ -563,11 +534,23 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                 if ext == "docx":
                     pdf_path = os.path.splitext(local_path)[0] + ".pdf"
                     try:
-                        convert_docx_to_pdf_linux(local_path, pdf_path)
-                        # record converted pdf path
-                        converted_pdf_paths.append(pdf_path)
-                        if verbose:
-                            print(f"[INFO] Converted DOCX to PDF: {local_path} -> {pdf_path}")
+                        # ---------- WINDOWS (MS WORD via COM) ----------
+                        system = platform.system().lower()
+                        if system == "windows":
+                            import pythoncom
+                            from docx2pdf import convert
+                            pythoncom.CoInitialize()     # ✅ REQUIRED
+                            try:
+                                convert(local_path, pdf_path)
+                            finally:
+                                pythoncom.CoUninitialize()  # ✅ REQUIRED
+                            return
+                        else:
+                            convert_docx_to_pdf_linux(local_path, pdf_path)
+                            # record converted pdf path
+                            converted_pdf_paths.append(pdf_path)
+                            if verbose:
+                                print(f"[INFO] Converted DOCX to PDF: {local_path} -> {pdf_path}")
                     except Exception as e:
                         if verbose:
                             print(f"[WARN] docx->pdf conversion failed for {base_name}: {e}")

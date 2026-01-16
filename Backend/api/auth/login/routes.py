@@ -12,7 +12,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
 from azure.cosmos import CosmosClient
-from utility.trf_utils import create_db_and_container
+from utility.trf_utils import ensure_cosmos_database
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -34,8 +34,8 @@ EMBED_DIM = 1536
 
 client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY)
 
-create_db_and_container(client, COSMOS_DB_TEXT, "/vector", EMBED_DIM, COSMOS_CONT_TEXT)
-create_db_and_container(client, COSMOS_DB_IMAGE, "/vector", EMBED_DIM, COSMOS_CONT_IMAGE)
+ensure_cosmos_database(client, COSMOS_DB_TEXT)
+ensure_cosmos_database(client, COSMOS_DB_IMAGE)
 
 router = APIRouter()
 

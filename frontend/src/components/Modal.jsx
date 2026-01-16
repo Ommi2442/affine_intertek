@@ -102,10 +102,12 @@ export default function BasicModal({ open, handleClose }) {
 
     try {
       const createdByEmail = localStorage.getItem("email");
+      const userName = localStorage.getItem("name");
 
       const payload = {
         ...form,
         Proj_Created_By: createdByEmail,
+        User_Name: userName
       };
 
       await createProjectApi(payload);

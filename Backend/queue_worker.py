@@ -203,6 +203,11 @@ async def process_message(message) -> bool:
     print(f"blob_urls source_docs------{blob_urls}")
     print(f" Files to embed: {len(blob_urls)}")
 
+    user_name = project_doc.get("User_Name") or []
+    first_name = user_name.split()[0]
+    textDB_container_name = f"vectorstorecontainer_new_itk_text_{first_name}_{project_id}"
+    imageDB_container_name = f"vectorstorecontainer_new_itk_image_{first_name}_{project_id}"
+
     # ---------------------------------------------------------
     # DEFINE CALLBACK (MUST BE BEFORE TRF CALL)
     # ---------------------------------------------------------
@@ -228,7 +233,7 @@ async def process_message(message) -> bool:
             trf_completed=False
         )
                 
-        ingest_files_from_blob_urls_create_embeddings(DOWNLOAD_DIR, blob_urls, project_id)
+        ingest_files_from_blob_urls_create_embeddings(DOWNLOAD_DIR, blob_urls, project_id, textDB_container_name, imageDB_container_name)
 
         print(f" Embeddings completed for project {project_id}")
 
@@ -269,8 +274,11 @@ async def process_message(message) -> bool:
             for filename in INPUT_JSON_FILENAMES
         ]
 
+
         run_trf_generation(
             blob_urls,
+            textDB_container_name,
+            imageDB_container_name,
             input_docx_path=INPUT_DOCX_PATH,
             output_docx_path=OUTPUT_DOCX_PATH,
             base_pta_path=BASE_PTA_JSON_PATH,

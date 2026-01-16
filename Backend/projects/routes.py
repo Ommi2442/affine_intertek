@@ -99,6 +99,7 @@ async def create_project(payload: ProjectCreate):
             Client_Name=payload.Client_Name,
             Proj_Archived=False,
             Proj_Created_By=payload.Proj_Created_By,
+            User_Name=payload.User_Name,
             Proj_Created_On=str(datetime.utcnow()),
             
         )
@@ -113,7 +114,7 @@ async def create_project(payload: ProjectCreate):
             return folder_path
 
         base_path = f"Documents/{new_project.Project_Id}"
-        folders_to_create = [f"{base_path}/source_documents",f"{base_path}/TRF Templates",f"{base_path}/CDR Templates",f"{base_path}/Letters Templates",f"{base_path}/Standard Document",f"{base_path}/Generated_trf_Report",f"{base_path}/Generated_cdr_Report",f"{base_path}/Citation_docs"]
+        folders_to_create = [f"{base_path}/source_documents",f"{base_path}/TRF Templates",f"{base_path}/CDR Templates",f"{base_path}/Letters Templates",f"{base_path}/Standard Document",f"{base_path}/Generated_trf_Report",f"{base_path}/Generated_cdr_Report",f"{base_path}/Citation_docs",f"{base_path}/letter_images"]
         created_folders = [create_folder(folder) for folder in folders_to_create]
         return {
             "status": "success",
