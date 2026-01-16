@@ -1158,6 +1158,29 @@ def download_file(project_id: str,report_type:str):
                 "Content-Disposition": f'attachment; filename="iec_output_sheet_{project_id}.xlsx"'
             }
         )
+    elif report_type == "letter":
+            blob_path = f"Documents/{project_id}/Letters Templates/letter_iec_output_{project_id}.docx"
+
+            blob_client = blob_service.get_blob_client(
+                container=blob_container,
+                blob=blob_path
+            )
+
+            if not blob_client.exists():
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Word file not found at {blob_path}"
+                )
+
+            stream = blob_client.download_blob()
+
+            return StreamingResponse(
+                stream.chunks(),  # or stream.readall() if chunks() causes issues
+                media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                headers={
+                    "Content-Disposition": f'attachment; filename="letter_iec_output_{project_id}.docx"'
+                }
+            )
 
 
 @router.get("/pdf-proxy")
