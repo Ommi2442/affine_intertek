@@ -142,6 +142,27 @@ def update_project_progress_CDR(
     print(f" Progress updated → {cdr_percentage}% | {cdr_stage} --- {cdr_completed}")
 
 
+def update_project_progress_Letter(
+    project_doc: dict,
+    letter_stage: str,
+    letter_percentage: int,
+    letter_step: str | None = None,
+    error: str | None = None,
+    last_updated: datetime | None = None,
+    letter_completed: bool = False
+):
+    project_doc["Letter_Project_Progress"] = {
+        "letter_stage": letter_stage,
+        "letter_percentage": letter_percentage,
+        "letter_step": letter_step,
+        "last_updated": (last_updated or datetime.utcnow()).isoformat(),
+        "error": error,
+        "letter_completed": letter_completed
+    }
+
+    projects_container.upsert_item(project_doc)
+    print(f" Progress updated → {letter_percentage}% | {letter_stage} --- {letter_completed}")
+
 
 
 

@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
 from pathlib import Path
 from azure.core.exceptions import ResourceNotFoundError
-from queue_worker import update_project_progress_CDR
+from queue_worker import update_project_progress_CDR,update_project_progress_Letter
 from fastapi import APIRouter, HTTPException, Depends, Body, Form, UploadFile, File, Query, logger, BackgroundTasks, status
 import traceback
 from azure.storage.blob import ContainerClient
@@ -15,7 +15,7 @@ from fastapi import Depends
 from api.auth.jwt_auth.utils import get_current_user
 from db.database import *
 from db.database import COSMOS_DB_project_Container, COSMOS_DB_URI,COSMOS_DB_KEY,COSMOS_DB_DATABASE,COSMOS_DB_project_TRF_Container,COSMOS_DB_project_CDR_Container
-from projects.models import Project,ProjectCreate,ProjectFilter,FinalizeReportPayload
+from projects.models import Project,ProjectCreate,ProjectFilter,FinalizeReportPayload,LetterGeneration
 from azure.cosmos import exceptions
 from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueClient
@@ -33,6 +33,8 @@ from projects.helpers import *
 from utility.cdr_report.CDR_Pipelines.main import main2
 from utility.cdr_report.CDR_Pipelines.compiler import fill_excel_from_json
 
+from utility.letter_report.deploymentV1.letter_ingestor import main
+from utility.letter_report.deploymentV1.letter_generator import ingest_letter_pipeline
 from utility.cdr_report.CDR_Pipelines.configs import OUTPUT_EXCEL_AI_FINAL_PATH
 
 
@@ -42,8 +44,9 @@ from pathlib import Path
 import asyncio
 import threading
 import traceback
-
-
+from dotenv import load_dotenv
+load_dotenv()
+BLOB_CONTAINER_NAME = os.getenv("LT_BLOB_CONTAINER_NAME")
 
 router = APIRouter()
 
@@ -520,7 +523,7 @@ def process_citation_documents(
     SOURCE_PREFIX = f"Documents/{project_id}/source_documents/"
     TARGET_PREFIX = f"Documents/{project_id}/Citation_docs/"
 
-    print("▶ Citation processing started:", project_id)
+    
 
     container_client = blob_service.get_container_client(container_name)
 
@@ -1156,6 +1159,29 @@ def download_file(project_id: str,report_type:str):
                 "Content-Disposition": f'attachment; filename="iec_output_sheet_{project_id}.xlsx"'
             }
         )
+    elif report_type == "letter":
+            blob_path = f"Documents/{project_id}/Letters Templates/letter_iec_output_{project_id}.docx"
+
+            blob_client = blob_service.get_blob_client(
+                container=blob_container,
+                blob=blob_path
+            )
+
+            if not blob_client.exists():
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Word file not found at {blob_path}"
+                )
+
+            stream = blob_client.download_blob()
+
+            return StreamingResponse(
+                stream.chunks(),  # or stream.readall() if chunks() causes issues
+                media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                headers={
+                    "Content-Disposition": f'attachment; filename="letter_iec_output_{project_id}.docx"'
+                }
+            )
 
 
 @router.get("/pdf-proxy")
@@ -1440,6 +1466,162 @@ async def finalize_reports(payload: FinalizeReportPayload):
             detail=f"Unhandled error: {str(e)}"
         )
 
+@router.post("/letter-generation")
+async def letter_implementation(payload: LetterGeneration):
+    try:
+        projectId = payload.projectId
+        trf_urls = payload.trf_urls
+        cdr_urls = payload.cdr_urls
+        other_urls = payload.other_urls
+
+        # Build blob_urls list
+        blob_urls = [
+            trf_urls,
+            cdr_urls,
+            other_urls
+        ]
+
+        print("Project ID for Letter Generation:", projectId,type(projectId))
+        print("All URLs for Letter Generation:", blob_urls)
+
+        if not projectId:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="projectId is required"
+            )
+
+        # ----------------------------------
+        # Cosmos DB query
+        # ----------------------------------
+        project_id = projectId
+        query = "SELECT * FROM c WHERE c.Project_Id = @pid"
+        params = [{"name": "@pid", "value": project_id}]
+
+        items = list(
+            COSMOS_DB_project_Container.query_items(
+                query=query,
+                parameters=params,
+                enable_cross_partition_query=True
+            )
+        )
+
+        if not items:
+            raise HTTPException(
+                status_code=404,
+                detail="Project not found"
+            )
+
+        letter_progress = items[0].get("Letter_Project_Progress") or {}
+        letter_percentage = letter_progress.get("letter_percentage", 0)
+
+        if letter_percentage < 100:
+            query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
+            docs = list(
+                projects_container.query_items(
+                    query=query,
+                    enable_cross_partition_query=True,
+                )
+            )
+
+            if not docs:
+                raise HTTPException(
+                    status_code=404,
+                    detail="Project document not found"
+                )
+
+            project_doc = docs[0]
+
+            update_project_progress_Letter(
+                project_doc,
+                letter_stage="steps in Progress",
+                letter_percentage=10,
+                letter_step="Starting running CDR",
+                letter_completed=False
+            )
+            f=main(blob_urls)
+            
+            if f:
+                BASE_DIR = Path(__file__).resolve().parents[1]
+                DATA_DIR = BASE_DIR / "data"
+                project_dir = DATA_DIR / projectId
+                project_dir.mkdir(parents=True, exist_ok=True)
+                letter_json1 = project_dir / f"letter_header_iec_output_{projectId}.json"
+                letter_json2 = project_dir / f"letter_body_iec_output_{projectId}.json"
+                letter_docx_file = project_dir / f"letter_iec_output_{projectId}.docx"
+
+                intter_returned_data=ingest_letter_pipeline(
+                blob_urls=blob_urls,
+                container_name=BLOB_CONTAINER_NAME,
+                src_files_dir="src_files",
+                letter_json_path="letter_old.json",
+                letter_header_json_path="letter_header_old.json",
+                letter_template_docx="Letter_Template.docx",
+                output_letter_docx=letter_docx_file,
+                output_letter_json=letter_json1,
+                output_letter_header_json=letter_json2, )
+
+                print("----- Saving Letter JSON and DOCX to Blob and CosmosDB -----")
+                
+                save_local_jsons_and_docx_to_blob_and_cosmos_for_letter(
+                                    str(letter_json1),
+                                    str(letter_json2),
+                                    str(letter_docx_file),
+                                    project_id=project_id
+                                    )
+                update_project_progress_Letter(
+                project_doc,
+                letter_stage="Completed",
+                letter_percentage=100,
+                letter_step="Letter generated and stored",
+                letter_completed=True)
+                
+                with open(letter_json1, "r", encoding="utf-8") as f:
+                    letter_json_data = json.load(f)
+                with open(letter_json2, "r", encoding="utf-8") as f:
+                    letter_header_json_data = json.load(f)
+
+            
+                return  {
+                    "status":"success",
+                    "project_Id":project_id,
+                    "Message":"Letter Generated Successfully",
+                    "Data":{
+                        "Letter_json_body":letter_json_data,
+                        "Letter_header_json":letter_header_json_data
+                    }
+                }
+
+        if letter_percentage == 100:
+            BASE_DIR = Path(__file__).resolve().parents[1]
+            DATA_DIR = BASE_DIR / "data"
+            project_dir = DATA_DIR / projectId
+            project_dir.mkdir(parents=True, exist_ok=True)
+            letter_json1 = project_dir / f"letter_header_iec_output_{projectId}.json"
+            letter_json2 = project_dir / f"letter_body_iec_output_{projectId}.json"
+            letter_docx_file = project_dir / f"letter_iec_output_{projectId}.docx"
+
+            with open(letter_json2, "r", encoding="utf-8") as f:
+                letter_json_data = json.load(f)
+            
+            with open(letter_json1, "r", encoding="utf-8") as f:
+                letter_header_json_data = json.load(f)
+            return {
+                "status":"success",
+                "project_Id":project_id,
+                "Message":"Letter Already Generated",
+                "Data":{
+                        "Letter_json_body":letter_json_data,
+                        "Letter_header_json":letter_header_json_data
+                    }
+            }   
+            
+    except Exception as e:
+        print(traceback.format_exc())
+        return {
+            "status":"Failed",
+            "Message":"Letter Generation Code Failed"
+        }
+
 
 def delete_by_project_id(container, project_id):
     props = container.read()
@@ -1467,3 +1649,163 @@ def delete_by_project_id(container, project_id):
             partition_key=item[pk_name]
         )
     return len(items)
+
+
+@router.post("/upload_trf")
+async def upload_files(
+    background_tasks: BackgroundTasks,
+    projectId: str = Form(...),
+    files: list[UploadFile] = File(...),
+):
+    uploaded_urls = []
+    folder_path = f"{BLOB_PREFIX}/{projectId}/user_uploaded_TRF_file"
+ 
+    # Upload files to Blob Storage
+    for file in files:
+        filename = os.path.basename(file.filename)
+        blob_path = f"{folder_path}/{filename}"
+        blob_client = container_client.get_blob_client(blob_path)
+ 
+        data = await file.read()
+        blob_client.upload_blob(data, overwrite=True)
+ 
+        uploaded_urls.append({
+            "filename": filename,
+            "blob_url": blob_client.url
+        })
+ 
+    if not uploaded_urls:
+        raise HTTPException(status_code=400, detail="No files uploaded")
+ 
+    # Fetch project document
+    query = f"SELECT * FROM c WHERE c.Project_Id = '{projectId}'"
+    docs = list(
+        COSMOS_DB_project_Container.query_items(
+            query=query,
+            enable_cross_partition_query=True
+        )
+    )
+ 
+    if not docs:
+        raise HTTPException(status_code=404, detail="Project not found")
+ 
+    project_doc = docs[0]
+ 
+    # Ensure User_uploaded_trf exists
+    if "User_uploaded_trf" not in project_doc or project_doc["User_uploaded_trf"] is None:
+        project_doc["User_uploaded_trf"] = []
+ 
+    now = datetime.utcnow().isoformat()
+ 
+    # Soft-delete existing active records
+    for record in project_doc["User_uploaded_trf"]:
+        if record.get("Deleted_At") is None:
+            record["Deleted_At"] = now
+ 
+    # Insert new uploads as active records
+    for item in uploaded_urls:
+        project_doc["User_uploaded_trf"].append({
+            "filename": item["filename"],
+            "url": item["blob_url"],
+            "uploaded_at": now,
+            "Deleted_At": None
+        })
+ 
+    COSMOS_DB_project_Container.upsert_item(project_doc)
+ 
+    background_tasks.add_task(
+        process_citation_documents,
+        projectId,
+        blob_service,
+        CONTAINER_NAME
+    )
+ 
+    first_file = uploaded_urls[0]
+ 
+    return {
+        "status": "success",
+        "message": "Files uploaded successfully for TRF",
+        "filename": first_file["filename"],
+        "blob_url": first_file["blob_url"]
+    }
+
+
+@router.post("/upload_cdr")
+async def upload_files(
+    background_tasks: BackgroundTasks,
+    projectId: str = Form(...),
+    files: list[UploadFile] = File(...),
+):
+    uploaded_urls = []
+    folder_path = f"{BLOB_PREFIX}/{projectId}/user_uploaded_CDR_file"
+ 
+    # Upload files to Blob Storage
+    for file in files:
+        filename = os.path.basename(file.filename)
+        blob_path = f"{folder_path}/{filename}"
+        blob_client = container_client.get_blob_client(blob_path)
+ 
+        data = await file.read()
+        blob_client.upload_blob(data, overwrite=True)
+ 
+        uploaded_urls.append({
+            "filename": filename,
+            "blob_url": blob_client.url
+        })
+ 
+    if not uploaded_urls:
+        raise HTTPException(status_code=400, detail="No files uploaded")
+ 
+    # Fetch project document
+    query = f"SELECT * FROM c WHERE c.Project_Id = '{projectId}'"
+    docs = list(
+        COSMOS_DB_project_Container.query_items(
+            query=query,
+            enable_cross_partition_query=True
+        )
+    )
+ 
+    if not docs:
+        raise HTTPException(status_code=404, detail="Project not found")
+ 
+    project_doc = docs[0]
+ 
+    # Ensure User_uploaded_cdr exists
+    if "User_uploaded_cdr" not in project_doc or project_doc["User_uploaded_cdr"] is None:
+        project_doc["User_uploaded_cdr"] = []
+ 
+    now = datetime.utcnow().isoformat()
+ 
+    # Soft-delete existing active records
+    for record in project_doc["User_uploaded_cdr"]:
+        if record.get("Deleted_At") is None:
+            record["Deleted_At"] = now
+ 
+    # Insert new uploads as active records
+    for item in uploaded_urls:
+        project_doc["User_uploaded_cdr"].append({
+            "filename": item["filename"],
+            "url": item["blob_url"],
+            "uploaded_at": now,
+            "Deleted_At": None
+        })
+ 
+    # Save back to Cosmos DB
+    COSMOS_DB_project_Container.upsert_item(project_doc)
+ 
+    # Background processing
+    background_tasks.add_task(
+        process_citation_documents,
+        projectId,
+        blob_service,
+        CONTAINER_NAME
+    )
+ 
+    first_file = uploaded_urls[0]
+ 
+    return {
+        "status": "success",
+        "message": "Files uploaded successfully for CDR ",
+        "filename": first_file["filename"],
+        "blob_url": first_file["blob_url"]
+    }

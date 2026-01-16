@@ -12,6 +12,7 @@ COSMOS_DB_users_registration=os.getenv("COSMOS_DB_users_registration")
 COSMOS_DB_project_Container_name = os.getenv("COSMOS_DB_project_Container")
 COSMOS_DB_project_TRF_Container = os.getenv("COSMOS_DB_project_TRF_Container")
 COSMOS_DB_project_CDR_Container = os.getenv("COSMOS_DB_project_CDR_Container")
+COSMOS_DB_project_LETTER_Container = os.getenv("COSMOS_DB_project_Letter_Container")
 
 try:
     print(" Connecting to Cosmos DB...")
@@ -22,6 +23,7 @@ try:
     projects_container = database.get_container_client(COSMOS_DB_project_Container_name)
     COSMOS_DB_project_TRF_Container = database.get_container_client(COSMOS_DB_project_TRF_Container)
     COSMOS_DB_project_CDR_Container = database.get_container_client(COSMOS_DB_project_CDR_Container)
+    COSMOS_DB_project_LETTER_Container = database.get_container_client(COSMOS_DB_project_LETTER_Container)
     COSMOS_DB_users_Container = users_container
     COSMOS_DB_users_registration=users_reg
     COSMOS_DB_project_Container = projects_container

@@ -1,0 +1,58 @@
+{
+  "pages": [
+    {
+      "page_number": 3,
+      "items": [
+        {
+          "key": "«AppCOMPANYNAME»",
+          "value": "Gener8 LLC",
+          "question": "",
+          "custom_prompt": "Enter the full legal name of the applicant/client company (e.g., 'ABC Technologies Inc.' or 'XYZ Manufacturing Corporation')",
+          "ai_fillable": true
+        },
+        {
+          "key": "Intertek Report: No:",
+          "value": "105581614MPK-001A",
+          "question": "",
+          "custom_prompt": "What's the REPORT NUMBER",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 1,
+              "similarity_score": 0.768063167773128,
+              "preview_text": "Page 2 of 51   \n \n \n \n \n \nDeliverables: \n \n105581614MPK-001A (Letter report) \n \nDraft IEC 61010-1 Report shared  \n \n \nDeliverable  Listing  LPC  NC Rpt  CB  TRF  Letter  Data Only"
+            },
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 49,
+              "similarity_score": 0.755110129595855,
+              "preview_text": "Page 50 of 51  \nIEC 61010-1 \nClause Requirement + Test Result - Remark Verdict \n \n \n \n \n \n4.1.2 TABLE: Critical components information  \nObject / part No. Manufacturer/ \ntrademark \nType / model Technical data Standard Mark(s) of \nconformity1) \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n      \nSupplementary information: \n1) Provided evidence ensures the agreed level of compliance. See OD"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7518118586738233,
+              "preview_text": "CLIENT INFORMATION SHEET (CIS) \nETL Certification and Follow‐Up Services \n \nSFT‐ETL‐OP‐19c  545 E. Algonquin Road, \n  Arlington Heights, IL 60005  Rev: June 28, 2018 \nApplicant:       (Company who owns the rights to the Listing Report and will appear on Intertek’s website) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nDBA (if applicable):  ____________________________________________________________ _____________ \n \nStreet Address:  ________"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 10,
+              "similarity_score": 0.7505415476811199,
+              "preview_text": "by any means as confidential by the disclosing party at the time of such disclosure; and/or (ii) is information, howsoever disclosed, which would reasonably be \nconsidered to be confidential by the receiving party.\n(d) Intellectual Property Right(s) means copyrights, trademarks (registered or unregistered), patents, patent applications (including the right to apply for a patent), \nservice marks, design rights (registered or unregistered), trade secrets and other like\nrights howsoever existing.\n("
+            },
+            {
+              "filename": "105581614MPK-001A_CR.pdf",
+              "page": 47,
+              "similarity_score": 0.7501979383528034,
+              "preview_text": "Page 48 of 51  \nIEC 61010-1 \nClause Requirement + Test Result - Remark Verdict \n \n \n \n \n \n \nPHOTO OF EQUIPMENT DESCRIPTION \n4.  \n \n \nRight view of the CellFe Infinity MTx \n \n5. \n \n \nTop internal view of the CellFe Infinity MTx \n \n \n6.  \n \n \nRight side internal view of the CellFe \nInfinity MTx"
+            }
+          ],
+          "image_support": [],
+          "evidence_type": "text",
+          "confidence": 100
+        }
+      ]
+    }
+  ]
+}

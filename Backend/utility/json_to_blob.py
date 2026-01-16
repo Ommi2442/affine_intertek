@@ -1,3 +1,6 @@
+import os
+from azure.storage.blob import BlobServiceClient
+from pathlib import Path
 from openpyxl import load_workbook
 from pathlib import Path
 from datetime import datetime
@@ -30,145 +33,25 @@ import mimetypes
 import os
 from azure.storage.blob import BlobServiceClient
 from pathlib import Path
+
+from db.database import COSMOS_DB_project_LETTER_Container,COSMOS_DB_project_TRF_Container,COSMOS_DB_project_CDR_Container
+
 from fastapi import HTTPException
+from dotenv import load_dotenv
+load_dotenv()
 
-
-AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net'
+AZURE_STORAGE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING_2")
+blob_container = os.getenv("blob_container2")
 blob_service = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
-blob_container = 'stintertekesusdev-blob'
-
-COSMOS_DB_URI="https://csdb-intertek-esus-dev.documents.azure.com:443/"
-COSMOS_DB_KEY="azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00MFDbK88ApotACDbODLFXA=="
-COSMOS_DB_DATABASE="intertek_poc_dev"
-COSMOS_PROJECT_TRF_CONTAINER="Project_TRF"
-COSMOS_PROJECT_CDR_CONTAINER="Project_CDR"
+COSMOS_DB_URI=os.getenv("COSMOS_DB_URI2")
+COSMOS_DB_KEY=os.getenv("COSMOS_DB_KEY2")
+COSMOS_DB_DATABASE=os.getenv("COSMOS_DB_DATABASE")
 
 # Cosmos DB
 cosmos_client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
 database  = cosmos_client.get_database_client(COSMOS_DB_DATABASE)
-trf_container = database.get_container_client(COSMOS_PROJECT_TRF_CONTAINER)
-cdr_container = database.get_container_client(COSMOS_PROJECT_CDR_CONTAINER)
-
-
-
-# def save_local_json_to_blob_and_cosmos(
-#     file_path: str,
-#     project_id: str
-# ) -> dict:
-#     """
-#     Reads a local JSON file, uploads it to Blob Storage,
-#     and stores the blob URL in Cosmos DB
-#     """
-
-#     path = Path(file_path)
-#     print("\n\n\n file_path:", file_path)
-    
-#     if not path.exists():
-#         raise FileNotFoundError(f"File not found: {file_path}")
-
-#     if path.suffix.lower() != ".json":
-#         raise ValueError("Only .json files are allowed")
-    
-#     filename = path.name
-#     from pathlib import Path
-
-#     print("\n\n\n file_path------:", file_path)
-
-#     path = Path(file_path)
-#     filename = path.stem + f"_download-file{project_id}" + path.suffix
-
-#     print("\n\n\n NEw file_path After---:", filename)
-
-#     # ---------- 1. Read local JSON ----------
-#     with open(path, "r", encoding="utf-8") as f:
-#         json_data = json.load(f)
-
-#     # ---------- 2. Upload to Blob ----------
-#     blob_path = f"Documents/{project_id}/Generated_trf_Report/{filename}"
-#     blob_client = blob_service.get_blob_client(
-#         container=blob_container,
-#         blob=blob_path
-#     )
-
-#     with open(path, "rb") as file_bytes:
-#         blob_client.upload_blob(
-#             file_bytes,
-#             overwrite=True,
-#             content_type="application/json"
-#         )
-
-#     blob_url = blob_client.url
-
-#     # ---------- 3. Save metadata in Cosmos ----------
-#     cosmos_item = {
-#         "id": str(uuid.uuid4()),
-#         "project_id": project_id,
-#         "filename": filename,
-#         "blob_url": blob_url,
-#         "uploaded_on": datetime.utcnow().isoformat() + "Z"
-#     }
-
-#     trf_container.create_item(cosmos_item)
-
-#     return cosmos_item
-
-
-
-
-# def save_local_json_to_blob_and_cosmos(
-#     file_path: str,
-#     project_id: str
-# ) -> dict:
-#     """
-#     Reads a local JSON file, uploads it to Blob Storage,
-#     and stores the blob URL in Cosmos DB
-#     """
-
-    
-#     path = Path(file_path)
-#     print("\n\n\nOriginal file_path:", file_path)
-    
-#     if not path.exists():
-#         raise FileNotFoundError(f"File not found: {file_path}")
-
-#     if path.suffix.lower() != ".json":
-#         raise ValueError("Only .json files are allowed")
-    
-#     filename = path.stem + f"_{project_id}" + path.suffix
-#     print("\n\n\nModified filename After---:", filename)
-#     # ---------- 2. Read local JSON ----------
-#     with open(path, "r", encoding="utf-8") as f:
-#         json_data = json.load(f)
-
-#     # ---------- 3. Upload to Blob ----------
-#     blob_path = f"Documents/{project_id}/Generated_trf_Report/{filename}"
-#     blob_client = blob_service.get_blob_client(
-#         container=blob_container,
-#         blob=blob_path
-#     )
-
-#     with open(path, "rb") as file_bytes:
-#         blob_client.upload_blob(
-#             file_bytes,
-#             overwrite=True,
-#             content_type="application/json"
-#         )
-
-#     blob_url = blob_client.url
-
-#     # ---------- 4. Save metadata in Cosmos ----------
-#     cosmos_item = {
-#         "id": str(uuid.uuid4()),
-#         "project_id": project_id,
-#         "filename": filename,
-#         "blob_url": blob_url,
-#         "uploaded_on": datetime.utcnow().isoformat() + "Z"
-#     }
-
-#     trf_container.create_item(cosmos_item)
-
-#     return cosmos_item
-
+trf_container = COSMOS_DB_project_TRF_Container
+cdr_container = COSMOS_DB_project_CDR_Container
 
 
 def save_local_json_to_blob_and_cosmos(
@@ -319,7 +202,6 @@ def load_trf_json_from_blob(project_id):
     # Fetch JSON from Blob Storage
     json_data = fetch_json_from_blob(blob_url)
 
-    print('json_data', json_data)
 
     # Return to frontend
     return {
@@ -342,66 +224,6 @@ def download_docx_from_local(project_id: str) -> Path:
         raise HTTPException(status_code=500, detail="DOCX file is empty")
 
     return docx_path
-
-
-
-# def save_cdr_local_json_to_blob_and_cosmos(json_file_path,project_id) -> list:
-#     """
-#     Uploads both JSON and DOCX files to Blob Storage
-#     and returns Cosmos DB items (list)
-#     """
-
-#     cosmos_items = []
-
-#     for file_path in [json_file_path]:
-#         print("\n\n\n file_path:", json_file_path)
-        
-#         path = Path(file_path)
-
-#         if not path.exists():
-#             raise FileNotFoundError(f"File not found: {file_path}")
-
-#         if path.suffix.lower() not in [".json"]:
-#             raise ValueError("Only .json and files allowed")
-        
-#         print("\n\n\n file_path------and name  :", file_path,"-------------",filename)
-#         filename = path.stem + f"_download-file{project_id}" + path.suffix
-#         print("\n\n\n Modified filename After---:", filename)
-#         # ---------- blob path ----------
-#         blob_path = f"Documents/{project_id}/Generated_cdr_Report/{filename}"
-
-#         blob_client = blob_service.get_blob_client(
-#             container=blob_container,
-#             blob=blob_path
-#         )
-
-#         # ---------- content type ----------
-#         content_type, _ = mimetypes.guess_type(path.name)
-#         content_type = content_type or "application/octet-stream"
-
-#         # ---------- upload ----------
-#         with open(path, "rb") as f:
-#             blob_client.upload_blob(
-#                 f,
-#                 overwrite=True,
-#                 content_type=content_type
-#             )
-
-#         # ---------- cosmos item ----------
-#         cosmos_item = {
-#             "id": str(uuid.uuid4()),
-#             "project_id": project_id,
-#             "filename": filename,
-#             "file_type": path.suffix.lower(),
-#             "blob_path": blob_path,
-#             "blob_url": blob_client.url,
-#             "uploaded_on": datetime.utcnow().isoformat() + "Z"
-#         }
-
-#         cdr_container.create_item(cosmos_item)
-#         cosmos_items.append(cosmos_item)
-
-#     return cosmos_items
 
 
 def save_cdr_local_json_to_blob_and_cosmos_cdr(json_file_path, project_id) -> list:
@@ -619,3 +441,110 @@ def save_local_json_to_blob_and_cosmos_cdr(
         result["cosmos_id"] = cosmos_item["id"]
 
     return result
+
+
+def save_local_jsons_and_docx_to_blob_and_cosmos_for_letter(
+    json_file_path_1: str,
+    json_file_path_2: str,
+    docx_file_path: str,
+    project_id: str
+) -> list:
+    try:
+        results = []
+
+        file_paths = [
+            json_file_path_1,
+            json_file_path_2,
+            docx_file_path
+        ]
+
+        for file_path in file_paths:
+            print("\n\nProcessing file:", file_path)
+            path = Path(file_path)
+
+            if not path.exists():
+                raise FileNotFoundError(f"File not found: {file_path}")
+
+            if path.suffix.lower() not in (".json", ".docx"):
+                raise ValueError("Only .json and .docx files allowed")
+
+            # ---------- filename logic ----------
+            stem = path.stem
+            print("Original filename stem:", stem)
+
+            if stem.endswith(f"_{project_id}"):
+                filename = f"{stem}{path.suffix}"
+            else:
+                filename = f"{stem}_{project_id}{path.suffix}"
+
+            print("Modified filename after adding project ID:", filename)
+
+            # ---------- blob path ----------
+            blob_path = f"Documents/{project_id}/Letters Templates/{filename}"
+
+            blob_client = blob_service.get_blob_client(
+                container=blob_container,
+                blob=blob_path
+            )
+
+            # ---------- validate JSON ----------
+            if path.suffix.lower() == ".json":
+                with open(path, "r", encoding="utf-8") as f:
+                    json.load(f)
+
+            # ---------- content type ----------
+            content_type, _ = mimetypes.guess_type(path.name)
+            content_type = content_type or "application/octet-stream"
+
+            # ---------- check blob existence ----------
+            blob_exists = blob_client.exists()
+
+            # ---------- upload (create or update) ----------
+            with open(path, "rb") as f:
+                blob_client.upload_blob(
+                    f,
+                    overwrite=True,
+                    content_type=content_type
+                )
+
+            status = "updated" if blob_exists else "created"
+
+            result = {
+                "project_id": project_id,
+                "filename": filename,
+                "file_type": path.suffix.lower(),
+                "blob_path": blob_path,
+                "blob_url": blob_client.url,
+                "status": status
+            }
+
+            # ---------- create cosmos record ONLY if new blob ----------
+            if not blob_exists:
+                cosmos_item = {
+                    "id": str(uuid.uuid4()),
+                    "project_id": project_id,
+                    "filename": filename,
+                    "file_type": path.suffix.lower(),
+                    "blob_path": blob_path,
+                    "blob_url": blob_client.url,
+                    "uploaded_on": datetime.utcnow().isoformat() + "Z"
+                }
+
+                COSMOS_DB_project_LETTER_Container.create_item(cosmos_item)
+                print("\n-----\n", cosmos_item)
+                print(f"Cosmos item created for {filename}")
+
+                result["cosmos_id"] = cosmos_item["id"]
+
+            results.append(result)
+
+        print("Results:", results)
+        return results
+
+    except Exception:
+        print(traceback.format_exc())
+        raise
+
+
+
+
