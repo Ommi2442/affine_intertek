@@ -19,6 +19,7 @@ class ProjectCreate(BaseModel):
     Standard: str
     Project_Id: str
     Proj_Created_By: str
+    User_Name: str
     Client_Name: str
     Product: str
 
@@ -59,6 +60,7 @@ class Project(BaseModel):
     Proj_Archived: bool = False
     Proj_Created_On: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
     Proj_Created_By: Optional[str] = "system"
+    User_Name: Optional[str] = None
     Proj_Deleted_On: Optional[str] = None
     Proj_Deleted_By: Optional[str] = None
     Proj_Archived_On: Optional[str] = None
