@@ -1,0 +1,948 @@
+{
+  "pages": [
+    {
+      "page_number": 1,
+      "items": [
+        {
+          "key": "CUSTOMER NAME",
+          "value": "CellFE, Inc.",
+          "question": "What is the customer name?",
+          "custom_prompt": "Mention the name of the client?",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 11,
+              "similarity_score": 0.7799961551459752,
+              "preview_text": "Quote No:  Qu-01390131-0\n12 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\ncircumstances, infringe any legal rights (including Intellectual Property Rights) of any third party.\n4.2 In the event that the Services provided relate to any third party, the Client shall cause any such third party to acknowledge and agree to the provisions in this \nAgreement and the Proposal prior to and as a condition precedent to such third party receiving any Reports or the benefit o"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 11,
+              "similarity_score": 0.7799961551459752,
+              "preview_text": "Quote No:  Qu-01390131-0\n12 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\ncircumstances, infringe any legal rights (including Intellectual Property Rights) of any third party.\n4.2 In the event that the Services provided relate to any third party, the Client shall cause any such third party to acknowledge and agree to the provisions in this \nAgreement and the Proposal prior to and as a condition precedent to such third party receiving any Reports or the benefit o"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 11,
+              "similarity_score": 0.7799961551459752,
+              "preview_text": "Quote No:  Qu-01390131-0\n12 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\ncircumstances, infringe any legal rights (including Intellectual Property Rights) of any third party.\n4.2 In the event that the Services provided relate to any third party, the Client shall cause any such third party to acknowledge and agree to the provisions in this \nAgreement and the Proposal prior to and as a condition precedent to such third party receiving any Reports or the benefit o"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 11,
+              "similarity_score": 0.7799961551459752,
+              "preview_text": "Quote No:  Qu-01390131-0\n12 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\ncircumstances, infringe any legal rights (including Intellectual Property Rights) of any third party.\n4.2 In the event that the Services provided relate to any third party, the Client shall cause any such third party to acknowledge and agree to the provisions in this \nAgreement and the Proposal prior to and as a condition precedent to such third party receiving any Reports or the benefit o"
+            },
+            {
+              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
+              "page": 1,
+              "similarity_score": 0.7782781870333678,
+              "preview_text": "Click here"
+            }
+          ],
+          "image_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "image_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "pdf_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": null,
+              "url": "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf/page_None.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-06-30T12:09:44Z&st=2026-01-08T03:54:44Z&spr=https&sig=HwRh3ITH77D0TVTWxGmVZOlUsjl5YLxL806axkqBG4Y%3D"
+            }
+          ],
+          "evidence_type": "image",
+          "confidence": 100
+        },
+        {
+          "key": "KEY1",
+          "value": "Imaging Station",
+          "question": "Specify the type of testing being conducted",
+          "custom_prompt": "Mention the project name.",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
+              "page": 1,
+              "similarity_score": 0.7784182123891741,
+              "preview_text": "Click here"
+            },
+            {
+              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
+              "page": 1,
+              "similarity_score": 0.7784182123891741,
+              "preview_text": "Click here"
+            },
+            {
+              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
+              "page": 1,
+              "similarity_score": 0.7784182123891741,
+              "preview_text": "Click here"
+            },
+            {
+              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
+              "page": 1,
+              "similarity_score": 0.7784182123891741,
+              "preview_text": "Click here"
+            },
+            {
+              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
+              "page": 1,
+              "similarity_score": 0.7784182123891741,
+              "preview_text": "Click here"
+            }
+          ],
+          "image_support": [
+            {
+              "filename": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf_page_1.png",
+              "image_file": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf_page_1.png",
+              "pdf_file": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+              "page": 1,
+              "url": "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf/page_1.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-06-30T12:09:44Z&st=2026-01-08T03:54:44Z&spr=https&sig=HwRh3ITH77D0TVTWxGmVZOlUsjl5YLxL806axkqBG4Y%3D"
+            }
+          ],
+          "evidence_type": "image",
+          "confidence": 100
+        },
+        {
+          "key": "XXXXXXXXXXXXXXXXXXXXXXXX",
+          "value": "13403",
+          "question": "What's the REPORT NUMBER",
+          "custom_prompt": "Mention the REPORT NUMBER",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf",
+              "page": 0,
+              "similarity_score": 0.7904739630482602,
+              "preview_text": "Gener8 PO & Part Number to be referenced on all packing lists & invoices.\n1. Include RoHS 3 certificate required with shipment\n2. Include CoC required with shipment.\n3. Include Materials Certificate if applicable.\n4. Include Plating Certificate if applicable.\n5. Include FAIR (1st Article Insp Report) if applicable.\n6. Include Packing slip\nPLEASE EMAIL ALL INVOICES TO : apgroup@gener8.net\nMail to :\nACCOUNTS PAYABLE\n5975 CASTLE CREEK PKWY N DR, STE 250\nINDIANAPOLIS, IN 46250\n(800) 338-4105 x55012"
+            },
+            {
+              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
+              "page": 1,
+              "similarity_score": 0.7865267635198209,
+              "preview_text": "Total Quality. Assured.\r\n\r\n________________________________\r\n\r\nCONFIDENTIALITY NOTICE\r\n\r\nThis email may contain confidential or privileged information, if you are not the intended recipient, or the person responsible for delivering the message to the intended recipient then please notify us by return email immediately. Should you have received this email in error then you should not copy this for any purpose nor disclose its contents to any other person.\r\n\r\nEXPORT NOTIFICATION"
+            },
+            {
+              "filename": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+              "page": 0,
+              "similarity_score": 0.7831285496588011,
+              "preview_text": "this list, or are the product(s) on which services will be performed originating from or \ndestined for a Sanctioned Country?  LINK2   \nRequired to comply with national and international regulations.  \n☐YES    ☒NO \n1.4 Is the product subject to Import/Export Controls and Regulations (e.g., International \nTraffic and Arms Regulations (ITAR), Export Administration Regulations (EAR))?   \nThis may involve military, defence or dual-use products and is required to comply with special project \nmanagemen"
+            },
+            {
+              "filename": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf",
+              "page": 0,
+              "similarity_score": 0.7831026366754652,
+              "preview_text": "Billing info change - please update your recordsBilling info change - please update your recordsBilling info change - please update your recordsBilling info change - please update your records Purchase Order Revision Order DateBill ToBill ToBill ToBill To\nGENER8 Accounts Payable P70909 0 8/23/2023\n5975 Castle Creek Pkwy N. Dr. Supplier Print Date\nSuite 250\nINTZZ03 8/23/2023apgroup@gener8.net\nPurchase OrderPurchase OrderPurchase OrderPurchase Order\nIndianapolis, IN 46250-2781\nUNITED STATES\nSSSSuu"
+            },
+            {
+              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
+              "page": 1,
+              "similarity_score": 0.7819375439406693,
+              "preview_text": "Click here"
+            }
+          ],
+          "image_support": [
+            {
+              "filename": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf_page_1.png",
+              "image_file": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf_page_1.png",
+              "pdf_file": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf",
+              "page": 1,
+              "url": "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf/page_1.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-06-30T12:09:44Z&st=2026-01-08T03:54:44Z&spr=https&sig=HwRh3ITH77D0TVTWxGmVZOlUsjl5YLxL806axkqBG4Y%3D"
+            }
+          ],
+          "evidence_type": "image",
+          "confidence": 95
+        },
+        {
+          "key": "KEY3",
+          "value": "",
+          "question": "What's the Issue Date",
+          "custom_prompt": "What's the Issue Date?",
+          "ai_fillable": false
+        },
+        {
+          "key": "[DD-mmmm-yyyy]",
+          "value": "[DD-mmmm-yyyy]",
+          "question": "What's the revised Date?",
+          "custom_prompt": "What's the revised Date?",
+          "ai_fillable": false
+        },
+        {
+          "key": "pages",
+          "value": "No of pages",
+          "question": "",
+          "custom_prompt": "Enter the total number of pages in this report (numeric value only, e.g., '7' or '12')",
+          "ai_fillable": false
+        }
+      ]
+    },
+    {
+      "page_number": 2,
+      "items": [
+        {
+          "key": "«IssuedDate»",
+          "value": "",
+          "question": "What's the Issue Date?",
+          "custom_prompt": "What's the Issue Date",
+          "ai_fillable": false
+        },
+        {
+          "key": "«ReportNumber»",
+          "value": "13403",
+          "question": "What's the REPORT NUMBER",
+          "custom_prompt": "Mention the REPORT NUMBER.",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf",
+              "page": 0,
+              "similarity_score": 0.786119860614354,
+              "preview_text": "Gener8 PO & Part Number to be referenced on all packing lists & invoices.\n1. Include RoHS 3 certificate required with shipment\n2. Include CoC required with shipment.\n3. Include Materials Certificate if applicable.\n4. Include Plating Certificate if applicable.\n5. Include FAIR (1st Article Insp Report) if applicable.\n6. Include Packing slip\nPLEASE EMAIL ALL INVOICES TO : apgroup@gener8.net\nMail to :\nACCOUNTS PAYABLE\n5975 CASTLE CREEK PKWY N DR, STE 250\nINDIANAPOLIS, IN 46250\n(800) 338-4105 x55012"
+            },
+            {
+              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
+              "page": 1,
+              "similarity_score": 0.7817790058762188,
+              "preview_text": "to report this email as spam."
+            },
+            {
+              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
+              "page": 1,
+              "similarity_score": 0.7817361082087227,
+              "preview_text": "to report this email as spam."
+            },
+            {
+              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
+              "page": 1,
+              "similarity_score": 0.7815862153673296,
+              "preview_text": "to report this email as spam."
+            },
+            {
+              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
+              "page": 1,
+              "similarity_score": 0.7815862153673296,
+              "preview_text": "to report this email as spam."
+            }
+          ],
+          "image_support": [
+            {
+              "filename": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf_page_1.png",
+              "image_file": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf_page_1.png",
+              "pdf_file": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf",
+              "page": 1,
+              "url": "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf/page_1.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-06-30T12:09:44Z&st=2026-01-08T03:54:44Z&spr=https&sig=HwRh3ITH77D0TVTWxGmVZOlUsjl5YLxL806axkqBG4Y%3D"
+            }
+          ],
+          "evidence_type": "image",
+          "confidence": 95
+        },
+        {
+          "key": "«ProjectNumber»",
+          "value": "",
+          "question": "What's the Project Number?",
+          "custom_prompt": "What's the Project Number? Remove anything after 'MPK' including 'MPK'and append a 'G' in the start",
+          "ai_fillable": false
+        },
+        {
+          "key": "«AppContactName»",
+          "value": "Leonid Fomin",
+          "question": "What's the name of the contact person  of the Client",
+          "custom_prompt": "Mention the name of primary contact person of the applicant.",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8154191693241317,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8154191693241317,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8154191693241317,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8112567525155192,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8112567525155192,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            }
+          ],
+          "image_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "image_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "pdf_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": null,
+              "url": "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf/page_None.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-06-30T12:09:44Z&st=2026-01-08T03:54:44Z&spr=https&sig=HwRh3ITH77D0TVTWxGmVZOlUsjl5YLxL806axkqBG4Y%3D"
+            }
+          ],
+          "evidence_type": "image",
+          "confidence": 100
+        },
+        {
+          "key": "«AppPhone»",
+          "value": "(818) 689-2280",
+          "question": "",
+          "custom_prompt": "Mention the phone number of the primary contact person of the applicant.",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8109959521594945,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8109959521594945,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8109959521594945,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8046593604471214,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8046593604471214,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            }
+          ],
+          "image_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "image_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "pdf_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": null,
+              "url": "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf/page_None.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-06-30T12:09:44Z&st=2026-01-08T03:54:44Z&spr=https&sig=HwRh3ITH77D0TVTWxGmVZOlUsjl5YLxL806axkqBG4Y%3D"
+            }
+          ],
+          "evidence_type": "image",
+          "confidence": 100
+        },
+        {
+          "key": "«AppCOMPANYNAME»",
+          "value": "CellFE, Inc.",
+          "question": "",
+          "custom_prompt": "Mention the name of the client?",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 11,
+              "similarity_score": 0.7799961551459752,
+              "preview_text": "Quote No:  Qu-01390131-0\n12 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\ncircumstances, infringe any legal rights (including Intellectual Property Rights) of any third party.\n4.2 In the event that the Services provided relate to any third party, the Client shall cause any such third party to acknowledge and agree to the provisions in this \nAgreement and the Proposal prior to and as a condition precedent to such third party receiving any Reports or the benefit o"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 11,
+              "similarity_score": 0.7799961551459752,
+              "preview_text": "Quote No:  Qu-01390131-0\n12 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\ncircumstances, infringe any legal rights (including Intellectual Property Rights) of any third party.\n4.2 In the event that the Services provided relate to any third party, the Client shall cause any such third party to acknowledge and agree to the provisions in this \nAgreement and the Proposal prior to and as a condition precedent to such third party receiving any Reports or the benefit o"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 11,
+              "similarity_score": 0.7799961551459752,
+              "preview_text": "Quote No:  Qu-01390131-0\n12 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\ncircumstances, infringe any legal rights (including Intellectual Property Rights) of any third party.\n4.2 In the event that the Services provided relate to any third party, the Client shall cause any such third party to acknowledge and agree to the provisions in this \nAgreement and the Proposal prior to and as a condition precedent to such third party receiving any Reports or the benefit o"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 11,
+              "similarity_score": 0.7799961551459752,
+              "preview_text": "Quote No:  Qu-01390131-0\n12 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\ncircumstances, infringe any legal rights (including Intellectual Property Rights) of any third party.\n4.2 In the event that the Services provided relate to any third party, the Client shall cause any such third party to acknowledge and agree to the provisions in this \nAgreement and the Proposal prior to and as a condition precedent to such third party receiving any Reports or the benefit o"
+            },
+            {
+              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
+              "page": 1,
+              "similarity_score": 0.7782781870333678,
+              "preview_text": "Click here"
+            }
+          ],
+          "image_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "image_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "pdf_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": null,
+              "url": "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf/page_None.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-06-30T12:09:44Z&st=2026-01-08T03:54:44Z&spr=https&sig=HwRh3ITH77D0TVTWxGmVZOlUsjl5YLxL806axkqBG4Y%3D"
+            }
+          ],
+          "evidence_type": "image",
+          "confidence": 100
+        },
+        {
+          "key": "«AppFax»",
+          "value": "-",
+          "question": "",
+          "custom_prompt": "Mention the fax of the primary contact person of the applicant. Mention ' - ' incase no value found.",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7884361450992179,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7884361450992179,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7884361450992179,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7875205114358977,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7875205114358977,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            }
+          ],
+          "image_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "image_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "pdf_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": null,
+              "url": "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf/page_None.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-06-30T12:09:44Z&st=2026-01-08T03:54:44Z&spr=https&sig=HwRh3ITH77D0TVTWxGmVZOlUsjl5YLxL806axkqBG4Y%3D"
+            }
+          ],
+          "evidence_type": "image",
+          "confidence": 100
+        },
+        {
+          "key": "«AppStreetAddress»",
+          "value": "1000 Atlantic Avenue, Suite 104",
+          "question": "What's the City, State and Zip of the Client's Address?",
+          "custom_prompt": "Mention the Street Address of the applicant.",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8244433903983316,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8244433903983316,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8244433903983316,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8215151829164496,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8215151829164496,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            }
+          ],
+          "image_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "image_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "pdf_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": null,
+              "url": "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf/page_None.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-06-30T12:09:44Z&st=2026-01-08T03:54:44Z&spr=https&sig=HwRh3ITH77D0TVTWxGmVZOlUsjl5YLxL806axkqBG4Y%3D"
+            }
+          ],
+          "evidence_type": "image",
+          "confidence": 100
+        },
+        {
+          "key": "«AppEmail»",
+          "value": "leo@cellfebiotech.com",
+          "question": "",
+          "custom_prompt": "Mention the email address of the primary contact person of the applicant.",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8292293224091792,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8292293224091792,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8292293224091792,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8187628189959048,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8187628189959048,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            }
+          ],
+          "image_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "image_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "pdf_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": null,
+              "url": "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf/page_None.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-06-30T12:09:44Z&st=2026-01-08T03:54:44Z&spr=https&sig=HwRh3ITH77D0TVTWxGmVZOlUsjl5YLxL806axkqBG4Y%3D"
+            }
+          ],
+          "evidence_type": "image",
+          "confidence": 100
+        },
+        {
+          "key": "«AppCityStZip»",
+          "value": "Alameda, CA, 95401, USA",
+          "question": "",
+          "custom_prompt": "Mention the City, State, Postal Code, Country of the applicant.",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8305836150469408,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8305836150469408,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8305836150469408,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8303382659686288,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8303382659686288,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            }
+          ],
+          "image_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "image_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "pdf_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": null,
+              "url": "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf/page_None.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-06-30T12:09:44Z&st=2026-01-08T03:54:44Z&spr=https&sig=HwRh3ITH77D0TVTWxGmVZOlUsjl5YLxL806axkqBG4Y%3D"
+            }
+          ],
+          "evidence_type": "image",
+          "confidence": 100
+        },
+        {
+          "key": "<ETL Listing/CB/Other Evaluation> of the «ProductType» «ProductCovModels»",
+          "value": "ETL Listing",
+          "question": "",
+          "custom_prompt": "Specify the type of evaluation being conducted. Choose one: 'ETL Listing' for North American certification, 'CB' for international CB scheme certification, or specify another evaluation type (e.g., 'Field Evaluation', 'Special Inspection')",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 6,
+              "similarity_score": 0.8669685889774451,
+              "preview_text": "Conformity in order to apply the CE Mark to your product. Please note, these test reports provide no \ncertification for the European Union.\nETL Listing Certification for North America:\nIntertek will evaluate your product(s) to the applicable requirements of the US and Canadian standards \nreferenced in this proposal. If your product(s) are found to be in compliance an ETL Listing Report will be \nissued. If non-compliances are found, we will issue format report to assist you with making corrective"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 6,
+              "similarity_score": 0.8669685889774451,
+              "preview_text": "Conformity in order to apply the CE Mark to your product. Please note, these test reports provide no \ncertification for the European Union.\nETL Listing Certification for North America:\nIntertek will evaluate your product(s) to the applicable requirements of the US and Canadian standards \nreferenced in this proposal. If your product(s) are found to be in compliance an ETL Listing Report will be \nissued. If non-compliances are found, we will issue format report to assist you with making corrective"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 6,
+              "similarity_score": 0.8669685889774451,
+              "preview_text": "Conformity in order to apply the CE Mark to your product. Please note, these test reports provide no \ncertification for the European Union.\nETL Listing Certification for North America:\nIntertek will evaluate your product(s) to the applicable requirements of the US and Canadian standards \nreferenced in this proposal. If your product(s) are found to be in compliance an ETL Listing Report will be \nissued. If non-compliances are found, we will issue format report to assist you with making corrective"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 6,
+              "similarity_score": 0.8669685889774451,
+              "preview_text": "Conformity in order to apply the CE Mark to your product. Please note, these test reports provide no \ncertification for the European Union.\nETL Listing Certification for North America:\nIntertek will evaluate your product(s) to the applicable requirements of the US and Canadian standards \nreferenced in this proposal. If your product(s) are found to be in compliance an ETL Listing Report will be \nissued. If non-compliances are found, we will issue format report to assist you with making corrective"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 6,
+              "similarity_score": 0.8372859641935106,
+              "preview_text": "for the desired countries of entry will be determined. \nShould your product be found in compliance, a CB Test Certificate and Report will be issued. These \ndocuments can then be presented to any National Certification Body (NCB) as an application to apply \ntheir respective Certification Mark. If non-compliances are found, a formal report of our findings will be \nissued to assist you in making corrective actions. Please note that NCB Application Procedures can vary \nand the issuance of their \"lic"
+            }
+          ],
+          "image_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "image_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "pdf_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": null,
+              "url": "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf/page_None.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-06-30T12:09:44Z&st=2026-01-08T03:54:44Z&spr=https&sig=HwRh3ITH77D0TVTWxGmVZOlUsjl5YLxL806axkqBG4Y%3D"
+            }
+          ],
+          "evidence_type": "image",
+          "confidence": 100
+        },
+        {
+          "key": "«AppContactName»",
+          "value": "Leonid Fomin",
+          "question": "Enter the full name of the primary contact person at the applicant/client company (e.g., 'John Smith' or 'Sarah Johnson')",
+          "custom_prompt": "Mention the name of primary contact person of the applicant.",
+          "ai_fillable": true,
+          "text_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8154191693241317,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8154191693241317,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8154191693241317,
+              "preview_text": "Note: If the billing entity is different from the applicant, the billing company is required to provide company registration documents and a letter \naccepting financial responsibility of the applicant’s certification at the location listed below. \n \nManufacturer:    \n(Location where final assembly will take place and/or where Certification label will be applied) \n \nLegal Entity:  _________________________________________________ ________________________ \n \nStreet Address:  ______________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8112567525155192,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            },
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.8112567525155192,
+              "preview_text": "Email:  ___________________________________  ____________________ _______________ \n \nBill‐To:      (Company responsible for ETL Certification Follow‐Up Service fees) \n(If different than applicant) \n \nLegal Entity Name:  ____________________________________________ _____________________________ \n \nStreet Address:  _______________________________________________ __________________________ \n \nCity, State, Postal Code, Country:  ____________________________ __________________________________________"
+            }
+          ],
+          "image_support": [
+            {
+              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "image_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf_page_None.png",
+              "pdf_file": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
+              "page": null,
+              "url": "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf/page_None.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-06-30T12:09:44Z&st=2026-01-08T03:54:44Z&spr=https&sig=HwRh3ITH77D0TVTWxGmVZOlUsjl5YLxL806axkqBG4Y%3D"
+            }
+          ],
+          "evidence_type": "image",
+          "confidence": 100
+        },
+        {
+          "key": "«StandardTitleNoEdDate»",
+          "value": "IEC 61010-1:2010, IEC 61010-1:2010/AMD1:2016",
+          "question": "",
+          "custom_prompt": "Enter the complete standard reference(s) used for this evaluation including title, number, edition, and date. Format: 'Standard Number: Standard Title, Edition/Date' (e.g., 'UL 508A: Industrial Control Panels, 3rd Edition 2013' or 'IEC 60950-1: Information Technology Equipment - Safety, 2nd Edition 2005'). If multiple standards, list each on a new line",
+          "ai_fillable": false,
+          "confidence": 100
+        },
+        {
+          "key": "evaluation (Stage 1) or/and testing (Stage 2)",
+          "value": "evaluation (Stage 1) or/and testing (Stage 2)",
+          "question": "",
+          "custom_prompt": "Specify which stage(s) of the evaluation process identified the non-conformances. Choose: 'during our evaluation (Stage 1)', 'during our testing (Stage 2)', or 'during our evaluation (Stage 1) and testing (Stage 2)'",
+          "ai_fillable": false
+        },
+        {
+          "key": "<CB Test Report/ETL CDR/Deliverable>",
+          "value": "<CB Test Report/ETL CDR/Deliverable>",
+          "question": "",
+          "custom_prompt": "Specify the type of deliverable document that will be provided. Choose: 'CB Test Report' for CB scheme, 'ETL CDR' (Construction Details Report) for ETL listing, or specify another deliverable type (e.g., 'Field Evaluation Report', 'Technical Assessment')",
+          "ai_fillable": false
+        },
+        {
+          "key": "<will be sent under separate cover/attached to this letter>",
+          "value": "<will be sent under separate cover/attached to this letter>",
+          "question": "",
+          "custom_prompt": "Specify how the draft deliverable will be provided. Choose: 'will be sent under separate cover' if sending separately, or 'attached to this letter' if including with this letter report",
+          "ai_fillable": false
+        },
+        {
+          "key": "<product(s)/system/etc>",
+          "value": "<product(s)/system/etc>",
+          "question": "",
+          "custom_prompt": "Specify what is being evaluated. Choose the most appropriate: 'product' for a single item, 'products' for multiple items, 'system' for an integrated system, or specify another appropriate term (e.g., 'equipment', 'assembly', 'installation')",
+          "ai_fillable": false
+        }
+      ]
+    },
+    {
+      "page_number": 3,
+      "items": [
+        {
+          "key": "<additional/modified>",
+          "value": "<additional/modified>",
+          "question": "",
+          "custom_prompt": "Specify what type of samples or documentation are needed. Choose: 'additional' if new samples/documents are required, 'modified' if changes to existing samples/documents are needed, or 'additional/modified' if both may apply",
+          "ai_fillable": false
+        },
+        {
+          "key": "the intrinsic safety analysis and constructional evaluation",
+          "value": "the intrinsic safety analysis and constructional evaluation",
+          "question": "",
+          "custom_prompt": "",
+          "ai_fillable": false
+        },
+        {
+          "key": "Initial Documentation Review",
+          "value": "Initial Documentation Review",
+          "question": "",
+          "custom_prompt": "Specify when the non-conformances were identified. If found during initial documentation review, keep as 'Initial Documentation Review'. If found during another phase, replace with the appropriate phase name (e.g., 'Physical Inspection', 'Performance Testing', 'Final Evaluation')",
+          "ai_fillable": false
+        },
+        {
+          "key": "Non-conformance Table",
+          "value": [
+            {
+              "Clause": "5.1",
+              "Requirement of the Clause": "Required equipment markings must be present and visible from the exterior or after opening, and not on removable parts.",
+              "Remark and Findings": "No markings on equipment."
+            },
+            {
+              "Clause": "5.1.1",
+              "Requirement of the Clause": "Required equipment markings must be visible and use correct symbols.",
+              "Remark and Findings": "No required markings or symbols present on equipment."
+            },
+            {
+              "Clause": "5.1.2",
+              "Requirement of the Clause": "Equipment must be identified by model number, name, or other means.",
+              "Remark and Findings": "No model identification on equipment."
+            },
+            {
+              "Clause": "5.1.3",
+              "Requirement of the Clause": "Equipment shall be marked with rated voltage, current, and frequency.",
+              "Remark and Findings": "No electrical ratings marked on the equipment."
+            },
+            {
+              "Clause": "5.1.5",
+              "Requirement of the Clause": "Where necessary for safety, indication of purpose of terminals, connectors, controls and indicators must be marked.",
+              "Remark and Findings": "None provided in the equipment."
+            },
+            {
+              "Clause": "5.1.5.101",
+              "Requirement of the Clause": "Gas and liquid connections must be clearly marked near the connector with means of identifying the gas or liquid, maximum permitted pressure, and flow direction if applicable.",
+              "Remark and Findings": "No identification, maximum pressure, or flow direction marking provided on the equipment."
+            },
+            {
+              "Clause": "5.4.1",
+              "Requirement of the Clause": "Equipment must be accompanied by documentation for safety purposes for operator or responsible body.",
+              "Remark and Findings": "No such document provided with equipment."
+            },
+            {
+              "Clause": "5.4.1",
+              "Requirement of the Clause": "Documentation must include intended use.",
+              "Remark and Findings": "None provided."
+            },
+            {
+              "Clause": "5.4.1",
+              "Requirement of the Clause": "Documentation must include technical specification.",
+              "Remark and Findings": "None provided."
+            },
+            {
+              "Clause": "5.4.1",
+              "Requirement of the Clause": "Documentation must include information specified in 5.4.2 to 5.4.6.",
+              "Remark and Findings": "None provided."
+            },
+            {
+              "Clause": "5.4.1",
+              "Requirement of the Clause": "Documentation must include instructions for lifting and carrying if equipment is over 18 kg.",
+              "Remark and Findings": "No instructions for lifting or carrying."
+            },
+            {
+              "Clause": "5.4.2",
+              "Requirement of the Clause": "Documentation must include supply voltage or voltage range, frequency or frequency range, and power or current rating.",
+              "Remark and Findings": "Incomplete/insufficient electrical ratings provided in IFU."
+            },
+            {
+              "Clause": "5.4.2",
+              "Requirement of the Clause": "Documentation must include description of all input and output connections.",
+              "Remark and Findings": "None provided."
+            },
+            {
+              "Clause": "5.4.2",
+              "Requirement of the Clause": "Documentation must include statement of the range of environmental conditions, including mains supply voltage fluctuations, overvoltage category, wet location, and pollution degree.",
+              "Remark and Findings": "None provided for mains supply voltage fluctuations, overvoltage category, wet location, and pollution degree."
+            },
+            {
+              "Clause": "5.4.3",
+              "Requirement of the Clause": "Documentation must include instructions for assembly, location, and mounting requirements.",
+              "Remark and Findings": "None provided."
+            },
+            {
+              "Clause": "5.4.4",
+              "Requirement of the Clause": "Documentation must include identification and description of operating controls, positioning for disconnection, specification of intermittent operation limits, explanation of symbols used, listing of any poisonous or injurious gases and quantities, risk reduction procedures relating burn from surfaces permitted to exceed limits, additional precautions for IEC 60950 conforming equipment in regard to moistures and liquids, and a statement about protection impairment if used in a manner not specified by the manufacturer.",
+              "Remark and Findings": "None provided."
+            },
+            {
+              "Clause": "5.4.5",
+              "Requirement of the Clause": "Documentation must include instructions sufficient in detail permitting safe maintenance and inspection and continued safety, instruction against the use of detachable mains supply cord with inadequate rating, rating and characteristics of fuses, product specific risks may affect service personnel, protective measures for these risks, and verification of the safe state after repair.",
+              "Remark and Findings": "None provided."
+            },
+            {
+              "Clause": "7.5.1",
+              "Requirement of the Clause": "Equipment over 18 kg must have means for lifting or carrying, or directions given in documentation.",
+              "Remark and Findings": "No means for lifting or carrying and no directions given in IFU."
+            }
+          ],
+          "question": "",
+          "custom_prompt": "Specify when the non-conformances were identified. If found during initial documentation review, keep as 'Initial Documentation Review'. If found during another phase, replace with the appropriate phase name (e.g., 'Physical Inspection', 'Performance Testing', 'Final Evaluation')",
+          "ai_fillable": false,
+          "dataframe_table": true,
+          "confidence": 100
+        },
+        {
+          "key": "Critical components table",
+          "value": [],
+          "question": "",
+          "custom_prompt": "Specify when the non-conformances were identified. If found during initial documentation review, keep as 'Initial Documentation Review'. If found during another phase, replace with the appropriate phase name (e.g., 'Physical Inspection', 'Performance Testing', 'Final Evaluation')",
+          "ai_fillable": false,
+          "dataframe_table": true,
+          "confidence": 100
+        }
+      ]
+    },
+    {
+      "page_number": 5,
+      "items": [
+        {
+          "key": "photograph",
+          "is_photo": true,
+          "marking_urls": [
+            {
+              "id": 1,
+              "url": "https://images.unsplash.com/photo-1761839258753-85d8eecbbc29?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8"
+            }
+          ]
+        },
+        {
+          "key": "«ProjectNumber»",
+          "value": "",
+          "question": "",
+          "custom_prompt": "Extract the project number from the document. This is typically found in the header or introductory section and follows a format like 'Project No. XXXXX'",
+          "ai_fillable": false
+        },
+        {
+          "key": "<and conduct repeat testing, if required>",
+          "value": "<and conduct repeat testing, if required>",
+          "question": "",
+          "custom_prompt": "Determine if repeat testing is required based on the evaluation results. Fill with 'and conduct repeat testing, if required' if testing issues were identified, otherwise leave blank",
+          "ai_fillable": false
+        },
+        {
+          "key": "<will/will not>",
+          "value": "<will/will not>",
+          "question": "",
+          "custom_prompt": "Select 'will' if modified samples or additional documentation WILL be required for follow-up project based on the non-conformances identified",
+          "ai_fillable": false
+        },
+        {
+          "key": "<page no.>",
+          "value": "<page no.>",
+          "question": "Insert page number reference '4' or current page number where this section appears",
+          "custom_prompt": "Insert page number reference '4' or current page number where this section appears",
+          "ai_fillable": false
+        },
+        {
+          "key": "Theresa Reinhardt via theresa.reinhardt@intertek.com",
+          "value": "Project Manager via email.",
+          "question": "Extract the Project Manager's name and email from the document. Format as: 'Name via email@domain.com'. Look for contact information in the document header or signature sections",
+          "custom_prompt": "Extract the Project Manager's name and email from the document. Format as: 'Name via email@domain.com'. Look for contact information in the document header or signature sections",
+          "ai_fillable": false
+        },
+        {
+          "key": "Completed By",
+          "value": "Completed By",
+          "question": "Completed By",
+          "custom_prompt": "Mention name of the person in the field 'Tested by (name, function, signature):'",
+          "ai_fillable": false
+        },
+        {
+          "key": "Compliance Investigator",
+          "value": "Compliance Investigator",
+          "question": "Compliance Investigator",
+          "custom_prompt": "",
+          "ai_fillable": false
+        },
+        {
+          "key": "«Reviewer»",
+          "value": "«Reviewer»",
+          "question": "What is the name of the reviewer?",
+          "custom_prompt": "Extract the name of the person who reviewed this evaluation report. Look for reviewer information in signature sections or document metadata",
+          "ai_fillable": true
+        },
+        {
+          "key": "«ReviewerTitle»",
+          "value": "«ReviewerTitle»",
+          "question": "Extract the title/role of the reviewer from the document. Common titles include 'Senior Engineer', 'Project Manager', 'Technical Reviewer', etc.",
+          "custom_prompt": "Extract the title/role of the reviewer from the document. Common titles include 'Senior Engineer', 'Project Manager', 'Technical Reviewer', etc.",
+          "ai_fillable": true
+        }
+      ]
+    }
+  ]
+}

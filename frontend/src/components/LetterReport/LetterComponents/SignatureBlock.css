@@ -1,0 +1,58 @@
+.signature-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  border: 1px solid #333;
+  margin-top: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.sig-col {
+  border-right: 1px solid #333;
+  box-sizing: border-box;
+}
+
+.sig-col:last-child {
+  border-right: none;
+}
+
+.sig-row {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  border-bottom: 1px solid #333;
+  min-height: 42px;
+  box-sizing: border-box;
+}
+
+.sig-row:last-child {
+  border-bottom: none;
+}
+
+.sig-label {
+  background: #e6e6e6;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.sig-value {
+  padding: 8px 10px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sig-line {
+  margin: 0 10px;
+  border-bottom: 1px solid #000;
+  width: 100%;
+  box-sizing: border-box;
+}

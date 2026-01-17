@@ -552,3 +552,54 @@ table {
 .finalize-status-dot.red {
   background-color: #c91c1c; /* red */
 }
+
+/* White page container */
+.letter-white-box {
+  background: #f0f0f0;
+  padding: 20px;
+  height: calc(100vh - 160px);
+  overflow: hidden;
+}
+
+/* Scrollable document */
+.letter-scroll-container {
+  background: #dcdcdc;
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px 0;
+}
+
+/* Each page */
+.letter-page-wrapper {
+  background: white;
+  width: 850px;
+  min-height: 1100px;
+  margin: 0 auto 30px auto;
+  padding: 40px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Page nav */
+.letter-page-nav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.letter-page-btn {
+  min-width: 36px !important;
+  border-radius: 50% !important;
+  background: #e0e0e0 !important;
+  color: #000 !important;
+}
+
+.letter-page-btn.active {
+  background: #396872ff !important;
+  color: white !important;
+}
+
+.letter-page-nav {
+  margin-top: 16px;
+  padding-bottom: 10px;
+}

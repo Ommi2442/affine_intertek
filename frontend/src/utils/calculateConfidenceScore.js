@@ -19,7 +19,7 @@ export const calculateConfidenceScore = (data) => {
   const aiFields = allEntries.filter(
     (item) =>
       item?.ai_fillable === true &&
-      item?.accuracy_level === true &&
+      (item.accuracy_level === undefined || item.accuracy_level === true) &&
       normalizeConfidence(item.confidence) !== null
   );
 
@@ -28,7 +28,7 @@ export const calculateConfidenceScore = (data) => {
     (item) => item?.is_user_edited === true || item?.is_user_modified === true
   );
 
-  const totalAiFields = aiFields.length;
+  let totalAiFields = aiFields.length;
   if (totalAiFields === 0) return null;
 
   let high = 0;
@@ -61,11 +61,33 @@ export const calculateConfidenceScore = (data) => {
     else low++;
   });
 
+  /* ================================
+      NEW: LETTER DATAFRAME TABLES
+     ================================ */
+  const dataframeHighCount = allEntries.reduce((count, item) => {
+    if (
+      item?.dataframe_table === true &&
+      item?.confidence === 100 &&
+      Array.isArray(item.value)
+    ) {
+      return count + item.value.length;
+    }
+    return count;
+  }, 0);
+
+  if (dataframeHighCount > 0) {
+    high += dataframeHighCount;
+    sumConfidence += dataframeHighCount * 100;
+    aiConfidenceCount += dataframeHighCount;
+  }
+
   const avgConfidence =
     aiConfidenceCount > 0 ? Math.round(sumConfidence / aiConfidenceCount) : 0;
 
   const overallLabel =
     avgConfidence < 50 ? 'Low' : avgConfidence < 75 ? 'Medium' : 'High';
+
+  totalAiFields += dataframeHighCount;
 
   return {
     totalAiFields, // AI fields only

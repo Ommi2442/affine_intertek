@@ -9,6 +9,7 @@ import deleteProjectReducer from '../redux/features/deleteProject/deleteProjectS
 import archieveProjectReducer from '../redux/features/archieveProject/archieveProjectSlice';
 import confidenceReducer from '../redux/features/confidence/confidenceSlice';
 import generateCdrReducer from '../redux/features/generateCdr/generateCdrSlice';
+import generateLetterReducer from '../redux/features/generateLetter/generateLetterSlice';
 import rootSaga from './rootSaga';
 //import downloadReportReducer from '../redux/features/downloadReport/downloadReportSlice';
 
@@ -26,6 +27,7 @@ export const store = configureStore({
     confidence: confidenceReducer,
     //downloadReport: downloadReportReducer,
     cdr: generateCdrReducer,
+    letter: generateLetterReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware),

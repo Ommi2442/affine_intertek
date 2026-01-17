@@ -1,0 +1,88 @@
+.arrow-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.arrow-list li {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 6px;
+}
+
+.arrow-list li::before {
+  content: '➤'; /* or "→" or "►" */
+  position: absolute;
+  left: 0;
+  color: #396872;
+  font-weight: bold;
+}
+
+.page1_cust_name {
+  font-size: 350%;
+}
+
+.page1_letter_report {
+  font-size: 350%;
+  color: rgb(255, 255, 49);
+}
+
+.letter-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.letter-header-text {
+  flex: 1;
+  min-width: 0;
+  margin-top: 3%;
+}
+
+.letter-header-image {
+  width: 45%;
+  height: auto;
+  margin-top: -14%;
+  margin-right: 4%;
+  object-fit: contain;
+}
+
+.section {
+  color: rgb(255, 255, 49);
+  margin-bottom: 0.3%;
+}
+
+.test-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+.test-table th {
+  background-color: #ffcc00; /* yellow header */
+  color: #000;
+  font-weight: bold;
+  text-align: center;
+  padding: 6px;
+  border: 1px solid #000;
+}
+
+.test-table td {
+  height: 24px;
+  border: 1px solid #000;
+  padding: 4px;
+}
+
+.letter-page {
+  overflow: visible !important;
+}
+
+.letter-page-wrapper {
+  overflow: visible !important;
+}
+
+.letter-scroll-container {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
