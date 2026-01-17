@@ -47,7 +47,20 @@ const ConfidenceScore = ({ data, confidenceTick, projectId, reportType }) => {
       }
 
       if (!sourceData) return;
-      const result = calculateConfidenceScore(sourceData);
+      let normalizedData = sourceData;
+
+      /* ---------- LETTER ---------- */
+      if (reportType === 'letter' && sourceData?.pages) {
+        normalizedData = {
+          Tables: sourceData.pages.map((p) => ({
+            Items: p.items || [],
+          })),
+        };
+      }
+
+      const result = calculateConfidenceScore(normalizedData);
+
+      // const result = calculateConfidenceScore(sourceData);
       //console.log('result', result);
       if (result && isMounted) {
         dispatch(setConfidenceScore(result));
@@ -59,7 +72,6 @@ const ConfidenceScore = ({ data, confidenceTick, projectId, reportType }) => {
       isMounted = false;
     };
   }, [data, confidenceTick, projectId, reportType, dispatch]);
-
   if (!summary || summary.totalAiFields === 0) {
     return (
       <Card className="confidence-card">

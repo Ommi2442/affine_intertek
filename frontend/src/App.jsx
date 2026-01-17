@@ -19,6 +19,8 @@ import GlobalLoader from './loader/GlobalLoader.jsx';
 import './loader/axiosInterceptor';
 import { BreadcrumbProvider } from './components/BreadCrumbContext';
 import CdrReportPage from './pages/ReportPage/CdrReportPage.jsx';
+import LetterReportPage from './pages/ReportPage/LetterReportPage.jsx';
+import UploadLetterFilePage from './pages/UploadFilePage/UploadLetterFilePage.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -44,6 +46,7 @@ function App() {
       children: [
         { path: 'dashboard', element: <Dashboard /> },
         { path: 'create-project', element: <UploadFilePage /> },
+        { path: 'create-project-letter', element: <UploadLetterFilePage /> },
         // REPORT ROUTES
         {
           path: 'report-page',
@@ -51,6 +54,7 @@ function App() {
             { index: true, element: <Navigate to="trf" replace /> },
             { path: 'trf', element: <ReportPage /> },
             { path: 'cdr', element: <CdrReportPage /> },
+            { path: 'letter', element: <LetterReportPage /> },
             // { path: 'letter', element: <LetterPage /> },
           ],
         },

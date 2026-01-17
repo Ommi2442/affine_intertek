@@ -95,6 +95,58 @@ export function DownloadMissingFieldsExcel(jsonData, projectID, reportType) {
   }
 
   /* =========================
+      LETTER
+  ========================= */
+  if (reportType === 'letter') {
+    const pages = jsonData?.pages || [];
+
+    pages.forEach((page, pageIndex) => {
+      const items = page?.items || [];
+
+      items.forEach((item) => {
+        /* ---------- NORMAL LETTER FIELDS ---------- */
+        if (item?.dataframe_table !== true) {
+          const value = item?.value;
+
+          const isMissing =
+            (item?.ai_fillable === true || item?.user_editable === true) &&
+            (value === null || value === '');
+
+          if (isMissing) {
+            rows.push({
+              Field: item?.key || item?.field || '',
+              Page: pageIndex + 1,
+              Value: value ?? '',
+            });
+          }
+        }
+
+        /* ---------- DATAFRAME TABLE (NON-CONFORMANCE ETC.) ---------- */
+        if (item?.dataframe_table === true && Array.isArray(item.value)) {
+          item.value.forEach((row, rowIndex) => {
+            if (row?.__isNew) return; //  skip new rows
+
+            const missingColumns = Object.entries(row)
+              .filter(
+                ([key, val]) =>
+                  key !== '__isNew' && (val === null || val === '')
+              )
+              .map(([key]) => key);
+
+            if (missingColumns.length > 0) {
+              rows.push({
+                Field: `${item.key || 'Table'} – Row ${rowIndex + 1}`,
+                Page: pageIndex + 1,
+                Value: `Missing: ${missingColumns.join(', ')}`,
+              });
+            }
+          });
+        }
+      });
+    });
+  }
+
+  /* =========================
         Empty check
   ========================= */
   if (rows.length === 0) {

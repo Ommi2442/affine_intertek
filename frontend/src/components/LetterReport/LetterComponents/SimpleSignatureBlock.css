@@ -1,0 +1,33 @@
+.simple-signature {
+  width: 100%;
+  border: 1px solid #000;
+  margin-top: 20px;
+  box-sizing: border-box;
+}
+
+.simple-row {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  min-height: 42px;
+  border-bottom: 1px solid #000;
+}
+
+.simple-row:last-child {
+  border-bottom: none;
+}
+
+.simple-label {
+  background: #e6e6e6;
+  padding: 10px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.simple-line {
+  border-bottom: 1px solid #000;
+  margin: 0 12px;
+  align-self: center;
+  box-sizing: border-box;
+}

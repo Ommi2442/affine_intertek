@@ -2,10 +2,11 @@
 // TRF_DB with two stores: TRF_STORE and CDR_STORE
 
 const DB_NAME = 'TRF_DB';
-const DB_VERSION = 3; // IMPORTANT: bumped to 2 so new store gets created
+const DB_VERSION = 4; // IMPORTANT: bumped to 2 so new store gets created
 
 const DEFAULT_STORE = 'TRF_STORE';
 const CDR_STORE = 'CDR_STORE';
+const LETTER_STORE = 'LETTER_STORE';
 
 // Create stores when DB upgrades
 function ensureStores(db) {
@@ -14,6 +15,9 @@ function ensureStores(db) {
   }
   if (!db.objectStoreNames.contains(CDR_STORE)) {
     db.createObjectStore(CDR_STORE);
+  }
+  if (!db.objectStoreNames.contains(LETTER_STORE)) {
+    db.createObjectStore(LETTER_STORE);
   }
 }
 
@@ -241,4 +245,5 @@ export const idb_clear_all = () =>
 export const STORES = {
   TRF: DEFAULT_STORE,
   CDR: CDR_STORE,
+  LETTER: LETTER_STORE,
 };

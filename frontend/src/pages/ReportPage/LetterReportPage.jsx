@@ -15,25 +15,21 @@ import {
 import { useNavigate, useNavigationType } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import './ReportPage.css';
-//import localCDRJson from '../../utils/iec_output_cdr_PRJ_0000011.json';
-import CdrReport from '../../components/CdrReport/CdrReport';
-import CdrLoader from '../../components/CdrReport/CdrLoader';
-import ConfidenceScore from './ConfidenceScore';
 import CloseIcon from '@mui/icons-material/Close';
+import localLetterJson from '../../utils/letter_output_4.json';
+import LetterReport from '../../components/LetterReport/LetterReport';
+import ConfidenceScore from './ConfidenceScore';
 
-import { triggerGenerateCdrApi } from '../../redux/api/generateCdrApi';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
-import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
-
 import { idb_get, idb_set, STORES } from '../../utils/idb';
-
+import LetterLoader from '../../components/LetterReport/LetterLoader';
 import { truncateWords } from '../../Helpers/truncateWords';
 import { normalizeNewLines } from '../../Helpers/normalizeNewLines';
-import { RenderImageThumbnails } from '../../Helpers/renderImageThumbnails';
+import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 
-const STORAGE_KEY_PREFIX = 'cdr_report_';
+const STORAGE_KEY_PREFIX = 'letter_report_';
 
-const CdrReportPage = () => {
+const LetterReportPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const dataTableRef = useRef(null);
@@ -42,32 +38,31 @@ const CdrReportPage = () => {
   const storageKey = `${STORAGE_KEY_PREFIX}${projectId}`;
 
   /* ---------------- STATE ---------------- */
-  const [cdrJson, setCdrJson] = useState(null);
+  const [letterJson, setLetterJson] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const [editMode, setEditMode] = useState(false);
   const [finalised, setFinalised] = useState(false);
   const [confidenceTick, setConfidenceTick] = useState(0);
+  const [liveLetterData, setLiveLetterData] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
+  const navigationType = useNavigationType();
+  const isHardRefresh = navigationType === 'POP';
   const [bookmarkOpen, setBookmarkOpen] = useState(false);
   const [bookmarkData, setBookmarkData] = useState(null);
 
   const [openCitationDialog, setOpenCitationDialog] = useState(false);
   const [selectedCitation, setSelectedCitation] = useState(null);
-  const [liveCdrData, setLiveCdrData] = useState(null);
 
-  const navigationType = useNavigationType();
-  const isHardRefresh = navigationType === 'POP';
-
-  /* ---------------- SAVE EVERY APPROVE ---------------- */
+  /* ---------------- SAVE EVERY CHANGE ---------------- */
   useEffect(() => {
     if (!dataTableRef.current) return;
     const updated = dataTableRef.current.getUpdatedJson();
     if (!updated) return;
 
-    idb_set(storageKey, updated, STORES.CDR);
-    //setCdrJson(updated);
-    setLiveCdrData(updated);
+    idb_set(storageKey, updated, STORES.LETTER);
+    setLiveLetterData(updated);
   }, [confidenceTick]);
 
   /* ---------------- LOAD LOGIC ---------------- */
@@ -77,21 +72,18 @@ const CdrReportPage = () => {
     const load = async () => {
       setLoading(true);
 
-      // 1️⃣ Always try IndexedDB first
-      const cached = await idb_get(storageKey, STORES.CDR);
+      // 1️⃣ IndexedDB first
+      const cached = await idb_get(storageKey, STORES.LETTER);
       if (cached) {
-        setCdrJson(cached);
+        setLetterJson(cached);
         setLoading(false);
         return;
       }
 
-      // 2️⃣ Only call backend if this is NOT a refresh
+      // 2️⃣ Backend (for now local JSON)
       if (!isHardRefresh) {
-        const res = await triggerGenerateCdrApi(projectId);
-        if (res?.data) {
-          await idb_set(storageKey, res.data, STORES.CDR); // overwrite
-          setCdrJson(res.data); // render only backend data
-        }
+        setLetterJson(localLetterJson);
+        await idb_set(storageKey, localLetterJson, STORES.LETTER);
       }
 
       setLoading(false);
@@ -105,38 +97,21 @@ const CdrReportPage = () => {
     if (!dataTableRef.current) return;
 
     const payload = dataTableRef.current.getUpdatedJson();
-    if (!payload) return;
+    await idb_set(storageKey, payload, STORES.LETTER);
 
-    //  THIS IS MISSING TODAY
-    await idb_set(storageKey, payload, STORES.CDR);
-
-    setCdrJson(payload); // local UI
+    setLetterJson(payload);
     setFinalised(true);
     setEditMode(false);
 
     dispatch(
       finaliseReportRequest({
         projectId,
-        reportType: 'cdr',
+        reportType: 'letter',
         data: payload,
       })
     );
   };
 
-  const handleDownload = () => {
-    const BASE_URL = import.meta.env.VITE_BACKEND_URL;
-    //http://127.0.0.1:8000/projects/download-file?project_id=PRJ_0000011&report_type=cdr
-    window.open(
-      `${BASE_URL}/projects/download-file?project_id=${projectId}&report_type=cdr`
-    );
-  };
-
-  const handleRegenerate = () => navigate('/create-project');
-  const handleGenerateLetter = () => {
-    finalised && navigate('/create-project-letter');
-  };
-
-  /* ---------------- BOOKMARK ---------------- */
   const handleBookmarkFromChild = (data) => {
     if (!data) return;
 
@@ -148,38 +123,97 @@ const CdrReportPage = () => {
     setBookmarkOpen(true);
   };
 
+  const handleDownload = () => {
+    const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+    window.open(
+      `${BASE_URL}/projects/download-file?project_id=${projectId}&report_type=letter`
+    );
+  };
+
   const handleMissingField = (data, projectID, reportClick) => {
     DownloadMissingFieldsExcel(data, projectID, reportClick);
   };
 
+  const handleRegenerate = () => navigate('/create-project');
+
   /* ---------------- UI ---------------- */
   return (
     <Box>
+      {/* 🔷 Header same as CDR */}
       <Box className="report-title-container">
         <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
-          CDR REPORT
+          LETTER REPORT
         </Typography>
       </Box>
 
       <Box className="report-container">
-        {/* LEFT PANEL */}
+        {/* ---------------- LEFT PANEL ---------------- */}
         <Box className="left-panel">
-          {loading && <CdrLoader />}
+          {loading && <LetterLoader />}
 
-          {!loading && cdrJson && (
-            <CdrReport
-              ref={dataTableRef}
-              jsonData={cdrJson}
-              editMode={editMode}
-              projectId={projectId}
-              cdrFinalised={finalised}
-              onBookmarkClick={handleBookmarkFromChild}
-              onConfidenceChange={() => setConfidenceTick((v) => v + 1)}
-            />
+          {!loading && localLetterJson && (
+            <>
+              {/* 1️⃣ White scrollable letter */}
+              <Box className="letter-white-box">
+                <LetterReport
+                  ref={dataTableRef}
+                  jsonData={localLetterJson}
+                  editMode={editMode}
+                  onPageChange={(p) => setCurrentPage(p)}
+                  onConfidenceChange={() => setConfidenceTick((v) => v + 1)}
+                  onBookmarkClick={handleBookmarkFromChild}
+                />
+              </Box>
+
+              {/* 2️⃣ Bottom pagination bar */}
+              <Box className="letter-page-nav">
+                {/* ◀ PREVIOUS */}
+                <Button
+                  className="letter-page-btn nav-btn"
+                  disabled={currentPage === 1}
+                  onClick={() => {
+                    const p = Math.max(1, currentPage - 1);
+                    setCurrentPage(p);
+                    dataTableRef.current?.scrollToPage(p);
+                  }}
+                >
+                  &lt;
+                </Button>
+
+                {/* PAGE NUMBERS */}
+                {[1, 2, 3, 4, 5, 6].map((p) => (
+                  <Button
+                    key={p}
+                    onClick={() => {
+                      setCurrentPage(p);
+                      dataTableRef.current?.scrollToPage(p);
+                    }}
+                    className={`letter-page-btn ${
+                      currentPage === p ? 'active' : ''
+                    }`}
+                  >
+                    {p}
+                  </Button>
+                ))}
+
+                {/* ▶ NEXT */}
+                <Button
+                  className="letter-page-btn nav-btn"
+                  disabled={currentPage === 6}
+                  onClick={() => {
+                    const p = Math.min(6, currentPage + 1);
+                    setCurrentPage(p);
+                    dataTableRef.current?.scrollToPage(p);
+                  }}
+                >
+                  &gt;
+                </Button>
+              </Box>
+            </>
           )}
         </Box>
 
-        {/* RIGHT PANEL */}
+        {/* ---------------- RIGHT PANEL ---------------- */}
         {bookmarkOpen ? (
           <Box className="right-panel bookmark-panel">
             <Box className="bookmark-header">
@@ -240,14 +274,14 @@ const CdrReportPage = () => {
                     },
                     {
                       text: 'Finalize',
-                      icon: '/images/approve_icon.png',
                       bg: '#396872ff',
+                      icon: '/images/approve_icon.png',
                       action: handleFinalise,
                     },
                     {
                       text: 'Download',
-                      icon: '/images/download_icon.png',
                       bg: '#77D5EA',
+                      icon: '/images/download_icon.png',
                       action: handleDownload,
                     },
                     {
@@ -255,12 +289,16 @@ const CdrReportPage = () => {
                       icon: '/images/file_icon.png',
                       bg: '#5191a0ff',
                       action: () =>
-                        handleMissingField(cdrJson, projectId, 'cdr'),
+                        handleMissingField(
+                          localLetterJson,
+                          projectId,
+                          'letter'
+                        ),
                     },
                     {
                       text: 'Regenerate',
-                      icon: '/images/regenrate_icon.png',
                       bg: '#417581',
+                      icon: '/images/regenrate_icon.png',
                       action: handleRegenerate,
                     },
                   ].map((btn, i) => (
@@ -271,12 +309,11 @@ const CdrReportPage = () => {
                       className="action-button"
                       onClick={btn.action}
                       style={{
-                        background: !cdrJson ? '#A9A9A9' : btn.bg, // grey out
-                        cursor: !cdrJson ? 'not-allowed' : 'pointer',
-                        opacity: !cdrJson ? 0.7 : 1,
+                        background: !localLetterJson ? '#A9A9A9' : btn.bg,
+                        cursor: !localLetterJson ? 'not-allowed' : 'pointer',
+                        opacity: !localLetterJson ? 0.7 : 1,
                       }}
                     >
-                      {/* STATUS DOT (only for Finalize) */}
                       {btn.text === 'Finalize' && (
                         <span
                           className={`finalize-status-dot ${
@@ -284,39 +321,22 @@ const CdrReportPage = () => {
                           }`}
                         />
                       )}
-
                       <img
                         src={btn.icon}
                         alt=""
                         className={`icon-img icon-white`}
                       />
-
                       {btn.text}
                     </Button>
                   ))}
                 </Box>
-
-                <Typography className="generate-title">Generate</Typography>
-
-                <Box className="generate-row">
-                  <Button
-                    variant="contained"
-                    className="generate-btn"
-                    style={{
-                      background: finalised ? '#417581' : '#A9A9A9',
-                    }}
-                    onClick={handleGenerateLetter}
-                  >
-                    Letter
-                  </Button>
-                </Box>
               </CardContent>
             </Card>
 
-            {(liveCdrData || cdrJson) && (
+            {localLetterJson && (
               <ConfidenceScore
-                data={liveCdrData || cdrJson}
-                reportType="cdr"
+                data={localLetterJson}
+                reportType="letter"
                 confidenceTick={confidenceTick}
                 projectId={projectId}
               />
@@ -372,7 +392,7 @@ const CdrReportPage = () => {
                 {/* {normalizeNewLines(selectedCitation.text)} */}
               </Typography>
 
-              {reportClick === 'trf' && selectedCitation?.filename && (
+              {reportClick === 'letter' && selectedCitation?.filename && (
                 <Typography
                   sx={{
                     fontSize: 13,
@@ -394,7 +414,7 @@ const CdrReportPage = () => {
                 </Typography>
               )}
 
-              {reportClick === 'cdr' && selectedCitation?.filename && (
+              {reportClick === 'letter' && selectedCitation?.filename && (
                 <Typography
                   sx={{
                     fontSize: 13,
@@ -440,4 +460,4 @@ const CdrReportPage = () => {
   );
 };
 
-export default CdrReportPage;
+export default LetterReportPage;
