@@ -3,9 +3,7 @@ from azure.cosmos import CosmosClient, ConsistencyLevel
 from openai import AzureOpenAI
 
 # Core helpers (DO NOT MODIFY)
-
 from utility.letter_report.deploymentV1.core import *
-
 
 
 from dotenv import load_dotenv
@@ -47,8 +45,6 @@ INITIAL_BACKOFF = int(os.getenv("LT_INITIAL_BACKOFF"))
  
 
 
-
-
 def main(blob_urls):
     """
     Main ingestion pipeline.
@@ -65,7 +61,7 @@ def main(blob_urls):
     # STEP 1 — Cleanup existing vector container
     # -------------------------------------------------------
 
-    print("[INFO] Cleaning existing Cosmos container...")
+    # print("[INFO] Cleaning existing Cosmos container...")
 
     cosmos_client = CosmosClient(
         COSMOS_URL,
@@ -73,19 +69,19 @@ def main(blob_urls):
         consistency_level=ConsistencyLevel.Eventual
     )
 
-    # container = cosmos_client.get_database_client(DB_NAME).get_container_client(CONT_NAME)
+    container = cosmos_client.get_database_client(DB_NAME).get_container_client(CONT_NAME)
 
     # items = container.read_all_items()
     # for item in items:
     #     container.delete_item(item=item, partition_key=item["id"])
 
-    print("[SUCCESS] All existing documents deleted.\n")
+    # print("[SUCCESS] All existing documents deleted.\n")
 
     # -------------------------------------------------------
     # STEP 2 — Download + extract blob files
     # -------------------------------------------------------
 
-    container_blob = BLOB_CONTAINER_NAME  
+    container_blob = BLOB_CONTAINER_NAME  # from config.py
 
     print("[INFO] Downloading and extracting blob files...\n")
 
@@ -252,4 +248,29 @@ def main(blob_urls):
     print("✅ INGESTION PIPELINE COMPLETED")
     print("==============================\n")
     return True
+
+# # -------------------------------------------------------
+# # CLI Runner
+# # -------------------------------------------------------
+
+# if __name__ == "__main__":
+
+#     # blob_urls = [
+#     #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Project%20Summary%20Report.pdf',
+#     #         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-001_TRF.doc',
+#     #         # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-002_TRF.doc',
+#     #         "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Lewco_CiS.pdf" ,
+#     #         "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01414060-2.pdf"
+#     #     ]
+    
+#     blob_urls =[
+#         #'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01390131-0.pdf',
+#     # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-002_TRF.doc',
+#     "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/CDR_105080268MPK-004.xlsx",
+#     "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105581614MPK-001A_CR.docx",
+#     # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf'
+#     ]
+
+#     main(blob_urls)
+
 

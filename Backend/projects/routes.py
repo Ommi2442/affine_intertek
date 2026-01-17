@@ -34,8 +34,9 @@ from utility.cdr_report.CDR_Pipelines.main import main2
 from utility.cdr_report.CDR_Pipelines.compiler import fill_excel_from_json
 
 from utility.letter_report.deploymentV1.letter_ingestor import main
-from utility.letter_report.deploymentV1.letter_generator import ingest_letter_pipeline
+from utility.letter_report.deploymentV1.letter_generator import letter_gen
 from utility.cdr_report.CDR_Pipelines.configs import OUTPUT_EXCEL_AI_FINAL_PATH
+from utility.letter_report.deploymentV1.ingest_trf_letter import run_full_ingestion
 
 
 from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_cdr_local_json_to_blob_and_cosmos_cdr,save_local_xlsx_to_blob_and_cosmos_cdr
@@ -1474,7 +1475,7 @@ async def letter_implementation(payload: LetterGeneration):
         cdr_urls = payload.cdr_urls
         other_urls = payload.other_urls
 
-        # Build blob_urls list
+        
         blob_urls = [
             trf_urls,
             cdr_urls,
@@ -1538,8 +1539,22 @@ async def letter_implementation(payload: LetterGeneration):
                 letter_step="Starting running CDR",
                 letter_completed=False
             )
-            f=main(blob_urls)
+
+            Source_Doc_urls = [
+                item["url"]
+                for item in project_doc.get("Source_Doc", [])
+                if "url" in item
+            ]
+            if not Source_Doc_urls:
+                raise HTTPException(
+                    status_code=400,
+                    detail="No Source_Doc URLs found for this project"
+                )
             
+            run_full_ingestion(Source_Doc_urls)
+            blob_urls_trf=blob_urls+ Source_Doc_urls
+            print("Blob URLs for Letter Generation after ingestion:", blob_urls_trf)
+            f=main(blob_urls)
             if f:
                 BASE_DIR = Path(__file__).resolve().parents[1]
                 DATA_DIR = BASE_DIR / "data"
@@ -1549,16 +1564,19 @@ async def letter_implementation(payload: LetterGeneration):
                 letter_json2 = project_dir / f"letter_body_iec_output_{projectId}.json"
                 letter_docx_file = project_dir / f"letter_iec_output_{projectId}.docx"
 
-                intter_returned_data=ingest_letter_pipeline(
+                intter_returned_data=letter_gen(
                 blob_urls=blob_urls,
                 container_name=BLOB_CONTAINER_NAME,
                 src_files_dir="src_files",
-                letter_json_path="letter_old.json",
-                letter_header_json_path="letter_header_old.json",
+                src_files_trf="src_files_trf",  
+                letter_json_path="letter.json",
+                letter_header_json_path="letter_header.json",
                 letter_template_docx="Letter_Template.docx",
                 output_letter_docx=letter_docx_file,
                 output_letter_json=letter_json1,
-                output_letter_header_json=letter_json2, )
+                output_letter_header_json=letter_json2,
+                project_Id=projectId,
+                blob_urls_trf=blob_urls_trf )
 
                 print("----- Saving Letter JSON and DOCX to Blob and CosmosDB -----")
                 

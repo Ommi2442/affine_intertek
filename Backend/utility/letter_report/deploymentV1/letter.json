@@ -5,42 +5,42 @@
       "items": [
         {
           "key": "CUSTOMER NAME",
-          "value": "Gener8 LLC",
+          "value": "",
           "question": "What is the customer name?",
-          "custom_prompt": "What is the name of the client?",
+          "custom_prompt": "Mention the name of the client?",
           "ai_fillable": true
         },
         {
           "key": "KEY1",
-          "value": "cETLus/CB certification and report for CellFE Infinity MTx - Safety",
+          "value": "KEY1",
           "question": "Specify the type of testing being conducted",
-          "custom_prompt": "Specify the type of testing being conducted (e.g., 'Safety Testing', 'EMC Testing', 'Performance Testing') followed by the product type and list up to 3 model numbers. Format: 'Testing Type - Product Type - Model1, Model2, Model3'",
-          "ai_fillable": true
+          "custom_prompt": "Mention the project name.",
+          "ai_fillable": false
         },
         {
           "key": "XXXXXXXXXXXXXXXXXXXXXXXX",
           "value": "",
           "question": "What's the REPORT NUMBER",
-          "custom_prompt": "What's the REPORT NUMBER",
+          "custom_prompt": "Mention the REPORT NUMBER",
           "ai_fillable": true
         },
         {
           "key": "KEY3",
-          "value": "",
+          "value": "KEY3",
           "question": "What's the Issue Date",
           "custom_prompt": "What's the Issue Date?",
-          "ai_fillable": true
+          "ai_fillable": false
         },
         {
           "key": "[DD-mmmm-yyyy]",
-          "value": "",
+          "value": "[DD-mmmm-yyyy]",
           "question": "What's the revised Date?",
           "custom_prompt": "What's the revised Date?",
-          "ai_fillable": true
+          "ai_fillable": false
         },
         {
           "key": "pages",
-          "value": "",
+          "value": "No of pages",
           "question": "",
           "custom_prompt": "Enter the total number of pages in this report (numeric value only, e.g., '7' or '12')",
           "ai_fillable": false
@@ -52,133 +52,120 @@
       "items": [
         {
           "key": "«IssuedDate»",
-          "value": "",
+          "value": "«IssuedDate»",
           "question": "What's the Issue Date?",
           "custom_prompt": "What's the Issue Date",
-          "ai_fillable": true
+          "ai_fillable": false
         },
         {
           "key": "«ReportNumber»",
           "value": "",
           "question": "What's the REPORT NUMBER",
-          "custom_prompt": "What's the REPORT NUMBER? If not found, give the response as 'Not Found' ",
+          "custom_prompt": "Mention the REPORT NUMBER.",
           "ai_fillable": true
         },
         {
           "key": "«ProjectNumber»",
-          "value": "",
+          "value": "«ProjectNumber»",
           "question": "What's the Project Number?",
           "custom_prompt": "What's the Project Number? Remove anything after 'MPK' including 'MPK'and append a 'G' in the start",
-          "ai_fillable": true
+          "ai_fillable": false
         },
         {
           "key": "«AppContactName»",
-          "value": "Shivam Patel",
+          "value": "",
           "question": "What's the name of the contact person  of the Client",
-          "custom_prompt": "What's the name of the contact person of the Client. Incase there is no answer, return 'Not Found' ",
+          "custom_prompt": "Mention the name of primary contact person of the applicant.",
           "ai_fillable": true
         },
         {
           "key": "«AppPhone»",
-          "value": "(650) 940-9898",
+          "value": "",
           "question": "",
-          "custom_prompt": "Enter the phone number of the applicant contact person including area code (e.g., '(555) 123-4567' or '+1-555-123-4567'). Incase there is no answer, return 'Not Found' ",
+          "custom_prompt": "Mention the phone number of the primary contact person of the applicant.",
           "ai_fillable": true
         },
         {
           "key": "«AppCOMPANYNAME»",
-          "value": "Gener8 LLC",
+          "value": "",
           "question": "",
-          "custom_prompt": "Enter the full legal name of the applicant/client company (e.g., 'ABC Technologies Inc.' or 'XYZ Manufacturing Corporation')",
+          "custom_prompt": "Mention the name of the client?",
           "ai_fillable": true
         },
         {
           "key": "«AppFax»",
           "value": "",
           "question": "",
-          "custom_prompt": "Enter the fax number of the applicant contact person including area code (e.g., '(555) 123-4568'). Incase there is no answer, return 'Not Found' ",
+          "custom_prompt": "Mention the fax of the primary contact person of the applicant. Mention ' - ' incase no value found.",
           "ai_fillable": true
         },
         {
           "key": "«AppStreetAddress»",
-          "value": "2560 Junction Ave, San Jose, CA 95134",
+          "value": "",
           "question": "What's the City, State and Zip of the Client's Address?",
-          "custom_prompt": "What's the Street Address of the Client",
+          "custom_prompt": "Mention the Street Address of the applicant.",
           "ai_fillable": true
         },
         {
           "key": "«AppEmail»",
-          "value": "spatel@gener8.net",
+          "value": "",
           "question": "",
-          "custom_prompt": "Enter the email address of the applicant contact person (e.g., 'john.smith@company.com'). Incase there is no answer, return 'Not Found'",
+          "custom_prompt": "Mention the email address of the primary contact person of the applicant.",
           "ai_fillable": true
         },
         {
           "key": "«AppCityStZip»",
-          "value": "95134",
+          "value": "",
           "question": "",
-          "custom_prompt": "Enter the city, state/province, and ZIP/postal code of the applicant company (e.g., 'Plano, TX 75074' or 'Toronto, ON M5H 2N2')",
+          "custom_prompt": "Mention the City, State, Postal Code, Country of the applicant.",
           "ai_fillable": true
         },
         {
-          "key": "<ETL Listing/CB/Other Evaluation>",
-          "value": "cETLus/CB certification and report for CellFE Infinity MTx - Safety",
+          "key": "<ETL Listing/CB/Other Evaluation> of the «ProductType» «ProductCovModels»",
+          "value": "<ETL Listing/CB/Other Evaluation> of the «ProductType» «ProductCovModels»",
           "question": "",
           "custom_prompt": "Specify the type of evaluation being conducted. Choose one: 'ETL Listing' for North American certification, 'CB' for international CB scheme certification, or specify another evaluation type (e.g., 'Field Evaluation', 'Special Inspection')",
-          "ai_fillable": true
-        },
-        {
-          "key": "«ProductType»",
-          "value": "",
-          "question": "",
-          "custom_prompt": "Enter the general product type or category being evaluated (e.g., 'Industrial Control Panel', 'Heating Equipment', 'Power Supply', 'Temperature Controller')",
-          "ai_fillable": true
-        },
-        {
-          "key": "«ProductCovModels»",
-          "value": "",
-          "question": "",
-          "custom_prompt": "List all model numbers covered by this evaluation, separated by commas (e.g., 'Model ABC-100, ABC-200, ABC-300')",
-          "ai_fillable": true
+          "ai_fillable": false
         },
         {
           "key": "«AppContactName»",
-          "value": "Shivam Patel",
+          "value": "«AppContactName»",
           "question": "Enter the full name of the primary contact person at the applicant/client company (e.g., 'John Smith' or 'Sarah Johnson')",
-          "custom_prompt": "Enter the full name of the primary contact person at the applicant/client company (e.g., 'John Smith' or 'Sarah Johnson')",
+          "custom_prompt": "Mention the name of primary contact person of the applicant.",
           "ai_fillable": true
         },
         {
           "key": "«StandardTitleNoEdDate»",
-          "value": "",
+          "value": "IEC 61010-1:2010, IEC 61010-1:2010/AMD1:2016",
           "question": "",
           "custom_prompt": "Enter the complete standard reference(s) used for this evaluation including title, number, edition, and date. Format: 'Standard Number: Standard Title, Edition/Date' (e.g., 'UL 508A: Industrial Control Panels, 3rd Edition 2013' or 'IEC 60950-1: Information Technology Equipment - Safety, 2nd Edition 2005'). If multiple standards, list each on a new line",
-          "ai_fillable": false
+          "ai_fillable": false,
+          "confidence": 100
         },
         {
           "key": "evaluation (Stage 1) or/and testing (Stage 2)",
-          "value": "",
+          "value": "evaluation (Stage 1) or/and testing (Stage 2)",
           "question": "",
           "custom_prompt": "Specify which stage(s) of the evaluation process identified the non-conformances. Choose: 'during our evaluation (Stage 1)', 'during our testing (Stage 2)', or 'during our evaluation (Stage 1) and testing (Stage 2)'",
           "ai_fillable": false
         },
         {
           "key": "<CB Test Report/ETL CDR/Deliverable>",
-          "value": "",
+          "value": "<CB Test Report/ETL CDR/Deliverable>",
           "question": "",
           "custom_prompt": "Specify the type of deliverable document that will be provided. Choose: 'CB Test Report' for CB scheme, 'ETL CDR' (Construction Details Report) for ETL listing, or specify another deliverable type (e.g., 'Field Evaluation Report', 'Technical Assessment')",
           "ai_fillable": false
         },
         {
           "key": "<will be sent under separate cover/attached to this letter>",
-          "value": "",
+          "value": "<will be sent under separate cover/attached to this letter>",
           "question": "",
           "custom_prompt": "Specify how the draft deliverable will be provided. Choose: 'will be sent under separate cover' if sending separately, or 'attached to this letter' if including with this letter report",
           "ai_fillable": false
         },
         {
           "key": "<product(s)/system/etc>",
-          "value": "",
+          "value": "<product(s)/system/etc>",
           "question": "",
           "custom_prompt": "Specify what is being evaluated. Choose the most appropriate: 'product' for a single item, 'products' for multiple items, 'system' for an integrated system, or specify another appropriate term (e.g., 'equipment', 'assembly', 'installation')",
           "ai_fillable": false
@@ -190,17 +177,42 @@
       "items": [
         {
           "key": "<additional/modified>",
-          "value": "",
+          "value": "<additional/modified>",
           "question": "",
           "custom_prompt": "Specify what type of samples or documentation are needed. Choose: 'additional' if new samples/documents are required, 'modified' if changes to existing samples/documents are needed, or 'additional/modified' if both may apply",
           "ai_fillable": false
         },
         {
+          "key": "the intrinsic safety analysis and constructional evaluation",
+          "value": "the intrinsic safety analysis and constructional evaluation",
+          "question": "",
+          "custom_prompt": "",
+          "ai_fillable": false
+        },
+        {
           "key": "Initial Documentation Review",
-          "value": "",
+          "value": "Initial Documentation Review",
           "question": "",
           "custom_prompt": "Specify when the non-conformances were identified. If found during initial documentation review, keep as 'Initial Documentation Review'. If found during another phase, replace with the appropriate phase name (e.g., 'Physical Inspection', 'Performance Testing', 'Final Evaluation')",
           "ai_fillable": false
+        },
+        {
+          "key": "Non-conformance Table",
+          "value": "",
+          "question": "",
+          "custom_prompt": "Specify when the non-conformances were identified. If found during initial documentation review, keep as 'Initial Documentation Review'. If found during another phase, replace with the appropriate phase name (e.g., 'Physical Inspection', 'Performance Testing', 'Final Evaluation')",
+          "ai_fillable": false,
+          "dataframe_table": true,
+          "confidence":100
+        },
+        {
+          "key": "Critical components table",
+          "value": "",
+          "question": "",
+          "custom_prompt": "Specify when the non-conformances were identified. If found during initial documentation review, keep as 'Initial Documentation Review'. If found during another phase, replace with the appropriate phase name (e.g., 'Physical Inspection', 'Performance Testing', 'Final Evaluation')",
+          "ai_fillable": false,
+          "dataframe_table": true,
+          "confidence":100
         }
       ]
     },
@@ -209,56 +221,73 @@
       "items": [
         {
           "key": "«ProjectNumber»",
+          "value": "«ProjectNumber»",
+          "question": "",
+          "custom_prompt": "Extract the project number from the document. This is typically found in the header or introductory section and follows a format like 'Project No. XXXXX'",
+          "ai_fillable": false
+        },
+        {
+          "key": "photograph",
+          "is_photo": true,
+          "nonConforming_urls": "",
           "value": "",
           "question": "",
           "custom_prompt": "Extract the project number from the document. This is typically found in the header or introductory section and follows a format like 'Project No. XXXXX'",
-          "ai_fillable": true
+          "ai_fillable": false
         },
         {
           "key": "<and conduct repeat testing, if required>",
-          "value": "",
+          "value": "<and conduct repeat testing, if required>",
           "question": "",
           "custom_prompt": "Determine if repeat testing is required based on the evaluation results. Fill with 'and conduct repeat testing, if required' if testing issues were identified, otherwise leave blank",
           "ai_fillable": false
         },
         {
           "key": "<will/will not>",
-          "value": "",
+          "value": "<will/will not>",
           "question": "",
           "custom_prompt": "Select 'will' if modified samples or additional documentation WILL be required for follow-up project based on the non-conformances identified",
           "ai_fillable": false
         },
+
         {
           "key": "<page no.>",
-          "value": "",
+          "value": "<page no.>",
           "question": "Insert page number reference '4' or current page number where this section appears",
           "custom_prompt": "Insert page number reference '4' or current page number where this section appears",
           "ai_fillable": false
         },
         {
           "key": "Theresa Reinhardt via theresa.reinhardt@intertek.com",
-          "value": "",
+          "value": "Project Manager via email.",
           "question": "Extract the Project Manager's name and email from the document. Format as: 'Name via email@domain.com'. Look for contact information in the document header or signature sections",
           "custom_prompt": "Extract the Project Manager's name and email from the document. Format as: 'Name via email@domain.com'. Look for contact information in the document header or signature sections",
           "ai_fillable": false
         },
         {
           "key": "Completed By",
-          "value": "",
+          "value": "Completed By",
           "question": "Completed By",
           "custom_prompt": "Mention name of the person in the field 'Tested by (name, function, signature):'",
-          "ai_fillable": true
+          "ai_fillable": false
+        },
+        {
+          "key": "Compliance Investigator",
+          "value": "Compliance Investigator",
+          "question": "Compliance Investigator",
+          "custom_prompt": "",
+          "ai_fillable": false
         },
         {
           "key": "«Reviewer»",
-          "value": "",
+          "value": "«Reviewer»",
           "question": "What is the name of the reviewer?",
           "custom_prompt": "Extract the name of the person who reviewed this evaluation report. Look for reviewer information in signature sections or document metadata",
           "ai_fillable": true
         },
         {
           "key": "«ReviewerTitle»",
-          "value": "",
+          "value": "«ReviewerTitle»",
           "question": "Extract the title/role of the reviewer from the document. Common titles include 'Senior Engineer', 'Project Manager', 'Technical Reviewer', etc.",
           "custom_prompt": "Extract the title/role of the reviewer from the document. Common titles include 'Senior Engineer', 'Project Manager', 'Technical Reviewer', etc.",
           "ai_fillable": true
