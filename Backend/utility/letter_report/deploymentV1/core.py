@@ -162,49 +162,81 @@ CONT_NAME = os.getenv("LT_CONT_NAME")
 MAX_THREADS = int(os.getenv("LT_MAX_THREADS"))
 MAX_RETRIES = int(os.getenv("LT_MAX_RETRIES"))
 INITIAL_BACKOFF = int(os.getenv("LT_INITIAL_BACKOFF"))
- 
+EMBED_DIM = 500
 
-def build_vectorstore(embeddings, COSMOS_URL, COSMOS_KEY,DB_NAME, CONT_NAME ):
-    
-    # COSMOS_URL    = "https://csdb-intertek-esus-dev.documents.azure.com:443/"
-    # COSMOS_KEY    = "azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00MFDbK88ApotACDbODLFXA=="
-    # DB_NAME     = "ragdatabase"
-    # CONT_NAME   = "vectorstorecontainer"
-    # COSMOS_URL    = "https://rag-intertek.documents.azure.com:443/"
-    # COSMOS_KEY    = "AbhkomWJLtf8TR7odpABPqx1OrjlmCcpTXlKr9Vvp3RulZmFGollxQflIp3LLUAFt4XcMh70RbRxACDbuxyZLg=="
-    # DB_NAME     = "ragdatabase_new"
-    # # CONT_NAME   = "vectorstorecontainer_new"
-    # DB_NAME     = "ragdatabase_new_itk"
-    # CONT_NAME   = "vectorstorecontainer_new_itk"
-    
-    # COSMOS_URL    = "https://csdb-intertek-esus-dev.documents.azure.com:443/"
-    # COSMOS_KEY    = "azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00MFDbK88ApotACDbODLFXA=="
+
+# def build_vectorstore(embeddings, COSMOS_URL, COSMOS_KEY,DB_NAME, CONT_NAME ):
+#     cosmos_client = CosmosClient(
+#         url=COSMOS_URL,
+#         credential=COSMOS_KEY,
+#         consistency_level=ConsistencyLevel.Eventual
+#     )
+
+#     # keep your existing policy helpers if your constructor requires them
+#     return AzureCosmosDBNoSqlVectorSearch(
+#         cosmos_client=cosmos_client,
+#         embedding=embeddings,
+#         database_name=DB_NAME,
+#         container_name=CONT_NAME,
+
+#         # if your version requires explicit policies, keep these as you already had:
+#         vector_embedding_policy={"vectorEmbeddings":[{"path":"/vector","dataType":"float32","dimensions":1536,"distanceFunction":"cosine"}]},
+#         indexing_policy={"includedPaths":[{"path":"/*"}],
+#                          "excludedPaths":[{"path":"/\"_etag\"/?"},{"path":"/vector/*"}],
+#                          "vectorIndexes":[{"path":"/vector","type":"quantizedFlat"}]},
+#         cosmos_container_properties={"partition_key":"/id"},
+#         cosmos_database_properties={}, # _db_props()
+
+#         # IMPORTANT: pass a dict, not a list
+#         vector_search_fields={
+#             "text_field": "text",
+#             "embedding_field": "vector",
+#             "metadata_field": "metadata"
+#         }
+#     )
+from azure.cosmos import CosmosClient, ConsistencyLevel, PartitionKey
+from langchain_azure_ai.vectorstores import AzureCosmosDBNoSqlVectorSearch
+
+
+def build_vectorstore(embeddings, COSMOS_URL, COSMOS_KEY, DB_NAME, CONT_NAME):
     cosmos_client = CosmosClient(
         url=COSMOS_URL,
         credential=COSMOS_KEY,
         consistency_level=ConsistencyLevel.Eventual
     )
 
-    # keep your existing policy helpers if your constructor requires them
+    
+    test_vec = embeddings.embed_query("test")
+    dimensions = len(test_vec)
+
     return AzureCosmosDBNoSqlVectorSearch(
         cosmos_client=cosmos_client,
         embedding=embeddings,
         database_name=DB_NAME,
         container_name=CONT_NAME,
-
-        # if your version requires explicit policies, keep these as you already had:
-        vector_embedding_policy={"vectorEmbeddings":[{"path":"/vector","dataType":"float32","dimensions":1536,"distanceFunction":"cosine"}]},
-        indexing_policy={"includedPaths":[{"path":"/*"}],
-                         "excludedPaths":[{"path":"/\"_etag\"/?"},{"path":"/vector/*"}],
-                         "vectorIndexes":[{"path":"/vector","type":"quantizedFlat"}]},
-        cosmos_container_properties={"partition_key":"/id"},
-        cosmos_database_properties={}, # _db_props()
-
-        # IMPORTANT: pass a dict, not a list
+        vector_embedding_policy={
+            "vectorEmbeddings": [
+                {
+                    "path": "/vector",
+                    "dataType": "float32",
+                    "dimensions": dimensions,
+                    "distanceFunction": "cosine",
+                }
+            ]
+        },
+        indexing_policy={
+            "includedPaths": [{"path": "/*"}],
+            "excludedPaths": [{"path": "/\"_etag\"/?"}],
+            "vectorIndexes": [{"path": "/vector", "type": "flat"}],
+        },
+        cosmos_container_properties={
+            "partition_key": PartitionKey(path="/id")
+        },
+        cosmos_database_properties={},
         vector_search_fields={
-            "text_field": "text",
+            "text_field": "page_content",
             "embedding_field": "vector",
-            "metadata_field": "metadata"
+            "metadata_field": "metadata",
         }
     )
 
