@@ -55,7 +55,77 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from azure.core.exceptions import HttpResponseError
 import time
 from langchain_community.callbacks import get_openai_callback
+import re
+import tempfile
+import shutil
+import requests
+from urllib.parse import urlparse, unquote
+from email import policy
+from email.parser import BytesParser
+import extract_msg
+import uuid
+from langchain_core.documents import Document
+import io
+import openpyxl
+import xlrd
 
+import os
+import pdfplumber
+from fuzzywuzzy import fuzz
+# from utils import *
+from azure.storage.blob import BlobClient
+from azure.core.exceptions import ResourceNotFoundError, AzureError
+# from templates import *
+from utility.letter_report.deploymentV1.trf_essential import *
+from utility.letter_report.deploymentV1.trf_utils import *
+import pandas as pd
+import math
+import copy
+import time
+from azure.cosmos import CosmosClient, PartitionKey, exceptions
+import json, os
+from azure.cosmos import CosmosClient, ConsistencyLevel
+from typing import List, Dict, Any, Tuple
+from docx import Document
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+from langchain_azure_ai.vectorstores import AzureCosmosDBNoSqlVectorSearch
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from azure.cosmos import CosmosClient
+from langchain_openai import AzureOpenAIEmbeddings
+from operator import itemgetter
+from langchain_core.runnables import (
+    RunnableParallel, RunnableLambda, RunnableMap
+)
+from langchain_core.output_parsers import StrOutputParser
+from langchain_openai import AzureChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from tenacity import retry, retry_if_exception_type, wait_exponential, stop_never, RetryCallState
+from openai import RateLimitError  # Make sure this import exists
+from types import SimpleNamespace
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from azure.core.exceptions import HttpResponseError
+import time
+from langchain_community.callbacks import get_openai_callback
+pd.set_option('display.max_colwidth', None)  # Don't truncate cell text
+pd.set_option('display.max_rows', None)      # Show all rows (optional)
+pd.set_option('display.max_columns', None)
+
+import os
+import re
+import pandas as pd
+from typing import Optional, Tuple
+## CAD and Schematic Support::: Stringent for Images- use This
+
+# Each rule independently catches a different type of engineering drawing:
+# Raster-heavy schematics
+# Vector-heavy CAD
+# Flowcharts & logic diagrams
+# Tables of components or wiring connections
+# Minimal text wiring diagrams
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -94,77 +164,6 @@ MAX_RETRIES = int(os.getenv("LT_MAX_RETRIES"))
 INITIAL_BACKOFF = int(os.getenv("LT_INITIAL_BACKOFF"))
  
 
-import re
-import tempfile
-import shutil
-import requests
-from urllib.parse import urlparse, unquote
-from email import policy
-from email.parser import BytesParser
-import extract_msg
-import uuid
-from langchain_core.documents import Document
-import io
-import openpyxl
-import xlrd
-
-import os
-import pdfplumber
-from fuzzywuzzy import fuzz
-# from utils import *
-from azure.storage.blob import BlobClient
-from azure.core.exceptions import ResourceNotFoundError, AzureError
-# from templates import *
-from trf_essential import *
-from trf_utils import *
-import pandas as pd
-import math
-import copy
-import time
-from azure.cosmos import CosmosClient, PartitionKey, exceptions
-import json, os
-from azure.cosmos import CosmosClient, ConsistencyLevel
-from typing import List, Dict, Any, Tuple
-from docx import Document
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
-from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
-from langchain_azure_ai.vectorstores import AzureCosmosDBNoSqlVectorSearch
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from azure.cosmos import CosmosClient
-from langchain_openai import AzureOpenAIEmbeddings
-from operator import itemgetter
-from langchain_core.runnables import (
-    RunnableParallel, RunnableLambda, RunnableMap
-)
-from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import AzureChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
-from tenacity import retry, retry_if_exception_type, wait_exponential, stop_never, RetryCallState
-from openai import RateLimitError  # Make sure this import exists
-from types import SimpleNamespace
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from azure.core.exceptions import HttpResponseError
-import time
-from langchain_community.callbacks import get_openai_callback
-pd.set_option('display.max_colwidth', None)  # Don't truncate cell text
-pd.set_option('display.max_rows', None)      # Show all rows (optional)
-pd.set_option('display.max_columns', None)
-from config import *
-import os
-import re
-import pandas as pd
-from typing import Optional, Tuple
-## CAD and Schematic Support::: Stringent for Images- use This
-
-# Each rule independently catches a different type of engineering drawing:
-# Raster-heavy schematics
-# Vector-heavy CAD
-# Flowcharts & logic diagrams
-# Tables of components or wiring connections
-# Minimal text wiring diagrams
 def build_vectorstore(embeddings, COSMOS_URL, COSMOS_KEY,DB_NAME, CONT_NAME ):
     
     # COSMOS_URL    = "https://csdb-intertek-esus-dev.documents.azure.com:443/"
