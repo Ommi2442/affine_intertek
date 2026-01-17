@@ -1051,8 +1051,13 @@ def generate_cdr(projectId: str):
 
             output_json_path = project_dir / f"iec_output_cdr_{projectId}.json"
             output_excel_path = project_dir / f"iec_output_sheet_{projectId}.xlsx"
+
+            user_name = project_doc.get("User_Name") or []
+            user_id = user_name.split()[0]
+
             # ------------------ PIPELINE ------------------
             result = main2(project_id,
+                user_id,
                 trf_filled,
                 output_excel_path=output_excel_path
             )

@@ -130,9 +130,11 @@ def _process_guide_chunk(chunk, guide_filename, guide_url, page_no):
                 {
                     "role": "system",
                     "content": (
-                        "You are a certification engineer.\n"
-                        "Extract physical components supported by the text.\n"
+                        "You are an expert certification engineer.\n"
+                        "Follow the user manual to get context of product/device."
+                        "Extract AS MANY physical/electrical components supported by the text.\n"
                         "Each component MUST be supported by the text."
+                        "the product/device itself is NOT a component."
                     )
                 },
                 {

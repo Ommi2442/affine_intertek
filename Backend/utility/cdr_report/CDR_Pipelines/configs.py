@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from threading import RLock
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from typing import Optional, Dict, Tuple
+
 
 from azure.cosmos import CosmosClient
 from azure.storage.blob import BlobServiceClient, generate_container_sas, ContainerSasPermissions
@@ -11,6 +13,119 @@ from langchain_openai import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+
+
+# ============================================================
+# PROJECT RUNTIME (SAFE, MULTI-USER AWARE)
+# ============================================================
+
+@dataclass(frozen=True)
+class RuntimeContext:
+    project_id: str
+    user_id: str              # <-- NEW (not used in path)
+    base_dir: Path
+
+
+# key = (project_id, user_id)
+_runtime_registry: Dict[Tuple[str, str], RuntimeContext] = {}
+
+# ---------------- LEGACY RUNTIME PROXY ----------------
+class _LegacyRuntimeProxy:
+    """
+    Backward compatibility layer.
+    Old code accessing `_runtime.project_id` will still work.
+    Returns the most recently initialized runtime.
+    """
+    @property
+    def project_id(self) -> Optional[str]:
+        if not _runtime_registry:
+            return None
+        return next(reversed(_runtime_registry.values())).project_id
+
+    @property
+    def user_id(self) -> Optional[str]:
+        if not _runtime_registry:
+            return None
+        return next(reversed(_runtime_registry.values())).user_id
+
+
+# expose legacy name expected by old code
+_runtime = _LegacyRuntimeProxy()
+
+_lock = RLock()
+
+
+# ============================================================
+# API
+# ============================================================
+
+def init_runtime(*, project_id: str, user_id: str) -> RuntimeContext:
+    """
+    Initialize runtime for a (project_id, user_id) pair.
+    Safe to call multiple times.
+    """
+    key = (project_id, user_id)
+
+    with _lock:
+        if key not in _runtime_registry:
+            base = (
+                Path(__file__)
+                .resolve()
+                .parents[3]
+                / "data"
+                / "cdr_files"
+                / project_id     # <-- user_id intentionally NOT used here
+            )
+            base.mkdir(parents=True, exist_ok=True)
+
+            _runtime_registry[key] = RuntimeContext(
+                project_id=project_id,
+                user_id=user_id,
+                base_dir=base,
+            )
+
+        return _runtime_registry[key]
+
+
+def get_runtime(*, project_id: str, user_id: str) -> RuntimeContext:
+    """
+    Fetch runtime for a specific user + project.
+    """
+    key = (project_id, user_id)
+    try:
+        return _runtime_registry[key]
+    except KeyError:
+        raise RuntimeError(
+            f"Runtime not initialized for project_id={project_id}, user_id={user_id}"
+        )
+
+
+def clear_runtime(*, project_id: str, user_id: str) -> None:
+    """
+    Remove a runtime safely.
+    """
+    key = (project_id, user_id)
+    with _lock:
+        _runtime_registry.pop(key, None)
+
+
+def require_runtime() -> None:
+    """
+    Legacy guard: ensures *some* runtime exists.
+    """
+    if not _runtime_registry:
+        raise RuntimeError("Runtime not initialized")
+
+
+def build_cosmos_cont_name() -> str:
+    require_runtime()
+    project_id = _runtime.project_id
+    user_id = _runtime.user_id
+
+    if not project_id or not user_id:
+        raise RuntimeError("Runtime initialized but user_id or project_id missing")
+    return f"vectorstorecontainer_new_itk_text_{user_id}_{project_id}"
+ 
 
 
 # ============================================================
@@ -26,7 +141,7 @@ EMBED_DEPLOY = os.getenv("EMBED_DEPLOY")
 CHAT_DEPLOY = os.getenv("CHAT_DEPLOY")
 
 COSMOS_DB_TEXT = os.getenv("COSMOS_DB_TEXT")
-COSMOS_CONT_TEXT = os.getenv("COSMOS_CONT_TEXT")
+#COSMOS_CONT_TEXT = os.getenv("COSMOS_CONT_TEXT")
 COSMOS_DB_IMAGE = os.getenv("COSMOS_DB_IMAGE")
 COSMOS_CONT_IMAGE = os.getenv("COSMOS_CONT_IMAGE")
 
@@ -45,6 +160,36 @@ ENABLE_CAD_SCHEMATICS = os.getenv("ENABLE_CAD_SCHEMATICS")
 # LEGACY VARIABLE COMPATIBILITY
 # ============================================================
 
+
+class _DynamicPath:
+    def __init__(self, resolver):
+        self._resolver = resolver
+
+    def __getattr__(self, name):
+        return getattr(self._resolver(), name)
+
+    def __fspath__(self):
+        return str(self._resolver())
+
+    def __str__(self):
+        return str(self._resolver())
+
+    def __truediv__(self, other):
+        return self._resolver() / other
+
+
+class _DynamicValue:
+    def __init__(self, resolver):
+        self._resolver = resolver
+    def __str__(self):
+        return str(self._resolver())
+    def __repr__(self):
+        return repr(self._resolver())
+    def __call__(self):
+        return self._resolver()
+
+
+COSMOS_CONT_TEXT = _DynamicValue(build_cosmos_cont_name)
 COSMOS_DB = COSMOS_DB_TEXT
 COSMOS_CONT = COSMOS_CONT_TEXT
 
@@ -55,6 +200,7 @@ COSMOS_CONTAINER_NAME = COSMOS_CONT
 
 AZURE_OPENAI_ENDPOINT = AOAI_ENDPOINT
 AZURE_OPENAI_KEY = AOAI_KEY
+AZURE_OPENAI_API_KEY = AOAI_KEY
 AZURE_OPENAI_API_VERSION = API_VERSION
 
 AZURE_BLOB_CONNECTION_STRING = AZURE_CONN_STRING
@@ -100,47 +246,7 @@ score_llm = AzureChatOpenAI(
     temperature=0.0,
 )
 
-
-# ============================================================
-# PROJECT RUNTIME (SAFE)
-# ============================================================
-
-@dataclass
-class RuntimeContext:
-    project_id: str
-    base_dir: Path
-
-_runtime_registry: dict[str, RuntimeContext] = {}
-
-# ---------------- LEGACY RUNTIME PROXY ----------------
-class _LegacyRuntimeProxy:
-    @property
-    def project_id(self):
-        if not _runtime_registry:
-            return None
-        return next(reversed(_runtime_registry.values())).project_id
-
-# expose legacy name expected by old code
-_runtime = _LegacyRuntimeProxy()
-
-_lock = RLock()
-
-def init_runtime(project_id: str):
-    with _lock:
-        if project_id not in _runtime_registry:
-            base = Path(__file__).resolve().parents[3] / "data" / "cdr_files" / project_id
-            base.mkdir(parents=True, exist_ok=True)
-            _runtime_registry[project_id] = RuntimeContext(project_id, base)
-
-def get_runtime(project_id: str):
-    return _runtime_registry[project_id]
-
-def clear_runtime(project_id: str):
-    _runtime_registry.pop(project_id, None)
-
-def require_runtime():
-    if not _runtime_registry:
-        raise RuntimeError("Runtime not initialized")
+ 
 
 
 # ============================================================
@@ -148,7 +254,15 @@ def require_runtime():
 # ============================================================
 
 def project_paths(project_id: str):
-    base = get_runtime(project_id).base_dir
+    base = (
+        Path(__file__)
+        .resolve()
+        .parents[3]
+        / "data"
+        / "cdr_files"
+        / project_id
+    )
+
     return {
         "BASE": base,
         "SRC": base / "src_files",
@@ -159,28 +273,12 @@ def project_paths(project_id: str):
         "AI_RAW": base / "CDR_Report_AI.xlsx",
         "AI_FINAL": base / "CDR_Final_Report_AI.xlsx",
     }
+ 
 
 
 # ============================================================
 # LEGACY GLOBAL FILE PATHS (PROJECT SAFE)
 # ============================================================
-
-class _DynamicPath:
-    def __init__(self, resolver):
-        self._resolver = resolver
-
-    def __getattr__(self, name):
-        return getattr(self._resolver(), name)
-
-    def __fspath__(self):
-        return str(self._resolver())
-
-    def __str__(self):
-        return str(self._resolver())
-
-    def __truediv__(self, other):
-        return self._resolver() / other
-
 
 
 def _cur():
@@ -239,6 +337,36 @@ def build_container_sas_url(container: str, expiry_hours=48):
         datetime.utcnow() + timedelta(hours=expiry_hours),
     )
     return f"https://{blob_service.account_name}.blob.core.windows.net/{container}?{sas}"
+
+
+def get_cosmos_container_client():
+    """
+    Returns Cosmos container client for *current* (user_id, project_id) runtime.
+    Must be called after init_runtime().
+    """
+    ctx = require_runtime()
+    cont_name = build_cosmos_cont_name()  # returns a REAL str
+    return cosmos_client.get_database_client(DB_NAME).get_container_client(cont_name)
+
+
+
+# def get_cosmos_container():
+#     """
+#     One-stop function:
+#     - requires runtime (user_id + project_id)
+#     - builds dynamic container name
+#     - creates container if missing
+#     - returns Cosmos ContainerProxy (client)
+#     """
+#     ctx = require_runtime()  # ensures init_runtime(project_id, user_id) was called
+
+#     container_name = f"{ctx.project_id}_{ctx.user_id}"  # your desired format
+
+#     db = cosmos_client.get_database_client(COSMOS_DB_NAME)
+#     return db.create_container_if_not_exists(
+#         id=container_name,
+#         partition_key=PartitionKey(path=PARTITION_KEY),
+#     )
 
 
 # ============================================================

@@ -5,20 +5,20 @@
             "address": 100,
             "country": 100,
             "contacts": 100,
-            "phone": 0,
+            "phone": 100,
             "fax": 0,
             "email": 100
         },
         "manufacturers": [
             {
-                "label": "CellFE, Inc.",
+                "label": "Manufacturer",
                 "name": 100,
                 "address": 100,
                 "country": 100,
-                "contacts": 80,
+                "contacts": 100,
                 "phone": 0,
                 "fax": 0,
-                "email": 100
+                "email": 0
             }
         ]
     }

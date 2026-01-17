@@ -21,13 +21,13 @@ def get_openai_client():
         api_version=configs.AZURE_OPENAI_API_VERSION
     )
 
-def get_cosmos_container():
-    client = CosmosClient(configs.COSMOS_ENDPOINT, configs.COSMOS_KEY)
-    db = client.get_database_client(configs.COSMOS_DB_NAME)
-    return db.create_container_if_not_exists(
-        id=configs.COSMOS_CONTAINER_NAME,
-        partition_key=PartitionKey(path=configs.PARTITION_KEY)
-    )
+# def get_cosmos_container():
+#     client = CosmosClient(configs.COSMOS_ENDPOINT, configs.COSMOS_KEY)
+#     db = client.get_database_client(configs.COSMOS_DB_NAME)
+#     return db.create_container_if_not_exists(
+#         id=configs.COSMOS_CONTAINER_NAME,
+#         partition_key=PartitionKey(path=configs.PARTITION_KEY)
+#     )
 
 # ===================== TOKEN TRACKING =====================
 TOTAL_TOKENS = {

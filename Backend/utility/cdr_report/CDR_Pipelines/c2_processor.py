@@ -145,13 +145,23 @@ def deduplicate_components(df):
     # Assign Photo No
     photo_map = {}
     photo_counter = 1
+
     def assign_photo_no(image_id):
         nonlocal photo_counter
-        if not image_id:
-            return "guide"
+
+        # ---- HANDLE NO PHOTO CASES ----
+        if (
+            image_id is None
+            or (isinstance(image_id, float) and pd.isna(image_id))
+            or (isinstance(image_id, str) and image_id.strip().lower() in {"", "nan", "none"})
+        ):
+            return "guide"   # or "" / None depending on your requirement
+
+        # ---- ASSIGN PHOTO NUMBER ----
         if image_id not in photo_map:
             photo_map[image_id] = photo_counter
             photo_counter += 1
+
         return photo_map[image_id]
 
     deduped_df["photo_no"] = deduped_df["_image_id"].apply(assign_photo_no)

@@ -25,10 +25,10 @@ openai_client = AzureOpenAI(
 
 cosmos_client = CosmosClient(configs.COSMOS_ENDPOINT, configs.COSMOS_KEY)
 cosmos_db = cosmos_client.get_database_client(configs.COSMOS_DB_NAME)
-cosmos_container = cosmos_db.create_container_if_not_exists(
-    id=configs.COSMOS_CONTAINER_NAME,
-    partition_key=PartitionKey(path=configs.PARTITION_KEY)
-)
+# cosmos_container = cosmos_db.create_container_if_not_exists(
+#     id=configs.COSMOS_CONTAINER_NAME,
+#     partition_key=PartitionKey(path=configs.PARTITION_KEY)
+# )
 
 # Alias for compatibility with original code
 client = openai_client
