@@ -12,6 +12,9 @@ from utility.cdr_report.CDR_Pipelines.configs import (
     cosmos_client,
     AZURE_BLOB_CONNECTION_STRING,
     BLOB_CONTAINER_NAME,
+    AZURE_CONN_STRING,
+    container,
+    DB_NAME
 )
 
 import utility.cdr_report.CDR_Pipelines.configs as configs
@@ -24,8 +27,8 @@ from utility.cdr_report.CDR_Pipelines.description import description_main, build
 from utility.cdr_report.CDR_Pipelines.components_agent import run_sheet_3_and_4_agentic
 import utility.cdr_report.CDR_Pipelines.compiler as compiler
 import utility.cdr_report.CDR_Pipelines.utils as utils
-from utility.cdr_report.CDR_Pipelines.utils import get_image_urls_from_container_sas, move_device_images_in_blob
-
+from utility.cdr_report.CDR_Pipelines.utils import get_image_urls_from_container_sas, move_device_images_in_blob, get_blob_urls
+from utility.cdr_report.CDR_Pipelines.editable_processing import extract_cis
 from langchain_azure_ai.vectorstores import AzureCosmosDBNoSqlVectorSearch
 
 
@@ -53,11 +56,13 @@ def get_trf_blob_url(conn_str, container, blob_name):
 
 
 def build_vectorstore():
+    ctx = configs.require_runtime()
+    COSMOS_CONTAINER_NAME = configs.build_cosmos_cont_name()
     return AzureCosmosDBNoSqlVectorSearch(
         cosmos_client=cosmos_client,
         embedding=utils.build_embeddings(),
         database_name=configs.COSMOS_DB_NAME,
-        container_name=configs.COSMOS_CONTAINER_NAME,
+        container_name=COSMOS_CONTAINER_NAME,
         vector_embedding_policy={
             "vectorEmbeddings": [{
                 "path": "/vector",
@@ -85,18 +90,19 @@ def build_vectorstore():
 # PIPELINE ENTRYPOINTS
 # ============================================================
 
-def main2(project_id, input_json, output_excel_path):
+
+def main2(project_id, user_id, input_json, output_excel_path):
     """
     Safe entrypoint used by FastAPI, queue_worker, and CLI.
     """
-    init_runtime(project_id)
+    init_runtime(project_id=project_id, user_id=user_id)
     try:
-        return main3(project_id, input_json, output_excel_path)
+        return main3(project_id, user_id, input_json, output_excel_path)
     finally:
-        clear_runtime(project_id)
+        clear_runtime(project_id=project_id, user_id=user_id)
 
 
-def main3(project_id, input_json, output_excel_path):
+def main3(project_id, user_id, input_json, output_excel_path):
     paths = project_paths(project_id)
 
     print(f"[RUNTIME] Running project {project_id}")
@@ -104,11 +110,13 @@ def main3(project_id, input_json, output_excel_path):
     TOTAL = 16
     step = 0
 
+    conn_str = AZURE_CONN_STRING
+
     # --------------------------------------------------
     # Prepare workspace
     # --------------------------------------------------
-    if paths["SRC"].exists():
-        shutil.rmtree(paths["SRC"])
+    if paths["SRC"].parent.exists():
+        shutil.rmtree(paths["SRC"].parent)
     paths["SRC"].mkdir(parents=True, exist_ok=True)
 
     step += 1; progress(step, TOTAL, "Starting pipeline")
@@ -132,10 +140,17 @@ def main3(project_id, input_json, output_excel_path):
         BLOB_CONTAINER_NAME,
         f"Documents/{project_id}/Generated_trf_Report/final_output_{project_id}.docx"
     )
+    
+    step += 1; progress(step, TOTAL, "Listing blob URLs")
+    prefix = f"Documents/{project_id}/source_documents"
+    blob_urls = get_blob_urls(conn_str, container)
+    
+    blob_urls.append(trf_blob)
+
 
     step += 1; progress(step, TOTAL, "Downloading TRF")
     extracted_texts, image_urls, _, _ = utils.process_blob_urls_2(
-        [trf_blob],
+        blob_urls,
         AZURE_BLOB_CONNECTION_STRING,
         BLOB_CONTAINER_NAME,
         download_dir=paths["SRC"],
@@ -145,6 +160,15 @@ def main3(project_id, input_json, output_excel_path):
 
     step += 1; progress(step, TOTAL, "Downloading images from blobs")
     image_urls = get_image_urls_from_container_sas()
+
+
+    # --------------------------------------------------
+    # CIS Extraction
+    # --------------------------------------------------
+
+    step += 1; progress(step, TOTAL, "Extracting CIS info")
+    cis_info = extract_cis()
+    extracted_texts += cis_info
 
     # --------------------------------------------------
     # Save extracted text
@@ -158,22 +182,28 @@ def main3(project_id, input_json, output_excel_path):
     # --------------------------------------------------
     pdf_paths = [paths["SRC"] / f for f in os.listdir(paths["SRC"]) if f.lower().endswith(".pdf")]
 
+
+    # --------------------------------------------------
+    # Container Creation Cosmos
+    # --------------------------------------------------
+    step += 1; progress(step, TOTAL, "Creating DB/container (Cosmos)")
+    container_obj = utils.create_db_and_container()
+
+    db = cosmos_client.get_database_client(DB_NAME)
+    print(f"db_created:{db}", flush=True)
+    
+    
     # --------------------------------------------------
     # Vector store
     # --------------------------------------------------
-    step += 1; progress(step, TOTAL, "Building vector store")
+    
+    step += 1; progress(step, TOTAL, "Building embeddings + vector store")
+    # embeddings = utils.build_embeddings()
     vs = build_vectorstore()
 
-    step += 1; progress(step, TOTAL, "Chunking + Ingesting")
-    chunks = utils.load_and_split_pdfs_text(
-        pdf_paths,
-        configs.CHUNK_SIZE,
-        configs.CHUNK_OVERLAP,
-        extracted_texts=None,
-        cad_schematics=False
-    )
-    chunks = utils.add_ids_to_chunks(chunks)
-    utils.ingest_to_cosmos_parallel(vs, chunks, batch_size=10, max_workers=10)
+    step += 1; progress(step, TOTAL, "Chunking + ingesting documents into vector store")
+    chunks = utils.load_and_split_pdfs_text(pdf_paths, extracted_texts=extracted_texts)
+    utils.ingest_chunks(vs, chunks, max_workers=5, batch_size=10)
 
     # --------------------------------------------------
     # Reference generation
@@ -237,4 +267,12 @@ def main3(project_id, input_json, output_excel_path):
     compiler.fill_excel_from_json(cdr, output_excel_path)
 
     progress(TOTAL, TOTAL, "Done", {"project": project_id})
+
+    Container_name = f"vectorstorecontainer_new_itk_text_{user_id}_{project_id}"
+
+    utils.delete_cosmos_container(configs.COSMOS_URL,configs.COSMOS_KEY,configs.DB_NAME,Container_name)
+
+    if paths["SRC"].parent.exists():
+        shutil.rmtree(paths["SRC"].parent)
+
     return cdr

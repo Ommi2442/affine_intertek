@@ -22,7 +22,7 @@ from collections import defaultdict
 from utility.cdr_report.CDR_Pipelines.prompts import ref_prompt as prompt
 from utility.cdr_report.CDR_Pipelines.prompts import score_prompt
 #cosmos_client = CosmosClient(url=COSMOS_URL, credential=COSMOS_KEY)
-cosmos_container = cosmos_client.get_database_client(DB_NAME).get_container_client(CONT_NAME)
+# cosmos_container = cosmos_client.get_database_client(DB_NAME).get_container_client(CONT_NAME)
 
 EMAIL_RE = re.compile(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", re.I)
 PHONE_RE = re.compile(r"(\+\d[\d\s\-\(\)]{6,}\d|\(\d{3}\)\s*\d{3}\-\d{4})")
@@ -313,6 +313,8 @@ def build_context_docs(vs, container, retrieved_docs: List[Document], user_quest
 
 def references_main(vs, ref):
     configs.require_runtime()
+
+    cosmos_container = configs.get_cosmos_container_client()  # ✅ per request
 
     print('inside reference_main')
     retriever = vs.as_retriever(

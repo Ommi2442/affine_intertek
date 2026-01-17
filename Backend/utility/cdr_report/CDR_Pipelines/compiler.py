@@ -656,6 +656,7 @@ def fill_excel_from_json(JSON_PATH, OUTPUT_EXCEL_PATH):
 
     wb.save(OUTPUT_EXCEL_PATH)
     print(f"✅ Excel generated: {OUTPUT_EXCEL_PATH}")
+
     return OUTPUT_EXCEL_PATH
 
 #fill_excel_from_json("cdr_payload_v5_updated.json")

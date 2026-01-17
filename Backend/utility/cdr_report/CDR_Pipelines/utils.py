@@ -557,6 +557,8 @@ def download_images_from_blob_urls(
 #client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY)
 
 def create_db_and_container():
+    ctx = configs.require_runtime()
+    CONT_NAME = configs.build_cosmos_cont_name()
     print("→ Ensuring database...")
     #db = client.create_database_if_not_exists(DB_NAME)
     db = cosmos_client.create_database_if_not_exists(DB_NAME)
@@ -697,118 +699,23 @@ def build_embeddings():
         azure_deployment=EMBED_DEPLOY,
     )
 
-def load_and_split_pdfs_text(
-    pdf_paths,
-    CHUNK_SIZE,
-    CHUNK_OVERLAP,
-    extracted_texts=None,
-    cad_schematics=False
-):
-    """
-    EXACT implementation from your notebook.
-    Returns:
-        chunks → list of text Document objects
-        image_page_metadata → list of schematic image metadata
-    """
-
-    docs = []
-    image_page_metadata = []
-
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=CHUNK_SIZE,
-        chunk_overlap=CHUNK_OVERLAP,
-        separators=["\n\n", "\n", ". ", " "],
-        keep_separator=False,
-    )
-
-    # ----- STEP 1: PDF TEXT EXTRACTION -----
-    for path in pdf_paths:
-        if not str(path).lower().endswith(".pdf"):
-            continue
-
-        loader = PyPDFLoader(str(path))
-        raw_docs = loader.load()
-        base = os.path.basename(str(path))
-
-        for d in raw_docs:
-            page = int(d.metadata.get("page", 1))
-            d.metadata["source_file"] = base
-            d.metadata["page"] = page
-            d.metadata["citation"] = f"{base}#page={page}"
-
-        docs.extend(raw_docs)
-
-        # ----- STEP 2: CAD/Schematic Image Extraction -----
-        # if cad_schematics:
-        #     try:
-        #         extracted = extract_relevant_pdf_page_images(path)
-        #         image_page_metadata.extend(extracted)
-        #     except Exception as e:
-        #         print(f"[WARN] selective image extraction failed for {path}: {e}")
-
-    # ----- STEP 3: External extracted text -----
-    # -------------------------------------------------------------
-    # STEP 2 — Process externally extracted text files (unchanged)
-    # -------------------------------------------------------------
-    if extracted_texts:
-        for item in extracted_texts:
-            if not isinstance(item, dict):
-                continue
-
-            if "filename" in item and "text" in item:
-                filename = item["filename"]
-                text = item["text"]
-            elif len(item) == 1:
-                filename, text = next(iter(item.items()))
-            elif "text" in item:
-                filename = item.get("filename") or "unknown"
-                text = item["text"]
-            else:
-                filename = item.get("filename") or "unknown"
-                text = None
-                for k, v in item.items():
-                    if isinstance(v, str) and v.strip():
-                        filename = k
-                        text = v
-                        break
-                if text is None:
-                    text = " ".join(str(v) for v in item.values())
-
-            metadata = {
-                "source_file": os.path.basename(str(filename)),
-                "page": 1,
-                "citation": os.path.basename(str(filename))
-            }
-
-            # ORIGINAL WORKING VERSION — KEEP SimpleNamespace
-            docs.append(
-                SimpleNamespace(
-                    page_content=text or "",
-                    metadata=metadata
-                )
-            )
-
-
-
-    # ----- STEP 4: Chunking -----
-    chunks = splitter.split_documents(docs)
-
-    return chunks
-    # return chunks, image_page_metadata
-
-
-
-# def load_and_split_pdfs_text(pdf_paths, extracted_texts=None):
+# def load_and_split_pdfs_text(
+#     pdf_paths,
+#     CHUNK_SIZE,
+#     CHUNK_OVERLAP,
+#     extracted_texts=None,
+#     cad_schematics=False
+# ):
 #     """
-#     pdf_paths: iterable of file paths (existing behavior — only PDFs processed)
-#     extracted_texts: optional list of dicts. Supported shapes:
-#         - { "filename.ext": "text..." }
-#         - { "filename": "...", "text": "..." }
-#         - mixed list containing either form
-#     Returns: list of chunks (output of splitter.split_documents)
+#     EXACT implementation from your notebook.
+#     Returns:
+#         chunks → list of text Document objects
+#         image_page_metadata → list of schematic image metadata
 #     """
-#     print('START OF CHUNKING')
+
 #     docs = []
+#     image_page_metadata = []
+
 #     splitter = RecursiveCharacterTextSplitter(
 #         chunk_size=CHUNK_SIZE,
 #         chunk_overlap=CHUNK_OVERLAP,
@@ -816,40 +723,50 @@ def load_and_split_pdfs_text(
 #         keep_separator=False,
 #     )
 
-#     # --- existing PDF flow (unchanged) ---
+#     # ----- STEP 1: PDF TEXT EXTRACTION -----
 #     for path in pdf_paths:
 #         if not str(path).lower().endswith(".pdf"):
 #             continue
+
 #         loader = PyPDFLoader(str(path))
 #         raw_docs = loader.load()
 #         base = os.path.basename(str(path))
+
 #         for d in raw_docs:
 #             page = int(d.metadata.get("page", 1))
 #             d.metadata["source_file"] = base
 #             d.metadata["page"] = page
 #             d.metadata["citation"] = f"{base}#page={page}"
+
 #         docs.extend(raw_docs)
 
-#     # --- new: accept extracted_texts in multiple sensible shapes ---
+#         # ----- STEP 2: CAD/Schematic Image Extraction -----
+#         # if cad_schematics:
+#         #     try:
+#         #         extracted = extract_relevant_pdf_page_images(path)
+#         #         image_page_metadata.extend(extracted)
+#         #     except Exception as e:
+#         #         print(f"[WARN] selective image extraction failed for {path}: {e}")
+
+#     # ----- STEP 3: External extracted text -----
+#     # -------------------------------------------------------------
+#     # STEP 2 — Process externally extracted text files (unchanged)
+#     # -------------------------------------------------------------
 #     if extracted_texts:
 #         for item in extracted_texts:
 #             if not isinstance(item, dict):
 #                 continue
 
-#             # Case A: explicit keys 'filename' and 'text'
 #             if "filename" in item and "text" in item:
 #                 filename = item["filename"]
 #                 text = item["text"]
-#             # Case B: single-key mapping { "actual_filename": "text..." }
 #             elif len(item) == 1:
 #                 filename, text = next(iter(item.items()))
-#             # Case C: has 'text' but no filename key
 #             elif "text" in item:
-#                 filename = item.get("filename") or item.get("name") or "unknown"
+#                 filename = item.get("filename") or "unknown"
 #                 text = item["text"]
 #             else:
-#                 # Fallback: pick first string value
-#                 filename = None
+#                 filename = item.get("filename") or "unknown"
 #                 text = None
 #                 for k, v in item.items():
 #                     if isinstance(v, str) and v.strip():
@@ -857,24 +774,109 @@ def load_and_split_pdfs_text(
 #                         text = v
 #                         break
 #                 if text is None:
-#                     filename = item.get("filename") or "unknown"
 #                     text = " ".join(str(v) for v in item.values())
 
-#             base = os.path.basename(str(filename))
 #             metadata = {
-#                 "source_file": base,
+#                 "source_file": os.path.basename(str(filename)),
 #                 "page": 1,
-#                 "citation": f"{base}"
+#                 "citation": os.path.basename(str(filename))
 #             }
 
-#             # Create a simple Document-like object expected by splitter
-#             # splitter expects attributes like .page_content and .metadata
-#             doc = SimpleNamespace(page_content=text or "", metadata=metadata)
+#             # ORIGINAL WORKING VERSION — KEEP SimpleNamespace
+#             docs.append(
+#                 SimpleNamespace(
+#                     page_content=text or "",
+#                     metadata=metadata
+#                 )
+#             )
 
-#             docs.append(doc)
-#     print('END OF CHUNKING FUNCTION')
-#     # finally split all collected documents (pdf chunks + plain-text docs)
-#     return splitter.split_documents(docs)
+
+
+#     # ----- STEP 4: Chunking -----
+#     chunks = splitter.split_documents(docs)
+
+#     return chunks
+#     # return chunks, image_page_metadata
+
+
+
+def load_and_split_pdfs_text(pdf_paths, extracted_texts=None):
+    """
+    pdf_paths: iterable of file paths (existing behavior — only PDFs processed)
+    extracted_texts: optional list of dicts. Supported shapes:
+        - { "filename.ext": "text..." }
+        - { "filename": "...", "text": "..." }
+        - mixed list containing either form
+    Returns: list of chunks (output of splitter.split_documents)
+    """
+    print('START OF CHUNKING')
+    docs = []
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=CHUNK_SIZE,
+        chunk_overlap=CHUNK_OVERLAP,
+        separators=["\n\n", "\n", ". ", " "],
+        keep_separator=False,
+    )
+
+    # --- existing PDF flow (unchanged) ---
+    for path in pdf_paths:
+        if not str(path).lower().endswith(".pdf"):
+            continue
+        loader = PyPDFLoader(str(path))
+        raw_docs = loader.load()
+        base = os.path.basename(str(path))
+        for d in raw_docs:
+            page = int(d.metadata.get("page", 1))
+            d.metadata["source_file"] = base
+            d.metadata["page"] = page
+            d.metadata["citation"] = f"{base}#page={page}"
+        docs.extend(raw_docs)
+
+    # --- new: accept extracted_texts in multiple sensible shapes ---
+    if extracted_texts:
+        for item in extracted_texts:
+            if not isinstance(item, dict):
+                continue
+
+            # Case A: explicit keys 'filename' and 'text'
+            if "filename" in item and "text" in item:
+                filename = item["filename"]
+                text = item["text"]
+            # Case B: single-key mapping { "actual_filename": "text..." }
+            elif len(item) == 1:
+                filename, text = next(iter(item.items()))
+            # Case C: has 'text' but no filename key
+            elif "text" in item:
+                filename = item.get("filename") or item.get("name") or "unknown"
+                text = item["text"]
+            else:
+                # Fallback: pick first string value
+                filename = None
+                text = None
+                for k, v in item.items():
+                    if isinstance(v, str) and v.strip():
+                        filename = k
+                        text = v
+                        break
+                if text is None:
+                    filename = item.get("filename") or "unknown"
+                    text = " ".join(str(v) for v in item.values())
+
+            base = os.path.basename(str(filename))
+            metadata = {
+                "source_file": base,
+                "page": 1,
+                "citation": f"{base}"
+            }
+
+            # Create a simple Document-like object expected by splitter
+            # splitter expects attributes like .page_content and .metadata
+            doc = SimpleNamespace(page_content=text or "", metadata=metadata)
+
+            docs.append(doc)
+    print('END OF CHUNKING FUNCTION')
+    # finally split all collected documents (pdf chunks + plain-text docs)
+    return splitter.split_documents(docs)
 
 # def add_batch(batch, idx_start, vs):
 #     # helpful for logging
@@ -1246,3 +1248,33 @@ def invoke_with_rate_limit_retry(
     # exhausted
     raise last_err
 
+
+
+def delete_cosmos_container(
+    endpoint: str,
+    key: str,
+    database_name: str,
+    container_name: str
+):
+    """
+    Deletes a Cosmos DB container.
+    """
+
+    client = CosmosClient(endpoint, credential=key)
+
+    try:
+        database = client.get_database_client(database_name)
+        database.delete_container(container_name)
+        
+        print("\n===============================================")
+        print(f" DELETING THE VECTOR COSMOS DB Container '{container_name}'")
+        print("===============================================")
+
+        print(f"Container '{container_name}' deleted successfully.")
+
+
+    except ResourceNotFoundError:
+        print(f"Container '{container_name}' or database '{database_name}' not found.")
+
+    except Exception as e:
+        raise RuntimeError(f"Failed to delete container: {e}")

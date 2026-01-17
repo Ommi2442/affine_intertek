@@ -5,6 +5,96 @@
             "row_type": "table_data",
             "photo_no": "1",
             "item_no": "1",
+            "name": "Back Panel",
+            "manufacturer": null,
+            "type_model": null,
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": false,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+                    "page": 1,
+                    "similarity_score": null,
+                    "text": "Page 1 of 59 \nCellFE Infinity MTx Operating Manual \n \n \n \nCellFE Biotech, Inc. \n1000 Atlantic Avenue, Suite 104 \nAlameda, CA  94501-1098 \n(512)-914-2840 \nsupport@cellfebiotech.com \nhttps://www.cellfebiotech.com \n\u00a9 2023, CellFE Biotech, Inc. \n \n \n \n \nFor Research Use Only. Not for use in diagnostic procedures. \nPlaceholder: Image of Infinity MTx \n \n  Page 2 of 59 \n \nTable of Contents \nChapter 1. Product Information ............................................................................................. 5 \nProduct Description ............................................................................................................... 5 \nKey Benefits .......................................................................................................................... 5 \nProduct Contents ................................ ................................ ................................ ........................... 6 \nSystem contents ................................................................................................................................................... 6 \nOptimizer kit contents ......................................................................................................................................... 7 \nSystem Components .............................................................................................................. 7 \nFront Panel ................................ ................................ ................................ ................................ ....8 \nBack Panel ................................ ................................ ................................ ................................ .....9 \nInfinity MPA ................................ ................................ ................................ ................................ . 11 \nChapter 2. Upon Receiving the Infinity MTx ......................................................................... 12 \nSite Preparations .....",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/Citation_docs/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf"
+                }
+            ],
+            "confidence": 85
+        },
+        {
+            "start_cell": "A4",
+            "row_type": "table_data",
+            "photo_no": "1",
+            "item_no": "2",
+            "name": "Electrical supply",
+            "manufacturer": null,
+            "type_model": null,
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": false,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+                    "page": 1,
+                    "similarity_score": null,
+                    "text": "........................... ................................ ................................ ..........................  12 \nPhysical space requirements ............................................................................................................................. 12 \nElectrical Requirements ..................................................................................................................................... 12 \nInfrastructure Requirements ............................................................................................................................. 12 \nSafety and environmental considerations ........................................................................................................ 12 \nSetting Up the Infinity MTx ................................ ................................ ................................ ........... 13 \nUnpacking and Inspecting .................................................................................................................................. 13 \nAssembling and Connecting the MTx ................................................................................................................ 14 \nTesting MTx Functionality .................................................................................................................................. 14 \nChapter 3: Using the Infinity MTx ......................................................................................... 15 \nSoftware user interface ...................................................................................................................................... 15 \n ............................................................................................................................................................................ 16 \nManaging users .................................................................................................................................................. 1",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/Citation_docs/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf"
+                }
+            ],
+            "confidence": 90
+        },
+        {
+            "start_cell": "A5",
+            "row_type": "table_data",
+            "photo_no": "1",
+            "item_no": "3",
+            "name": "Front Panel",
+            "manufacturer": null,
+            "type_model": null,
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": false,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+                    "page": 1,
+                    "similarity_score": null,
+                    "text": "Page 1 of 59 \nCellFE Infinity MTx Operating Manual \n \n \n \nCellFE Biotech, Inc. \n1000 Atlantic Avenue, Suite 104 \nAlameda, CA  94501-1098 \n(512)-914-2840 \nsupport@cellfebiotech.com \nhttps://www.cellfebiotech.com \n\u00a9 2023, CellFE Biotech, Inc. \n \n \n \n \nFor Research Use Only. Not for use in diagnostic procedures. \nPlaceholder: Image of Infinity MTx \n \n  Page 2 of 59 \n \nTable of Contents \nChapter 1. Product Information ............................................................................................. 5 \nProduct Description ............................................................................................................... 5 \nKey Benefits .......................................................................................................................... 5 \nProduct Contents ................................ ................................ ................................ ........................... 6 \nSystem contents ................................................................................................................................................... 6 \nOptimizer kit contents ......................................................................................................................................... 7 \nSystem Components .............................................................................................................. 7 \nFront Panel ................................ ................................ ................................ ................................ ....8 \nBack Panel ................................ ................................ ................................ ................................ .....9 \nInfinity MPA ................................ ................................ ................................ ................................ . 11 \nChapter 2. Upon Receiving the Infinity MTx ......................................................................... 12 \nSite Preparations .....",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/Citation_docs/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf"
+                }
+            ],
+            "confidence": 85
+        },
+        {
+            "start_cell": "A6",
+            "row_type": "table_data",
+            "photo_no": "1",
+            "item_no": "4",
             "name": "Infinity MPA",
             "manufacturer": null,
             "type_model": null,
@@ -25,17 +115,17 @@
                     "page": 1,
                     "similarity_score": null,
                     "text": "Page 1 of 59 \nCellFE Infinity MTx Operating Manual \n \n \n \nCellFE Biotech, Inc. \n1000 Atlantic Avenue, Suite 104 \nAlameda, CA  94501-1098 \n(512)-914-2840 \nsupport@cellfebiotech.com \nhttps://www.cellfebiotech.com \n\u00a9 2023, CellFE Biotech, Inc. \n \n \n \n \nFor Research Use Only. Not for use in diagnostic procedures. \nPlaceholder: Image of Infinity MTx \n \n  Page 2 of 59 \n \nTable of Contents \nChapter 1. Product Information ............................................................................................. 5 \nProduct Description ............................................................................................................... 5 \nKey Benefits .......................................................................................................................... 5 \nProduct Contents ................................ ................................ ................................ ........................... 6 \nSystem contents ................................................................................................................................................... 6 \nOptimizer kit contents ......................................................................................................................................... 7 \nSystem Components .............................................................................................................. 7 \nFront Panel ................................ ................................ ................................ ................................ ....8 \nBack Panel ................................ ................................ ................................ ................................ .....9 \nInfinity MPA ................................ ................................ ................................ ................................ . 11 \nChapter 2. Upon Receiving the Infinity MTx ......................................................................... 12 \nSite Preparations .....",
-                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CDR_Test_614_new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf"
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/Citation_docs/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf"
                 }
             ],
-            "confidence": 95
+            "confidence": 90
         },
         {
-            "start_cell": "A4",
+            "start_cell": "A7",
             "row_type": "table_data",
             "photo_no": "1",
-            "item_no": "2",
-            "name": "Infinity MTx",
+            "item_no": "5",
+            "name": "Physical space",
             "manufacturer": null,
             "type_model": null,
             "technical_data": null,
@@ -55,10 +145,10 @@
                     "page": 1,
                     "similarity_score": null,
                     "text": "........................... ................................ ................................ ..........................  12 \nPhysical space requirements ............................................................................................................................. 12 \nElectrical Requirements ..................................................................................................................................... 12 \nInfrastructure Requirements ............................................................................................................................. 12 \nSafety and environmental considerations ........................................................................................................ 12 \nSetting Up the Infinity MTx ................................ ................................ ................................ ........... 13 \nUnpacking and Inspecting .................................................................................................................................. 13 \nAssembling and Connecting the MTx ................................................................................................................ 14 \nTesting MTx Functionality .................................................................................................................................. 14 \nChapter 3: Using the Infinity MTx ......................................................................................... 15 \nSoftware user interface ...................................................................................................................................... 15 \n ............................................................................................................................................................................ 16 \nManaging users .................................................................................................................................................. 1",
-                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CDR_Test_614_new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf"
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/Citation_docs/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf"
                 }
             ],
-            "confidence": 95
+            "confidence": 80
         }
     ]
 }
