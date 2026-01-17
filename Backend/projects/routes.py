@@ -1100,6 +1100,10 @@ def generate_cdr(projectId: str):
             project_dir.mkdir(parents=True, exist_ok=True)
 
             output_json_path = project_dir / f"iec_output_cdr_{projectId}.json"
+            output_excel_path = project_dir / f"iec_output_sheet_{projectId}.xlsx"
+
+
+            output_json_path = project_dir / f"iec_output_cdr_{projectId}.json"
             with open(output_json_path, "r", encoding="utf-8") as f:
                 cdr_output = json.load(f)
             
