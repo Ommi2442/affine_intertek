@@ -48,7 +48,7 @@ import threading
 import traceback
 from dotenv import load_dotenv
 load_dotenv()
-BLOB_CONTAINER_NAME = os.getenv("LT_BLOB_CONTAINER_NAME")
+BLOB_CONTAINER_NAME = os.getenv("BLOB_CONTAINER")
 
 router = APIRouter()
 
