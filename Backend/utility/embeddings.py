@@ -1379,6 +1379,20 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
     NOTE: This function will DELETE ALL DOCUMENTS in the target Cosmos container (as per notebook).
     """
 
+    print('######### download_dir ########', download_dir)
+
+    print('######## blob_urls #########', blob_urls)
+
+    print('######## project_id #########', project_id)
+
+    print('######## textDB_container_name #########', textDB_container_name)
+
+    print('######## imageDB_container_name #########', imageDB_container_name)
+
+
+
+
+
     # 1) Cosmos client and container
     # client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY, consistency_level=ConsistencyLevel.Eventual)
     # db_client = client.get_database_client(COSMOS_DB_TEXT)

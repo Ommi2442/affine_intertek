@@ -40,11 +40,11 @@ from fastapi import HTTPException
 from dotenv import load_dotenv
 load_dotenv()
 
-AZURE_STORAGE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING_2")
-blob_container = os.getenv("blob_container2")
+AZURE_STORAGE_CONNECTION_STRING = os.getenv("AZURE_CONN_STRING")
+blob_container = os.getenv("BLOB_CONTAINER")
 blob_service = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
-COSMOS_DB_URI=os.getenv("COSMOS_DB_URI2")
-COSMOS_DB_KEY=os.getenv("COSMOS_DB_KEY2")
+COSMOS_DB_URI=os.getenv("COSMOS_DB_URI")
+COSMOS_DB_KEY=os.getenv("COSMOS_DB_KEY")
 COSMOS_DB_DATABASE=os.getenv("COSMOS_DB_DATABASE")
 
 # Cosmos DB
