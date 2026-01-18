@@ -27,6 +27,8 @@ try:
     COSMOS_DB_users_Container = users_container
     COSMOS_DB_users_registration=users_reg
     COSMOS_DB_project_Container = projects_container
+    COSMOS_DB_project_trf_Container = COSMOS_DB_project_TRF_Container
+    COSMOS_DB_project_cdr_Container = COSMOS_DB_project_CDR_Container
     print(" Connected to Cosmos DB successfully.")
 
 except Exception as e:
