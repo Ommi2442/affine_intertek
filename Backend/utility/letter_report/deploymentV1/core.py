@@ -1,5 +1,3 @@
-import json
-import re
 import re
 import tempfile
 import shutil
@@ -14,60 +12,7 @@ import io
 import openpyxl
 import xlrd
 
-import os
-import pdfplumber
-from fuzzywuzzy import fuzz
-# from utils import *
-from azure.storage.blob import BlobClient
-from azure.core.exceptions import ResourceNotFoundError, AzureError
-# from templates import *
-from utility.letter_report.deploymentV1.trf_essential import *
-from utility.letter_report.deploymentV1.trf_utils import *
-import pandas as pd
-import math
-import copy
-import time
-from azure.cosmos import CosmosClient, PartitionKey, exceptions
-import json, os
-from azure.cosmos import CosmosClient, ConsistencyLevel
-from typing import List, Dict, Any, Tuple
-from docx import Document
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
-from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
-from langchain_azure_ai.vectorstores import AzureCosmosDBNoSqlVectorSearch
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from azure.cosmos import CosmosClient
-from langchain_openai import AzureOpenAIEmbeddings
-from operator import itemgetter
-from langchain_core.runnables import (
-    RunnableParallel, RunnableLambda, RunnableMap
-)
-from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import AzureChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
-from tenacity import retry, retry_if_exception_type, wait_exponential, stop_never, RetryCallState
-from openai import RateLimitError  # Make sure this import exists
-from types import SimpleNamespace
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from azure.core.exceptions import HttpResponseError
-import time
-from langchain_community.callbacks import get_openai_callback
-import re
-import tempfile
-import shutil
-import requests
-from urllib.parse import urlparse, unquote
-from email import policy
-from email.parser import BytesParser
-import extract_msg
-import uuid
-from langchain_core.documents import Document
-import io
-import openpyxl
-import xlrd
+from utility.letter_report.deploymentV1.config import AZURE_CONN_STRING, DB_NAME_IMG, CONT_NAME_IMG, CHUNK_SIZE, CHUNK_OVERLAP, TOP_K, EMBED_DIM, VECTOR_PATH, BLOB_CONTAINER_NAME, conn_str, IMAGE_EXTS, AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY, CHAT_DEPLOY, COSMOS_URL, COSMOS_KEY, COSMOS_DB, COSMOS_CONT, DB_NAME, CONT_NAME, MAX_THREADS, MAX_RETRIES, INITIAL_BACKOFF
 
 import os
 import pdfplumber
@@ -118,125 +63,36 @@ import os
 import re
 import pandas as pd
 from typing import Optional, Tuple
-## CAD and Schematic Support::: Stringent for Images- use This
 
-# Each rule independently catches a different type of engineering drawing:
-# Raster-heavy schematics
-# Vector-heavy CAD
-# Flowcharts & logic diagrams
-# Tables of components or wiring connections
-# Minimal text wiring diagrams
-from dotenv import load_dotenv
-
-load_dotenv()
-import os
-
-AZURE_CONN_STRING = os.getenv("LT_AZURE_CONN_STRING")
-DB_NAME_IMG = os.getenv("LT_DB_NAME_IMG")
-CONT_NAME_IMG = os.getenv("LT_CONT_NAME_IMG")
-CHUNK_SIZE = int(os.getenv("LT_CHUNK_SIZE"))
-CHUNK_OVERLAP = int(os.getenv("LT_CHUNK_OVERLAP"))
-TOP_K = int(os.getenv("LT_TOP_K"))
-EMBED_DIM = int(os.getenv("LT_EMBED_DIM"))
-VECTOR_PATH = os.getenv("LT_VECTOR_PATH")
-
-BLOB_CONTAINER_NAME = os.getenv("LT_BLOB_CONTAINER_NAME")
-CONN_STR = os.getenv("LT_conn_str")
-
-IMAGE_EXTS = os.getenv("LT_IMAGE_EXTS")
-
-AOAI_ENDPOINT = os.getenv("LT_AOAI_ENDPOINT")
-AOAI_KEY = os.getenv("LT_AOAI_KEY")
-API_VERSION = os.getenv("LT_API_VERSION")
-EMBED_DEPLOY = os.getenv("LT_EMBED_DEPLOY")
-CHAT_DEPLOY = os.getenv("LT_CHAT_DEPLOY")
-
-COSMOS_URL = os.getenv("LT_COSMOS_URL")
-COSMOS_KEY = os.getenv("LT_COSMOS_KEY")
-COSMOS_DB = os.getenv("LT_COSMOS_DB")
-COSMOS_CONT = os.getenv("LT_COSMOS_CONT")
-
-DB_NAME = os.getenv("LT_DB_NAME")
-CONT_NAME = os.getenv("LT_CONT_NAME")
-
-MAX_THREADS = int(os.getenv("LT_MAX_THREADS"))
-MAX_RETRIES = int(os.getenv("LT_MAX_RETRIES"))
-INITIAL_BACKOFF = int(os.getenv("LT_INITIAL_BACKOFF"))
-EMBED_DIM = 500
-
-
-# def build_vectorstore(embeddings, COSMOS_URL, COSMOS_KEY,DB_NAME, CONT_NAME ):
-#     cosmos_client = CosmosClient(
-#         url=COSMOS_URL,
-#         credential=COSMOS_KEY,
-#         consistency_level=ConsistencyLevel.Eventual
-#     )
-
-#     # keep your existing policy helpers if your constructor requires them
-#     return AzureCosmosDBNoSqlVectorSearch(
-#         cosmos_client=cosmos_client,
-#         embedding=embeddings,
-#         database_name=DB_NAME,
-#         container_name=CONT_NAME,
-
-#         # if your version requires explicit policies, keep these as you already had:
-#         vector_embedding_policy={"vectorEmbeddings":[{"path":"/vector","dataType":"float32","dimensions":1536,"distanceFunction":"cosine"}]},
-#         indexing_policy={"includedPaths":[{"path":"/*"}],
-#                          "excludedPaths":[{"path":"/\"_etag\"/?"},{"path":"/vector/*"}],
-#                          "vectorIndexes":[{"path":"/vector","type":"quantizedFlat"}]},
-#         cosmos_container_properties={"partition_key":"/id"},
-#         cosmos_database_properties={}, # _db_props()
-
-#         # IMPORTANT: pass a dict, not a list
-#         vector_search_fields={
-#             "text_field": "text",
-#             "embedding_field": "vector",
-#             "metadata_field": "metadata"
-#         }
-#     )
-from azure.cosmos import CosmosClient, ConsistencyLevel, PartitionKey
-from langchain_azure_ai.vectorstores import AzureCosmosDBNoSqlVectorSearch
-
-
-def build_vectorstore(embeddings, COSMOS_URL, COSMOS_KEY, DB_NAME, CONT_NAME):
+def build_vectorstore(embeddings, COSMOS_URL, COSMOS_KEY,DB_NAME, CONT_NAME ):
+    
+    
     cosmos_client = CosmosClient(
         url=COSMOS_URL,
         credential=COSMOS_KEY,
         consistency_level=ConsistencyLevel.Eventual
     )
 
-    
-    test_vec = embeddings.embed_query("test")
-    dimensions = len(test_vec)
-
+    # keep your existing policy helpers if your constructor requires them
     return AzureCosmosDBNoSqlVectorSearch(
         cosmos_client=cosmos_client,
         embedding=embeddings,
         database_name=DB_NAME,
         container_name=CONT_NAME,
-        vector_embedding_policy={
-            "vectorEmbeddings": [
-                {
-                    "path": "/vector",
-                    "dataType": "float32",
-                    "dimensions": dimensions,
-                    "distanceFunction": "cosine",
-                }
-            ]
-        },
-        indexing_policy={
-            "includedPaths": [{"path": "/*"}],
-            "excludedPaths": [{"path": "/\"_etag\"/?"}],
-            "vectorIndexes": [{"path": "/vector", "type": "flat"}],
-        },
-        cosmos_container_properties={
-            "partition_key": PartitionKey(path="/id")
-        },
-        cosmos_database_properties={},
+
+        # if your version requires explicit policies, keep these as you already had:
+        vector_embedding_policy={"vectorEmbeddings":[{"path":"/vector","dataType":"float32","dimensions":1536,"distanceFunction":"cosine"}]},
+        indexing_policy={"includedPaths":[{"path":"/*"}],
+                         "excludedPaths":[{"path":"/\"_etag\"/?"},{"path":"/vector/*"}],
+                         "vectorIndexes":[{"path":"/vector","type":"quantizedFlat"}]},
+        cosmos_container_properties={"partition_key":"/id"},
+        cosmos_database_properties={}, # _db_props()
+
+        # IMPORTANT: pass a dict, not a list
         vector_search_fields={
-            "text_field": "page_content",
+            "text_field": "text",
             "embedding_field": "vector",
-            "metadata_field": "metadata",
+            "metadata_field": "metadata"
         }
     )
 
@@ -574,15 +430,7 @@ def upload_pdf_images_and_append_urls_parallel(
 
 # for processing images (dont run)
 def build_vectorstore2(embeddings, COSMOS_URL, COSMOS_KEY, DB_NAME_IMG, CONT_NAME_IMG):
-    # COSMOS_URL    = "https://rag-intertek.documents.azure.com:443/"
-    # COSMOS_KEY    = "AbhkomWJLtf8TR7odpABPqx1OrjlmCcpTXlKr9Vvp3RulZmFGollxQflIp3LLUAFt4XcMh70RbRxACDbuxyZLg=="
-    # DB_NAME     = "ragdatabase_new"
-    # # CONT_NAME   = "vectorstorecontainer_new"
-    # DB_NAME     = "ragdatabase_new_itk2"
-    # CONT_NAME   = "vectorstorecontainer_new_itk2"
     
-    # COSMOS_URL    = "https://csdb-intertek-esus-dev.documents.azure.com:443/"
-    # COSMOS_KEY    = "azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00MFDbK88ApotACDbODLFXA=="
     cosmos_client = CosmosClient(
         url=COSMOS_URL,
         credential=COSMOS_KEY,
@@ -760,10 +608,6 @@ def load_and_process_images(image_urls,MAX_THREADS,MAX_RETRIES, INITIAL_BACKOFF,
 
     print(f"\n[COMPLETE] Finished processing {total} images.\n")
     return docs
-
-
-
-
 
 
 def build_vision_message_v5(inputs):

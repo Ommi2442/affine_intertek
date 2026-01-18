@@ -7,10 +7,6 @@ import json
 from azure.cosmos import CosmosClient
 from langchain_openai import AzureChatOpenAI
 from openai import AzureOpenAI
-
-from utility.letter_report.deploymentV1.core import *
-
-
 import re
 import tempfile
 import shutil
@@ -24,14 +20,21 @@ from langchain_core.documents import Document
 import io
 import openpyxl
 import xlrd
-
+#from utils import *
+# from config import *
+# from ocr_image_processor import load_and_process_images
+# from trf_essential import *
+# from trf_utils import *
+# from core import *
+from utility.letter_report.deploymentV1.config import *
+from utility.letter_report.deploymentV1.ocr_image_processor import load_and_process_images
+from utility.letter_report.deploymentV1.trf_essential import *
+from utility.letter_report.deploymentV1.trf_utils import *
 from utility.letter_report.deploymentV1.core import *
 
 from azure.storage.blob import BlobClient
 from azure.core.exceptions import ResourceNotFoundError, AzureError
-# from templates import *
-from utility.letter_report.deploymentV1.trf_essential import *
-from utility.letter_report.deploymentV1.trf_utils import *
+
 import pandas as pd
 import math
 import copy
@@ -64,7 +67,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from azure.core.exceptions import HttpResponseError
 import time
 from langchain_community.callbacks import get_openai_callback
-from utility.letter_report.deploymentV1.ocr_image_processor import load_and_process_images
 
 import requests
 from openai import AzureOpenAI
@@ -810,44 +812,6 @@ from fuzzywuzzy import fuzz
 
 
 #START FROM HERE
-from dotenv import load_dotenv
-
-load_dotenv()
-import os
-
-AZURE_CONN_STRING = os.getenv("LT_AZURE_CONN_STRING")
-DB_NAME_IMG = os.getenv("LT_DB_NAME_IMG")
-CONT_NAME_IMG = os.getenv("LT_CONT_NAME_IMG")
-CHUNK_SIZE = int(os.getenv("LT_CHUNK_SIZE"))
-CHUNK_OVERLAP = int(os.getenv("LT_CHUNK_OVERLAP"))
-TOP_K = int(os.getenv("LT_TOP_K"))
-EMBED_DIM = int(os.getenv("LT_EMBED_DIM"))
-VECTOR_PATH = os.getenv("LT_VECTOR_PATH")
-
-BLOB_CONTAINER_NAME = os.getenv("LT_BLOB_CONTAINER_NAME")
-CONN_STR = os.getenv("LT_conn_str")
-
-IMAGE_EXTS = os.getenv("LT_IMAGE_EXTS")
-
-AOAI_ENDPOINT = os.getenv("LT_AOAI_ENDPOINT")
-AOAI_KEY = os.getenv("LT_AOAI_KEY")
-API_VERSION = os.getenv("LT_API_VERSION")
-EMBED_DEPLOY = os.getenv("LT_EMBED_DEPLOY")
-CHAT_DEPLOY = os.getenv("LT_CHAT_DEPLOY")
-
-COSMOS_URL = os.getenv("LT_COSMOS_URL")
-COSMOS_KEY = os.getenv("LT_COSMOS_KEY")
-COSMOS_DB = os.getenv("LT_COSMOS_DB")
-COSMOS_CONT = os.getenv("LT_COSMOS_CONT")
-
-DB_NAME = os.getenv("LT_DB_NAME")
-CONT_NAME = os.getenv("LT_CONT_NAME")
-
-MAX_THREADS = int(os.getenv("LT_MAX_THREADS"))
-MAX_RETRIES = int(os.getenv("LT_MAX_RETRIES"))
-INITIAL_BACKOFF = int(os.getenv("LT_INITIAL_BACKOFF"))
- 
-
 import fitz
 def contains_prepared_for_table(pdf_path):
     """
@@ -2640,13 +2604,13 @@ def letter_gen(blob_urls,
 
 # if __name__ == "__main__":
 
-    # blob_urls = [
-    #     # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Project%20Summary%20Report.pdf',
-    #         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-001_TRF.doc',
-    #         # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-002_TRF.doc',
-    #         # "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Lewco_CiS.pdf" ,
-    #         # "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01414060-2.pdf"
-    #     ]
+#     # blob_urls = [
+#     #     # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Project%20Summary%20Report.pdf',
+#     #         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-001_TRF.doc',
+#     #         # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-002_TRF.doc',
+#     #         # "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Lewco_CiS.pdf" ,
+#     #         # "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01414060-2.pdf"
+#     #     ]
 #     blob_urls =[
 #         #'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01390131-0.pdf',
 #     # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-002_TRF.doc',
@@ -2656,40 +2620,40 @@ def letter_gen(blob_urls,
 #     "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105581614MPK-001A_CR.docx"
 #     ]
 
-    # blob_urls_trf=[
-    #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Accepted_-_Gener8_LLC_-_Qu-01390131-0.msg',
-    #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/CFE-4LB011-E%20(1)%20(1).pdf',
-    #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/CFE_block_diagram.png',
-    #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf',
-    #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/PastedGraphic-1.png',
-    #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/celFE_isol.docx',
-    #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml',
-    #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Risk%20Assessment%20CFE_28nov.xlsx',
-    #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.docx',
-    #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/CellFE_Infinity_MTx_Operating_Manual.docx',
-    #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Cell_Gener8_Agent_Agreement_2018_1_.pdf',
-    #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf',
-    #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.docx',
-    #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01390131-0.pdf'
+#     blob_urls_trf=[
+#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Accepted_-_Gener8_LLC_-_Qu-01390131-0.msg',
+#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/CFE-4LB011-E%20(1)%20(1).pdf',
+#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/CFE_block_diagram.png',
+#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf',
+#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/PastedGraphic-1.png',
+#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/celFE_isol.docx',
+#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml',
+#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Risk%20Assessment%20CFE_28nov.xlsx',
+#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.docx',
+#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/CellFE_Infinity_MTx_Operating_Manual.docx',
+#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Cell_Gener8_Agent_Agreement_2018_1_.pdf',
+#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf',
+#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.docx',
+#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01390131-0.pdf'
 
-    # ]
+#     ]
 
 
 
-    # letter_gen(
-    #     blob_urls=blob_urls,
-    #     container_name=BLOB_CONTAINER_NAME,
-    #     src_files_dir="src_files",
-    #     src_files_trf="src_files_trf",
-    #     letter_json_path="letter.json",
-    #     letter_header_json_path="letter_header.json",
-    #     letter_template_docx="Letter_Template.docx",
-    #     output_letter_docx="letter.docx",
-    #     letter_json_path_output="letter_output.json",
-    #     letter_header_json_path_output="letter_header_output.json",
-    #     project_Id="PRJ_12345",
-    #     blob_urls_trf=blob_urls_trf# blob_urls + sourcefile urls_trf
-    # )
+#     letter_gen(
+#         blob_urls=blob_urls,
+#         container_name=BLOB_CONTAINER_NAME,
+#         src_files_dir="src_files",
+#         src_files_trf="src_files_trf",
+#         letter_json_path="letter.json",
+#         letter_header_json_path="letter_header.json",
+#         letter_template_docx="Letter_Template.docx",
+#         output_letter_docx="letter.docx",
+#         letter_json_path_output="letter_output.json",
+#         letter_header_json_path_output="letter_header_output.json",
+#         project_Id="PRJ_12345",
+#         blob_urls_trf=blob_urls_trf
+#     )
 
   
 

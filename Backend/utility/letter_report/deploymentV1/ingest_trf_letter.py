@@ -18,7 +18,13 @@ import xlrd
 from azure.storage.blob import BlobClient
 from azure.core.exceptions import ResourceNotFoundError, AzureError
 from utility.letter_report.deploymentV1.trf_essential import *
-from utility.letter_report.deploymentV1.trf_utils import *
+from utility.letter_report.deploymentV1.trf_utils_new import *
+from utility.letter_report.deploymentV1.config import AZURE_CONN_STRING, DB_NAME_IMG, CONT_NAME_IMG, CHUNK_SIZE, CHUNK_OVERLAP, TOP_K, EMBED_DIM, VECTOR_PATH, BLOB_CONTAINER_NAME, conn_str, IMAGE_EXTS, AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY, CHAT_DEPLOY, COSMOS_URL, COSMOS_KEY, COSMOS_DB, COSMOS_CONT, DB_NAME, CONT_NAME, MAX_THREADS, MAX_RETRIES, INITIAL_BACKOFF
+
+# from trf_essential import *
+# from trf_utils_new import *
+# from config import AZURE_CONN_STRING, DB_NAME_IMG, CONT_NAME_IMG, CHUNK_SIZE, CHUNK_OVERLAP, TOP_K, EMBED_DIM, VECTOR_PATH, BLOB_CONTAINER_NAME, conn_str, IMAGE_EXTS, AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY, CHAT_DEPLOY, COSMOS_URL, COSMOS_KEY, COSMOS_DB, COSMOS_CONT, DB_NAME, CONT_NAME, MAX_THREADS, MAX_RETRIES, INITIAL_BACKOFF
+
 import pandas as pd
 import math
 import copy
@@ -73,53 +79,26 @@ from openai import AzureOpenAI
 from dotenv import load_dotenv
 load_dotenv()
 
-AZURE_CONN_STRING = os.getenv("LT_AZURE_CONN_STRING")
-DB_NAME_IMG = os.getenv("LT_DB_NAME_IMG")
-CONT_NAME_IMG = os.getenv("LT_CONT_NAME_IMG")
-CHUNK_SIZE = int(os.getenv("LT_CHUNK_SIZE"))
-CHUNK_OVERLAP = int(os.getenv("LT_CHUNK_OVERLAP"))
-TOP_K = int(os.getenv("LT_TOP_K"))
-EMBED_DIM = int(os.getenv("LT_EMBED_DIM"))
-VECTOR_PATH = os.getenv("LT_VECTOR_PATH")
-
-BLOB_CONTAINER_NAME = os.getenv("LT_BLOB_CONTAINER_NAME")
-CONN_STR = os.getenv("LT_conn_str")
-
-IMAGE_EXTS = os.getenv("LT_IMAGE_EXTS")
-
-AOAI_ENDPOINT = os.getenv("LT_AOAI_ENDPOINT")
-AOAI_KEY = os.getenv("LT_AOAI_KEY")
-API_VERSION = os.getenv("LT_API_VERSION")
-EMBED_DEPLOY = os.getenv("LT_EMBED_DEPLOY")
-CHAT_DEPLOY = os.getenv("LT_CHAT_DEPLOY")
-# COSMOS_URL = os.getenv("LT_COSMOS_URL")
-# COSMOS_KEY = os.getenv("LT_COSMOS_KEY")
-COSMOS_DB = os.getenv("LT_COSMOS_DB")
-COSMOS_CONT = os.getenv("LT_COSMOS_CONT")
-DB_NAME = os.getenv("LT_DB_NAME")
-CONT_NAME = os.getenv("LT_CONT_NAME")
-MAX_THREADS = int(os.getenv("LT_MAX_THREADS"))
-MAX_RETRIES = int(os.getenv("LT_MAX_RETRIES"))
-INITIAL_BACKOFF = int(os.getenv("LT_INITIAL_BACKOFF"))
-# COSMOS_DB_TEXT  = os.getenv("COSMOS_DB_TEXT")
 COSMOS_CONT_TEXT = COSMOS_CONT
 COSMOS_DB_IMAGE  = DB_NAME_IMG
 COSMOS_CONT_IMAGE = CONT_NAME_IMG
 BLOB_CONT_NAME= os.getenv("BLOB_CONT_NAME")
-INITIAL_BACKOFF = int(os.getenv("LT_INITIAL_BACKOFF"))
 ENABLE_CAD_SCHEMATICS = os.getenv("ENABLE_CAD_SCHEMATICS")
-DOWNLOAD_DIR = os.getenv("DOWNLOAD_DIR")
 FLATTENED_DIR = os.getenv("FLATTENED_DIR")
 IMAGES_ROOT =os.getenv("IMAGES_ROOT")
-TRF_DOWNLOAD_DIR=os.getenv("TRF_DOWNLOAD_DIR")
+DOWNLOAD_DIR = os.getenv("TRF_DOWNLOAD_DIR")
 
-COSMOS_URL  = "https://rag-intertek.documents.azure.com:443/"
-COSMOS_KEY  = "AbhkomWJLtf8TR7odpABPqx1OrjlmCcpTXlKr9Vvp3RulZmFGollxQflIp3LLUAFt4XcMh70RbRxACDbuxyZLg=="
-COSMOS_DB_TEXT  = "ragdatabase_new_itk"
-COSMOS_CONT_TEXT = "vectorstorecontainer_new_itk"
+COSMOS_CONT_TEXT = os.getenv("COSMOS_CONT_TEXT")
+COSMOS_DB_TEXT=os.getenv("COSMOS_DB_TEXT")
+print("@@@@@@@@ ",DOWNLOAD_DIR)
+
 # ----------------------------------------------------------------------------------------
 # Azure OpenAI Client (shared for whole pipeline)
 # ----------------------------------------------------------------------------------------
+
+print("#################  ",COSMOS_CONT_TEXT,"\n",COSMOS_CONT_IMAGE,"\n",COSMOS_DB_TEXT,"\n",COSMOS_DB_IMAGE)
+import time;time.sleep(5)
+
 aoai_client = AzureOpenAI(
     api_key=AOAI_KEY,
     api_version=API_VERSION,
