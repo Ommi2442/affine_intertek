@@ -36,8 +36,6 @@ from utility.cdr_report.CDR_Pipelines.compiler import fill_excel_from_json
 from utility.letter_report.deploymentV1.letter_ingestor import main
 from utility.letter_report.deploymentV1.letter_generator import ingest_letter_pipeline
 from utility.cdr_report.CDR_Pipelines.configs import OUTPUT_EXCEL_AI_FINAL_PATH
-from projects.trf_task_manager import submit_trf_job
-from projects.trf_processor import process_trf_direct
 from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_cdr_local_json_to_blob_and_cosmos_cdr,save_local_xlsx_to_blob_and_cosmos_cdr
 import logging
 from pathlib import Path
@@ -390,11 +388,11 @@ async def delete_project(project_id: str):
                 detail="Project not found in Project container"
             )
         deleted_trf = delete_by_project_id(
-            COSMOS_DB_project_TRF_Container, project_id
+            COSMOS_DB_project_trf_Container, project_id
         )
 
         deleted_cdr = delete_by_project_id(
-            COSMOS_DB_project_CDR_Container, project_id
+            COSMOS_DB_project_cdr_Container, project_id
         )
 
         delete_blob_folder(f"Documents/{project_id}")
