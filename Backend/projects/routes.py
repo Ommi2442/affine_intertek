@@ -36,8 +36,8 @@ from utility.cdr_report.CDR_Pipelines.compiler import fill_excel_from_json
 from utility.letter_report.deploymentV1.letter_ingestor import main
 from utility.letter_report.deploymentV1.letter_generator import ingest_letter_pipeline
 from utility.cdr_report.CDR_Pipelines.configs import OUTPUT_EXCEL_AI_FINAL_PATH
-
-
+from projects.trf_task_manager import submit_trf_job
+from projects.trf_processor import process_trf_direct
 from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_cdr_local_json_to_blob_and_cosmos_cdr,save_local_xlsx_to_blob_and_cosmos_cdr
 import logging
 from pathlib import Path
@@ -45,6 +45,7 @@ import asyncio
 import threading
 import traceback
 from dotenv import load_dotenv
+
 load_dotenv()
 BLOB_CONTAINER_NAME = os.getenv("LT_BLOB_CONTAINER_NAME")
 
@@ -54,34 +55,25 @@ router = APIRouter()
 
 logger = logging.getLogger(__name__)
 
-# CONNECTION_STRING = os.getenv("AZURE_CONNECTION_STRING")
-CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net"
-QUEUE_CONN_STR = "DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net"
-# CONTAINER_NAME = os.getenv("AZURE_CONTAINER_NAME")
-CONTAINER_NAME = "stintertekesusdev-blob"
+CONNECTION_STRING = os.getenv("AZURE_CONNECTION_STRING")
+# CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=stintertekesusdev;AccountKey=YtSK+RvUKmkMRJDS8895whLoVFHf35yIMlBgOtqbXBvhdvPznk9fRbijQ5PeroYtn9AECeNL2uEw+AStV9/VUA==;EndpointSuffix=core.windows.net"
+CONTAINER_NAME = os.getenv("AZURE_CONTAINER_NAME")
+# CONTAINER_NAME = "stintertekesusdev-blob"
+
+COSMOS_DB_URI = os.getenv("COSMOS_DB_URI")
+COSMOS_DB_KEY = os.getenv("COSMOS_DB_KEY")
+COSMOS_DB_DATABASE = os.getenv("COSMOS_DB_DATABASE")
+COSMOS_DB_project_TRF_Container = os.getenv("COSMOS_DB_project_TRF_Container")
+
 client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
 database = client.get_database_client(COSMOS_DB_DATABASE)
 trf_container = database.get_container_client(COSMOS_DB_project_TRF_Container)
-# QUEUE_NAME = os.getenv("AZURE_QUEUE_NAME")
-QUEUE_NAME = "stintertekesus-dev-queue"
-CDR_QUEUE_NAME = "stintertekesus-dev-queue-cdr"
 
 
 BLOB_PREFIX = "Documents"   # top-level folder in blob
 
-blob_service = BlobServiceClient.from_connection_string(QUEUE_CONN_STR)
 container_client = blob_service.get_container_client(CONTAINER_NAME)
 
-
-queue_client = QueueClient.from_connection_string(
-    conn_str=QUEUE_CONN_STR,
-    queue_name=QUEUE_NAME
-)
-
-queue_client_cdr = QueueClient.from_connection_string(
-    conn_str=QUEUE_CONN_STR,
-    queue_name=CDR_QUEUE_NAME
-)
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -90,6 +82,7 @@ LOCAL_TRF_FOLDER = BASE_DIR / "data"
 TOTAL_PARTS = 5
 FILE_PREFIX = "pta_final_6_3_1_part"
 
+WORKER_URL = "http://127.0.0.1:9000/run-trf"
 
 @router.post("/create")
 async def create_project(payload: ProjectCreate):
@@ -871,30 +864,200 @@ def get_project_report_status(id: str):
 
 
 
+# @router.post("/generate-trf", status_code=202)
+# def generate_trf(projectId: str):
+#     """
+#     Triggers TRF generation asynchronously.
+#     Frontend must poll /trf-json-part for parts.
+#     """
+#     try:
+#         queue_client.send_message(json.dumps({
+#             "projectId": projectId,
+#             "action": "embed_generatetrf",
+#             "timestamp": datetime.utcnow().isoformat()
+#         }))
+
+#         return {
+#             "projectId": projectId,
+#             "status": "started",
+#             "message": "TRF generation triggered. Fetch parts progressively."
+#         }
+
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+# @router.post("/generate-trf", status_code=202)
+# def generate_trf(projectId: str):
+#     """
+#     Triggers TRF generation asynchronously.
+#     Frontend must poll /trf-json-part for parts.
+#     """
+#     try:
+#         project_id = event.get("projectId")
+#         if not project_id:
+#             print(" Missing projectId in queue message")
+#             return True
+
+#         print(f"📦 Processing project: {project_id}")
+
+#         query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
+#         docs = list(
+#             projects_container.query_items(
+#                 query=query,
+#                 enable_cross_partition_query=True,
+#             )
+#         )
+
+#         if not docs:
+#             print(f" Project not found: {project_id}")
+#             return True
+
+#         project_doc = docs[0]
+
+#         source_docs = project_doc.get("Source_Doc") or []
+
+#         blob_urls: list[str] = []
+#         for doc in source_docs:
+#             if isinstance(doc, dict) and "url" in doc:
+#                 blob_urls.append(doc["url"])
+#             else:
+#                 print(f" Skipping invalid Source_Doc entry: {doc}")
+
+#         if not blob_urls:
+#             print(f" No valid source documents for project {project_id}")
+#             return True
+        
+#         print(f"blob_urls source_docs------{blob_urls}")
+#         print(f" Files to embed: {len(blob_urls)}")
+
+#         user_name = project_doc.get("User_Name") or []
+#         first_name = user_name.split()[0]
+#         textDB_container_name = f"vectorstorecontainer_new_itk_text_{first_name}_{project_id}"
+#         imageDB_container_name = f"vectorstorecontainer_new_itk_image_{first_name}_{project_id}"
+
+#         # ---------------------------------------------------------
+#         # DEFINE CALLBACK (MUST BE BEFORE TRF CALL)
+#         # ---------------------------------------------------------
+#         def on_first_json_ready():
+#             print("🚀 EVENT: First TRF JSON has been generated")
+
+#             update_project_progress(
+#                 project_doc,
+#                 trf_stage="First TRF JSON Generated",
+#                 trf_percentage=30, 
+#                 trf_step="Initial TRF JSON ready",
+#                 trf_completed=False
+#             )
+        
+#         try:
+#             # Start at 10%
+#             update_project_progress(
+#                 project_doc,
+#                 trf_stage="Indexing in Progress",
+#                 trf_percentage=10,
+#                 trf_step="Starting embedding",
+#                 trf_completed=False
+#             )
+                    
+#             ingest_files_from_blob_urls_create_embeddings(DOWNLOAD_DIR, blob_urls, project_id, textDB_container_name, imageDB_container_name)
+
+#             print(f" Embeddings completed for project {project_id}")
+
+
+#             project_data_dir = BASE_DIR / "data" / project_id
+
+#             OUTPUT_JSON_PATH = DATA_DIR / project_id / "final_output.json"
+#             OUTPUT_DOCX_PATH = DATA_DIR / project_id / "final_output.docx"
+
+#             INPUT_FILES = DATA_DIR / "input_files"
+
+#             INPUT_JSON_PATHS = [
+#                 INPUT_FILES / filename
+#                 for filename in INPUT_JSON_FILENAMES
+#             ]
+
+
+#             run_trf_generation(
+#                 blob_urls,
+#                 textDB_container_name,
+#                 imageDB_container_name,
+#                 input_docx_path=INPUT_DOCX_PATH,
+#                 output_docx_path=OUTPUT_DOCX_PATH,
+#                 base_pta_path=BASE_PTA_JSON_PATH,
+#                 input_json_paths=INPUT_JSON_PATHS,
+#                 project_data_dir=project_data_dir,
+#                 batch_size=150,
+#                 final_output_path=OUTPUT_JSON_PATH,
+#                 cooldown_sec=15,
+#                 max_workers=10,
+#                 on_first_json_generated=on_first_json_ready,
+#             )
+
+
+#             print(f" TRF generation completed for project {project_id}")
+            
+#             save_local_json_to_blob_and_cosmos(str(OUTPUT_JSON_PATH),str(OUTPUT_DOCX_PATH),project_id=project_id,update_only=False)
+
+#             # 100% completed
+#             update_project_progress(
+#                 project_doc,
+#                 trf_stage="Completed",
+#                 trf_percentage=100,
+#                 trf_step="TRF generated and stored",
+#                 trf_completed=True
+#             )
+
+#             print(f" Saving TRF Report to the Blob")
+#             return {
+#                 "projectId": projectId,
+#                 "status": "started",
+#                 "message": "TRF generation triggered. Fetch parts progressively."
+#             }
+
+#         except Exception as e:
+#             print(f" Worker failed for project {project_id}: {e}")
+#             raise HTTPException(status_code=500, detail=str(e))
+
+#             update_project_progress(
+#                 project_doc,
+#                 trf_stage="Failed",
+#                 trf_percentage=0,
+#                 trf_step="Processing failed",
+#                 error=str(e),
+#                 trf_completed=False
+#             )
+
+#             return {
+#                 "projectId": projectId,
+#                 "status": "started",
+#                 "message": "TRF generation triggered. Fetch parts progressively."
+#             }
+
+
 @router.post("/generate-trf", status_code=202)
 def generate_trf(projectId: str):
-    """
-    Triggers TRF generation asynchronously.
-    Frontend must poll /trf-json-part for parts.
-    """
     try:
-        queue_client.send_message(json.dumps({
-            "projectId": projectId,
-            "action": "embed_generatetrf",
-            "timestamp": datetime.utcnow().isoformat()
-        }))
+        response = requests.post(
+            WORKER_URL,
+            json={"projectId": projectId},
+            timeout=3
+        )
+        response.raise_for_status()
 
         return {
             "projectId": projectId,
-            "status": "started",
-            "message": "TRF generation triggered. Fetch parts progressively."
+            "status": "dispatched",
+            "worker_port": 9000
         }
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Worker unavailable: {e}"
+        )
 
 
 @router.get("/report/status")

@@ -534,27 +534,26 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                 if ext == "docx":
                     pdf_path = os.path.splitext(local_path)[0] + ".pdf"
                     try:
-                        # ---------- WINDOWS (MS WORD via COM) ----------
                         system = platform.system().lower()
                         if system == "windows":
                             import pythoncom
                             from docx2pdf import convert
-                            pythoncom.CoInitialize()     # ✅ REQUIRED
+                            pythoncom.CoInitialize()
                             try:
                                 convert(local_path, pdf_path)
                             finally:
-                                pythoncom.CoUninitialize()  # ✅ REQUIRED
-                            return
+                                pythoncom.CoUninitialize()
                         else:
                             convert_docx_to_pdf_linux(local_path, pdf_path)
-                            # record converted pdf path
-                            converted_pdf_paths.append(pdf_path)
-                            if verbose:
-                                print(f"[INFO] Converted DOCX to PDF: {local_path} -> {pdf_path}")
+
+                        converted_pdf_paths.append(pdf_path)
+                        if verbose:
+                            print(f"[INFO] Converted DOCX to PDF: {local_path} -> {pdf_path}")
+
                     except Exception as e:
                         if verbose:
                             print(f"[WARN] docx->pdf conversion failed for {base_name}: {e}")
-                    # do NOT extract text for docx as per request
+
                     continue
 
                 # 🆕 DOC → convert to pdf (using your working helper) (windows)
