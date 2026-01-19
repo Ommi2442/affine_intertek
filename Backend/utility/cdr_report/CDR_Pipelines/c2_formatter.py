@@ -54,7 +54,7 @@ def create_s4_json(input_excel, output_json):
                                                 else None
                                             ),
                                     "similarity_score": None,
-                                    "text": c2_utils.clean_value(row.get("Guide Reference")),
+                                    "preview_text": c2_utils.clean_value(row.get("Guide Reference")),
                                     "url": c2_utils.clean_value(row.get("URL")),
                                 }
                             ],

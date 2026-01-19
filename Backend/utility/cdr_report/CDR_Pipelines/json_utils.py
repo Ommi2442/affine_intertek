@@ -341,7 +341,7 @@ def top_chunks_as_json(vs, question: str, k_search: int = 300, top_k: int = 5, t
             "filename": source,
             "page": int(page) if isinstance(page, (int, float)) else page,
             "similarity_score": float(score),
-            "text": (doc.page_content or "")[:text_chars],
+            "preview_text": (doc.page_content or "")[:text_chars],
         })
 
         if len(out) >= top_k:

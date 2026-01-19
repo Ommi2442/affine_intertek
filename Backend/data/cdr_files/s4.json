@@ -3,9 +3,9 @@
         {
             "start_cell": "A3",
             "row_type": "table_data",
-            "photo_no": "1",
+            "photo_no": "guide",
             "item_no": "1",
-            "name": "Channels",
+            "name": "Connection Cables",
             "manufacturer": null,
             "type_model": null,
             "technical_data": null,
@@ -21,11 +21,11 @@
             "image_support": null,
             "text_support": [
                 {
-                    "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
                     "page": 1,
                     "similarity_score": null,
-                    "text": "6 \nTouchscreen Controls ......................................................................................................................................... 18 \nSetting Up and Running a Protocol ................................ ................................ ................................  18 \n1) Load the MPA ............................................................................................................................................ 19 \n2) Select the desired protocol ....................................................................................................................... 21 \n3) Choose run settings ................................................................................................................................... 22 \nRunning the protocol ......................................................................................................................................... 25 \n14. \u201cStart\u201d Button \u2013 Pressing this button will start the transfection process by initiating the Infinity MTx\u2019s \nengagement with the Infinity MPA device and supplying pressure to each of the 8 sample chambers where \npressure supply has been enabled. Note: After pressing Start, the channels and pressures cannot be changed; \nensure processing parameters are set and run notes and additional information are provided where desired \nbefore pressing Start. Sample chambers will be processed from 1 to 8 in numerical o rder. When beginning \nthe transfection process, colored borders will appear around each channel to signify the status (below).  ...... 25 \nProtocol List View ............................................................................................................................................... 26 \n \n  Page 3 of 59 \nEditing Protocols ................................................................................................................................................ 27 \n Viewing run history ................................",
-                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/Citation_docs/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf"
+                    "preview_text": "........ ................................ ...............  12 \nProvided Materials ................................ ................................ ....................  Error! Bookmark not defined. \nEquipment ..................................................................................................................... Error! Bookmark not defined. \nOptimizer Kit and Contents ......................................................................................................................................... 7 \nSite Preparations ................................ ................................ ................................ ...............................  12 \nPhysical Space Requirements ....................................................................................... Error! Bookmark not defined. \nElectrical Requirements ............................................................................................................................................. 12 \nInfrastructure Requirements ..................................................................................................................................... 12 \nSafety and Environmental Considerations .................................................................. Error! Bookmark not defined. \nSetting Up the Infinity MTx ................................ ................................ ................................ .................  13 \nUnpacking and Inspecting ......................................................................................................................................... 13 \nAssembling and Connecting ...................................................................................................................................... 14 \nTesting Functionality .................................................................................................................................................. 14 \nUsing the Infinity MTx .......................",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
                 }
             ],
             "confidence": 80
@@ -33,9 +33,9 @@
         {
             "start_cell": "A4",
             "row_type": "table_data",
-            "photo_no": "1",
+            "photo_no": "guide",
             "item_no": "2",
-            "name": "Electrical supply",
+            "name": "Cooling Fan",
             "manufacturer": null,
             "type_model": null,
             "technical_data": null,
@@ -51,21 +51,21 @@
             "image_support": null,
             "text_support": [
                 {
-                    "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
                     "page": 1,
                     "similarity_score": null,
-                    "text": "........................... ................................ ................................ ..........................  12 \nPhysical space requirements ............................................................................................................................. 12 \nElectrical Requirements ..................................................................................................................................... 12 \nInfrastructure Requirements ............................................................................................................................. 12 \nSafety and environmental considerations ........................................................................................................ 12 \nSetting Up the Infinity MTx ................................ ................................ ................................ ........... 13 \nUnpacking and Inspecting .................................................................................................................................. 13 \nAssembling and Connecting the MTx ................................................................................................................ 14 \nTesting MTx Functionality .................................................................................................................................. 14 \nChapter 3: Using the Infinity MTx ......................................................................................... 15 \nSoftware user interface ...................................................................................................................................... 15 \n ............................................................................................................................................................................ 16 \nManaging users .................................................................................................................................................. 1",
-                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/Citation_docs/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf"
+                    "preview_text": "Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 1 of 50 \nCellFE Infinity MTx Operating Manual \n \n \n \nCellFE Biotech, Inc. \n980 Atlantic Avenue, Suite 110 \nAlameda, CA  94501-1098 \n(512)-914-2840 \nsupport@cellfebiotech.com \nhttps://www.cellfebiotech.com \n\u00a9 2023, CellFE Biotech, Inc. \n \n \n \n \nFor Research Use Only. Not for use in diagnostic procedures. \nPlaceholder: Image of Infinity MTx \n Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 2 of 50 \n \nTable of Contents \nChapter 1. Product Information ................................ ................................ ................................ .. 5 \nIntroduction ................................ ................................ ....................  Error! Bookmark not defined. \nProduct Description ................................ ................................ ................................ ....................  5 \nThe Infinity MTx ................................ ................................ ........................  Error! Bookmark not defined. \nThe Infinity MPA ................................ ................................ .......................  Error! Bookmark not defined. \nKey Features and Benefits ................................ ................................ ................................ ..........  5 \nSystem Components ................................ ................................ ................................ ...................  8 \nFront Panel ................................ ................................ ................................ ................................ ..........  8 \nBack Panel ................................ ................................ ................................ ................................ ...........  9 \nInfinity MPA ................................ ................................ ................................ ................................ .......  10 \nChapter 2. Upon Receiving the Infinity MTx ........................",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
                 }
             ],
-            "confidence": 95
+            "confidence": 85
         },
         {
             "start_cell": "A5",
             "row_type": "table_data",
-            "photo_no": "1",
+            "photo_no": "guide",
             "item_no": "3",
-            "name": "Infinity MPA",
+            "name": "Electrical Requirements",
             "manufacturer": null,
             "type_model": null,
             "technical_data": null,
@@ -81,11 +81,11 @@
             "image_support": null,
             "text_support": [
                 {
-                    "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
                     "page": 1,
                     "similarity_score": null,
-                    "text": "Page 1 of 59 \nCellFE Infinity MTx Operating Manual \n \n \n \nCellFE Biotech, Inc. \n1000 Atlantic Avenue, Suite 104 \nAlameda, CA  94501-1098 \n(512)-914-2840 \nsupport@cellfebiotech.com \nhttps://www.cellfebiotech.com \n\u00a9 2023, CellFE Biotech, Inc. \n \n \n \n \nFor Research Use Only. Not for use in diagnostic procedures. \nPlaceholder: Image of Infinity MTx \n \n  Page 2 of 59 \n \nTable of Contents \nChapter 1. Product Information ............................................................................................. 5 \nProduct Description ............................................................................................................... 5 \nKey Benefits .......................................................................................................................... 5 \nProduct Contents ................................ ................................ ................................ ........................... 6 \nSystem contents ................................................................................................................................................... 6 \nOptimizer kit contents ......................................................................................................................................... 7 \nSystem Components .............................................................................................................. 7 \nFront Panel ................................ ................................ ................................ ................................ ....8 \nBack Panel ................................ ................................ ................................ ................................ .....9 \nInfinity MPA ................................ ................................ ................................ ................................ . 11 \nChapter 2. Upon Receiving the Infinity MTx ......................................................................... 12 \nSite Preparations .....",
-                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/Citation_docs/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf"
+                    "preview_text": "........ ................................ ...............  12 \nProvided Materials ................................ ................................ ....................  Error! Bookmark not defined. \nEquipment ..................................................................................................................... Error! Bookmark not defined. \nOptimizer Kit and Contents ......................................................................................................................................... 7 \nSite Preparations ................................ ................................ ................................ ...............................  12 \nPhysical Space Requirements ....................................................................................... Error! Bookmark not defined. \nElectrical Requirements ............................................................................................................................................. 12 \nInfrastructure Requirements ..................................................................................................................................... 12 \nSafety and Environmental Considerations .................................................................. Error! Bookmark not defined. \nSetting Up the Infinity MTx ................................ ................................ ................................ .................  13 \nUnpacking and Inspecting ......................................................................................................................................... 13 \nAssembling and Connecting ...................................................................................................................................... 14 \nTesting Functionality .................................................................................................................................................. 14 \nUsing the Infinity MTx .......................",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
                 }
             ],
             "confidence": 90
@@ -93,9 +93,9 @@
         {
             "start_cell": "A6",
             "row_type": "table_data",
-            "photo_no": "1",
+            "photo_no": "guide",
             "item_no": "4",
-            "name": "Pressure Supply",
+            "name": "Fuses",
             "manufacturer": null,
             "type_model": null,
             "technical_data": null,
@@ -111,21 +111,141 @@
             "image_support": null,
             "text_support": [
                 {
-                    "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
                     "page": 1,
                     "similarity_score": null,
-                    "text": "6 \nTouchscreen Controls ......................................................................................................................................... 18 \nSetting Up and Running a Protocol ................................ ................................ ................................  18 \n1) Load the MPA ............................................................................................................................................ 19 \n2) Select the desired protocol ....................................................................................................................... 21 \n3) Choose run settings ................................................................................................................................... 22 \nRunning the protocol ......................................................................................................................................... 25 \n14. \u201cStart\u201d Button \u2013 Pressing this button will start the transfection process by initiating the Infinity MTx\u2019s \nengagement with the Infinity MPA device and supplying pressure to each of the 8 sample chambers where \npressure supply has been enabled. Note: After pressing Start, the channels and pressures cannot be changed; \nensure processing parameters are set and run notes and additional information are provided where desired \nbefore pressing Start. Sample chambers will be processed from 1 to 8 in numerical o rder. When beginning \nthe transfection process, colored borders will appear around each channel to signify the status (below).  ...... 25 \nProtocol List View ............................................................................................................................................... 26 \n \n  Page 3 of 59 \nEditing Protocols ................................................................................................................................................ 27 \n Viewing run history ................................",
-                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/Citation_docs/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf"
+                    "preview_text": "Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 1 of 50 \nCellFE Infinity MTx Operating Manual \n \n \n \nCellFE Biotech, Inc. \n980 Atlantic Avenue, Suite 110 \nAlameda, CA  94501-1098 \n(512)-914-2840 \nsupport@cellfebiotech.com \nhttps://www.cellfebiotech.com \n\u00a9 2023, CellFE Biotech, Inc. \n \n \n \n \nFor Research Use Only. Not for use in diagnostic procedures. \nPlaceholder: Image of Infinity MTx \n Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 2 of 50 \n \nTable of Contents \nChapter 1. Product Information ................................ ................................ ................................ .. 5 \nIntroduction ................................ ................................ ....................  Error! Bookmark not defined. \nProduct Description ................................ ................................ ................................ ....................  5 \nThe Infinity MTx ................................ ................................ ........................  Error! Bookmark not defined. \nThe Infinity MPA ................................ ................................ .......................  Error! Bookmark not defined. \nKey Features and Benefits ................................ ................................ ................................ ..........  5 \nSystem Components ................................ ................................ ................................ ...................  8 \nFront Panel ................................ ................................ ................................ ................................ ..........  8 \nBack Panel ................................ ................................ ................................ ................................ ...........  9 \nInfinity MPA ................................ ................................ ................................ ................................ .......  10 \nChapter 2. Upon Receiving the Infinity MTx ........................",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
+                }
+            ],
+            "confidence": 95
+        },
+        {
+            "start_cell": "A7",
+            "row_type": "table_data",
+            "photo_no": "guide",
+            "item_no": "5",
+            "name": "Power Cord",
+            "manufacturer": null,
+            "type_model": null,
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": false,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
+                    "page": 1,
+                    "similarity_score": null,
+                    "preview_text": "Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 1 of 50 \nCellFE Infinity MTx Operating Manual \n \n \n \nCellFE Biotech, Inc. \n980 Atlantic Avenue, Suite 110 \nAlameda, CA  94501-1098 \n(512)-914-2840 \nsupport@cellfebiotech.com \nhttps://www.cellfebiotech.com \n\u00a9 2023, CellFE Biotech, Inc. \n \n \n \n \nFor Research Use Only. Not for use in diagnostic procedures. \nPlaceholder: Image of Infinity MTx \n Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 2 of 50 \n \nTable of Contents \nChapter 1. Product Information ................................ ................................ ................................ .. 5 \nIntroduction ................................ ................................ ....................  Error! Bookmark not defined. \nProduct Description ................................ ................................ ................................ ....................  5 \nThe Infinity MTx ................................ ................................ ........................  Error! Bookmark not defined. \nThe Infinity MPA ................................ ................................ .......................  Error! Bookmark not defined. \nKey Features and Benefits ................................ ................................ ................................ ..........  5 \nSystem Components ................................ ................................ ................................ ...................  8 \nFront Panel ................................ ................................ ................................ ................................ ..........  8 \nBack Panel ................................ ................................ ................................ ................................ ...........  9 \nInfinity MPA ................................ ................................ ................................ ................................ .......  10 \nChapter 2. Upon Receiving the Infinity MTx ........................",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
+                }
+            ],
+            "confidence": 95
+        },
+        {
+            "start_cell": "A8",
+            "row_type": "table_data",
+            "photo_no": "guide",
+            "item_no": "6",
+            "name": "Power Supply",
+            "manufacturer": null,
+            "type_model": null,
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": false,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
+                    "page": 1,
+                    "similarity_score": null,
+                    "preview_text": "........ ................................ ...............  12 \nProvided Materials ................................ ................................ ....................  Error! Bookmark not defined. \nEquipment ..................................................................................................................... Error! Bookmark not defined. \nOptimizer Kit and Contents ......................................................................................................................................... 7 \nSite Preparations ................................ ................................ ................................ ...............................  12 \nPhysical Space Requirements ....................................................................................... Error! Bookmark not defined. \nElectrical Requirements ............................................................................................................................................. 12 \nInfrastructure Requirements ..................................................................................................................................... 12 \nSafety and Environmental Considerations .................................................................. Error! Bookmark not defined. \nSetting Up the Infinity MTx ................................ ................................ ................................ .................  13 \nUnpacking and Inspecting ......................................................................................................................................... 13 \nAssembling and Connecting ...................................................................................................................................... 14 \nTesting Functionality .................................................................................................................................................. 14 \nUsing the Infinity MTx .......................",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
+                }
+            ],
+            "confidence": 95
+        },
+        {
+            "start_cell": "A9",
+            "row_type": "table_data",
+            "photo_no": "guide",
+            "item_no": "7",
+            "name": "Power Switch",
+            "manufacturer": null,
+            "type_model": null,
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": false,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
+                    "page": 1,
+                    "similarity_score": null,
+                    "preview_text": "Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 1 of 50 \nCellFE Infinity MTx Operating Manual \n \n \n \nCellFE Biotech, Inc. \n980 Atlantic Avenue, Suite 110 \nAlameda, CA  94501-1098 \n(512)-914-2840 \nsupport@cellfebiotech.com \nhttps://www.cellfebiotech.com \n\u00a9 2023, CellFE Biotech, Inc. \n \n \n \n \nFor Research Use Only. Not for use in diagnostic procedures. \nPlaceholder: Image of Infinity MTx \n Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 2 of 50 \n \nTable of Contents \nChapter 1. Product Information ................................ ................................ ................................ .. 5 \nIntroduction ................................ ................................ ....................  Error! Bookmark not defined. \nProduct Description ................................ ................................ ................................ ....................  5 \nThe Infinity MTx ................................ ................................ ........................  Error! Bookmark not defined. \nThe Infinity MPA ................................ ................................ .......................  Error! Bookmark not defined. \nKey Features and Benefits ................................ ................................ ................................ ..........  5 \nSystem Components ................................ ................................ ................................ ...................  8 \nFront Panel ................................ ................................ ................................ ................................ ..........  8 \nBack Panel ................................ ................................ ................................ ................................ ...........  9 \nInfinity MPA ................................ ................................ ................................ ................................ .......  10 \nChapter 2. Upon Receiving the Infinity MTx ........................",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
+                }
+            ],
+            "confidence": 95
+        },
+        {
+            "start_cell": "A10",
+            "row_type": "table_data",
+            "photo_no": "guide",
+            "item_no": "8",
+            "name": "Sample Input Port",
+            "manufacturer": null,
+            "type_model": null,
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": false,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
+                    "page": 1,
+                    "similarity_score": null,
+                    "preview_text": "Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 1 of 50 \nCellFE Infinity MTx Operating Manual \n \n \n \nCellFE Biotech, Inc. \n980 Atlantic Avenue, Suite 110 \nAlameda, CA  94501-1098 \n(512)-914-2840 \nsupport@cellfebiotech.com \nhttps://www.cellfebiotech.com \n\u00a9 2023, CellFE Biotech, Inc. \n \n \n \n \nFor Research Use Only. Not for use in diagnostic procedures. \nPlaceholder: Image of Infinity MTx \n Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 2 of 50 \n \nTable of Contents \nChapter 1. Product Information ................................ ................................ ................................ .. 5 \nIntroduction ................................ ................................ ....................  Error! Bookmark not defined. \nProduct Description ................................ ................................ ................................ ....................  5 \nThe Infinity MTx ................................ ................................ ........................  Error! Bookmark not defined. \nThe Infinity MPA ................................ ................................ .......................  Error! Bookmark not defined. \nKey Features and Benefits ................................ ................................ ................................ ..........  5 \nSystem Components ................................ ................................ ................................ ...................  8 \nFront Panel ................................ ................................ ................................ ................................ ..........  8 \nBack Panel ................................ ................................ ................................ ................................ ...........  9 \nInfinity MPA ................................ ................................ ................................ ................................ .......  10 \nChapter 2. Upon Receiving the Infinity MTx ........................",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
                 }
             ],
             "confidence": 80
         },
         {
-            "start_cell": "A7",
+            "start_cell": "A11",
             "row_type": "table_data",
-            "photo_no": "1",
-            "item_no": "5",
-            "name": "Sample Chambers",
+            "photo_no": "guide",
+            "item_no": "9",
+            "name": "Sample Output Port",
             "manufacturer": null,
             "type_model": null,
             "technical_data": null,
@@ -141,11 +261,11 @@
             "image_support": null,
             "text_support": [
                 {
-                    "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
                     "page": 1,
                     "similarity_score": null,
-                    "text": "6 \nTouchscreen Controls ......................................................................................................................................... 18 \nSetting Up and Running a Protocol ................................ ................................ ................................  18 \n1) Load the MPA ............................................................................................................................................ 19 \n2) Select the desired protocol ....................................................................................................................... 21 \n3) Choose run settings ................................................................................................................................... 22 \nRunning the protocol ......................................................................................................................................... 25 \n14. \u201cStart\u201d Button \u2013 Pressing this button will start the transfection process by initiating the Infinity MTx\u2019s \nengagement with the Infinity MPA device and supplying pressure to each of the 8 sample chambers where \npressure supply has been enabled. Note: After pressing Start, the channels and pressures cannot be changed; \nensure processing parameters are set and run notes and additional information are provided where desired \nbefore pressing Start. Sample chambers will be processed from 1 to 8 in numerical o rder. When beginning \nthe transfection process, colored borders will appear around each channel to signify the status (below).  ...... 25 \nProtocol List View ............................................................................................................................................... 26 \n \n  Page 3 of 59 \nEditing Protocols ................................................................................................................................................ 27 \n Viewing run history ................................",
-                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/Citation_docs/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf"
+                    "preview_text": "Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 1 of 50 \nCellFE Infinity MTx Operating Manual \n \n \n \nCellFE Biotech, Inc. \n980 Atlantic Avenue, Suite 110 \nAlameda, CA  94501-1098 \n(512)-914-2840 \nsupport@cellfebiotech.com \nhttps://www.cellfebiotech.com \n\u00a9 2023, CellFE Biotech, Inc. \n \n \n \n \nFor Research Use Only. Not for use in diagnostic procedures. \nPlaceholder: Image of Infinity MTx \n Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 2 of 50 \n \nTable of Contents \nChapter 1. Product Information ................................ ................................ ................................ .. 5 \nIntroduction ................................ ................................ ....................  Error! Bookmark not defined. \nProduct Description ................................ ................................ ................................ ....................  5 \nThe Infinity MTx ................................ ................................ ........................  Error! Bookmark not defined. \nThe Infinity MPA ................................ ................................ .......................  Error! Bookmark not defined. \nKey Features and Benefits ................................ ................................ ................................ ..........  5 \nSystem Components ................................ ................................ ................................ ...................  8 \nFront Panel ................................ ................................ ................................ ................................ ..........  8 \nBack Panel ................................ ................................ ................................ ................................ ...........  9 \nInfinity MPA ................................ ................................ ................................ ................................ .......  10 \nChapter 2. Upon Receiving the Infinity MTx ........................",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
                 }
             ],
             "confidence": 80
