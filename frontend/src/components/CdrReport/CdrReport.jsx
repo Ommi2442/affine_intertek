@@ -261,14 +261,6 @@ const CdrReport = forwardRef(
               )}
 
               <Divider sx={{ my: 2 }} />
-
-              <Button
-                size="small"
-                variant="outlined"
-                onClick={() => idb_set(storageKey, fullJson, STORES.CDR)}
-              >
-                Save draft
-              </Button>
             </AccordionDetails>
           </Accordion>
         ))}
