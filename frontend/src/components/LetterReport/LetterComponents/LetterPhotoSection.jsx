@@ -8,13 +8,15 @@ import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 const LetterPhotoSection = ({ item, editMode, onChange }) => {
   if (!item || item.is_photo !== true) return null;
 
-  const photos = Array.isArray(item.marking_urls) ? item.marking_urls : [];
+  const photos = Array.isArray(item.nonConforming_urls)
+    ? item.nonConforming_urls
+    : [];
 
   /* -------- ADD PHOTO -------- */
   const addPhoto = (file) => {
     const url = URL.createObjectURL(file);
 
-    item.marking_urls = [...photos, { id: Date.now(), url }];
+    item.nonConforming_urls = [...photos, { id: Date.now(), url }];
     onChange?.();
   };
 
@@ -23,13 +25,13 @@ const LetterPhotoSection = ({ item, editMode, onChange }) => {
     const url = URL.createObjectURL(file);
     const next = [...photos];
     next[index] = { ...next[index], url };
-    item.marking_urls = next;
+    item.nonConforming_urls = next;
     onChange?.();
   };
 
   /* -------- DELETE PHOTO -------- */
   const deletePhoto = (index) => {
-    item.marking_urls = photos.filter((_, i) => i !== index);
+    item.nonConforming_urls = photos.filter((_, i) => i !== index);
     onChange?.();
   };
 

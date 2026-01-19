@@ -39,9 +39,9 @@ const UploadLetterFilePage = () => {
   const cdrInputRef = useRef(null);
 
   /* ---------------- STATIC FILE ---------------- */
-  const files = {
-    standardDocument: { name: 'IEC_61010-1-2010.pdf' },
-  };
+  // const files = {
+  //   standardDocument: { name: 'IEC_61010-1-2010.pdf' },
+  // };
 
   /* ---------------- STATE ---------------- */
   const [uploadedFiles, setUploadedFiles] = useState({
@@ -182,7 +182,13 @@ const UploadLetterFilePage = () => {
       <Box>
         <Typography fontWeight={600}>{label}</Typography>
         {helperText && (
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'red',
+              fontWeight: 600,
+            }}
+          >
             ({helperText})
           </Typography>
         )}
@@ -256,15 +262,15 @@ const UploadLetterFilePage = () => {
             'CDR Filled:',
             uploadedFiles.cdr,
             () => cdrInputRef.current.click(),
-            'xlsx'
+            'xlsx(optional)'
           )}
-          {renderFileRow(
+          {/* {renderFileRow(
             'Standard Document:',
             files.standardDocument.name,
             null,
             '',
             true
-          )}
+          )} */}
         </Stack>
 
         <input
@@ -286,11 +292,43 @@ const UploadLetterFilePage = () => {
           <Button
             variant="contained"
             sx={{ px: 6 }}
-            onClick={() =>
-              dispatch(
-                generateLetterRequest({ projectId, trfBlobUrl, cdrBlobUrl })
-              )
-            }
+            onClick={async () => {
+              if (!projectId) {
+                setErrorToast({
+                  open: true,
+                  message: 'Project ID not found. Cannot generate Letter.',
+                });
+                return;
+              }
+
+              try {
+                const res = await triggerGenerateLetterApi(
+                  projectId,
+                  trfBlobUrl,
+                  cdrBlobUrl
+                );
+
+                if (res?.data) {
+                  //  Navigate to Letter report page after backend generation
+                  navigate('/report-page/letter', {
+                    state: {
+                      standard,
+                      projectId,
+                      clientName,
+                      product,
+                    },
+                  });
+                } else {
+                  throw new Error('Letter generation failed');
+                }
+              } catch (err) {
+                console.error('Letter generation failed:', err);
+                setErrorToast({
+                  open: true,
+                  message: 'Failed to generate Letter report',
+                });
+              }
+            }}
           >
             Generate Letter
           </Button>
