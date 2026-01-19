@@ -47,7 +47,7 @@ def build_product_section_items(product_info: dict, trf_blob_url):
                                     "filename": f"final_output_{configs._runtime.project_id}.docx",
                                     "page": "7" if field == "Description" else "2",
                                     "similarity_score": None,
-                                    "text": None,
+                                    "preview_text": None,
                                     "url":  trf_blob_url
                                 }
                             ],

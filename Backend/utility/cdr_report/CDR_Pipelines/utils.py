@@ -46,7 +46,17 @@ import time
 import random
 from openai import RateLimitError
 
-_EMBED_SEMAPHORE = threading.Semaphore(1)  # 👈 HARD GATE
+import random, time, logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from threading import Semaphore, Lock
+from openai import RateLimitError
+from azure.core.exceptions import ServiceResponseError, ServiceRequestError
+from azure.cosmos.exceptions import CosmosHttpResponseError, CosmosResourceNotFoundError
+# logging.basicConfig(level=logging.INFO)
+# logger = logging.getLogger(__name__)
+
+_EMBED_SEMAPHORE = Semaphore(5)  # Limit concurrent embeddings
+_VS_LOCK = Lock()  # Protect vector store if not thread-safe
 
 from utility.cdr_report.CDR_Pipelines.configs import (
     container,
@@ -895,33 +905,66 @@ def load_and_split_pdfs_text(pdf_paths, extracted_texts=None):
 #             idx_start, size = f.result()
 #             print(f"✅ Finished batch starting at {idx_start}, size={size}")
 
-def add_batch(batch, idx_start, vs, max_retries=5):
-    print(f"Ingesting batch starting at {idx_start} (size={len(batch)})")
+def _compute_wait(attempt: int, cap: float = 30.0) -> float:
+    return min((2 ** attempt) + random.random(), cap)
 
+def add_batch(batch, idx_start, vs, max_retries=7):
+    # logger.info(f"Ingesting batch starting at {idx_start} (size={len(batch)})")
+    last_err = None
+    
     for attempt in range(max_retries):
         try:
-            with _EMBED_SEMAPHORE:   # 🔒 critical line
-                vs.add_documents(batch)
-
+            with _EMBED_SEMAPHORE:
+                with _VS_LOCK:  # Add if vs is not thread-safe
+                    vs.add_documents(batch)
             return idx_start, len(batch)
-
-        except RateLimitError:
-            wait = min(2 ** attempt + random.random(), 30)
-            print(f"⚠️ Rate limited at batch {idx_start}, retrying in {wait:.1f}s")
+        
+        except RateLimitError as e:
+            last_err = e
+            wait = _compute_wait(attempt)
+            # logger.warning(f"OpenAI rate limited at batch {idx_start}, retrying in {wait:.1f}s")
             time.sleep(wait)
+        
+        except CosmosHttpResponseError as e:
+            last_err = e
+            retry_after_ms = e.headers.get("x-ms-retry-after-ms")
+            wait = min(float(retry_after_ms) / 1000.0, 60.0) if retry_after_ms else _compute_wait(attempt, 60.0)
+            # logger.warning(f"CosmosHttpResponseError (status={e.status_code}) at batch {idx_start}, retrying in {wait:.1f}s")
+            time.sleep(wait)
+        
+        except (ServiceResponseError, ServiceRequestError, TimeoutError, ConnectionError, OSError, CosmosResourceNotFoundError) as e:
+            last_err = e
+            wait = _compute_wait(attempt, 60.0)
+            # logger.warning(f"Network error at batch {idx_start}: {type(e).__name__}. Retrying in {wait:.1f}s")
+            time.sleep(wait)
+        
+        except ValueError as e:
+            if any(kw in str(e).lower() for kw in ["token", "length", "size"]):
+                # logger.error(f"Skipping batch {idx_start} due to validation error: {e}")
+                return idx_start, 0  # Skip this batch
+            raise
+    
+    raise RuntimeError(f"Failed batch at {idx_start} after {max_retries} retries. Last error: {last_err}")
 
-    raise RuntimeError(f"❌ Failed batch at {idx_start}")
-
-def ingest_chunks(vs, chunks, max_workers=5, batch_size=10):
+def ingest_chunks(vs, chunks, max_workers=5, batch_size=10, fail_threshold=0.3):
     futures = []
+    failed = []
+    
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         for i in range(0, len(chunks), batch_size):
             batch = chunks[i:i + batch_size]
             futures.append(executor.submit(add_batch, batch, i, vs))
-
+        
         for f in as_completed(futures):
-            idx_start, size = f.result()
-            print(f"✅ Finished batch starting at {idx_start}, size={size}")
+            try:
+                idx_start, size = f.result()
+                # logger.info(f"✅ Finished batch starting at {idx_start}, size={size}")
+            except Exception as e:
+                # logger.error(f"❌ Batch failed: {e}")
+                failed.append(e)
+    
+    if failed and len(failed) / len(futures) > fail_threshold:
+        raise RuntimeError(f"{len(failed)}/{len(futures)} batches failed (>{fail_threshold*100}% threshold)")
 
 
 from azure.storage.blob import BlobServiceClient

@@ -45,7 +45,7 @@ def build_text_support_list(sheet_name, source_doc):
             "filename": filename,
             "page": filename,   # ← your expected behavior
             "similarity_score": None,
-            "text": None,
+            "preview_text": None,
             "url": url
         })
 
@@ -222,6 +222,10 @@ def run_formatter():
         items_meta.append(item)
         current_row_meta += ROW_GAP
 
+    # Continue photo numbering after matched photos
+    max_photo_no = int(matched_df["photo_no"].max())
+    next_photo_no = max_photo_no + 1
+
     # ---------------- ADD UNMATCHED IMAGES ----------------
 
     for img_url in sorted(remaining_images):
@@ -231,7 +235,10 @@ def run_formatter():
         items_meta.append({
             "question_cell": question_cell,
             "prefix": "Product",
-            "field": image_name_no_ext(img_url),   # filename without extension
+            "field": build_field_text(
+                next_photo_no,
+                image_name_no_ext(img_url)  # used as caption-like text
+            ),
             "answer_cell": answer_cell,
             "photo_path": img_url,
             "field_merged": False,
@@ -244,6 +251,7 @@ def run_formatter():
             "accuracy_level": False
         })
 
+        next_photo_no += 1
         current_row_meta += ROW_GAP
 
 

@@ -92,7 +92,7 @@ def rag_multimodal_retrieve(
             {
                 "filename": d.metadata.get("source_file"),
                 "page": d.metadata.get("page"),
-                "text": d.page_content,
+                "preview_text": d.page_content,
                 "similarity_score": d.metadata.get("score"),
             }
             for d in text_chunks

@@ -149,20 +149,25 @@ def deduplicate_components(df):
     def assign_photo_no(image_id):
         nonlocal photo_counter
 
-        # ---- HANDLE NO PHOTO CASES ----
-        if (
-            image_id is None
-            or (isinstance(image_id, float) and pd.isna(image_id))
-            or (isinstance(image_id, str) and image_id.strip().lower() in {"", "nan", "none"})
-        ):
-            return "guide"   # or "" / None depending on your requirement
+        if not image_id:
+            return "guide"
 
-        # ---- ASSIGN PHOTO NUMBER ----
+        img = str(image_id).strip().lower()
+
+        # ----- VALID IMAGE CHECK -----
+        is_http_image = img.startswith(("http://", "https://"))
+        is_base64_image = img.startswith("data:image/")
+
+        if not (is_http_image or is_base64_image):
+            return "guide"
+
+        # ----- ASSIGN CONTINUOUS PHOTO NO -----
         if image_id not in photo_map:
             photo_map[image_id] = photo_counter
             photo_counter += 1
 
         return photo_map[image_id]
+ 
 
     deduped_df["photo_no"] = deduped_df["_image_id"].apply(assign_photo_no)
     
