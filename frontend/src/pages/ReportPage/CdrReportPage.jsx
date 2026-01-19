@@ -77,7 +77,7 @@ const CdrReportPage = () => {
     const load = async () => {
       setLoading(true);
 
-      // 1️⃣ Always try IndexedDB first
+      // Always try IndexedDB first
       const cached = await idb_get(storageKey, STORES.CDR);
       if (cached) {
         setCdrJson(cached);
@@ -85,7 +85,14 @@ const CdrReportPage = () => {
         return;
       }
 
-      // 2️⃣ Only call backend if this is NOT a refresh
+      //  HARD REFRESH + no cache → do NOT wipe UI or call backend yet
+      if (isHardRefresh) {
+        console.warn('Hard refresh but no CDR cache found → holding state');
+        setLoading(false);
+        return;
+      }
+
+      // Only call backend if this is NOT a refresh
       if (!isHardRefresh) {
         const res = await triggerGenerateCdrApi(projectId);
         if (res?.data) {
@@ -175,6 +182,7 @@ const CdrReportPage = () => {
               cdrFinalised={finalised}
               onBookmarkClick={handleBookmarkFromChild}
               onConfidenceChange={() => setConfidenceTick((v) => v + 1)}
+              isHardRefresh={isHardRefresh}
             />
           )}
         </Box>
