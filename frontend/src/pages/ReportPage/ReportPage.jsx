@@ -415,8 +415,15 @@ const ReportPage = () => {
   };
 
   const handleCitationLinkClick = (filename, page, text, blob_url) => {
-    // ---- XLSX → DOWNLOAD ----
-    if (filename?.toLowerCase().endsWith('.xlsx')) {
+    const lower = filename?.toLowerCase() || '';
+
+    // ---- XLSX / EML → DOWNLOAD ----
+    if (lower.endsWith('.xlsx') || lower.endsWith('.eml')) {
+      if (!blob_url) {
+        console.error('Missing blob_url for download file:', filename);
+        return;
+      }
+
       const cleanUrl = blob_url.startsWith('/') ? blob_url.slice(1) : blob_url;
 
       const link = document.createElement('a');
@@ -1192,7 +1199,7 @@ const ReportPage = () => {
                   }}
                   onClick={() =>
                     handleCitationLinkClick(
-                      item?.filename,
+                      selectedCitation?.filename,
                       selectedCitation.page + 1,
                       selectedCitation.preview_text,
                       selectedCitation.url

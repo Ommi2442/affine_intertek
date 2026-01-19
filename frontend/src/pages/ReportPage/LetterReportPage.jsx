@@ -16,7 +16,7 @@ import { useNavigate, useNavigationType } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import './ReportPage.css';
 import CloseIcon from '@mui/icons-material/Close';
-import localLetterJson from '../../utils/letter_output_4.json';
+//import localLetterJson from '../../utils/letter_output_4.json';
 import LetterReport from '../../components/LetterReport/LetterReport';
 import ConfidenceScore from './ConfidenceScore';
 
@@ -28,6 +28,7 @@ import { normalizeNewLines } from '../../Helpers/normalizeNewLines';
 import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 import PdfViewer from '../../components/PdfViewer';
 import { loadPdfWithCache } from '../../components/loadPdfWithCache';
+import { triggerGenerateLetterApi } from '../../redux/api/generateLetterApi';
 
 const STORAGE_KEY_PREFIX = 'letter_report_';
 
@@ -77,7 +78,7 @@ const LetterReportPage = () => {
     const load = async () => {
       setLoading(true);
 
-      // 1️⃣ IndexedDB first
+      //  Always try IndexedDB first
       const cached = await idb_get(storageKey, STORES.LETTER);
       if (cached) {
         setLetterJson(cached);
@@ -85,10 +86,18 @@ const LetterReportPage = () => {
         return;
       }
 
-      // 2️⃣ Backend (for now local JSON)
-      if (!isHardRefresh) {
-        setLetterJson(localLetterJson);
-        await idb_set(storageKey, localLetterJson, STORES.LETTER);
+      //  Hard refresh + no cache → do nothing yet
+      if (isHardRefresh) {
+        console.warn('Hard refresh but no LETTER cache found → holding state');
+        setLoading(false);
+        return;
+      }
+
+      // Only call backend if NOT refresh
+      const res = await triggerGenerateLetterApi(projectId);
+      if (res?.data) {
+        await idb_set(storageKey, res.data, STORES.LETTER);
+        setLetterJson(res.data);
       }
 
       setLoading(false);
@@ -135,6 +144,9 @@ const LetterReportPage = () => {
     if (!dataTableRef.current) return;
 
     const payload = dataTableRef.current.getUpdatedJson();
+    if (!payload) return;
+
+    // Persist to IndexedDB
     await idb_set(storageKey, payload, STORES.LETTER);
 
     setLetterJson(payload);
@@ -194,65 +206,15 @@ const LetterReportPage = () => {
         <Box className="left-panel">
           {loading && <LetterLoader />}
 
-          {!loading && localLetterJson && (
-            <>
-              {/* 1️⃣ White scrollable letter */}
-              <Box className="letter-white-box">
-                <LetterReport
-                  ref={dataTableRef}
-                  jsonData={localLetterJson}
-                  editMode={editMode}
-                  onPageChange={(p) => setCurrentPage(p)}
-                  onConfidenceChange={() => setConfidenceTick((v) => v + 1)}
-                  onBookmarkClick={handleBookmarkFromChild}
-                />
-              </Box>
-
-              {/* 2️⃣ Bottom pagination bar */}
-              <Box className="letter-page-nav">
-                {/* ◀ PREVIOUS */}
-                <Button
-                  className="letter-page-btn nav-btn"
-                  disabled={currentPage === 1}
-                  onClick={() => {
-                    const p = Math.max(1, currentPage - 1);
-                    setCurrentPage(p);
-                    dataTableRef.current?.scrollToPage(p);
-                  }}
-                >
-                  &lt;
-                </Button>
-
-                {/* PAGE NUMBERS */}
-                {[1, 2, 3, 4, 5, 6].map((p) => (
-                  <Button
-                    key={p}
-                    onClick={() => {
-                      setCurrentPage(p);
-                      dataTableRef.current?.scrollToPage(p);
-                    }}
-                    className={`letter-page-btn ${
-                      currentPage === p ? 'active' : ''
-                    }`}
-                  >
-                    {p}
-                  </Button>
-                ))}
-
-                {/* ▶ NEXT */}
-                <Button
-                  className="letter-page-btn nav-btn"
-                  disabled={currentPage === 6}
-                  onClick={() => {
-                    const p = Math.min(6, currentPage + 1);
-                    setCurrentPage(p);
-                    dataTableRef.current?.scrollToPage(p);
-                  }}
-                >
-                  &gt;
-                </Button>
-              </Box>
-            </>
+          {!loading && letterJson && (
+            <LetterReport
+              ref={dataTableRef}
+              jsonData={letterJson}
+              editMode={editMode}
+              onConfidenceChange={() => setConfidenceTick((v) => v + 1)}
+              onBookmarkClick={handleBookmarkFromChild}
+              isHardRefresh={isHardRefresh}
+            />
           )}
         </Box>
 
@@ -360,11 +322,7 @@ const LetterReportPage = () => {
                       icon: '/images/file_icon.png',
                       bg: '#5191a0ff',
                       action: () =>
-                        handleMissingField(
-                          localLetterJson,
-                          projectId,
-                          'letter'
-                        ),
+                        handleMissingField(letterJson, projectId, 'letter'),
                     },
                     {
                       text: 'Regenerate',
@@ -380,9 +338,9 @@ const LetterReportPage = () => {
                       className="action-button"
                       onClick={btn.action}
                       style={{
-                        background: !localLetterJson ? '#A9A9A9' : btn.bg,
-                        cursor: !localLetterJson ? 'not-allowed' : 'pointer',
-                        opacity: !localLetterJson ? 0.7 : 1,
+                        background: !letterJson ? '#A9A9A9' : btn.bg,
+                        cursor: !letterJson ? 'not-allowed' : 'pointer',
+                        opacity: !letterJson ? 0.7 : 1,
                       }}
                     >
                       {btn.text === 'Finalize' && (
@@ -404,9 +362,9 @@ const LetterReportPage = () => {
               </CardContent>
             </Card>
 
-            {localLetterJson && (
+            {(liveLetterData || letterJson) && (
               <ConfidenceScore
-                data={localLetterJson}
+                data={liveLetterData || letterJson}
                 reportType="letter"
                 confidenceTick={confidenceTick}
                 projectId={projectId}
