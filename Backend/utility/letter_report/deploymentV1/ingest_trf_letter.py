@@ -78,11 +78,11 @@ from openai import AzureOpenAI
 
 from dotenv import load_dotenv
 load_dotenv()
-
+AZURE_CONN_STRING = os.getenv("AZURE_CONN_STRING")
 COSMOS_CONT_TEXT = COSMOS_CONT
 COSMOS_DB_IMAGE  = DB_NAME_IMG
 COSMOS_CONT_IMAGE = CONT_NAME_IMG
-BLOB_CONT_NAME= os.getenv("BLOB_CONT_NAME")
+BLOB_CONT_NAME= os.getenv("BLOB_CONTAINER")
 ENABLE_CAD_SCHEMATICS = os.getenv("ENABLE_CAD_SCHEMATICS")
 FLATTENED_DIR = os.getenv("FLATTENED_DIR")
 IMAGES_ROOT =os.getenv("IMAGES_ROOT")
@@ -91,6 +91,7 @@ DOWNLOAD_DIR = os.getenv("TRF_DOWNLOAD_DIR")
 COSMOS_CONT_TEXT = os.getenv("COSMOS_CONT_TEXT")
 COSMOS_DB_TEXT=os.getenv("COSMOS_DB_TEXT")
 print("@@@@@@@@ ",DOWNLOAD_DIR)
+
 
 # ----------------------------------------------------------------------------------------
 # Azure OpenAI Client (shared for whole pipeline)

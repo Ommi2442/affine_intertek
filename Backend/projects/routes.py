@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
 from pathlib import Path
 from azure.core.exceptions import ResourceNotFoundError
-from queue_worker import update_project_progress_CDR,update_project_progress_Letter
+
 from fastapi import APIRouter, HTTPException, Depends, Body, Form, UploadFile, File, Query, logger, BackgroundTasks, status
 import math
 import traceback
@@ -1480,6 +1480,32 @@ def sanitize_json(obj):
     else:
         return obj
 
+
+
+
+def update_letter_progress(
+    project_doc: dict,
+    letter_stage: str,
+    letter_percentage: int = 10,
+    letter_step: str | None = None,
+    error: str | None = None,
+    last_updated: datetime | None = None,
+    letter_completed: bool = False
+):
+    project_doc["Letter_Project_Progress"] = {
+        "letter_stage": letter_stage,
+        "letter_percentage": letter_percentage,
+        "letter_step": letter_step,
+        "last_updated": (last_updated or datetime.utcnow()).isoformat(),
+        "error": error,
+        "letter_completed": letter_completed
+    }
+
+    projects_container.upsert_item(project_doc)
+    print(f" Progress updated → {letter_percentage}% | {letter_step}")
+
+
+
 @router.post("/letter-generation")
 async def letter_implementation(payload: LetterGeneration):
     try:
@@ -1545,7 +1571,7 @@ async def letter_implementation(payload: LetterGeneration):
 
             project_doc = docs[0]
 
-            update_project_progress_Letter(
+            update_letter_progress(
                 project_doc,
                 letter_stage="steps in Progress",
                 letter_percentage=10,
@@ -1587,8 +1613,8 @@ async def letter_implementation(payload: LetterGeneration):
                 g=letter_gen(
                 blob_urls=blob_urls,
                 container_name=BLOB_CONTAINER_NAME,
-                src_files_dir="src_files",
-                src_files_trf="src_files_trf",  
+                src_files_dir="letter_src_files",
+                src_files_trf="trf_src_files",  
                 
                 letter_json_path=letter_json_path,
                 letter_header_json_path=letter_header_json_path,
@@ -1608,12 +1634,14 @@ async def letter_implementation(payload: LetterGeneration):
                                     str(letter_docx_file),
                                     project_id=project_id
                                     )
-                update_project_progress_Letter(
+                
+                update_letter_progress(
                 project_doc,
                 letter_stage="Completed",
                 letter_percentage=100,
-                letter_step="Letter generated and stored",
-                letter_completed=True)
+                letter_step="All steps completed",
+                letter_completed=False
+            )
                 
                 with open(letter_json1, "r", encoding="utf-8") as f:
                     letter_json_data = json.load(f)

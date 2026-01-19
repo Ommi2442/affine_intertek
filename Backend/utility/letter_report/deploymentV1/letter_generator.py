@@ -74,742 +74,9 @@ from azure.storage.blob import BlobServiceClient
 
 from azure.storage.blob import ContainerClient
 
-
-
-# ============================================================
-# NOTEBOOK FUNCTIONS (PASTED AS-IS — ZERO MODIFICATION)
-# ============================================================
-
-# --------- ALL FUNCTIONS FROM letter_generation.ipynb ----------
-# (Kept exactly as provided by you)
-
-# [PASTE ALL YOUR FUNCTIONS HERE — UNCHANGED]
-# find_cis_pdf
 import os
 import pdfplumber
 from fuzzywuzzy import fuzz
-
-# def find_cis_pdf(folder_path, min_threshold_for_strong_match=70):
-#     """
-#     Scans all PDFs in the folder and returns the one with the highest CIS similarity score.
-#     Always returns the best candidate (the one with maximum matches).
-    
-#     Returns:
-#         dict with:
-#             - 'filename': best matching PDF
-#             - 'score': percentage of key phrases found (0-100)
-#             - 'found_phrases': list of detected key phrases
-#             - 'phrase_details': dict of all phrases with their match scores
-#             - 'is_strong_match': True if score >= threshold
-#     """
-#     # Key phrases that uniquely identify an Intertek CIS form
-#     key_phrases = [
-#         "CLIENT INFORMATION SHEET (CIS)",
-#         "ETL Certification and Follow-Up Services",
-#         "Applicant:",
-#         "CellFE, Inc.",
-#         "Bill-To:",
-#         "Manufacturer:",
-#         "Gener8",                  # Appears in email or company name
-#         "Labeling Method:",
-#         "Obtained from another source (Direct Imprint)",
-#         "Purchased from Intertek",
-#         "Completed By:",
-#         "SFT-ET-OP-19c",
-#         "Intertek"
-#     ]
-    
-#     best_filename = None
-#     best_score = -1
-#     best_found = []
-#     best_details = {}
-    
-#     if not os.path.isdir(folder_path):
-#         raise ValueError(f"Folder not found: {folder_path}")
-    
-#     print("Scanning PDFs for CIS form...\n")
-    
-#     for filename in sorted(os.listdir(folder_path)):
-#         if not filename.lower().endswith('.pdf'):
-#             continue
-            
-#         pdf_path = os.path.join(folder_path, filename)
-        
-#         try:
-#             with pdfplumber.open(pdf_path) as pdf:
-#                 if not pdf.pages:
-#                     continue
-                    
-#                 page = pdf.pages[0]
-                
-#                 # 1. Try enhanced text extraction
-#                 text = page.extract_text(
-#                     x_tolerance=3,
-#                     y_tolerance=3,
-#                     keep_blank_chars=True,
-#                     use_text_flow=True
-#                 )
-                
-#                 # 2. Supplement with table extraction (critical for forms)
-#                 table_text = ""
-#                 for table in page.extract_tables():
-#                     for row in table:
-#                         cleaned = [cell.strip() if cell else "" for cell in row]
-#                         table_text += " ".join(cleaned) + "\n"
-                
-#                 # Combine both
-#                 full_text = (text or "") + "\n" + table_text
-#                 full_text_lower = full_text.lower()
-                
-#                 # 3. Fallback: word-level if still poor
-#                 if len(full_text.strip()) < 300:
-#                     words = page.extract_words(x_tolerance=3, y_tolerance=3)
-#                     word_text = " ".join([w['text'] for w in words])
-#                     full_text_lower = (full_text_lower + " " + word_text.lower()).strip()
-                
-#                 # Evaluate matches
-#                 found_phrases = []
-#                 phrase_scores = {}
-                
-#                 for phrase in key_phrases:
-#                     ratio = fuzz.partial_ratio(phrase.lower(), full_text_lower)
-#                     phrase_scores[phrase] = ratio
-#                     if ratio > 82:  # Reliable threshold for partial match
-#                         found_phrases.append(phrase)
-                
-#                 match_count = len(found_phrases)
-#                 score = (match_count / len(key_phrases)) * 100
-                
-#                 print(f"{filename}")
-#                 print(f"   → {match_count}/{len(key_phrases)} key phrases found (score: {score:.1f}%)")
-#                 if found_phrases:
-#                     print(f"   Found: {found_phrases}")
-#                 else:
-#                     print(f"   Found: None")
-#                 print()
-                
-#                 # Update best
-#                 if score > best_score:
-#                     best_score = score
-#                     best_filename = filename
-#                     best_found = found_phrases
-#                     best_details = phrase_scores
-                    
-#         except Exception as e:
-#             print(f"Error reading {filename}: {e}\n")
-#             continue
-    
-#     # Always return the best one (maximum similarity)
-#     is_strong = best_score >= min_threshold_for_strong_match
-    
-#     print("="*60)
-#     if best_filename:
-#         print(f"BEST CIS CANDIDATE: {best_filename}")
-#         print(f"Score: {best_score:.1f}% ({len(best_found)}/{len(key_phrases)} phrases matched)")
-#         print(f"Strong match: {is_strong}")
-#         print(f"Key phrases found: {best_found}")
-#     else:
-#         print("No PDFs found in folder.")
-    
-#     return {
-#         'filename': best_filename,
-#         'score': best_score,
-#         'found_phrases': best_found,
-#         'phrase_details': best_details,
-#         'is_strong_match': is_strong
-#     }
-
-
-# import os
-# import pdfplumber
-# from fuzzywuzzy import fuzz
-
-# def find_cis_pdf(folder_path, min_threshold_for_strong_match=70):
-#     """
-#     Scans all PDFs in the folder and returns the one with the highest CIS similarity score.
-#     Always returns the best candidate (the one with maximum matches).
-    
-#     Returns:
-#         dict with:
-#             - 'pdf_path': full path to best matching PDF
-#             - 'filename': best matching PDF filename
-#             - 'score': percentage of key phrases found (0-100)
-#             - 'found_phrases': list of detected key phrases
-#             - 'phrase_details': dict of all phrases with their match scores
-#             - 'is_strong_match': True if score >= threshold
-#     """
-#     # Key phrases that uniquely identify an Intertek CIS form
-#     key_phrases = [
-#         "CLIENT INFORMATION SHEET (CIS)",
-#         "ETL Certification and Follow-Up Services",
-#         "Applicant:",
-#         "CellFE, Inc.",
-#         "Bill-To:",
-#         "Manufacturer:",
-#         "Gener8",                  # Appears in email or company name
-#         "Labeling Method:",
-#         "Obtained from another source (Direct Imprint)",
-#         "Purchased from Intertek",
-#         "Completed By:",
-#         "SFT-ET-OP-19c",
-#         "Intertek"
-#     ]
-    
-#     best_pdf_path = None
-#     best_filename = None
-#     best_score = -1
-#     best_found = []
-#     best_details = {}
-    
-#     if not os.path.isdir(folder_path):
-#         raise ValueError(f"Folder not found: {folder_path}")
-    
-#     print("Scanning PDFs for CIS form...\n")
-    
-#     for filename in sorted(os.listdir(folder_path)):
-#         if not filename.lower().endswith('.pdf'):
-#             continue
-            
-#         pdf_path = os.path.join(folder_path, filename)
-        
-#         try:
-#             with pdfplumber.open(pdf_path) as pdf:
-#                 if not pdf.pages:
-#                     continue
-                    
-#                 page = pdf.pages[0]
-                
-#                 # 1. Try enhanced text extraction
-#                 text = page.extract_text(
-#                     x_tolerance=3,
-#                     y_tolerance=3,
-#                     keep_blank_chars=True,
-#                     use_text_flow=True
-#                 )
-                
-#                 # 2. Supplement with table extraction (critical for forms)
-#                 table_text = ""
-#                 for table in page.extract_tables():
-#                     for row in table:
-#                         cleaned = [cell.strip() if cell else "" for cell in row]
-#                         table_text += " ".join(cleaned) + "\n"
-                
-#                 # Combine both
-#                 full_text = (text or "") + "\n" + table_text
-#                 full_text_lower = full_text.lower()
-                
-#                 # 3. Fallback: word-level if still poor
-#                 if len(full_text.strip()) < 300:
-#                     words = page.extract_words(x_tolerance=3, y_tolerance=3)
-#                     word_text = " ".join([w['text'] for w in words])
-#                     full_text_lower = (full_text_lower + " " + word_text.lower()).strip()
-                
-#                 # Evaluate matches
-#                 found_phrases = []
-#                 phrase_scores = {}
-                
-#                 for phrase in key_phrases:
-#                     ratio = fuzz.partial_ratio(phrase.lower(), full_text_lower)
-#                     phrase_scores[phrase] = ratio
-#                     if ratio > 82:  # Reliable threshold for partial match
-#                         found_phrases.append(phrase)
-                
-#                 match_count = len(found_phrases)
-#                 score = (match_count / len(key_phrases)) * 100
-                
-#                 print(f"{filename}")
-#                 print(f"   → {match_count}/{len(key_phrases)} key phrases found (score: {score:.1f}%)")
-#                 if found_phrases:
-#                     print(f"   Found: {found_phrases}")
-#                 else:
-#                     print(f"   Found: None")
-#                 print()
-                
-#                 # Update best
-#                 if score > best_score:
-#                     best_score = score
-#                     best_pdf_path = pdf_path
-#                     best_filename = filename
-#                     best_found = found_phrases
-#                     best_details = phrase_scores
-                    
-#         except Exception as e:
-#             print(f"Error reading {filename}: {e}\n")
-#             continue
-    
-#     # Always return the best one (maximum similarity)
-#     is_strong = best_score >= min_threshold_for_strong_match
-    
-#     print("="*60)
-#     if best_pdf_path:
-#         print(f"BEST CIS CANDIDATE: {best_filename}")
-#         print(f"Path: {best_pdf_path}")
-#         print(f"Score: {best_score:.1f}% ({len(best_found)}/{len(key_phrases)} phrases matched)")
-#         print(f"Strong match: {is_strong}")
-#         print(f"Key phrases found: {best_found}")
-#     else:
-#         print("No PDFs found in folder.")
-    
-#     return {
-#         'pdf_path': best_pdf_path,
-#         'filename': best_filename,
-#         'score': best_score,
-#         'found_phrases': best_found,
-#         'phrase_details': best_details,
-#         'is_strong_match': is_strong
-#     }
-
-
-# import pdfplumber
-
-# def extract_cis_fields(pdf_path: str) -> dict:
-#     """
-#     Extract form field values from a filled PDF Client Information Sheet.
-    
-#     Args:
-#         pdf_path: Path to the PDF file
-        
-#     Returns:
-#         Dictionary with extracted field values
-#     """
-#     with pdfplumber.open(pdf_path) as pdf:
-#         page = pdf.pages[0]
-        
-#         # Extract all form field annotations
-#         annots = page.annots if hasattr(page, 'annots') and page.annots else []
-        
-#         # Build a dictionary of field values by field name
-#         fields = {}
-#         for annot in annots:
-#             if 'data' in annot and 'T' in annot['data']:
-#                 field_name = annot['data']['T'].decode('utf-8') if isinstance(annot['data']['T'], bytes) else annot['data']['T']
-#                 if 'V' in annot['data']:
-#                     field_value = annot['data']['V']
-#                     if isinstance(field_value, bytes):
-#                         field_value = field_value.decode('utf-8')
-#                     # Clean up whitespace (only for strings)
-#                     if isinstance(field_value, str):
-#                         field_value = field_value.strip()
-#                     fields[field_name] = field_value
-        
-#         # Extract specific fields based on the form field names
-#         # Field '1' = Legal Entity Name (Applicant)
-#         # Field '3' = Street Address
-#         # Field '4' = City, State, Postal Code, Country
-#         # Field '5' = Contacts (Primary)
-#         # Field '6' = Phone Number
-#         # Field '7' = Email
-#         company = fields.get('1', '')
-#         street = fields.get('3', '')
-#         city_state_zip = fields.get('4', '')
-#         contact_name = fields.get('5', '')
-#         phone = fields.get('6', '')
-#         email = fields.get('7', '')
-        
-#         # Project Manager info
-#         # "Labeling Method" field contains the PM name (Shivam Patel)
-#         # Manufacturer contact email field contains the PM email
-#         pm_name = fields.get('Labeling Method', '')
-#         pm_email = fields.get('Location where final assembly will take place andor where Certification label will be applied 6', '')
-        
-#         project_manager = None
-#         if pm_name and pm_email:
-#             project_manager = f"{pm_name}, {pm_email}"
-#         elif pm_name:
-#             project_manager = pm_name
-        
-#         return {
-#             "CUSTOMER NAME": company,
-#             "«AppContactName»": contact_name,
-#             "«AppPhone»": phone,
-#             "«AppCOMPANYNAME»": company,
-#             "«AppStreetAddress»": street,
-#             "«AppEmail»": email,
-#             "«AppCityStZip»": city_state_zip,
-#             "Project Manager Name + Email": project_manager
-#         }
-
-# def find_and_extract_cis(folder_path, min_threshold_for_strong_match=70):
-#     """
-#     Finds and extracts fields from CIS PDF in one call.
-    
-#     Returns:
-#         Extracted fields dict, or None if CIS not found or extraction failed
-#     """
-#     # Find the CIS PDF
-#     detection = find_cis_pdf(folder_path, min_threshold_for_strong_match)
-    
-#     if not detection['pdf_path']:
-#         print("No CIS document found.")
-#         return None
-    
-#     # Extract fields from it
-#     try:
-#         fields = extract_cis_fields(detection['pdf_path'])
-#         return fields
-#     except Exception as e:
-#         print(f"Error extracting fields: {e}")
-#         return None
-
-# # extract_cis_fields
-# # find_and_extract_cis
-# # contains_prepared_for_table
-
-# import os
-# import re
-# import fitz  # PyMuPDF
-
-
-# def contains_prepared_for_table(pdf_path):
-#     """
-#     Check if PDF contains the specific 'Prepared For:' table with expected structure.
-#     Looks for key indicators like name, company, address, phone, email pattern.
-#     """
-#     text = ""
-#     with fitz.open(pdf_path) as doc:
-#         for page in doc:
-#             t = page.get_text()
-#             if t:
-#                 text += t + "\n"
-    
-#     # Look for "Prepared For:" header
-#     if not re.search(r"Prepared\s*For\s*:", text, re.IGNORECASE):
-#         return False
-    
-#     # Extract the section after "Prepared For:"
-#     match = re.search(r"Prepared\s*For\s*:(.{0,500})", text, re.IGNORECASE | re.DOTALL)
-#     if not match:
-#         return False
-    
-#     section = match.group(1)
-    
-#     # Check for multiple indicators that this is the specific table structure
-#     indicators = [
-#         r"Gener8\s*LLC",  # Company name
-#         r"\(\d{3}\)\s*\d{3}-\d{4}",  # Phone number pattern like (650) 940-9898
-#         r"\w+@\w+\.\w+",  # Email pattern
-#         r"San\s*Jose|CA\s*95134|USA",  # Address components
-#         r"Consultant"  # Role/title
-#     ]
-    
-#     # Require at least 3 of these indicators to be present in the section
-#     matches = sum(1 for pattern in indicators if re.search(pattern, section, re.IGNORECASE))
-    
-#     return matches >= 3
-
-
-# def find_prepared_for_pdf(folder_path: str):
-#     """
-#     Find the PDF that contains the specific 'Prepared For:' table.
-#     Returns the full PDF path or None if not found.
-#     """
-#     for file in os.listdir(folder_path):
-#         if file.lower().endswith(".pdf"):
-#             pdf_path = os.path.join(folder_path, file)
-#             if contains_prepared_for_table(pdf_path):
-#                 return pdf_path  # Return full path instead of just filename
-    
-#     return None
-
-
-# import re
-# from PyPDF2 import PdfReader
-
-# def extract_prepared_for_generic(pdf_path: str) -> dict:
-#     """
-#     Extract customer information and project details from an Intertek proposal PDF.
-    
-#     Args:
-#         pdf_path: Path to the PDF file
-        
-#     Returns:
-#         Dictionary containing:
-#         - CUSTOMER NAME
-#         - AppContactName
-#         - AppPhone
-#         - AppCOMPANYNAME
-#         - AppStreetAddress
-#         - AppEmail
-#         - AppCityStZip
-#         - Project Name / Scope of Work
-#     """
-#     text = "\n".join(page.extract_text() or "" for page in PdfReader(pdf_path).pages)
-    
-#     # Isolate Prepared For section only
-#     block = re.search(
-#         r"Prepared\s*For[:\s]*([\s\S]*?)(?:\nPrepared\s*by:|\nScope\s*of\s*Work:|\nProject|\Z)",
-#         text,
-#         re.IGNORECASE
-#     )
-#     block_text = block.group(1).strip() if block else text
-#     lines = [l.strip() for l in block_text.split("\n") if l.strip()]
-    
-#     # Contact name = first line
-#     contact_name = lines[0] if lines else None
-    
-#     # Company name = first company-like line
-#     company = None
-#     for line in lines:
-#         if re.search(r"\b(LLC|Inc|Company|Corp|Co\.|Pvt|Ltd|Limited|Group|Services|Net)\b", line, re.IGNORECASE):
-#             company = line
-#             break
-    
-#     # Collect address lines after company
-#     address = ""
-#     if company:
-#         collecting = False
-#         addr = []
-#         for line in lines:
-#             if line == company:
-#                 collecting = True
-#                 continue
-#             if collecting:
-#                 if re.search(r"Consultant|Representative|Prepared\s*by:|Scope\s*of\s*Work:", line, re.IGNORECASE):
-#                     break
-#                 addr.append(line)
-#         address = ", ".join(addr)
-    
-#     # Extract phone (first valid phone found anywhere in section)
-#     phone_match = re.search(r"\(?\+?\d{3}\)?[-\s]?\d{3}[-\s]?\d{4}", block_text)
-#     phone = phone_match.group(0) if phone_match else None
-    
-#     # Extract email (if multiple, pick first that is NOT an intertek internal email)
-#     email_matches = re.findall(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}", block_text)
-#     email = None
-#     if email_matches:
-#         for e in email_matches:
-#             if "intertek" not in e.lower():
-#                 email = e
-#                 break
-#         if not email:
-#             email = email_matches[0]
-    
-#     # City/Zip
-#     zip_match = re.search(r"\b\d{5,6}\b", address)
-#     city_zip = zip_match.group(0) if zip_match else None
-    
-#     # Extract Project Name / Scope of Work
-#     # Try multiple patterns to find the project name
-#     project_name = None
-    
-#     # Pattern 1: "PROJECT NAME" followed by the name on next line(s)
-#     # Stop at common headers like COMPILED BY, DATE, Prepared, etc.
-#     project_match = re.search(
-#         r"PROJECT\s*NAME[:\s]*\n([^\n]+(?:\n(?!(?:COMPILED|DATE|Prepared|QUOTE|Testing|Assumptions)[:\s])[^\n]+)*)",
-#         text,
-#         re.IGNORECASE | re.MULTILINE
-#     )
-#     if project_match:
-#         # Clean up the extracted text
-#         raw_text = project_match.group(1).strip()
-#         # Remove any trailing sections that start with all-caps words
-#         clean_text = re.sub(r'\s*(?:COMPILED|DATE|Prepared|QUOTE).*$', '', raw_text, flags=re.IGNORECASE)
-#         project_name = " ".join(clean_text.split())
-    
-#     # Pattern 2: "Scope of Work:" followed by the description
-#     if not project_name:
-#         scope_match = re.search(
-#             r"Scope\s*of\s*Work[:\s]*\n([^\n]+)",
-#             text,
-#             re.IGNORECASE | re.MULTILINE
-#         )
-#         if scope_match:
-#             project_name = scope_match.group(1).strip()
-    
-#     # Pattern 3: Look for certification-related text patterns
-#     if not project_name:
-#         cert_match = re.search(
-#             r"(c?ETL[uU]s?/?\w*\s+certification[^.\n]+)",
-#             text,
-#             re.IGNORECASE
-#         )
-#         if cert_match:
-#             project_name = cert_match.group(1).strip()
-    
-#     return {
-#         "CUSTOMER NAME": company,
-#         "«AppContactName»": contact_name,
-#         "«AppPhone»": phone,
-#         "«AppCOMPANYNAME»": company,
-#         "«AppStreetAddress»": address,
-#         "«AppEmail»": email,
-#         "«AppCityStZip»": city_zip,
-#         "Scope of Work": project_name
-#     }
-# def process_quote_from_folder(folder_path: str):
-#     """
-#     Find the quote PDF in the folder and extract the 'Prepared For' information from it.
-    
-#     Args:
-#         folder_path: Path to the folder containing PDFs
-        
-#     Returns:
-#         Extracted fields from the quote PDF, or None if no quote PDF found
-#     """
-#     # Find the quote PDF
-#     quote_pdf_path = find_prepared_for_pdf(folder_path)
-    
-#     if quote_pdf_path is None:
-#         print(f"No quote PDF found in folder: {folder_path}")
-#         return None
-    
-#     print(f"Found quote PDF: {quote_pdf_path}")
-    
-#     # Extract fields from the quote PDF
-#     fields = extract_prepared_for_generic(quote_pdf_path)
-    
-#     return fields
-
-# # find_prepared_for_pdf
-# # extract_prepared_for_generic
-# # process_quote_from_folder
-# # update_scope_of_work_in_json
-# import json
-
-# def update_scope_of_work_in_json(input_json_path, output_json_path, extracted_data):
-#     """
-#     Reads input JSON file
-#     Updates value of:
-#       - key == "KEY1"
-#       - key == "<ETL Listing/CB/Other Evaluation>"
-#     using Scope of Work from extracted_data
-#     Writes updated JSON to output file
-#     """
-
-#     scope_of_work = extracted_data.get("Scope of Work", "")
-
-#     # Load input JSON
-#     with open(input_json_path, "r", encoding="utf-8") as f:
-#         data = json.load(f)
-
-#     # Traverse pages and items
-#     for page in data.get("pages", []):
-#         for item in page.get("items", []):
-#             if item.get("key") in ["KEY1", "<ETL Listing/CB/Other Evaluation>"]:
-#                 item["value"] = scope_of_work
-
-#     # Write output JSON
-#     with open(output_json_path, "w", encoding="utf-8") as f:
-#         json.dump(data, f, indent=2, ensure_ascii=False)
-
-#     print(f"✅ Updated JSON saved to: {output_json_path}")
-
-# # merge_quote_and_cis_data
-
-# def merge_quote_and_cis_data(folder_path: str, min_threshold_for_strong_match=70):
-
-#     """
-
-#     Extract data from Quote PDF and CIS PDF, then merge into a single JSON.
-
-#     Quote data gets first priority. CIS fills only missing/empty fields.
-
-#     """
-
-
-
-#     quote_data = process_quote_from_folder(folder_path)
-
-#     cis_data = find_and_extract_cis(folder_path, min_threshold_for_strong_match)
-
-
-
-#     if quote_data is None and cis_data is None:
-
-#         print("No data extracted from either Quote or CIS documents.")
-
-#         return None
-
-
-
-#     merged_data = {}
-
-
-
-#     # Step 1: Fill quote data first
-
-#     if quote_data:
-
-#         merged_data.update(quote_data)
-
-
-
-#     # Step 2: CIS fills only missing or empty values, DOES NOT override quote values
-
-#     if cis_data:
-
-#         for k, v in cis_data.items():
-
-#             if k not in merged_data or merged_data[k] in ["", None]:
-
-#                 merged_data[k] = v
-
-
-
-#     # Step 3: Save output JSON in same folder
-
-#     output_path = os.path.join(folder_path, "letter_f1.json")
-
-#     with open(output_path, "w", encoding="utf-8") as f:
-
-#         json.dump(merged_data, f, indent=2, ensure_ascii=False)
-
-
-
-#     return merged_data
-
-
-# # fill_letter_json
-
-# def fill_letter_json(
-#     src_dir: str,
-#     letter_json_path: str,
-#     output_path: str = "letter.json"
-# ):
-#     """
-#     Fill letter.json values using data extracted from source directory
-#     and save to a new file.
-
-#     Args:
-#         src_dir: Path to source files directory
-#         letter_json_path: Path to the input letter.json file
-#         output_path: Output file path (default = letter_f1.json)
-
-#     Returns:
-#         Updated JSON dict
-#     """
-
-#     # --------------------------------------------------
-#     # Step 1: Run merge pipeline internally
-#     # --------------------------------------------------
-#     extracted_data = merge_quote_and_cis_data(src_dir)
-
-#     if not extracted_data:
-#         raise ValueError("merge_quote_and_cis_data returned empty data")
-
-#     # --------------------------------------------------
-#     # Step 2: Load letter JSON
-#     # --------------------------------------------------
-#     with open(letter_json_path, "r", encoding="utf-8") as f:
-#         letter_json = json.load(f)
-
-#     # --------------------------------------------------
-#     # Step 3: Fill values
-#     # --------------------------------------------------
-#     for page in letter_json.get("pages", []):
-#         for item in page.get("items", []):
-#             key = item.get("key")
-#             if key in extracted_data and extracted_data[key]:
-#                 item["value"] = extracted_data[key]
-
-#     # --------------------------------------------------
-#     # Step 4: Save output
-#     # --------------------------------------------------
-#     with open(output_path, "w", encoding="utf-8") as f:
-#         json.dump(letter_json, f, indent=2, ensure_ascii=False)
-
-#     return letter_json
-
 
 #START FROM HERE
 import fitz
@@ -956,55 +223,6 @@ def update_scope_of_work_in_json(input_json_path, output_json_path, extracted_da
 # replace_keys_with_values_no_format_change_all
 # this will chnage filders from json. Run after UI recivees new data
 from docx import Document
-
-# def replace_keys_with_values_no_format_change_all(
-#     input_docx: str,
-#     output_docx: str,
-#     data: dict
-# ):
-#     """
-#     Replaces placeholders with values WITHOUT changing formatting.
-#     Works even if Word splits placeholder across multiple runs.
-#     """
-
-#     doc = Document(input_docx)
-
-#     # Build replacement map
-#     replacements = {}
-#     for page in data.get("pages", []):
-#         for item in page.get("items", []):
-#             key = str(item.get("key", "")).strip()
-#             value = str(item.get("value", "")).strip()
-#             if not key:
-#                 continue
-#             replacements[key] = value
-#             replacements[f"<{key}>"] = value  # optional bracket form
-
-#     # --- RUN JOIN FALLBACK REPLACEMENT ---
-#     def replace_in_para(para):
-#         full_text = "".join(run.text for run in para.runs)
-#         for old, new in replacements.items():
-#             if old in full_text:
-#                 full_text = full_text.replace(old, new)
-
-#         # Push replaced text back while keeping formatting
-#         for run in para.runs:
-#             run.text = ""  # clear
-#         if para.runs:
-#             para.runs[0].text = full_text  # write in first run
-
-#     # Replace in paragraphs
-#     for para in doc.paragraphs:
-#         replace_in_para(para)
-
-#     # Replace in tables
-#     for table in doc.tables:
-#         for row in table.rows:
-#             for cell in row.cells:
-#                 for para in cell.paragraphs:
-#                     replace_in_para(para)
-
-#     doc.save(output_docx)
 
 from docx import Document
 
@@ -1231,27 +449,7 @@ def insert_dataframe_below_anchor(
 
 from docx import Document
 
-# def read_docx_full(path):
-#     doc = Document(path)
-#     content = []
 
-#     # Read normal paragraphs
-#     for p in doc.paragraphs:
-#         if p.text.strip():
-#             content.append(p.text.strip())
-
-#     # Read ALL tables (CRITICAL for IEC TRFs)
-#     for table in doc.tables:
-#         for row in table.rows:
-#             row_text = []
-#             for cell in row.cells:
-#                 cell_text = cell.text.strip()
-#                 if cell_text:
-#                     row_text.append(cell_text)
-#             if row_text:
-#                 content.append(" | ".join(row_text))
-
-#     return "\n".join(content)
 
 from docx import Document
 from pathlib import Path
@@ -1352,84 +550,7 @@ FULL TRF DOCUMENT:
         "finding": "Remark and Findings"
     })
 
-# def extract_iec61010_non_conformances_full_doc_new(
-#     document_text,
-#     deployment_name
-# ):
-#     system_prompt = """
-# You are an IEC 61010-1 CB Scheme compliance expert.
 
-# TASK:
-# - Review the FULL Test Report Form (TRF)
-# - Compare each clause with IEC 61010-1 requirements
-# - Identify ONLY NON-CONFORMANCES
-# - GROUP all sub-clause non-conformances under their MAIN clause
-
-# CLAUSE GROUPING RULES (MANDATORY):
-# - If non-conformances are found in sub-clauses (e.g. 5.1.1, 5.1.2, 5.1.3),
-#   they MUST be summarized into ONE finding under the main clause (e.g. 5.1)
-# - DO NOT list sub-clauses separately in the final output
-# - Each main clause (5.1, 5.2, 5.3, etc.) may appear ONLY ONCE in the output
-# - The "requirement" field must summarize the overall intent of the main clause
-# - The "finding" field must concisely combine all related sub-clause failures
-
-# NON-CONFORMANCE RULES:
-# - Verdict = F → Non-conformance
-# - Missing mandatory markings or documentation → Non-conformance
-# - TBD = testing not yet performed → DO NOT list
-# - N/A with justification → Ignore
-# - Do NOT invent issues
-# - Do NOT over-interpret compliant or partially compliant text
-
-# OUTPUT FORMAT (STRICT JSON ARRAY ONLY):
-# [
-#   {
-#     "clause": "5.1",
-#     "requirement": "Equipment markings and identification shall be provided as required by IEC 61010-1",
-#     "finding": "Equipment lacks required identification markings including model identification, rated electrical values, safety-related terminal markings, and connector identification."
-#   }
-# ]
-
-# IMPORTANT:
-# - Output MUST be valid JSON
-# - Do NOT include explanations, markdown, or commentary
-# - Return [] if no non-conformances exist
-
-# """
-#     client = AzureOpenAI(
-#     api_key=AOAI_KEY,
-#     api_version=API_VERSION,
-#     azure_endpoint=AOAI_ENDPOINT,
-#     )
-
-#     response = client.chat.completions.create(
-#         model=deployment_name,   # MUST be Azure deployment name
-#         temperature=0,
-#         messages=[
-#             {"role": "system", "content": system_prompt},
-#             {
-#                 "role": "user",
-#                 "content": f"""
-# FULL TRF DOCUMENT:
-# ------------------
-# {document_text}
-# ------------------
-# """
-#             }
-#         ]
-#     )
-
-#     output = response.choices[0].message.content.strip()
-#     findings = json.loads(output)
-
-#     return pd.DataFrame(
-#         findings,
-#         columns=["clause", "requirement", "finding"]
-#     ).rename(columns={
-#         "clause": "Clause",
-#         "requirement": "Requirement of the Clause",
-#         "finding": "Remark and Findings"
-#     })
 
 # download_files_from_blob
 # extract_images_from_docx
@@ -2235,6 +1356,26 @@ def replace_header_keys_with_values_header(input_docx, output_docx, data):
     doc.save(output_docx)
     return output_docx
 
+import pandas as pd
+import numpy as np
+
+def clean_dataframe_for_json(df, use_null=True):
+    """
+    Replace NaN values so JSON does not contain NaN.
+    use_null=True  -> NaN becomes None (JSON null)
+    use_null=False -> NaN becomes empty string ""
+    """
+    if df is None:
+        return None
+
+    df = df.copy()
+
+    if use_null:
+        df = df.replace({np.nan: None})
+    else:
+        df = df.fillna("")
+
+    return df
 
 
 
@@ -2309,23 +1450,6 @@ def generate_letter_pipeline(
     # -------------------------------------------------------
     # STEP 1 — Fill Letter JSON
     # -------------------------------------------------------
-
-    # find_and_extract_cis("src_files")
-    # result = process_quote_from_folder("src_files")
-
-    # fill_letter_json(
-    #     src_dir=src_files_dir,
-    #     letter_json_path=letter_json_path,
-    #     output_path="letter.json"
-    # )
-
-    # fill_letter_json(
-    #     src_dir=src_files_dir,
-    #     letter_json_path=letter_header_json_path,
-    #     output_path="letter_header.json"
-    # )
-
-    # update_scope_of_work_in_json("letter_ouput.json","letter_output.json",result)
 
     with open(letter_json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -2432,6 +1556,9 @@ def generate_letter_pipeline(
                 print("⚠️ Formatting failed. Inserting raw table.")
                 print(f"Reason: {e}")
 
+        # Clean NaN before using
+        df_1a = clean_dataframe_for_json(df_1a, use_null=True)
+
         # Step 3: Insert table
         insert_dataframe_below_anchor(
             input_docx=output_letter_docx,
@@ -2467,6 +1594,8 @@ def generate_letter_pipeline(
     )
     print('######'*5)
     #print(df_9_nonpass)
+    # ✅ Clean NaN
+    df_9_nonpass = clean_dataframe_for_json(df_9_nonpass, use_null=True)
 
     data = inject_dataframes_into_letter_json(
         data=data,
@@ -2511,8 +1640,8 @@ def generate_letter_pipeline(
     final_letter_images_path=final_letter_images_path
     )
 
-    print("blob urls: ###################################")
-    print(blob_urls_non_conform)
+    # print("blob urls: ###################################")
+    # print(blob_urls_non_conform)
 
     update_non_conforming_urls_from_blob(data, blob_urls_non_conform)
 
@@ -2566,28 +1695,75 @@ def letter_gen(blob_urls,
             letter_header_json_path_output,
             project_Id=project_Id
         )
-        extracted_data =  process_quote_from_folder(src_files_trf)
-        update_scope_of_work_in_json(letter_json_path_output,letter_json_path_output,extracted_data=extracted_data)
 
-        updated_letter = add_text_support_with_blob_url_and_filename(
+        # extracted_data =  process_quote_from_folder(src_files_trf)
+        # update_scope_of_work_in_json(letter_json_path_output,letter_json_path_output,extracted_data=extracted_data)
+        # ------------------------------------------------
+    # STEP 2 — Extract Scope of Work Data (SAFE)
+    # ------------------------------------------------
+        extracted_data = None
+        try:
+            extracted_data = process_quote_from_folder(src_files_trf)
+
+            if not extracted_data:
+                print("⚠️ No extracted quote data found. Skipping scope of work update.")
+            else:
+                update_scope_of_work_in_json(
+                    letter_json_path_output,
+                    letter_json_path_output,
+                    extracted_data=extracted_data
+                )
+                print("✅ Scope of work updated successfully.")
+
+        except Exception as e:
+            print("⚠️ Failed to update scope of work. Continuing without it.")
+            print(f"Reason: {e}")
+
+        # updated_letter = add_text_support_with_blob_url_and_filename(
+        #         letter_json_path=letter_json_path_output,
+        #         folder_path=src_files_trf )
+
+        # with open(letter_json_path_output, "w", encoding="utf-8") as f:
+        #     json.dump(updated_letter, f, indent=2,ensure_ascii=False)
+
+        try:
+            updated_letter = add_text_support_with_blob_url_and_filename(
                 letter_json_path=letter_json_path_output,
-                folder_path=src_files_trf )
+                folder_path=src_files_trf
+            )
 
-        with open(letter_json_path_output, "w", encoding="utf-8") as f:
-            json.dump(updated_letter, f, indent=2,ensure_ascii=False)
+            if not updated_letter:
+                print("⚠️ Updated letter content is empty. Skipping JSON overwrite.")
+            else:
+                with open(letter_json_path_output, "w", encoding="utf-8") as f:
+                    json.dump(updated_letter, f, indent=2, ensure_ascii=False)
+
+                print("✅ Letter JSON updated with blob support text.")
+
+        except Exception as e:
+            print("⚠️ Failed while adding blob support text.")
+            print(f"Reason: {e}")
 
  
 
         with open(letter_json_path_output, "r", encoding="utf-8") as f:
             data_final = json.load(f)
 
-        attach_blob_urls_to_image_support_letter(data_final, blob_urls_trf)
-        attach_blob_urls_to_text_support_letter(data_final, blob_urls_trf)
+        data_final=attach_blob_urls_to_image_support_letter(data_final, blob_urls_trf)
+        data_final=attach_blob_urls_to_text_support_letter(data_final, blob_urls_trf)
+
+        with open(letter_json_path_output, "w", encoding="utf-8") as f:
+            json.dump(data_final, f, indent=2, ensure_ascii=False)
+
+
 
         with open(letter_header_json_path_output, "r", encoding="utf-8") as f:
             data_header_final = json.load(f)
-        attach_blob_urls_to_image_support_letter(data_header_final, blob_urls_trf)
-        attach_blob_urls_to_text_support_letter(data_header_final, blob_urls_trf)
+        data_header_final=attach_blob_urls_to_image_support_letter(data_header_final, blob_urls_trf)
+        data_header_final=attach_blob_urls_to_text_support_letter(data_header_final, blob_urls_trf)
+
+        with open(letter_header_json_path_output, "w", encoding="utf-8") as f:
+            json.dump(data_header_final, f, indent=2, ensure_ascii=False)
         
 
 
@@ -2634,7 +1810,9 @@ def letter_gen(blob_urls,
 #         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Cell_Gener8_Agent_Agreement_2018_1_.pdf',
 #         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf',
 #         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.docx',
-#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01390131-0.pdf'
+#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01390131-0.pdf',
+#         "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/CDR_105080268MPK-004.xlsx",
+#         "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105581614MPK-001A_CR.docx"
 
 #     ]
 

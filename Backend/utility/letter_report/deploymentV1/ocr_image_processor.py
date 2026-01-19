@@ -31,8 +31,8 @@ API_VERSION = os.getenv("API_VERSION")
 EMBED_DEPLOY = os.getenv("EMBED_DEPLOY")
 CHAT_DEPLOY = os.getenv("CHAT_DEPLOY")
 
-COSMOS_URL = os.getenv("LT_COSMOS_URL")
-COSMOS_KEY = os.getenv("LT_COSMOS_KEY")
+COSMOS_URL = os.getenv("COSMOS_URL")
+COSMOS_KEY = os.getenv("COSMOS_KEY")
 COSMOS_DB = os.getenv("COSMOS_DB_TEXT")
 COSMOS_CONT = os.getenv("COSMOS_CONT_TEXT")
 

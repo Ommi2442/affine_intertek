@@ -12,9 +12,9 @@ COSMOS_DB_IMAGE  = DB_NAME_IMG
 COSMOS_CONT_IMAGE = CONT_NAME_IMG
 BLOB_CONT_NAME= os.getenv("BLOB_CONT_NAME")
 ENABLE_CAD_SCHEMATICS = os.getenv("ENABLE_CAD_SCHEMATICS")
-FLATTENED_DIR = os.getenv("FLATTENED_DIR")
-IMAGES_ROOT =os.getenv("IMAGES_ROOT")
-DOWNLOAD_DIR = os.getenv("DOWNLOAD_DIR")
+# FLATTENED_DIR = os.getenv("FLATTENED_DIR")
+# IMAGES_ROOT =os.getenv("IMAGES_ROOT")
+DOWNLOAD_DIR = os.getenv("LT_DOWNLOAD_DIR")
 COSMOS_CONT_TEXT = os.getenv("COSMOS_CONT_TEXT")
 COSMOS_DB_TEXT=os.getenv("COSMOS_DB_TEXT")
 
@@ -64,7 +64,7 @@ def main(blob_urls):
         blob_urls,
         AZURE_CONN_STRING,
         container_blob,
-        download_dir="src_files",
+        download_dir=DOWNLOAD_DIR,
         keep_files=True,
         verbose=True
     )
