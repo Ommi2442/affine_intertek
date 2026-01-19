@@ -76,63 +76,67 @@ const RenderSheetDefaultExcel = ({
               onMouseEnter={() => setHovered({ i: idx })}
               onMouseLeave={() => setHovered({ i: null })}
             >
-              <Box sx={{ display: 'flex' }}>
-                <TextField
-                  size="small"
-                  fullWidth
-                  value={item.value ?? ''}
-                  InputProps={{
-                    readOnly: !isEditable,
-                  }}
-                  onChange={(e) => {
-                    if (!isEditable) return;
-                    const value = e.target.value;
+              {item.user_editable && (
+                <Box sx={{ display: 'flex' }}>
+                  <TextField
+                    size="small"
+                    fullWidth
+                    value={item.value ?? ''}
+                    InputProps={{
+                      readOnly: !isEditable,
+                    }}
+                    onChange={(e) => {
+                      if (!isEditable) return;
+                      const value = e.target.value;
 
-                    // Fast local update
-                    setLocalItems((prev) =>
-                      prev.map((it, i) =>
-                        i === idx ? { ...it, value, is_user_edited: true } : it
-                      )
-                    );
-                  }}
-                  sx={{
-                    backgroundColor: isEditable ? '#fff' : '#f5f5f5',
-                    cursor: isEditable ? 'text' : 'default',
-                  }}
-                />
+                      // Fast local update
+                      setLocalItems((prev) =>
+                        prev.map((it, i) =>
+                          i === idx
+                            ? { ...it, value, is_user_edited: true }
+                            : it
+                        )
+                      );
+                    }}
+                    sx={{
+                      backgroundColor: isEditable ? '#fff' : '#f5f5f5',
+                      cursor: isEditable ? 'text' : 'default',
+                    }}
+                  />
 
-                <HoverActionWrapper
-                  show={hovered.i === idx}
-                  onApprove={
-                    canApprove
-                      ? () => {
-                          const item = localItems[idx];
+                  <HoverActionWrapper
+                    show={hovered.i === idx}
+                    onApprove={
+                      canApprove
+                        ? () => {
+                            const item = localItems[idx];
 
-                          updateField(
-                            sheet.sheet_no,
-                            item.answer_cell ?? item.field,
-                            item.value
-                          );
+                            updateField(
+                              sheet.sheet_no,
+                              item.answer_cell ?? item.field,
+                              item.value
+                            );
 
-                          handleApprove?.(idx);
-                        }
-                      : null
-                  }
-                  onComment={() => openComment(sheet.sheet_no, idx)}
-                  onBookmark={
-                    hasValue ? () => onBookmarkClick?.(localItems[idx]) : null
-                  }
-                />
+                            handleApprove?.(idx);
+                          }
+                        : null
+                    }
+                    onComment={() => openComment(sheet.sheet_no, idx)}
+                    onBookmark={
+                      hasValue ? () => onBookmarkClick?.(localItems[idx]) : null
+                    }
+                  />
 
-                {item.ai_fillable === true &&
-                  item.accuracy_level === true &&
-                  renderConfidenceColor(
-                    item.confidence,
-                    item.is_user_edited,
-                    item.ai_fillable,
-                    item.accuracy_level
-                  )}
-              </Box>
+                  {item.ai_fillable === true &&
+                    item.accuracy_level === true &&
+                    renderConfidenceColor(
+                      item.confidence,
+                      item.is_user_edited,
+                      item.ai_fillable,
+                      item.accuracy_level
+                    )}
+                </Box>
+              )}
             </Box>
           </Box>
         );

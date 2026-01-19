@@ -92,6 +92,12 @@ const DataTable = forwardRef(
       return [''];
     };
 
+    const isHardBlockedTextbox = (item) => {
+      if (!item) return false;
+
+      return item.page_no === 1 && item.field === 'Test specification:';
+    };
+
     const addPage3Row = (tableIdx) => {
       setTables((prev) => {
         const next = prev.map((t) => ({ ...t, Items: [...t.Items] }));
@@ -1617,9 +1623,9 @@ const DataTable = forwardRef(
                                 )}
                               </div>
                             ) : first.checkbox_value !== undefined ? (
-                              // ✅ checkbox rows → NEVER show textarea
+                              //  checkbox rows → NEVER show textarea
                               <Typography>{value}</Typography>
-                            ) : !editable ? (
+                            ) : !editable || isHardBlockedTextbox(first) ? (
                               <Typography>{value}</Typography>
                             ) : (
                               <div style={{ display: 'flex' }}>
@@ -1758,7 +1764,8 @@ const DataTable = forwardRef(
                                   </div>
                                 ) : pageNo === 7 &&
                                   r.take_value_UI ===
-                                    true ? null : r.user_editable !== true ? ( // ⛔ block textarea for page 7 checkbox UI
+                                    true ? null : r.user_editable !== true ||
+                                  isHardBlockedTextbox(first) ? ( //  block textarea for page 7 checkbox UI
                                   <Typography>{value}</Typography>
                                 ) : (
                                   <div
