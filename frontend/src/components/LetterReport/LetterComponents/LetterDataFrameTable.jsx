@@ -23,10 +23,16 @@ const emptyRow = () => ({
   __isNew: true,
 });
 
-const LetterDataFrameTable = ({ item, editMode, onChange }) => {
+const LetterDataFrameTable = ({
+  item,
+  editMode,
+  onChange,
+  renderHoverActions,
+}) => {
   if (!item || !Array.isArray(item.value)) return null;
 
   const rows = item.value;
+  const [hoveredRow, setHoveredRow] = React.useState(null);
 
   /* -------- UPDATE CELL -------- */
   const updateCell = (rowIndex, key, value) => {
@@ -112,17 +118,25 @@ const LetterDataFrameTable = ({ item, editMode, onChange }) => {
                 </TableCell>
               ))}
 
-              {/*  Confidence DOT per row */}
+              {/*  Confidence DOT + Hover Actions */}
               <TableCell
                 align="center"
                 sx={{
                   border: '1px solid #ccc',
                   width: '6%',
+                  position: 'relative',
                 }}
+                onMouseEnter={() => setHoveredRow(rowIndex)}
+                onMouseLeave={() => setHoveredRow(null)}
               >
                 {/*  Show dot only for existing rows */}
                 {!row.__isNew &&
                   renderConfidenceColor(item.confidence, false, true, true)}
+
+                {/*  Hover buttons after dot */}
+                {hoveredRow === rowIndex &&
+                  typeof renderHoverActions === 'function' &&
+                  renderHoverActions(null, null, true, item)}
               </TableCell>
 
               {editMode && (

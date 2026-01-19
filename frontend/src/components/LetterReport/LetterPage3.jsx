@@ -3,6 +3,10 @@ import { getLetterItem } from '../../utils/letterResolver';
 import { IntertekLogo } from './LetterComponents/IntertekLogo';
 import LetterDataFrameTable from './LetterComponents/LetterDataFrameTable';
 import LetterSmartField from './LetterComponents/LetterSmartField';
+import { IconButton } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
+import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 
 const LetterPage3 = ({
   json,
@@ -12,6 +16,88 @@ const LetterPage3 = ({
   onBookmarkClick,
 }) => {
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
+  //  Hover actions for Letter tables (Approve / Comment / Bookmark)
+  const renderHoverActions = (tIdx, iIdx, userEditable, directItem) => {
+    //  Allow direct item mode (Letter tables)
+    const item =
+      directItem ??
+      (tIdx != null && iIdx != null
+        ? json?.Tables?.[tIdx]?.Items?.[iIdx]
+        : null);
+
+    if (!item) return null;
+
+    // For Letter dataframe tables → ignore user_editable gate
+    const isLetterTableItem = item.dataframe_table === true;
+
+    if (!isLetterTableItem && userEditable !== true) return null;
+
+    const hasValueField = Object.prototype.hasOwnProperty.call(item, 'value');
+    if (!hasValueField) return null;
+
+    const isTbdNotAvailable =
+      typeof item.value === 'string' &&
+      item.value.trim().toLowerCase() === 'tbd-info not available';
+
+    const canApprove =
+      item.ai_fillable === true && item.accuracy_level === true;
+
+    return (
+      <div className="dt-hover-actions">
+        {/* APPROVE */}
+        {canApprove && (
+          <IconButton
+            size="small"
+            onClick={() => {
+              if (tIdx != null && iIdx != null) {
+                handleApprove?.(tIdx, iIdx);
+              }
+            }}
+          >
+            <CheckCircleIcon className="dt-icon-approve" />
+          </IconButton>
+        )}
+
+        {/* COMMENT */}
+        <IconButton
+          size="small"
+          onClick={() => {
+            //  Letter table → open comment using direct item
+            if (directItem) {
+              openComment?.(directItem);
+              return;
+            }
+
+            // 🔁 Normal DataTable path
+            if (tIdx != null && iIdx != null) {
+              openComment?.(tIdx, iIdx);
+            }
+          }}
+        >
+          <ChatBubbleOutlineOutlinedIcon className="dt-icon-comment" />
+        </IconButton>
+
+        {/* BOOKMARK */}
+        {!isTbdNotAvailable && (
+          <IconButton
+            size="small"
+            onClick={() => {
+              const row =
+                item ??
+                (tIdx != null && iIdx != null
+                  ? { __t: tIdx, __i: iIdx }
+                  : null);
+
+              if (row) onBookmarkClick?.(row);
+            }}
+          >
+            <MenuBookOutlinedIcon className="dt-icon-bookmark" />
+          </IconButton>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="letter-page">
       <IntertekLogo />
@@ -61,6 +147,7 @@ const LetterPage3 = ({
               item={item}
               editMode={editMode}
               onChange={forceUpdate}
+              renderHoverActions={renderHoverActions}
             />
           );
         }
