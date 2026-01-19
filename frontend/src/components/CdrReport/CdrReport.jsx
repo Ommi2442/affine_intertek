@@ -46,11 +46,12 @@ const CdrReport = forwardRef(
       onBookmarkClick,
       cdrFinalised,
       onConfidenceChange,
+      isHardRefresh,
     },
     ref
   ) => {
     const storageKey = `${STORAGE_KEY_PREFIX}${projectId ?? 'default'}`;
-    const isRefreshRef = useRef(false);
+    //const isRefreshRef = useRef(false);
 
     const [fullJson, setFullJson] = useState(null);
 
@@ -63,31 +64,71 @@ const CdrReport = forwardRef(
     const [expandedSheet, setExpandedSheet] = useState(null);
 
     /* -------- REFRESH DETECT -------- */
-    useEffect(() => {
-      const nav = performance.getEntriesByType?.('navigation')?.[0];
-      isRefreshRef.current =
-        nav?.type === 'reload' || performance.navigation?.type === 1;
-    }, []);
+    // useEffect(() => {
+    //   const nav = performance.getEntriesByType?.('navigation')?.[0];
+    //   isRefreshRef.current =
+    //     nav?.type === 'reload' || performance.navigation?.type === 1;
+    // }, []);
 
     /* -------- LOAD / SAVE -------- */
+    // useEffect(() => {
+    //   if (!jsonData) return;
+
+    //   if (isRefreshRef.current) {
+    //     idb_get(storageKey, STORES.CDR).then((saved) => {
+    //       if (saved) setFullJson(saved);
+    //       else {
+    //         setFullJson(jsonData);
+    //         idb_set(storageKey, jsonData, STORES.CDR);
+    //       }
+    //     });
+    //   } else {
+    //     setFullJson(jsonData);
+    //     idb_set(storageKey, jsonData, STORES.CDR);
+    //   }
+
+    //   setExpandedSheet(jsonData?.Sheets?.[0]?.sheet_no ?? null);
+    // }, [jsonData]);
+
     useEffect(() => {
       if (!jsonData) return;
 
-      if (isRefreshRef.current) {
-        idb_get(storageKey, STORES.CDR).then((saved) => {
-          if (saved) setFullJson(saved);
-          else {
-            setFullJson(jsonData);
-            idb_set(storageKey, jsonData, STORES.CDR);
-          }
-        });
-      } else {
-        setFullJson(jsonData);
-        idb_set(storageKey, jsonData, STORES.CDR);
-      }
+      let cancelled = false;
 
-      setExpandedSheet(jsonData?.Sheets?.[0]?.sheet_no ?? null);
-    }, [jsonData]);
+      const load = async () => {
+        // HARD REFRESH → reuse IndexedDB only
+        if (isHardRefresh) {
+          const saved = await idb_get(storageKey, STORES.CDR);
+          if (cancelled) return;
+
+          if (saved) {
+            console.log('CDR restored from IndexedDB (inside CdrReport)');
+            setFullJson(saved);
+            setExpandedSheet(saved?.Sheets?.[0]?.sheet_no ?? null);
+            return;
+          }
+
+          // fallback only if cache truly missing
+          console.warn('No CDR cache found → falling back to backend JSON');
+          setFullJson(jsonData);
+          setExpandedSheet(jsonData?.Sheets?.[0]?.sheet_no ?? null);
+          return;
+        }
+
+        // NORMAL LOAD → backend is authoritative
+        setFullJson(jsonData);
+        setExpandedSheet(jsonData?.Sheets?.[0]?.sheet_no ?? null);
+
+        // overwrite cache only on non-refresh
+        await idb_set(storageKey, jsonData, STORES.CDR);
+      };
+
+      load();
+
+      return () => {
+        cancelled = true;
+      };
+    }, [jsonData, isHardRefresh, storageKey]);
 
     const persist = (next) =>
       idb_set(storageKey, next, STORES.CDR).catch(() => {});
