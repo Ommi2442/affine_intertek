@@ -1,0 +1,39 @@
+{
+  "pages": [
+    {
+      "page_number": 3,
+      "items": [
+        {
+          "key": "«AppCOMPANYNAME»",
+          "value": "CellFE",
+          "question": "",
+          "custom_prompt": "Mention the name of the client?",
+          "ai_fillable": true,
+          "text_support": [],
+          "image_support": [
+            {
+              "filename": "source_documents_PastedGraphic-1.png",
+              "image_file": "source_documents_PastedGraphic-1.png",
+              "pdf_file": null,
+              "page": null,
+              "url": null
+            }
+          ],
+          "evidence_type": "image",
+          "confidence": 90
+        },
+        {
+          "key": "Intertek Report: No:",
+          "value": "Not stated in provided images.",
+          "question": "",
+          "custom_prompt": "Mention the REPORT NUMBER",
+          "ai_fillable": true,
+          "text_support": [],
+          "image_support": [],
+          "evidence_type": "image",
+          "confidence": 100
+        }
+      ]
+    }
+  ]
+}

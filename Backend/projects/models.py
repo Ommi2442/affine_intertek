@@ -82,4 +82,4 @@ class LetterGeneration(BaseModel):
     projectId: str
     trf_urls: str
     cdr_urls: str
-    other_urls: str
+    # other_urls: str

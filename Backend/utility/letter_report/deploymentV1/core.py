@@ -1,5 +1,3 @@
-import json
-import re
 import re
 import tempfile
 import shutil
@@ -13,6 +11,8 @@ from langchain_core.documents import Document
 import io
 import openpyxl
 import xlrd
+
+from utility.letter_report.deploymentV1.config import AZURE_CONN_STRING, DB_NAME_IMG, CONT_NAME_IMG, CHUNK_SIZE, CHUNK_OVERLAP, TOP_K, EMBED_DIM, VECTOR_PATH, BLOB_CONTAINER_NAME, conn_str, IMAGE_EXTS, AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY, CHAT_DEPLOY, COSMOS_URL, COSMOS_KEY, COSMOS_DB, COSMOS_CONT, DB_NAME, CONT_NAME, MAX_THREADS, MAX_RETRIES, INITIAL_BACKOFF
 
 import os
 import pdfplumber
@@ -55,66 +55,25 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from azure.core.exceptions import HttpResponseError
 import time
 from langchain_community.callbacks import get_openai_callback
-
-from dotenv import load_dotenv
-
-load_dotenv()
-import os
-
-AZURE_CONN_STRING = os.getenv("LT_AZURE_CONN_STRING")
-DB_NAME_IMG = os.getenv("LT_DB_NAME_IMG")
-CONT_NAME_IMG = os.getenv("LT_CONT_NAME_IMG")
-CHUNK_SIZE = int(os.getenv("LT_CHUNK_SIZE"))
-CHUNK_OVERLAP = int(os.getenv("LT_CHUNK_OVERLAP"))
-TOP_K = int(os.getenv("LT_TOP_K"))
-EMBED_DIM = int(os.getenv("LT_EMBED_DIM"))
-VECTOR_PATH = os.getenv("LT_VECTOR_PATH")
-
-BLOB_CONTAINER_NAME = os.getenv("LT_BLOB_CONTAINER_NAME")
-CONN_STR = os.getenv("LT_conn_str")
-
-IMAGE_EXTS = os.getenv("LT_IMAGE_EXTS")
-
-AOAI_ENDPOINT = os.getenv("LT_AOAI_ENDPOINT")
-AOAI_KEY = os.getenv("LT_AOAI_KEY")
-API_VERSION = os.getenv("LT_API_VERSION")
-EMBED_DEPLOY = os.getenv("LT_EMBED_DEPLOY")
-CHAT_DEPLOY = os.getenv("LT_CHAT_DEPLOY")
-
-COSMOS_URL = os.getenv("LT_COSMOS_URL")
-COSMOS_KEY = os.getenv("LT_COSMOS_KEY")
-COSMOS_DB = os.getenv("LT_COSMOS_DB")
-COSMOS_CONT = os.getenv("LT_COSMOS_CONT")
-
-DB_NAME = os.getenv("LT_DB_NAME")
-CONT_NAME = os.getenv("LT_CONT_NAME")
-
-MAX_THREADS = int(os.getenv("LT_MAX_THREADS"))
-MAX_RETRIES = int(os.getenv("LT_MAX_RETRIES"))
-INITIAL_BACKOFF = int(os.getenv("LT_INITIAL_BACKOFF"))
- 
-
-
 pd.set_option('display.max_colwidth', None)  # Don't truncate cell text
 pd.set_option('display.max_rows', None)      # Show all rows (optional)
 pd.set_option('display.max_columns', None)
 
-## CAD and Schematic Support::: Stringent for Images- use This
+import os
+import re
+import pandas as pd
+from typing import Optional, Tuple
 
-# Each rule independently catches a different type of engineering drawing:
-# Raster-heavy schematics
-# Vector-heavy CAD
-# Flowcharts & logic diagrams
-# Tables of components or wiring connections
-# Minimal text wiring diagrams
 def build_vectorstore(embeddings, COSMOS_URL, COSMOS_KEY,DB_NAME, CONT_NAME ):
     
-   
+    
     cosmos_client = CosmosClient(
         url=COSMOS_URL,
         credential=COSMOS_KEY,
         consistency_level=ConsistencyLevel.Eventual
     )
+
+    # keep your existing policy helpers if your constructor requires them
     return AzureCosmosDBNoSqlVectorSearch(
         cosmos_client=cosmos_client,
         embedding=embeddings,
@@ -471,7 +430,7 @@ def upload_pdf_images_and_append_urls_parallel(
 
 # for processing images (dont run)
 def build_vectorstore2(embeddings, COSMOS_URL, COSMOS_KEY, DB_NAME_IMG, CONT_NAME_IMG):
-   
+    
     cosmos_client = CosmosClient(
         url=COSMOS_URL,
         credential=COSMOS_KEY,
@@ -649,10 +608,6 @@ def load_and_process_images(image_urls,MAX_THREADS,MAX_RETRIES, INITIAL_BACKOFF,
 
     print(f"\n[COMPLETE] Finished processing {total} images.\n")
     return docs
-
-
-
-
 
 
 def build_vision_message_v5(inputs):
@@ -1202,6 +1157,49 @@ def update_tasks_with_top5_images(tasks, retriever, max_threads=10):
     return updated
 
 
+# # for processing images (dont run)
+# def build_vectorstore2(embeddings):
+#     COSMOS_URL    = "https://rag-intertek.documents.azure.com:443/"
+#     COSMOS_KEY    = "AbhkomWJLtf8TR7odpABPqx1OrjlmCcpTXlKr9Vvp3RulZmFGollxQflIp3LLUAFt4XcMh70RbRxACDbuxyZLg=="
+#     # DB_NAME     = "ragdatabase_new"
+#     # CONT_NAME   = "vectorstorecontainer_new"
+#     DB_NAME     = "ragdatabase_new_itk2"
+#     CONT_NAME   = "vectorstorecontainer_new_itk2"
+    
+#     # COSMOS_URL    = "https://csdb-intertek-esus-dev.documents.azure.com:443/"
+#     # COSMOS_KEY    = "azcUeVxFxoYoFkChvWI8Wr8lMijOuWXDYQsvMf6O2LmT0Uv3Zs7lDPiXSxWYOjq00MFDbK88ApotACDbODLFXA=="
+#     cosmos_client = CosmosClient(
+#         url=COSMOS_URL,
+#         credential=COSMOS_KEY,
+#         consistency_level=ConsistencyLevel.Eventual
+#     )
+
+#     # keep your existing policy helpers if your constructor requires them
+#     return AzureCosmosDBNoSqlVectorSearch(
+#         cosmos_client=cosmos_client,
+#         embedding=embeddings,
+#         database_name=DB_NAME,
+#         container_name=CONT_NAME,
+
+#         # if your version requires explicit policies, keep these as you already had:
+#         vector_embedding_policy={"vectorEmbeddings":[{"path":"/vector","dataType":"float32","dimensions":1536,"distanceFunction":"cosine"}]},
+#         indexing_policy={"includedPaths":[{"path":"/*"}],
+#                          "excludedPaths":[{"path":"/\"_etag\"/?"},{"path":"/vector/*"}],
+#                          "vectorIndexes":[{"path":"/vector","type":"quantizedFlat"}]},
+#         cosmos_container_properties={"partition_key":"/id"},
+#         cosmos_database_properties={}, # _db_props()
+
+#         # IMPORTANT: pass a dict, not a list
+#         vector_search_fields={
+#             "text_field": "text",
+#             "embedding_field": "vector",
+#             "metadata_field": "metadata"
+#         }
+#     )
+
+
+import json
+import re
 
 # --------------------------------------------------
 def extract_human_prefix(text):
@@ -1558,20 +1556,128 @@ from docx import Document
 
 # Load the Word document
 ## idetify the file format if pf convert to docx and read table 51
-def extract_table1a(filename):
+# def extract_table1a(filename):
         
-    doc = Document(filename)
-    table = doc.tables[51]
+#     doc = Document(filename)
+#     table = doc.tables[51]
 
+#     import pandas as pd
+
+#     data = []
+#     for row in table.rows:
+#         data.append([cell.text.strip() for cell in row.cells])
+
+#     # Assuming first row is header
+#     df = pd.DataFrame(data[:])
+#     return df
+
+def extract_table1a(filename):
+    from docx import Document
     import pandas as pd
 
-    data = []
-    for row in table.rows:
-        data.append([cell.text.strip() for cell in row.cells])
+    doc = Document(filename)
 
-    # Assuming first row is header
-    df = pd.DataFrame(data[:])
-    return df
+    target_table = None
+
+    for table in doc.tables:
+        table_text = " ".join(
+            cell.text.strip()
+            for row in table.rows
+            for cell in row.cells
+        ).lower()
+
+        if "table 1.a" in table_text and "list of components" in table_text:
+            target_table = table
+            break
+
+    if target_table is None:
+        # raise ValueError(
+        #     "Table containing 'Table 1.A: List of components' not found"
+        # )
+        return None
+
+    data = [
+        [cell.text.strip() for cell in row.cells]
+        for row in target_table.rows
+    ]
+
+    return pd.DataFrame(data)
+# import os
+# import pandas as pd
+# from typing import Optional
+
+
+# def extract_table1a(filename: Optional[str]) -> pd.DataFrame:
+#     """
+#     Extract Table 1.A from a DOCX file.
+#     If DOCX is missing or Table 1.A is not found,
+#     fall back to extracting from CDR Components Excel
+#     located in the same directory.
+
+#     Args:
+#         filename: Path to CDR .docx file
+
+#     Returns:
+#         pd.DataFrame
+#     """
+
+#     # Directory for Excel fallback
+#     src_directory = (
+#         os.path.dirname(filename)
+#         if filename and os.path.exists(filename)
+#         else None
+#     )
+
+#     # -------------------------------
+#     # 1️⃣ Attempt DOCX extraction
+#     # -------------------------------
+#     if filename and os.path.exists(filename):
+#         try:
+#             from docx import Document
+
+#             doc = Document(filename)
+#             target_table = None
+
+#             for table in doc.tables:
+#                 table_text = " ".join(
+#                     cell.text.strip()
+#                     for row in table.rows
+#                     for cell in row.cells
+#                 ).lower()
+
+#                 if "table 1.a" in table_text and "list of components" in table_text:
+#                     target_table = table
+#                     break
+
+#             if target_table:
+#                 data = [
+#                     [cell.text.strip() for cell in row.cells]
+#                     for row in target_table.rows
+#                 ]
+#                 return pd.DataFrame(data)
+
+#         except Exception as e:
+#             print(f"DOCX extraction failed, falling back to Excel: {e}")
+
+#     # --------------------------------
+#     # 2️⃣ Fallback → Excel extraction
+#     # --------------------------------
+#     if src_directory:
+#         df = load_cdr_components_df(src_directory)
+#         if df is not None:
+#             return df
+
+#     # --------------------------------
+#     # 3️⃣ Hard failure
+#     # --------------------------------
+#     raise RuntimeError(
+#         "Failed to extract Table 1.A from both DOCX and Excel sources."
+#     )
+
+
+from typing import Optional
+import os
+import pandas as pd
 
 import pandas as pd
 
@@ -1708,62 +1814,114 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 import pandas as pd
 
+# def insert_dataframe_below_anchor(
+#     input_docx,
+#     output_docx,
+#     df,
+#     anchor_text
+# ):
+#     doc = Document(input_docx)
+
+#     anchor_paragraph = None
+#     for para in doc.paragraphs:
+#         if anchor_text in para.text:
+#             anchor_paragraph = para
+#             break
+
+#     if anchor_paragraph is None:
+#         raise ValueError("Anchor text not found in document.")
+
+#     # -------------------------------------------------
+#     # INSERT BLANK PARAGRAPH AFTER ANCHOR (XML SAFE)
+#     # -------------------------------------------------
+#     blank_p = OxmlElement("w:p")
+#     anchor_paragraph._p.addnext(blank_p)
+
+#     # -------------------------------------------------
+#     # CREATE TABLE
+#     # -------------------------------------------------
+#     rows, cols = df.shape
+#     table = doc.add_table(rows=rows + 1, cols=cols)
+#     table.style = "Table Grid"
+
+#     # -----------------------------
+#     # Header row (Amber background)
+#     # -----------------------------
+#     for col_idx, col_name in enumerate(df.columns):
+#         cell = table.rows[0].cells[col_idx]
+#         cell.text = str(col_name)
+
+#         tc_pr = cell._tc.get_or_add_tcPr()
+#         shd = OxmlElement("w:shd")
+#         shd.set(qn("w:fill"), "FFC000")  # Amber
+#         tc_pr.append(shd)
+
+#     # -----------------------------
+#     # Data rows
+#     # -----------------------------
+#     for row_idx in range(rows):
+#         for col_idx in range(cols):
+#             table.rows[row_idx + 1].cells[col_idx].text = str(df.iat[row_idx, col_idx])
+
+#     # -------------------------------------------------
+#     # INSERT TABLE AFTER BLANK PARAGRAPH
+#     # -------------------------------------------------
+#     blank_p.addnext(table._element)
+
+#     doc.save(output_docx)
+
+from docx import Document
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+
 def insert_dataframe_below_anchor(
     input_docx,
     output_docx,
     df,
     anchor_text
 ):
+    if df is None or df.empty:
+        print("⚠️ DataFrame is empty. Skipping table insertion.")
+        return
+
     doc = Document(input_docx)
 
+    # 1️⃣ Find anchor paragraph
     anchor_paragraph = None
     for para in doc.paragraphs:
-        if anchor_text in para.text:
+        if anchor_text.strip() in para.text.strip():
             anchor_paragraph = para
             break
 
     if anchor_paragraph is None:
         raise ValueError("Anchor text not found in document.")
 
-    # -------------------------------------------------
-    # INSERT BLANK PARAGRAPH AFTER ANCHOR (XML SAFE)
-    # -------------------------------------------------
-    blank_p = OxmlElement("w:p")
-    anchor_paragraph._p.addnext(blank_p)
-
-    # -------------------------------------------------
-    # CREATE TABLE
-    # -------------------------------------------------
+    # 2️⃣ Create table FIRST (Word-safe)
     rows, cols = df.shape
     table = doc.add_table(rows=rows + 1, cols=cols)
     table.style = "Table Grid"
 
-    # -----------------------------
-    # Header row (Amber background)
-    # -----------------------------
+    # Header row
     for col_idx, col_name in enumerate(df.columns):
         cell = table.rows[0].cells[col_idx]
         cell.text = str(col_name)
 
         tc_pr = cell._tc.get_or_add_tcPr()
         shd = OxmlElement("w:shd")
-        shd.set(qn("w:fill"), "FFC000")  # Amber
+        shd.set(qn("w:fill"), "FFC000")
         tc_pr.append(shd)
 
-    # -----------------------------
     # Data rows
-    # -----------------------------
-    for row_idx in range(rows):
-        for col_idx in range(cols):
-            table.rows[row_idx + 1].cells[col_idx].text = str(df.iat[row_idx, col_idx])
+    for r in range(rows):
+        for c in range(cols):
+            table.rows[r + 1].cells[c].text = str(df.iat[r, c])
 
-    # -------------------------------------------------
-    # INSERT TABLE AFTER BLANK PARAGRAPH
-    # -------------------------------------------------
-    blank_p.addnext(table._element)
+    # 3️⃣ Move table XML BELOW anchor paragraph
+    anchor_paragraph._p.addnext(table._element)
 
     doc.save(output_docx)
 
+    print("✅ Table inserted below anchor.")
 
 
 from docx import Document
@@ -1990,16 +2148,45 @@ def replace_header_keys_with_values(input_docx, output_docx, data):
 
 import os
 
-def ensure_docx(file_path: str) -> str:
+# def ensure_docx(file_path: str) -> str:
+#     """
+#     Ensures the file is in DOCX format.
+#     - If .doc  -> converts to .docx
+#     - If .docx -> returns as-is
+#     - Else     -> raises error
+#     """
+
+#     if not os.path.exists(file_path):
+#         raise FileNotFoundError(file_path)
+
+#     ext = os.path.splitext(file_path)[1].lower()
+
+#     if ext == ".docx":
+#         return file_path
+
+#     if ext == ".doc":
+#         return convert_doc_to_docx(file_path)
+
+#     raise ValueError(f"Unsupported file type: {ext}. Only .doc or .docx allowed.")
+
+import os
+from typing import Optional
+
+def ensure_docx(file_path: Optional[str]) -> Optional[str]:
     """
-    Ensures the file is in DOCX format.
-    - If .doc  -> converts to .docx
-    - If .docx -> returns as-is
-    - Else     -> raises error
+    Safely ensures the file is in DOCX format.
+
+    - If file_path is None → returns None
+    - If .docx → returns as-is
+    - If .doc  → converts to .docx and returns path
+    - If file does not exist / unsupported type → returns None
     """
 
+    if not file_path:
+        return None
+
     if not os.path.exists(file_path):
-        raise FileNotFoundError(file_path)
+        return None
 
     ext = os.path.splitext(file_path)[1].lower()
 
@@ -2007,19 +2194,106 @@ def ensure_docx(file_path: str) -> str:
         return file_path
 
     if ext == ".doc":
-        return convert_doc_to_docx(file_path)
+        try:
+            return convert_doc_to_docx(file_path)
+        except Exception as e:
+            print(f"⚠️ DOC → DOCX conversion failed: {e}")
+            return None
 
-    raise ValueError(f"Unsupported file type: {ext}. Only .doc or .docx allowed.")
+    # Unsupported type → silently ignore
+    return None
 
+import pandas as pd
+
+# def format_critical_components_df(raw_df: pd.DataFrame) -> pd.DataFrame:
+#     """
+#     Formats extracted IEC table into clean Critical Components table.
+#     - Drops first 3 and last 3 rows
+#     - Resets Item numbering starting from 1
+#     """
+
+#     # --------------------------------------------------
+#     # 1. Rename columns by position
+#     # --------------------------------------------------
+#     df = raw_df.rename(columns={
+#         0: "Name",
+#         2: "Manufacturer/ trademark",
+#         3: "Type / Model",
+#         5: "Technical data and securement means",
+#         9: "Mark(s) of conformity"
+#     })
+
+#     # --------------------------------------------------
+#     # 2. Keep only required columns
+#     # --------------------------------------------------
+#     df = df[
+#         [
+#             "Name",
+#             "Manufacturer/ trademark",
+#             "Type / Model",
+#             "Technical data and securement means",
+#             "Mark(s) of conformity"
+#         ]
+#     ]
+
+#     # --------------------------------------------------
+#     # 3. Remove header / note / empty rows
+#     # --------------------------------------------------
+#     df = df[
+#         df["Name"].notna()
+#         & ~df["Name"].str.contains(
+#             r"IEC|Clause|table|NOTE|List all|May include|licence",
+#             case=False,
+#             na=False
+#         )
+#     ]
+
+#     # --------------------------------------------------
+#     # 4. Drop first 3 and last 3 rows
+#     # --------------------------------------------------
+#     df = df.iloc[3:-3].reset_index(drop=True)
+
+#     # --------------------------------------------------
+#     # 5. Remove Item column if already present
+#     # --------------------------------------------------
+#     if "Item" in df.columns:
+#         df = df.drop(columns=["Item"])
+
+#     # --------------------------------------------------
+#     # 6. Add Item column as first column (reset counter)
+#     # --------------------------------------------------
+#     df.insert(0, "Item", range(1, len(df) + 1))
+
+#     # --------------------------------------------------
+#     # 7. Clean whitespace
+#     # --------------------------------------------------
+#     df = df.applymap(
+#         lambda x: " ".join(str(x).split()) if pd.notna(x) else x
+#     )
+
+#     return df
 
 import pandas as pd
 
 def format_critical_components_df(raw_df: pd.DataFrame) -> pd.DataFrame:
     """
     Formats extracted IEC table into clean Critical Components table.
-    - Drops first 3 and last 3 rows
-    - Resets Item numbering starting from 1
     """
+
+    # --------------------------------------------------
+    # 0. Defensive guard
+    # --------------------------------------------------
+    if raw_df is None or raw_df.empty:
+        return pd.DataFrame(
+            columns=[
+                "Item",
+                "Name",
+                "Manufacturer/ trademark",
+                "Type / Model",
+                "Technical data and securement means",
+                "Mark(s) of conformity"
+            ]
+        )
 
     # --------------------------------------------------
     # 1. Rename columns by position
@@ -2058,9 +2332,11 @@ def format_critical_components_df(raw_df: pd.DataFrame) -> pd.DataFrame:
     ]
 
     # --------------------------------------------------
-    # 4. Drop first 3 and last 3 rows
+    # 4. Drop first 3 and last 3 rows (safe slice)
     # --------------------------------------------------
-    df = df.iloc[3:-3].reset_index(drop=True)
+    if len(df) > 6:
+        df = df.iloc[3:-3]
+    df = df.reset_index(drop=True)
 
     # --------------------------------------------------
     # 5. Remove Item column if already present
@@ -2069,7 +2345,7 @@ def format_critical_components_df(raw_df: pd.DataFrame) -> pd.DataFrame:
         df = df.drop(columns=["Item"])
 
     # --------------------------------------------------
-    # 6. Add Item column as first column (reset counter)
+    # 6. Add Item column
     # --------------------------------------------------
     df.insert(0, "Item", range(1, len(df) + 1))
 
@@ -2281,3 +2557,515 @@ def get_first_doc_or_docx(folder_path):
             return os.path.join(folder_path, filename)
 
     return None
+
+import os
+import re
+import pandas as pd
+from typing import Optional, Tuple
+
+
+# def sheet_name_is_component(sheet_name: str) -> bool:
+#     """
+#     Detects CDR Components sheets like:
+#     - 4.0 Components
+#     - Components
+#     - Component List
+#     """
+#     normalized = sheet_name.lower()
+#     normalized = re.sub(r"[^a-z]", "", normalized)
+
+#     return "component" in normalized
+
+# def sheet_has_required_columns(
+#     excel_path: str,
+#     sheet_name: str,
+#     max_header_search_rows: int = 15
+# ) -> bool:
+#     """
+#     Scans first N rows to find a valid header row
+#     containing Photo + Conformity columns.
+#     """
+
+#     try:
+#         preview = pd.read_excel(
+#             excel_path,
+#             sheet_name=sheet_name,
+#             header=None,
+#             nrows=max_header_search_rows
+#         )
+
+#         def normalize(val):
+#             return (
+#                 str(val)
+#                 .lower()
+#                 .replace(" ", "")
+#                 .replace("#", "")
+#                 .replace("_", "")
+#             )
+
+#         for row_idx in range(len(preview)):
+#             row = preview.iloc[row_idx].tolist()
+#             normalized = {normalize(c) for c in row if pd.notna(c)}
+
+#             has_photo = any("photo" in c for c in normalized)
+#             has_conform = any("conform" in c for c in normalized)
+
+#             if has_photo and has_conform:
+#                 print(f"        Header detected at row {row_idx}")
+#                 return True
+
+#         return False
+
+#     except Exception as e:
+#         print(f"        Column scan failed: {e}")
+#         return False
+
+# #CDR fallback
+
+# # def find_cdr_components_excel(
+# #     directory: str
+# # ) -> Optional[Tuple[str, str]]:
+# #     """
+# #     Finds an Excel file containing a valid CDR Components sheet.
+
+# #     Returns:
+# #         (excel_path, sheet_name) if found
+# #         None otherwise
+# #     """
+
+# #     if not os.path.isdir(directory):
+# #         raise FileNotFoundError(f"Directory not found: {directory}")
+
+# #     for filename in os.listdir(directory):
+
+# #         # Skip Excel temp/lock files
+# #         if filename.startswith("~$"):
+# #             continue
+
+# #         if not filename.lower().endswith(".xlsx"):
+# #             continue
+
+# #         excel_path = os.path.join(directory, filename)
+
+# #         try:
+# #             xls = pd.ExcelFile(excel_path)
+
+# #             for sheet in xls.sheet_names:
+
+# #                 if not sheet_name_is_component(sheet):
+# #                     continue
+
+# #                 if sheet_has_required_columns(excel_path, sheet):
+# #                     print("[FOUND] CDR Components sheet detected")
+# #                     print(f"        File : {filename}")
+# #                     print(f"        Sheet: {sheet}")
+
+# #                     return excel_path, sheet
+
+# #         except Exception as e:
+# #             print(f"[SKIP] {filename}: {e}")
+
+# #     print("[WARN] No valid CDR Components sheet found")
+# #     return None
+
+
+# def find_cdr_components_excel(directory: str):
+#     print("\n🔍 [CDR FINDER] Scanning directory:", directory)
+
+#     if not os.path.isdir(directory):
+#         print("❌ Directory does not exist")
+#         return None
+
+#     files = os.listdir(directory)
+#     print("📂 Files found:", files)
+
+#     for filename in files:
+
+#         print(f"\n➡️ Checking file: {filename}")
+
+#         if filename.startswith("~$"):
+#             print("   ⏭️ Skipping temp file")
+#             continue
+
+#         if not filename.lower().endswith(".xlsx"):
+#             print("   ⏭️ Not an .xlsx file")
+#             continue
+
+#         excel_path = os.path.join(directory, filename)
+#         print("   📄 Excel candidate:", excel_path)
+
+#         try:
+#             xls = pd.ExcelFile(excel_path)
+#             print("   📑 Sheets found:", xls.sheet_names)
+
+#             for sheet in xls.sheet_names:
+#                 print(f"      🔎 Checking sheet: '{sheet}'")
+
+#                 if not sheet_name_is_component(sheet):
+#                     print("         ❌ sheet_name_is_component = False")
+#                     continue
+
+#                 print("         ✅ sheet_name_is_component = True")
+
+#                 if not sheet_has_required_columns(excel_path, sheet):
+#                     print("         ❌ sheet_has_required_columns = False")
+#                     continue
+
+#                 print("         ✅ sheet_has_required_columns = True")
+#                 print("[FOUND] CDR Components sheet detected")
+#                 print(f"        File : {filename}")
+#                 print(f"        Sheet: {sheet}")
+
+#                 return excel_path, sheet
+
+#         except Exception as e:
+#             print(f"   ❌ Failed reading Excel: {e}")
+
+#     print("\n⚠️ [WARN] No valid CDR Components sheet found")
+#     return None
+
+
+# import pandas as pd
+# def extract_components_table(
+#     excel_path: str,
+#     sheet_name: str = "4.0 Components",
+#     start_keyword: str = "photo"
+# ) -> pd.DataFrame:
+#     """
+#     Extracts a table from an Excel sheet starting at the row
+#     containing 'Photo#' (robust match) and stops at the first fully blank row.
+#     """
+
+#     # Read entire sheet (no headers)
+#     df_raw = pd.read_excel(excel_path, sheet_name=sheet_name, header=None)
+
+#     # -------- FIND HEADER ROW ROBUSTLY --------
+#     start_row = None
+#     for i, row in df_raw.iterrows():
+#         row_str = row.astype(str).str.lower().str.strip()
+#         if row_str.str.contains(start_keyword).any():
+#             start_row = i
+#             break
+
+#     if start_row is None:
+#         raise ValueError(
+#             f"Could not find a row containing '{start_keyword}' in sheet '{sheet_name}'"
+#         )
+
+#     # -------- EXTRACT HEADERS --------
+#     headers = (
+#         df_raw.iloc[start_row]
+#         .astype(str)
+#         .str.strip()
+#         .replace("nan", "")
+#         .tolist()
+#     )
+
+#     # -------- EXTRACT DATA --------
+#     data = df_raw.iloc[start_row + 1:].copy()
+#     data.columns = headers
+
+#     # -------- STOP AT FIRST COMPLETELY BLANK ROW --------
+#     blank_rows = data.index[data.isna().all(axis=1)]
+#     if not blank_rows.empty:
+#         data = data.loc[: blank_rows[0] - 1]
+
+#     # -------- CLEANUP --------
+#     data = data.reset_index(drop=True)
+#     data = data.dropna(axis=1, how="all")
+
+#     return data 
+
+# from typing import Optional
+# import pandas as pd
+# from typing import Optional
+# import pandas as pd
+# import os
+
+# def load_cdr_components_df(
+#     directory: str
+# ) -> Optional[pd.DataFrame]:
+#     """
+#     Finds the CDR Components Excel file in the directory
+#     and extracts the components table as a DataFrame.
+
+#     Returns:
+#         pd.DataFrame if successful
+#         None if no valid CDR components Excel is found
+#     """
+
+#     print("\n🔍 [CDR EXCEL] Starting Excel-based component extraction")
+#     print(f"📂 Directory: {directory}")
+
+#     # -------------------------------
+#     # Step 1: Find Excel + sheet
+#     # -------------------------------
+#     result = find_cdr_components_excel(directory)
+
+#     if result is None:
+#         print("❌ [CDR EXCEL] No valid CDR Components Excel found.")
+#         print("📄 Files present:", os.listdir(directory))
+#         return None
+
+#     excel_path, sheet_name = result
+
+#     print("✅ [CDR EXCEL] Excel file detected")
+#     print(f"   📄 File : {excel_path}")
+#     print(f"   📑 Sheet: {sheet_name}")
+
+#     # -------------------------------
+#     # Step 2: Extract table
+#     # -------------------------------
+#     try:
+#         print("📊 [CDR EXCEL] Extracting components table...")
+
+#         df = extract_components_table(
+#             excel_path
+#             # sheet_name=sheet_name  # enable if needed
+#         )
+
+#         if df is None:
+#             print("❌ [CDR EXCEL] extract_components_table returned None")
+#             return None
+
+#         print("✅ [CDR EXCEL] Table extracted successfully")
+#         print(f"   🔢 Shape: {df.shape}")
+#         print("   🏷️ Columns:")
+#         for col in df.columns:
+#             print(f"      - {col}")
+
+#         # Optional: show first few rows
+#         print("   🔍 Preview:")
+#         print(df.head(3))
+
+#         return df
+
+#     except Exception as e:
+#         print("❌ [CDR EXCEL] Failed during table extraction")
+#         print(f"   Reason: {e}")
+#         return None
+import pandas as pd
+from typing import Optional
+from pathlib import Path
+
+def load_cdr_components_df(directory: str) -> Optional[pd.DataFrame]:
+    """
+    Loads CDR Components table from .xlsx / .xls / XML / HTML disguised files.
+    Removes NOTES automatically.
+    """
+
+    print("\n🔍 [CDR EXCEL] Starting Excel-based component extraction")
+    print(f"📂 Directory: {directory}")
+
+    for path in Path(directory).iterdir():
+
+        if path.name.startswith("~$"):
+            continue
+        if path.suffix.lower() not in (".xlsx", ".xls"):
+            continue
+
+        print(f"\n📄 Checking file: {path}")
+
+        tables = None
+
+        try:
+            # -------------------------------
+            # Explicit .xls handling
+            # -------------------------------
+            if path.suffix.lower() == ".xls":
+                print("   ✅ Detected legacy .xls")
+                tables = pd.read_excel(
+                    path,
+                    sheet_name=None,
+                    header=None,
+                    engine="xlrd"
+                )
+
+            else:
+                # -------------------------------
+                # Inspect header bytes
+                # -------------------------------
+                with open(path, "rb") as f:
+                    head = f.read(200)
+
+                is_zip = head.startswith(b"PK")
+                is_xml = head.lstrip().startswith(b"<?xml")
+                is_html = head.lstrip().lower().startswith(b"<html")
+
+                if is_zip:
+                    print("   ✅ Detected real XLSX")
+                    tables = pd.read_excel(path, sheet_name=None, header=None)
+
+                elif is_xml or is_html:
+                    print("   ✅ Detected XML / HTML export")
+                    dfs = pd.read_html(path)
+                    tables = {f"sheet_{i}": df for i, df in enumerate(dfs)}
+
+                else:
+                    print("   ⚠️ Unknown format → trying CSV fallback")
+                    df = pd.read_csv(path, header=None)
+                    tables = {"csv": df}
+
+        except Exception as e:
+            print(f"   ❌ Failed to read file: {e}")
+            continue
+
+        # -------------------------------
+        # Scan tables for Components header
+        # -------------------------------
+        for sheet, df_raw in tables.items():
+            print(f"   🔎 Scanning: {sheet}")
+
+            if df_raw is None or df_raw.empty:
+                continue
+
+            header_row = None
+            for i, row in df_raw.iterrows():
+                norm = (
+                    row.astype(str)
+                    .str.lower()
+                    .str.replace(" ", "")
+                    .str.strip()
+                )
+
+                if (
+                    norm.str.contains("photo").any()
+                    and norm.str.contains("name").any()
+                    and norm.str.contains("manufacturer").any()
+                    and norm.str.contains("conform").any()
+                ):
+                    header_row = i
+                    break
+
+            if header_row is None:
+                continue
+
+            print(f"   ✅ Header detected at row {header_row}")
+
+            # -------------------------------
+            # Extract table
+            # -------------------------------
+            headers = (
+                df_raw.iloc[header_row]
+                .astype(str)
+                .str.strip()
+                .replace("nan", "")
+                .tolist()
+            )
+
+            data = df_raw.iloc[header_row + 1:].copy()
+            data.columns = headers
+
+            # Remove NOTES and everything below
+            notes_idx = data[
+                data.apply(
+                    lambda r: r.astype(str)
+                    .str.contains(r"^notes:", case=False, na=False)
+                    .any(),
+                    axis=1
+                )
+            ].index
+
+            if not notes_idx.empty:
+                data = data.loc[: notes_idx[0] - 1]
+
+            data = data.dropna(axis=1, how="all")
+            data = data.reset_index(drop=True)
+
+            print("✅ [CDR EXCEL] Components table extracted")
+            print(f"   🔢 Shape: {data.shape}")
+
+            return data
+
+    print("\n⚠️ [WARN] No valid CDR Components table found")
+    return None
+
+
+import os
+from urllib.parse import unquote
+
+def attach_blob_urls_to_text_support_letter(data, blob_urls):
+    """
+    Add 'url' to each text_support item by matching base filenames.
+    Works with data.pages[].items[].text_support[] structure.
+    """
+
+    # Build filename → blob URL map
+    blob_map = {}
+    for url in blob_urls:
+        fname = unquote(url.split("/")[-1])
+        base = os.path.splitext(fname)[0]
+        blob_map.setdefault(base, url)
+
+    # Traverse updated JSON structure
+    for page in data.get("pages", []):
+        for item in page.get("items", []):
+            for ts in item.get("text_support", []):
+                ts["url"] = None  # default
+
+                fname = ts.get("filename")
+                if not fname:
+                    continue
+
+                base = os.path.splitext(fname)[0]
+                ts["url"] = blob_map.get(base)
+
+    return data
+ 
+
+import os
+from urllib.parse import unquote
+
+def attach_blob_urls_to_image_support_letter(data, blob_urls):
+    """
+    Add 'file_url' to each image_support entry based on pdf_file basename.
+    Works with data.pages[].items[].image_support[] structure.
+    """
+
+    # Build pdf base filename → blob URL map
+    blob_map = {}
+    for url in blob_urls:
+        fname = unquote(url.split("/")[-1])
+        base = os.path.splitext(fname)[0]
+        blob_map.setdefault(base, url)
+
+    # Traverse updated JSON structure
+    for page in data.get("pages", []):
+        for item in page.get("items", []):
+            for img in item.get("image_support", []):
+                img["file_url"] = None  # default
+
+                pdf_file = img.get("pdf_file")
+                if not pdf_file:
+                    continue
+
+                base = os.path.splitext(pdf_file)[0]
+                img["file_url"] = blob_map.get(base)
+
+    return data
+ 
+
+from urllib.parse import unquote
+
+def update_non_conforming_urls_from_blob(data, blob_urls):
+    """
+    Update 'nonConforming_urls' for the item where key == 'photograph'
+    using a list of blob URLs.
+    """
+
+    nonConformin_urls = [
+        {
+            "id": idx + 1,
+            "url": unquote(url).rstrip("'")
+        }
+        for idx, url in enumerate(blob_urls)
+    ]
+
+    for page in data.get("pages", []):
+        for item in page.get("items", []):
+            if item.get("key") == "photograph":
+                item["nonConforming_urls"] = nonConformin_urls
+                return data
+
+    return data
+ 

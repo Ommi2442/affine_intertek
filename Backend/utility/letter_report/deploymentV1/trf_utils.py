@@ -8,7 +8,10 @@ from email import policy
 from email.parser import BytesParser
 import extract_msg
 import uuid
-from langchain_core.documents import Document
+# from langchain_core.documents import Document
+from langchain_core.documents import Document as LCDocument
+from docx import Document as DocxDocument
+
 import io
 import openpyxl
 import xlrd
@@ -61,30 +64,63 @@ pd.set_option('display.max_columns', None)
 
 IMAGE_EXTS = {"jpg", "jpeg", "png", "gif", "bmp", "tiff", "tif", "webp", "svg"}
 
-def set_checkbox_checked(docx_path, out_path, checkbox_index=0):
-    doc = Document(docx_path)
+# def set_checkbox_checked(docx_path, out_path, checkbox_index=0):
+#     doc = Document(docx_path)
 
+#     count = 0
+#     for field in doc._element.body.iter():
+#         if field.tag == qn("w:fldSimple"):
+#             continue
+#         if field.tag == qn("w:fldChar") and field.get(qn("w:fldCharType")) == "begin":
+#             # potential checkbox start
+#             parent = field.getparent()
+#             ffData = parent.find(".//w:ffData", namespaces={"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"})
+#             if ffData is not None:
+#                 checkBox = ffData.find(".//w:checkBox", namespaces={"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"})
+#                 if checkBox is not None:
+#                     if count == checkbox_index:
+#                         default = checkBox.find(".//w:default", namespaces={"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"})
+#                         if default is None:
+#                             default = OxmlElement("w:default")
+#                             checkBox.append(default)
+#                         default.set(qn("w:val"), "1")  # ✔ check
+#                     count += 1
+
+#     doc.save(out_path)
+
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+from docx import Document as DocxDocument
+
+
+def set_checkbox_checked(docx_path, out_path, checkbox_index=0):
+    doc = DocxDocument(docx_path)
+
+    NS = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
     count = 0
-    for field in doc._element.body.iter():
-        if field.tag == qn("w:fldSimple"):
-            continue
-        if field.tag == qn("w:fldChar") and field.get(qn("w:fldCharType")) == "begin":
-            # potential checkbox start
-            parent = field.getparent()
-            ffData = parent.find(".//w:ffData", namespaces={"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"})
-            if ffData is not None:
-                checkBox = ffData.find(".//w:checkBox", namespaces={"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"})
-                if checkBox is not None:
-                    if count == checkbox_index:
-                        default = checkBox.find(".//w:default", namespaces={"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"})
-                        if default is None:
-                            default = OxmlElement("w:default")
-                            checkBox.append(default)
-                        default.set(qn("w:val"), "1")  # ✔ check
-                    count += 1
+
+    # Iterate through all XML elements in document body
+    for el in doc._element.body.iter():
+
+        # Look for legacy form field data
+        if el.tag == qn("w:ffData"):
+            checkBox = el.find(".//w:checkBox", namespaces=NS)
+            if checkBox is None:
+                continue
+
+            if count == checkbox_index:
+                # Find or create <w:default w:val="1"/>
+                default = checkBox.find("w:default", namespaces=NS)
+                if default is None:
+                    default = OxmlElement("w:default")
+                    checkBox.append(default)
+
+                default.set(qn("w:val"), "1")  # checked
+                break  # stop after checking desired checkbox
+
+            count += 1
 
     doc.save(out_path)
-
 
 ### If chunks ingested don't run
 def _extract_from_msg(path):
@@ -367,11 +403,24 @@ def build_embeddings(AOAI_ENDPOINT,AOAI_KEY,API_VERSION,EMBED_DEPLOY):
     )
 
 
+# def add_ids_to_chunks(chunks):
+#     docs = []
+#     for ch in chunks:
+#         docs.append(
+#             Document(
+#                 page_content=ch.page_content,
+#                 metadata={
+#                     **ch.metadata,
+#                     "id": str(uuid.uuid4())  # REQUIRED for Cosmos DB
+#                 }
+#             )
+#         )
+#     return docs
 def add_ids_to_chunks(chunks):
     docs = []
     for ch in chunks:
         docs.append(
-            Document(
+            LCDocument(
                 page_content=ch.page_content,
                 metadata={
                     **ch.metadata,
