@@ -24,6 +24,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import { triggerGenerateCdrApi } from '../../redux/api/generateCdrApi';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
+import PdfViewer from '../../components/PdfViewer';
+import { loadPdfWithCache } from '../../components/loadPdfWithCache';
 
 import { idb_get, idb_set, STORES } from '../../utils/idb';
 
@@ -55,6 +57,9 @@ const CdrReportPage = () => {
   const [openCitationDialog, setOpenCitationDialog] = useState(false);
   const [selectedCitation, setSelectedCitation] = useState(null);
   const [liveCdrData, setLiveCdrData] = useState(null);
+
+  const pdfViewerRef = useRef(null);
+  const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
 
   const navigationType = useNavigationType();
   const isHardRefresh = navigationType === 'POP';
@@ -106,6 +111,49 @@ const CdrReportPage = () => {
 
     load();
   }, [projectId, isHardRefresh]);
+
+  const handleCitationLinkClick = (filename, page, text, blob_url) => {
+    // ---- XLSX → DOWNLOAD ----
+    if (filename?.toLowerCase().endsWith('.xlsx')) {
+      if (!blob_url) {
+        console.error('Missing blob_url for XLSX:', filename);
+        return;
+      }
+
+      const cleanUrl = blob_url.startsWith('/') ? blob_url.slice(1) : blob_url;
+
+      const link = document.createElement('a');
+      link.href = cleanUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      return;
+    }
+
+    // ---- PDF → INDEXEDDB → VIEWER ----
+    setPdfViewerOpen(true);
+
+    setTimeout(async () => {
+      if (!pdfViewerRef.current) return;
+
+      await loadPdfWithCache(projectId, filename, blob_url, pdfViewerRef);
+
+      setTimeout(() => {
+        pdfViewerRef.current.goToCitation(page, text);
+      }, 1200);
+    }, 200);
+  };
+
+  const getCitationDialogText = () => {
+    if (!selectedCitation) return '';
+    return normalizeNewLines(
+      selectedCitation.preview_text ||
+        selectedCitation.text ||
+        selectedCitation.content ||
+        ''
+    );
+  };
 
   /* ---------------- ACTIONS ---------------- */
   const handleFinalise = async () => {
@@ -159,6 +207,13 @@ const CdrReportPage = () => {
     DownloadMissingFieldsExcel(data, projectID, reportClick);
   };
 
+  const handleCdrCitationClick = (item) => {
+    if (!item) return;
+
+    setSelectedCitation(item);
+    setOpenCitationDialog(true);
+  };
+
   /* ---------------- UI ---------------- */
   return (
     <Box>
@@ -198,14 +253,30 @@ const CdrReportPage = () => {
             </Box>
 
             {bookmarkData?.textSupportRaw?.map((item, idx) => {
-              const rawText = item?.text || '';
-              const truncated = truncateWords(normalizeNewLines(rawText), 20);
+              const rawText = item?.preview_text || '';
+              const cleanedText = normalizeNewLines(rawText);
+              const isTruncated = cleanedText.split(/\s+/).length > 20;
+              const truncated = truncateWords(cleanedText, 20);
 
               return (
                 <Card key={idx} sx={{ mb: 2 }}>
                   <CardContent>
                     <Typography sx={{ whiteSpace: 'pre-wrap', fontSize: 14 }}>
                       {truncated}
+                      {isTruncated && (
+                        <Typography
+                          component="span"
+                          sx={{
+                            ml: 0.5,
+                            color: '#0077cc',
+                            cursor: 'pointer',
+                            fontWeight: 500,
+                          }}
+                          onClick={() => handleCdrCitationClick(item)}
+                        >
+                          ...more
+                        </Typography>
+                      )}
                     </Typography>
 
                     {item?.filename && (
@@ -217,7 +288,7 @@ const CdrReportPage = () => {
                           cursor: 'pointer',
                           textDecoration: 'underline',
                         }}
-                        onClick={() => window.open(item.url, '_blank')}
+                        onClick={() => handleCdrCitationClick(item)}
                       >
                         {item.filename} (Page {item.page})
                       </Typography>
@@ -380,29 +451,7 @@ const CdrReportPage = () => {
                 {/* {normalizeNewLines(selectedCitation.text)} */}
               </Typography>
 
-              {reportClick === 'trf' && selectedCitation?.filename && (
-                <Typography
-                  sx={{
-                    fontSize: 13,
-                    fontWeight: 500,
-                    color: '#1976d2',
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                  }}
-                  onClick={() =>
-                    handleCitationLinkClick(
-                      item?.filename,
-                      selectedCitation.page + 1,
-                      selectedCitation.preview_text,
-                      selectedCitation.url
-                    )
-                  }
-                >
-                  {selectedCitation.filename} (Page {selectedCitation.page + 1})
-                </Typography>
-              )}
-
-              {reportClick === 'cdr' && selectedCitation?.filename && (
+              {selectedCitation?.filename && (
                 <Typography
                   sx={{
                     fontSize: 13,
@@ -415,7 +464,8 @@ const CdrReportPage = () => {
                     handleCitationLinkClick(
                       selectedCitation.filename,
                       selectedCitation.page,
-                      getCitationDialogText()
+                      getCitationDialogText(),
+                      selectedCitation.url
                     )
                   }
                 >
@@ -444,6 +494,52 @@ const CdrReportPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      {pdfViewerOpen && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0,0,0,0.65)',
+            zIndex: 2000,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backdropFilter: 'blur(3px)',
+          }}
+        >
+          <Box
+            sx={{
+              width: '90%',
+              height: '90%',
+              background: '#fff',
+              borderRadius: '8px',
+              overflow: 'hidden',
+              position: 'relative',
+              boxShadow: '0px 5px 20px rgba(0,0,0,0.3)',
+            }}
+          >
+            <Button
+              onClick={() => setPdfViewerOpen(false)}
+              sx={{
+                position: 'absolute',
+                top: 10,
+                right: 10,
+                zIndex: 2100,
+                background: 'rgba(0,0,0,0.6)',
+                color: '#fff',
+                '&:hover': { background: 'rgba(0,0,0,0.8)' },
+              }}
+            >
+              Close
+            </Button>
+
+            <PdfViewer ref={pdfViewerRef} />
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 };
