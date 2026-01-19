@@ -2,8 +2,9 @@ from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
 from pathlib import Path
 from azure.core.exceptions import ResourceNotFoundError
-from queue_worker import update_project_progress_CDR,update_project_progress_Letter
+
 from fastapi import APIRouter, HTTPException, Depends, Body, Form, UploadFile, File, Query, logger, BackgroundTasks, status
+import math
 import traceback
 from azure.storage.blob import ContainerClient
 from typing import List
@@ -34,7 +35,7 @@ from utility.cdr_report.CDR_Pipelines.main import main2
 from utility.cdr_report.CDR_Pipelines.compiler import fill_excel_from_json
 
 from utility.letter_report.deploymentV1.letter_ingestor import main
-from utility.letter_report.deploymentV1.letter_generator import ingest_letter_pipeline
+from utility.letter_report.deploymentV1.letter_generator import letter_gen
 from utility.cdr_report.CDR_Pipelines.configs import OUTPUT_EXCEL_AI_FINAL_PATH
 from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_cdr_local_json_to_blob_and_cosmos_cdr,save_local_xlsx_to_blob_and_cosmos_cdr
 import logging
@@ -45,7 +46,7 @@ import traceback
 from dotenv import load_dotenv
 
 load_dotenv()
-BLOB_CONTAINER_NAME = os.getenv("LT_BLOB_CONTAINER_NAME")
+BLOB_CONTAINER_NAME = os.getenv("BLOB_CONTAINER")
 
 router = APIRouter()
 
@@ -1636,19 +1637,57 @@ async def finalize_reports(payload: FinalizeReportPayload):
             detail=f"Unhandled error: {str(e)}"
         )
 
+def sanitize_json(obj):
+    if isinstance(obj, float):
+        if math.isnan(obj) or math.isinf(obj):
+            return None
+        return obj
+    elif isinstance(obj, dict):
+        return {k: sanitize_json(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [sanitize_json(i) for i in obj]
+    else:
+        return obj
+
+
+
+
+def update_letter_progress(
+    project_doc: dict,
+    letter_stage: str,
+    letter_percentage: int = 10,
+    letter_step: str | None = None,
+    error: str | None = None,
+    last_updated: datetime | None = None,
+    letter_completed: bool = False
+):
+    project_doc["Letter_Project_Progress"] = {
+        "letter_stage": letter_stage,
+        "letter_percentage": letter_percentage,
+        "letter_step": letter_step,
+        "last_updated": (last_updated or datetime.utcnow()).isoformat(),
+        "error": error,
+        "letter_completed": letter_completed
+    }
+
+    projects_container.upsert_item(project_doc)
+    print(f" Progress updated → {letter_percentage}% | {letter_step}")
+
+
+
 @router.post("/letter-generation")
 async def letter_implementation(payload: LetterGeneration):
     try:
         projectId = payload.projectId
         trf_urls = payload.trf_urls
         cdr_urls = payload.cdr_urls
-        other_urls = payload.other_urls
+        # other_urls = payload.other_urls
 
-        # Build blob_urls list
+        
         blob_urls = [
             trf_urls,
             cdr_urls,
-            other_urls
+            # other_urls
         ]
 
         print("Project ID for Letter Generation:", projectId,type(projectId))
@@ -1701,13 +1740,30 @@ async def letter_implementation(payload: LetterGeneration):
 
             project_doc = docs[0]
 
-            update_project_progress_Letter(
+            update_letter_progress(
                 project_doc,
                 letter_stage="steps in Progress",
                 letter_percentage=10,
                 letter_step="Starting running CDR",
                 letter_completed=False
             )
+
+            Source_Doc_urls = [
+                item["url"]
+                for item in project_doc.get("Source_Doc", [])
+                if "url" in item
+            ]
+            if not Source_Doc_urls:
+                raise HTTPException(
+                    status_code=400,
+                    detail="No Source_Doc URLs found for this project"
+                )
+            print("Source Document URLs for Letter Generation:\n\n\n", Source_Doc_urls)
+            import time;time.sleep(10)
+            print("Starting full ingestion for Letter Generation...")
+            run_full_ingestion(Source_Doc_urls)
+            blob_urls_trf=blob_urls+ Source_Doc_urls
+            print("Blob URLs for Letter Generation after ingestion:", blob_urls_trf)
             f=main(blob_urls)
             
             if f:
@@ -1715,20 +1771,29 @@ async def letter_implementation(payload: LetterGeneration):
                 DATA_DIR = BASE_DIR / "data"
                 project_dir = DATA_DIR / projectId
                 project_dir.mkdir(parents=True, exist_ok=True)
-                letter_json1 = project_dir / f"letter_header_iec_output_{projectId}.json"
-                letter_json2 = project_dir / f"letter_body_iec_output_{projectId}.json"
+                letter_json1 = project_dir / f"letter_body_iec_output_{projectId}.json"
+                letter_json2 = project_dir / f"letter_header_iec_output_{projectId}.json"
                 letter_docx_file = project_dir / f"letter_iec_output_{projectId}.docx"
-
-                intter_returned_data=ingest_letter_pipeline(
+                
+                letter_json_path = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "letter.json"
+                letter_header_json_path = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "letter_header.json"
+                letter_template_docx = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "Letter_Template.docx"
+                
+                g=letter_gen(
                 blob_urls=blob_urls,
                 container_name=BLOB_CONTAINER_NAME,
-                src_files_dir="src_files",
-                letter_json_path="letter_old.json",
-                letter_header_json_path="letter_header_old.json",
-                letter_template_docx="Letter_Template.docx",
+                src_files_dir="letter_src_files",
+                src_files_trf="trf_src_files",  
+                
+                letter_json_path=letter_json_path,
+                letter_header_json_path=letter_header_json_path,
+                letter_template_docx=letter_template_docx,
+
                 output_letter_docx=letter_docx_file,
-                output_letter_json=letter_json1,
-                output_letter_header_json=letter_json2, )
+                letter_json_path_output=letter_json1,
+                letter_header_json_path_output=letter_json2,
+                project_Id=projectId,
+                blob_urls_trf=blob_urls_trf )
 
                 print("----- Saving Letter JSON and DOCX to Blob and CosmosDB -----")
                 
@@ -1738,18 +1803,23 @@ async def letter_implementation(payload: LetterGeneration):
                                     str(letter_docx_file),
                                     project_id=project_id
                                     )
-                update_project_progress_Letter(
+                
+                update_letter_progress(
                 project_doc,
                 letter_stage="Completed",
                 letter_percentage=100,
-                letter_step="Letter generated and stored",
-                letter_completed=True)
+                letter_step="All steps completed",
+                letter_completed=False
+            )
                 
                 with open(letter_json1, "r", encoding="utf-8") as f:
                     letter_json_data = json.load(f)
                 with open(letter_json2, "r", encoding="utf-8") as f:
                     letter_header_json_data = json.load(f)
+                
 
+                letter_json_data = sanitize_json(letter_json_data)
+                letter_header_json_data = sanitize_json(letter_header_json_data)
             
                 return  {
                     "status":"success",
@@ -1766,15 +1836,18 @@ async def letter_implementation(payload: LetterGeneration):
             DATA_DIR = BASE_DIR / "data"
             project_dir = DATA_DIR / projectId
             project_dir.mkdir(parents=True, exist_ok=True)
-            letter_json1 = project_dir / f"letter_header_iec_output_{projectId}.json"
-            letter_json2 = project_dir / f"letter_body_iec_output_{projectId}.json"
+            letter_json1 = project_dir / f"letter_body_iec_output_{projectId}.json"
+            letter_json2 = project_dir / f"letter_header_iec_output_{projectId}.json"
             letter_docx_file = project_dir / f"letter_iec_output_{projectId}.docx"
-
+            
             with open(letter_json2, "r", encoding="utf-8") as f:
                 letter_json_data = json.load(f)
             
             with open(letter_json1, "r", encoding="utf-8") as f:
                 letter_header_json_data = json.load(f)
+            
+            letter_json_data = sanitize_json(letter_json_data)
+            letter_header_json_data = sanitize_json(letter_header_json_data)
             return {
                 "status":"success",
                 "project_Id":project_id,
