@@ -171,7 +171,8 @@ async def get_all_projects(payload: ProjectFilter):
                     c.Proj_Created_By,
                     c.Proj_Archived,
                     c.Project_Progress,
-                    c.CDR_Project_Progress
+                    c.CDR_Project_Progress,
+                    c.Letter_Project_Progress
 
                 FROM c
                 WHERE c.Proj_Created_By = "{user_email}"
@@ -188,7 +189,8 @@ async def get_all_projects(payload: ProjectFilter):
                     c.Proj_Created_By,
                     c.Proj_Archived,
                     c.Project_Progress,
-                    c.CDR_Project_Progress
+                    c.CDR_Project_Progress,
+                    c.Letter_Project_Progress
                 FROM c
                 WHERE c.Proj_Archived = false
             """
@@ -209,6 +211,7 @@ async def get_all_projects(payload: ProjectFilter):
         for p in items:
             progress = p.get("Project_Progress") or {}
             cdr_progress = p.get("CDR_Project_Progress") or {}
+            letter_progress = p.get("Letter_Project_Progress") or {}
 
             projects.append({
                 "Project_Id": p.get("Project_Id"),
@@ -230,11 +233,11 @@ async def get_all_projects(payload: ProjectFilter):
                 "cdr_error": cdr_progress.get("error"),
                 "cdr_completed": cdr_progress.get("cdr_completed", "No"),
 
-                "letter_percentage": progress.get("letter_percentage", 10),
-                "letter_step": progress.get("letter_step"),
-                "letter_last_updated": progress.get("letter_last_updated"),
-                "letter_error": progress.get("letter_error"),
-                "letter_completed": progress.get("letter_completed", "No")
+                "letter_percentage": letter_progress.get("letter_percentage", 10),
+                "letter_step": letter_progress.get("letter_stage"),
+                "letter_last_updated": letter_progress.get("last_updated"),
+                "letter_error": letter_progress.get("error"),
+                "letter_completed": letter_progress.get("letter_completed", "No")
             })
 
         return {
