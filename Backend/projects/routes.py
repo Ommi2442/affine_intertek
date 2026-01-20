@@ -1635,8 +1635,9 @@ async def finalize_reports(payload: FinalizeReportPayload):
                 )
             )
             project_doc = docs[0]
-            user_name = project_doc.get("User_Name") or []
-            user_id = user_name.split()[0]
+            # user_name = project_doc.get("User_Name") or []
+            user_name = "Aksh"
+            user_id = user_name.strip().split()[0] if isinstance(user_name, str) and user_name.strip() else None
             init_runtime(project_id=project_id, user_id=user_id)
             fill_excel_from_json(updated_json_data, str(output_excel_path))
             cosmos_item = save_local_xlsx_to_blob_and_cosmos_cdr(str(output_excel_path), project_id)
@@ -1677,12 +1678,12 @@ async def finalize_reports(payload: FinalizeReportPayload):
             project_dir = DATA_DIR / project_id
             letter_temp_path = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "Letter_Template.docx"
             project_dir.mkdir(parents=True, exist_ok=True)
-            local_letter_json_body = project_dir / f"letter_body_iec_output_{project_id}_updated.json"
-            local_letter_json_header = project_dir / f"letter_header_iec_output_{project_id}_updated.json"
-            letter_docx_file_updated = project_dir / f"letter_iec_output_{project_id}_updated.docx"
+            local_letter_json_body = project_dir / f"letter_body_iec_output_{project_id}.json"
+            local_letter_json_header = project_dir / f"letter_header_iec_output_{project_id}.json"
+            letter_docx_file_updated = project_dir / f"letter_iec_output_{project_id}.docx"
             
-            body = updated_data['body']
-            header = updated_data['header']
+            body = updated_data['Letter_header_json']
+            header = updated_data['Letter_json_body']
 
             with open(local_letter_json_body, "w", encoding="utf-8") as f:
                 json.dump(body, f, indent=2, ensure_ascii=False)
