@@ -1929,7 +1929,7 @@ def letter_gen(blob_urls,
         delete_cosmos_container(
         endpoint=COSMOS_URL,
         key=COSMOS_KEY,
-        database_name=DB_NAME,
+        database_name=DB_NAME_IMG,
         container_name=image_container
         )
 
