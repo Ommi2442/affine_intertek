@@ -1768,29 +1768,6 @@ def update_letter_progress(
 async def letter_implementation(payload: LetterGeneration):
     try:
         projectId = payload.projectId
-        trf_urls = payload.trf_urls
-        cdr_urls = payload.cdr_urls
-        # other_urls = payload.other_urls
-
-        
-        blob_urls = [
-            trf_urls,
-            cdr_urls,
-            # other_urls
-        ]
-
-        print("Project ID for Letter Generation:", projectId,type(projectId))
-        print("All URLs for Letter Generation:", blob_urls)
-
-        if not projectId:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="projectId is required"
-            )
-
-        # ----------------------------------
-        # Cosmos DB query
-        # ----------------------------------
         project_id = projectId
         query = "SELECT * FROM c WHERE c.Project_Id = @pid"
         params = [{"name": "@pid", "value": project_id}]
@@ -1808,11 +1785,30 @@ async def letter_implementation(payload: LetterGeneration):
                 status_code=404,
                 detail="Project not found"
             )
-
+        
         letter_progress = items[0].get("Letter_Project_Progress") or {}
         letter_percentage = letter_progress.get("letter_percentage", 0)
-
+        
         if letter_percentage < 100:
+            print("-------------  Started Letter  --------")
+            projectId = payload.projectId
+            trf_urls = payload.trf_urls
+            cdr_urls = payload.cdr_urls
+            
+            blob_urls = [
+                trf_urls,
+                cdr_urls,
+            ]
+
+            print("Project ID for Letter Generation:", projectId,type(projectId))
+            print("All URLs for Letter Generation:", blob_urls)
+
+            if not projectId:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="projectId is required"
+                )
+
             query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
             docs = list(
                 projects_container.query_items(
@@ -1836,7 +1832,6 @@ async def letter_implementation(payload: LetterGeneration):
                 letter_step="Starting running CDR",
                 letter_completed=False
             )
-
             Source_Doc_urls = [
                 item["url"]
                 for item in project_doc.get("Source_Doc", [])
@@ -1933,7 +1928,7 @@ async def letter_implementation(payload: LetterGeneration):
                     }
                 }
 
-        if letter_percentage == 100:
+        elif letter_percentage == 100:
             BASE_DIR = Path(__file__).resolve().parents[1]
             DATA_DIR = BASE_DIR / "data"
             project_dir = DATA_DIR / projectId
@@ -2138,13 +2133,7 @@ async def upload_files(
     # Save back to Cosmos DB
     COSMOS_DB_project_Container.upsert_item(project_doc)
  
-    # # Background processing
-    # background_tasks.add_task(
-    #     process_citation_documents,
-    #     projectId,
-    #     blob_service,
-    #     CONTAINER_NAME
-    # )
+    
  
     first_file = uploaded_urls[0]
  

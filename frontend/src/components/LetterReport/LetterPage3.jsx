@@ -100,7 +100,33 @@ const LetterPage3 = ({
 
   return (
     <div className="letter-page">
-      <IntertekLogo />
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <IntertekLogo />
+        <div>
+          <LetterSmartField
+            json={json}
+            name="«AppCOMPANYNAME»"
+            editMode={editMode}
+            onChange={forceUpdate}
+            onApprove={handleApprove}
+            onComment={openComment}
+            onBookmark={onBookmarkClick}
+          />
+          <div style={{ display: 'flex' }}>
+            <div> Intertek Report: No: </div>
+            <LetterSmartField
+              json={json}
+              name="«ReportNumber»"
+              editMode={editMode}
+              onChange={forceUpdate}
+              onApprove={handleApprove}
+              onComment={openComment}
+              onBookmark={onBookmarkClick}
+            />
+          </div>
+        </div>
+      </div>
+
       <h3 style={{ marginBottom: '5%' }}>Letter Report</h3>
       <p>
         Please review the following identified sections of the above referenced
