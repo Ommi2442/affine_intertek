@@ -1246,7 +1246,7 @@ def generate_cdr(projectId: str):
             output_excel_path = project_dir / f"iec_output_sheet_{projectId}.xlsx"
 
             user_name = project_doc.get("User_Name") or []
-            user_id = user_name.split()[0]
+            user_id = user_name.strip().split()[0] if isinstance(user_name, str) and user_name.strip() else None
 
             # ------------------ PIPELINE ------------------
             result = main2(project_id,
@@ -1635,8 +1635,7 @@ async def finalize_reports(payload: FinalizeReportPayload):
                 )
             )
             project_doc = docs[0]
-            # user_name = project_doc.get("User_Name") or []
-            user_name = "Aksh"
+            user_name = project_doc.get("User_Name") or []
             user_id = user_name.strip().split()[0] if isinstance(user_name, str) and user_name.strip() else None
             init_runtime(project_id=project_id, user_id=user_id)
             fill_excel_from_json(updated_json_data, str(output_excel_path))
