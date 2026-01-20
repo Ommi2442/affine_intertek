@@ -20,6 +20,7 @@ import { generateLetterRequest } from '../../redux/features/generateLetter/gener
 import { uploadTrfOutApi } from '../../redux/api/uploadTrfOutApi';
 import { uploadCdrOutApi } from '../../redux/api/uploadCdrOutApi';
 import { triggerGenerateLetterApi } from '../../redux/api/generateLetterApi';
+import { idb_get, STORES } from '../../utils/idb';
 
 const UploadLetterFilePage = () => {
   const navigate = useNavigate();
@@ -322,31 +323,44 @@ const UploadLetterFilePage = () => {
                 return;
               }
 
-              try {
-                const res = await triggerGenerateLetterApi(
-                  projectId,
-                  trfBlobUrl,
-                  cdrBlobUrl
-                );
+              const storageKey = `letter_report_${projectId}`;
 
-                if (res?.data) {
-                  //  Navigate to Letter report page after backend generation
+              try {
+                //  If already generated → just open Letter page
+                const cached = await idb_get(storageKey, STORES.LETTER);
+                if (cached) {
                   navigate('/report-page/letter', {
-                    state: {
-                      standard,
-                      projectId,
-                      clientName,
-                      product,
-                    },
+                    state: { standard, projectId, clientName, product },
                   });
-                } else {
-                  throw new Error('Letter generation failed');
+                  return;
                 }
+
+                //  Not generated yet → go to Letter page and let it generate
+                if (!trfBlobUrl) {
+                  setErrorToast({
+                    open: true,
+                    message:
+                      'Please upload TRF Filled file before generating Letter.',
+                  });
+                  return;
+                }
+
+                //  Navigate immediately → loader will show
+                navigate('/report-page/letter', {
+                  state: {
+                    standard,
+                    projectId,
+                    clientName,
+                    product,
+                    trfBlobUrl, // pass these so Letter page can generate
+                    cdrBlobUrl,
+                  },
+                });
               } catch (err) {
-                console.error('Letter generation failed:', err);
+                console.error('Letter generation navigation failed:', err);
                 setErrorToast({
                   open: true,
-                  message: 'Failed to generate Letter report',
+                  message: 'Failed to start Letter generation',
                 });
               }
             }}
