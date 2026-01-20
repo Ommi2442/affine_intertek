@@ -112,6 +112,81 @@ aoai_client = AzureOpenAI(
 # ----------------------------------------------------------------------------------------
 from langchain_openai import AzureOpenAIEmbeddings
 
+
+
+def get_or_create_vector_container_serverless(
+    client: CosmosClient,
+    DB_NAME: str,
+    CONT_NAME: str,
+    VECTOR_PATH: str,
+    EMBED_DIM: int,
+):
+    """
+    Serverless-safe Cosmos vector container creator.
+    - Database must already exist
+    - Creates container only if missing
+    - Does NOT delete existing container
+    - Does NOT set throughput (serverless limitation)
+    """
+
+    print("→ Using existing database:", DB_NAME)
+    db = client.get_database_client(DB_NAME)
+
+    try:
+        db.read()
+    except exceptions.CosmosResourceNotFoundError:
+        raise RuntimeError(f"[FATAL] Database does not exist: {DB_NAME}")
+
+    # ---- Vector embedding policy ----
+    vector_embedding_policy = {
+        "vectorEmbeddings": [
+            {
+                "path": VECTOR_PATH,
+                "dataType": "float32",
+                "dimensions": EMBED_DIM,
+                "distanceFunction": "cosine",
+            }
+        ]
+    }
+
+    # ---- Indexing policy ----
+    indexing_policy = {
+        "includedPaths": [{"path": "/*"}],
+        "excludedPaths": [
+            {"path": "/\"_etag\"/?"},
+            {"path": f"{VECTOR_PATH}/*"}
+        ],
+        "vectorIndexes": [
+            {
+                "path": VECTOR_PATH,
+                "type": "quantizedFlat"
+            }
+        ],
+    }
+
+    # ---- Check container ----
+    try:
+        container = db.get_container_client(CONT_NAME)
+        container.read()
+        print("✔ Container exists:", CONT_NAME)
+        return container
+
+    except exceptions.CosmosResourceNotFoundError:
+        print("→ Creating vector container (serverless-safe):", CONT_NAME)
+
+        container = db.create_container(
+            id=CONT_NAME,
+            partition_key=PartitionKey(path="/id"),
+            indexing_policy=indexing_policy,
+            vector_embedding_policy=vector_embedding_policy
+        )
+
+        print("✔ Vector container created:", CONT_NAME)
+        return container
+
+
+
+
 def build_embeddings():
     return AzureOpenAIEmbeddings(
         azure_endpoint=AOAI_ENDPOINT,
@@ -127,7 +202,7 @@ def build_embeddings():
 # ----------------------------------------------------------------------------------------
 
 
-def build_vectorstore_text():
+def build_vectorstore_text(textDB_container_name):
     cosmos_client = CosmosClient(
         url=COSMOS_URL,
         credential=COSMOS_KEY
@@ -137,7 +212,7 @@ def build_vectorstore_text():
         cosmos_client=cosmos_client,
         embedding=build_embeddings(),
         database_name=COSMOS_DB_TEXT,
-        container_name=COSMOS_CONT_TEXT,
+        container_name=textDB_container_name,
 
         vector_embedding_policy={
             "vectorEmbeddings": [{
@@ -166,7 +241,7 @@ def build_vectorstore_text():
 # Vector Store Builder (for IMAGES)
 # EXACT logic from notebook (not altered)
 # ----------------------------------------------------------------------------------------
-def build_vectorstore_image():
+def build_vectorstore_image(image_container):
     cosmos_client = CosmosClient(
         url=COSMOS_URL,
         credential=COSMOS_KEY
@@ -176,7 +251,7 @@ def build_vectorstore_image():
         cosmos_client=cosmos_client,
         embedding=build_embeddings(),
         database_name=COSMOS_DB_IMAGE,
-        container_name=COSMOS_CONT_IMAGE,
+        container_name=image_container,
 
         vector_embedding_policy={
             "vectorEmbeddings": [{
@@ -1250,7 +1325,7 @@ def append_cis_images_to_image_metadata(images_root: str, image_page_metadata: l
 # ------------------------------------------------------------
 # Master Orchestration Function
 # ------------------------------------------------------------
-def run_full_ingestion(blob_urls):
+def run_full_ingestion(blob_urls,text_container,image_container):
     """
     Master ingestion function to be called externally.
 
@@ -1266,6 +1341,25 @@ def run_full_ingestion(blob_urls):
     print("\n==============================")
     print("   STEP 1 — PROCESS BLOB URLs ")
     print("==============================\n")
+
+    client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY)
+
+
+    container_client_text = get_or_create_vector_container_serverless(
+        client=client,
+        DB_NAME=COSMOS_DB_TEXT,
+        CONT_NAME=text_container,
+        VECTOR_PATH=VECTOR_PATH,
+        EMBED_DIM=EMBED_DIM
+    )
+
+    container_client_image = get_or_create_vector_container_serverless(
+        client=client,
+        DB_NAME=COSMOS_DB_IMAGE,
+        CONT_NAME=image_container,
+        VECTOR_PATH=VECTOR_PATH,
+        EMBED_DIM=EMBED_DIM
+    )
 
     extracted_texts, image_urls_raw, downloaded_pdf_paths, converted_pdf_paths = process_blob_urls_2(
         blob_urls,
@@ -1341,9 +1435,9 @@ def run_full_ingestion(blob_urls):
     print("======================================\n")
 
     # Clear DB (EXACT notebook logic)
-    clear_cosmos_container(COSMOS_DB_TEXT, COSMOS_CONT_TEXT)
+    clear_cosmos_container(COSMOS_DB_TEXT, text_container)
 
-    vectorstore_text = build_vectorstore_text()
+    vectorstore_text = build_vectorstore_text(text_container)
 
     # Assign UUIDs to each chunk
     chunks_uuid = add_ids_to_chunks(chunks)
@@ -1403,9 +1497,9 @@ def run_full_ingestion(blob_urls):
     print("==============================================\n")
 
     # Clear DB (EXACT notebook logic)
-    clear_cosmos_container(COSMOS_DB_IMAGE, COSMOS_CONT_IMAGE)
+    clear_cosmos_container(COSMOS_DB_IMAGE, image_container)
 
-    vectorstore_image = build_vectorstore_image()
+    vectorstore_image = build_vectorstore_image(image_container)
 
     # Assign UUIDs to image docs
     docs_image_uuid = add_ids_to_chunks(docs_image)

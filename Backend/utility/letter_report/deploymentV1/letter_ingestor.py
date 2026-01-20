@@ -7,7 +7,7 @@ from utility.letter_report.deploymentV1.core import *
 
 from utility.letter_report.deploymentV1.config import AZURE_CONN_STRING, DB_NAME_IMG, CONT_NAME_IMG, CHUNK_SIZE, CHUNK_OVERLAP, TOP_K, EMBED_DIM, VECTOR_PATH, BLOB_CONTAINER_NAME, conn_str, IMAGE_EXTS, AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY, CHAT_DEPLOY, COSMOS_URL, COSMOS_KEY, COSMOS_DB, COSMOS_CONT, DB_NAME, CONT_NAME, MAX_THREADS, MAX_RETRIES, INITIAL_BACKOFF
 
-COSMOS_CONT_TEXT = COSMOS_CONT
+
 COSMOS_DB_IMAGE  = DB_NAME_IMG
 COSMOS_CONT_IMAGE = CONT_NAME_IMG
 BLOB_CONT_NAME= os.getenv("BLOB_CONT_NAME")
@@ -20,7 +20,7 @@ COSMOS_DB_TEXT=os.getenv("COSMOS_DB_TEXT")
 
 print("FOR------DOWNLOAD_DIR ----",DOWNLOAD_DIR)
 
-def main(blob_urls):
+def main(blob_urls,text_container,image_container):
     """
     Main ingestion pipeline.
     Takes list of blob URLs and ingests:
@@ -44,7 +44,7 @@ def main(blob_urls):
         consistency_level=ConsistencyLevel.Eventual
     )
 
-    container = cosmos_client.get_database_client(DB_NAME).get_container_client(CONT_NAME)
+    # container = cosmos_client.get_database_client(DB_NAME).get_container_client(text_container)
 
     # items = container.read_all_items()
     # for item in items:
@@ -97,7 +97,7 @@ def main(blob_urls):
         COSMOS_URL,
         COSMOS_KEY,
         DB_NAME,
-        CONT_NAME
+        text_container
     )
 
     # -------------------------------------------------------
@@ -174,7 +174,7 @@ def main(blob_urls):
         COSMOS_URL,
         COSMOS_KEY,
         DB_NAME_IMG,
-        CONT_NAME_IMG
+        image_container
     )
 
     # -------------------------------------------------------
