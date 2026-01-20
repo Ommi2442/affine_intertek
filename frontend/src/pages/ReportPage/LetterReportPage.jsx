@@ -12,7 +12,7 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import { useNavigate, useNavigationType } from 'react-router-dom';
+import { useNavigate, useNavigationType, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import './ReportPage.css';
 import CloseIcon from '@mui/icons-material/Close';
@@ -61,6 +61,11 @@ const LetterReportPage = () => {
   const pdfViewerRef = useRef(null);
   const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
 
+  const location = useLocation();
+
+  const { trfBlobUrl, cdrBlobUrl, standard, clientName, product } =
+    location.state || {};
+
   /* ---------------- SAVE EVERY CHANGE ---------------- */
   useEffect(() => {
     if (!dataTableRef.current) return;
@@ -93,11 +98,42 @@ const LetterReportPage = () => {
         return;
       }
 
-      // Only call backend if NOT refresh
-      const res = await triggerGenerateLetterApi(projectId);
-      if (res?.data) {
-        await idb_set(storageKey, res.data, STORES.LETTER);
-        setLetterJson(res.data);
+      // Only call backend if NOT refresh and no cache
+      if (!isHardRefresh) {
+        console.log('Calling backend to generate Letter...');
+
+        let res;
+
+        // Case 1: blobs were passed from Upload page
+        if (trfBlobUrl || cdrBlobUrl) {
+          console.log('Using blob URLs for generation', {
+            trfBlobUrl,
+            cdrBlobUrl,
+          });
+
+          res = await triggerGenerateLetterApi(
+            projectId,
+            trfBlobUrl,
+            cdrBlobUrl
+          );
+        }
+        // Case 2: blobs NOT available (refresh / direct open)
+        else {
+          console.log('No blob URLs found → generating using only projectId');
+
+          res = await triggerGenerateLetterApi(projectId);
+        }
+
+        console.log('Letter generation response:', res);
+
+        if (res) {
+          await idb_set(
+            storageKey,
+            res?.Data?.Letter_header_json,
+            STORES.LETTER
+          );
+          setLetterJson(res?.Data?.Letter_header_json);
+        }
       }
 
       setLoading(false);
@@ -190,6 +226,7 @@ const LetterReportPage = () => {
     if (!selectedCitation) return '';
     return normalizeNewLines(selectedCitation.preview_text || '');
   };
+  console.log('letterLoading', loading);
 
   /* ---------------- UI ---------------- */
   return (
@@ -207,14 +244,72 @@ const LetterReportPage = () => {
           {loading && <LetterLoader />}
 
           {!loading && letterJson && (
-            <LetterReport
-              ref={dataTableRef}
-              jsonData={letterJson}
-              editMode={editMode}
-              onConfidenceChange={() => setConfidenceTick((v) => v + 1)}
-              onBookmarkClick={handleBookmarkFromChild}
-              isHardRefresh={isHardRefresh}
-            />
+            <>
+              <LetterReport
+                ref={dataTableRef}
+                jsonData={letterJson}
+                editMode={editMode}
+                onConfidenceChange={() => setConfidenceTick((v) => v + 1)}
+                onBookmarkClick={handleBookmarkFromChild}
+                isHardRefresh={isHardRefresh}
+                onPageChange={(p) => setCurrentPage(p)}
+              />
+
+              {/* -------- PAGINATION BAR -------- */}
+              <Box className="letter-pagination">
+                <Button
+                  size="small"
+                  disabled={currentPage === 1}
+                  onClick={() => {
+                    const prev = Math.max(1, currentPage - 1);
+                    setCurrentPage(prev);
+                    dataTableRef.current?.scrollToPage(prev);
+                  }}
+                >
+                  ‹
+                </Button>
+
+                {Array.from({ length: 6 }).map((_, i) => {
+                  const page = i + 1;
+                  const isActive = page === currentPage;
+
+                  return (
+                    <Button
+                      key={page}
+                      size="small"
+                      onClick={() => {
+                        setCurrentPage(page);
+                        dataTableRef.current?.scrollToPage(page);
+                      }}
+                      sx={{
+                        minWidth: 36,
+                        mx: 0.5,
+                        fontWeight: isActive ? 700 : 400,
+                        backgroundColor: isActive ? '#000' : 'transparent',
+                        color: isActive ? '#fff' : '#000',
+                        '&:hover': {
+                          backgroundColor: isActive ? '#000' : '#eee',
+                        },
+                      }}
+                    >
+                      {page}
+                    </Button>
+                  );
+                })}
+
+                <Button
+                  size="small"
+                  disabled={currentPage === 6}
+                  onClick={() => {
+                    const next = Math.min(6, currentPage + 1);
+                    setCurrentPage(next);
+                    dataTableRef.current?.scrollToPage(next);
+                  }}
+                >
+                  ›
+                </Button>
+              </Box>
+            </>
           )}
         </Box>
 
