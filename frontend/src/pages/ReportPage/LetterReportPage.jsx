@@ -60,7 +60,7 @@ const LetterReportPage = () => {
 
   const pdfViewerRef = useRef(null);
   const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
-  const [headerJson, setHeaderJson] = useState({})
+  const [headerJson, setHeaderJson] = useState({});
 
   const location = useLocation();
 
@@ -76,7 +76,7 @@ const LetterReportPage = () => {
     idb_set(storageKey, updated, STORES.LETTER);
     setLiveLetterData(updated);
   }, [confidenceTick]);
-  console.log("lett", letterJson)
+  console.log('lett', letterJson);
 
   /* ---------------- LOAD LOGIC ---------------- */
   useEffect(() => {
@@ -183,12 +183,12 @@ const LetterReportPage = () => {
     if (!dataTableRef.current) return;
 
     const payload = dataTableRef.current.getUpdatedJson();
-    
+
     if (!payload) return;
     let letter_payload = {
-      "Letter_header_json": letterJson,
-      "Letter_json_body": headerJson
-    }
+      Letter_header_json: letterJson,
+      Letter_json_body: headerJson,
+    };
     // Persist to IndexedDB
     await idb_set(storageKey, payload, STORES.LETTER);
 
@@ -247,7 +247,7 @@ const LetterReportPage = () => {
 
       <Box className="report-container">
         {/* ---------------- LEFT PANEL ---------------- */}
-        <Box className="left-panel">
+        <Box className="left-panel-letter">
           {loading && <LetterLoader />}
 
           {!loading && letterJson && (
