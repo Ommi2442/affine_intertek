@@ -22,7 +22,9 @@ def image_name_no_ext(url):
 def build_text_support_list(sheet_name, source_doc):
     """
     Builds a list of text_support dicts.
-    Handles pipe-separated filenames / URLs correctly.
+    - page comes from sheet_name
+    - filename is extracted from the URL
+    - Handles pipe-separated sheet names and URLs
     """
 
     def split(v):
@@ -30,26 +32,32 @@ def build_text_support_list(sheet_name, source_doc):
             return []
         return [x.strip() for x in str(v).split("|")]
 
-    filenames = split(sheet_name)
+    def filename_from_url(url):
+        if not url:
+            return None
+        path = unquote(urlparse(url).path)
+        return os.path.basename(path)
+
+    pages = split(sheet_name)
     urls = split(source_doc)
 
-    max_len = max(len(filenames), len(urls))
+    max_len = max(len(pages), len(urls))
 
     supports = []
 
     for i in range(max_len):
-        filename = filenames[i] if i < len(filenames) else None
+        page = pages[i] if i < len(pages) else None
         url = urls[i] if i < len(urls) else None
 
         supports.append({
-            "filename": filename,
-            "page": filename,   # ← your expected behavior
+            "filename": filename_from_url(url),
+            "page": page,               # sheet name only
             "similarity_score": None,
-            "preview_text": None,
+            "text": None,
             "url": url
         })
 
-    return supports
+    return supports 
 
 
 def run_formatter():

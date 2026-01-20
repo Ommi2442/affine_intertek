@@ -90,7 +90,8 @@ def process_trf_direct(project_id: str):
         raise Exception("No valid source docs")
 
     user_name = project_doc.get("User_Name") or ""
-    first_name = user_name.split()[0]
+    # first_name = user_name.split()[0]
+    first_name = user_name.strip().split()[0] if isinstance(user_name, str) and user_name.strip() else None
 
     text_container = f"vectorstorecontainer_new_itk_text_{first_name}_{project_id}"
     image_container = f"vectorstorecontainer_new_itk_image_{first_name}_{project_id}"

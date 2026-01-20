@@ -1009,7 +1009,22 @@ def get_or_create_vector_container_serverless(
         return container
 
 
-
+from pathlib import Path
+from typing import List, Dict, Any
+from PyPDF2 import PdfReader
+from PyPDF2.generic import IndirectObject
+import fitz  # PyMuPDF
+import base64
+from dotenv import load_dotenv
+import os
+from pathlib import Path
+import json
+from openai import OpenAI
+import os
+import importlib
+# importlib.reload(configs)
+from openai import AzureOpenAI
+ 
 
 def _resolve_indirect(obj):
     if isinstance(obj, IndirectObject):
@@ -1510,7 +1525,7 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
             unique_metadata.append(item)
 
     image_urls = upload_pdf_images_and_append_urls(
-        image_page_metadata=image_page_metadata,
+        image_page_metadata=unique_metadata,
         image_urls=image_urls_raw,
         conn_str=AZURE_CONN_STRING,
         container=BLOB_CONTAINER,   # same notebook container

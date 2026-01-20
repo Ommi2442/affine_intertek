@@ -129,7 +129,7 @@
         },
         {
           "key": "«AppContactName»",
-          "value": "«AppContactName»",
+          "value": "",
           "question": "Enter the full name of the primary contact person at the applicant/client company (e.g., 'John Smith' or 'Sarah Johnson')",
           "custom_prompt": "Mention the name of primary contact person of the applicant.",
           "ai_fillable": true

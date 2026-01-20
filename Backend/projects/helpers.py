@@ -191,6 +191,7 @@ def update_docx_from_existing_json(
     input_docx_path: str,
     input_json_path: str,
     output_docx_path: str,
+    projectId: str,
 ):
 
     print("\n===============================================")
@@ -267,7 +268,11 @@ def update_docx_from_existing_json(
     # ---------------------------------------------------------
     print("\n[STEP] Inserting marking images...")
 
-    image_paths = download_marking_images_from_json_new(data)
+    BASE_DIR = Path(__file__).resolve().parent.parent
+
+    project_data_dir = BASE_DIR / "data" / projectId
+
+    image_paths = download_marking_images_from_json_new(data, project_data_dir)
     insert_marking_images_from_json_into_docx_new(
         docx_path=output_docx_path,
         output_path=output_docx_path,
