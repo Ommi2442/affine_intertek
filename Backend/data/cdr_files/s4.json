@@ -3,11 +3,11 @@
         {
             "start_cell": "A3",
             "row_type": "table_data",
-            "photo_no": "guide",
+            "photo_no": "1",
             "item_no": "1",
-            "name": "Connection Cables",
-            "manufacturer": null,
-            "type_model": null,
+            "name": "Connector Socket 26-30 AWG",
+            "manufacturer": "Molex",
+            "type_model": "430300012",
             "technical_data": null,
             "marks_of_conf": null,
             "field_merged": false,
@@ -17,27 +17,87 @@
             "task_type": "extraction",
             "user_editable": true,
             "ai_fillable": true,
-            "accuracy_level": false,
-            "image_support": null,
+            "accuracy_level": true,
+            "image_support": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/device_images/back-view.jpg?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D",
             "text_support": [
                 {
-                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
-                    "page": 1,
+                    "filename": "500-052459 ASM FAN",
+                    "page": "500-052459 ASM FAN",
                     "similarity_score": null,
-                    "preview_text": "........ ................................ ...............  12 \nProvided Materials ................................ ................................ ....................  Error! Bookmark not defined. \nEquipment ..................................................................................................................... Error! Bookmark not defined. \nOptimizer Kit and Contents ......................................................................................................................................... 7 \nSite Preparations ................................ ................................ ................................ ...............................  12 \nPhysical Space Requirements ....................................................................................... Error! Bookmark not defined. \nElectrical Requirements ............................................................................................................................................. 12 \nInfrastructure Requirements ..................................................................................................................................... 12 \nSafety and Environmental Considerations .................................................................. Error! Bookmark not defined. \nSetting Up the Infinity MTx ................................ ................................ ................................ .................  13 \nUnpacking and Inspecting ......................................................................................................................................... 13 \nAssembling and Connecting ...................................................................................................................................... 14 \nTesting Functionality .................................................................................................................................................. 14 \nUsing the Infinity MTx .......................",
-                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 70
+        },
+        {
+            "start_cell": "A4",
+            "row_type": "table_data",
+            "photo_no": "2",
+            "item_no": "2",
+            "name": "Connector, Housing, Rectangular, 4 POS, 3 mm, BLACK",
+            "manufacturer": "Molex",
+            "type_model": "430250400",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/device_images/internal-view-of-main-device-components.jpg?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D",
+            "text_support": [
+                {
+                    "filename": "500-052459 ASM FAN",
+                    "page": "500-052459 ASM FAN",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 70
+        },
+        {
+            "start_cell": "A5",
+            "row_type": "table_data",
+            "photo_no": "3",
+            "item_no": "3",
+            "name": "COVER TOP",
+            "manufacturer": "Client1, Inc. (USA)",
+            "type_model": "700-051964",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/device_images/front-angled-view.jpg?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D",
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
                 }
             ],
             "confidence": 80
         },
         {
-            "start_cell": "A4",
+            "start_cell": "A6",
             "row_type": "table_data",
-            "photo_no": "guide",
-            "item_no": "2",
-            "name": "Cooling Fan",
-            "manufacturer": null,
-            "type_model": null,
+            "photo_no": "3",
+            "item_no": "4",
+            "name": "Terminal, Crimp, Mini-Fit Jr, 18-24awg, bag",
+            "manufacturer": "Molex",
+            "type_model": "39000074",
             "technical_data": null,
             "marks_of_conf": null,
             "field_merged": false,
@@ -47,87 +107,27 @@
             "task_type": "extraction",
             "user_editable": true,
             "ai_fillable": true,
-            "accuracy_level": false,
-            "image_support": null,
+            "accuracy_level": true,
+            "image_support": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/device_images/front-angled-view.jpg?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D",
             "text_support": [
                 {
-                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
-                    "page": 1,
+                    "filename": "500-052456 ASM POWER",
+                    "page": "500-052456 ASM POWER",
                     "similarity_score": null,
-                    "preview_text": "Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 1 of 50 \nCellFE Infinity MTx Operating Manual \n \n \n \nCellFE Biotech, Inc. \n980 Atlantic Avenue, Suite 110 \nAlameda, CA  94501-1098 \n(512)-914-2840 \nsupport@cellfebiotech.com \nhttps://www.cellfebiotech.com \n\u00a9 2023, CellFE Biotech, Inc. \n \n \n \n \nFor Research Use Only. Not for use in diagnostic procedures. \nPlaceholder: Image of Infinity MTx \n Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 2 of 50 \n \nTable of Contents \nChapter 1. Product Information ................................ ................................ ................................ .. 5 \nIntroduction ................................ ................................ ....................  Error! Bookmark not defined. \nProduct Description ................................ ................................ ................................ ....................  5 \nThe Infinity MTx ................................ ................................ ........................  Error! Bookmark not defined. \nThe Infinity MPA ................................ ................................ .......................  Error! Bookmark not defined. \nKey Features and Benefits ................................ ................................ ................................ ..........  5 \nSystem Components ................................ ................................ ................................ ...................  8 \nFront Panel ................................ ................................ ................................ ................................ ..........  8 \nBack Panel ................................ ................................ ................................ ................................ ...........  9 \nInfinity MPA ................................ ................................ ................................ ................................ .......  10 \nChapter 2. Upon Receiving the Infinity MTx ........................",
-                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
-                }
-            ],
-            "confidence": 85
-        },
-        {
-            "start_cell": "A5",
-            "row_type": "table_data",
-            "photo_no": "guide",
-            "item_no": "3",
-            "name": "Electrical Requirements",
-            "manufacturer": null,
-            "type_model": null,
-            "technical_data": null,
-            "marks_of_conf": null,
-            "field_merged": false,
-            "fm_range": null,
-            "value_merged": false,
-            "vm_range": null,
-            "task_type": "extraction",
-            "user_editable": true,
-            "ai_fillable": true,
-            "accuracy_level": false,
-            "image_support": null,
-            "text_support": [
-                {
-                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
-                    "page": 1,
-                    "similarity_score": null,
-                    "preview_text": "........ ................................ ...............  12 \nProvided Materials ................................ ................................ ....................  Error! Bookmark not defined. \nEquipment ..................................................................................................................... Error! Bookmark not defined. \nOptimizer Kit and Contents ......................................................................................................................................... 7 \nSite Preparations ................................ ................................ ................................ ...............................  12 \nPhysical Space Requirements ....................................................................................... Error! Bookmark not defined. \nElectrical Requirements ............................................................................................................................................. 12 \nInfrastructure Requirements ..................................................................................................................................... 12 \nSafety and Environmental Considerations .................................................................. Error! Bookmark not defined. \nSetting Up the Infinity MTx ................................ ................................ ................................ .................  13 \nUnpacking and Inspecting ......................................................................................................................................... 13 \nAssembling and Connecting ...................................................................................................................................... 14 \nTesting Functionality .................................................................................................................................................. 14 \nUsing the Infinity MTx .......................",
-                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
                 }
             ],
             "confidence": 90
         },
         {
-            "start_cell": "A6",
-            "row_type": "table_data",
-            "photo_no": "guide",
-            "item_no": "4",
-            "name": "Fuses",
-            "manufacturer": null,
-            "type_model": null,
-            "technical_data": null,
-            "marks_of_conf": null,
-            "field_merged": false,
-            "fm_range": null,
-            "value_merged": false,
-            "vm_range": null,
-            "task_type": "extraction",
-            "user_editable": true,
-            "ai_fillable": true,
-            "accuracy_level": false,
-            "image_support": null,
-            "text_support": [
-                {
-                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
-                    "page": 1,
-                    "similarity_score": null,
-                    "preview_text": "Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 1 of 50 \nCellFE Infinity MTx Operating Manual \n \n \n \nCellFE Biotech, Inc. \n980 Atlantic Avenue, Suite 110 \nAlameda, CA  94501-1098 \n(512)-914-2840 \nsupport@cellfebiotech.com \nhttps://www.cellfebiotech.com \n\u00a9 2023, CellFE Biotech, Inc. \n \n \n \n \nFor Research Use Only. Not for use in diagnostic procedures. \nPlaceholder: Image of Infinity MTx \n Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 2 of 50 \n \nTable of Contents \nChapter 1. Product Information ................................ ................................ ................................ .. 5 \nIntroduction ................................ ................................ ....................  Error! Bookmark not defined. \nProduct Description ................................ ................................ ................................ ....................  5 \nThe Infinity MTx ................................ ................................ ........................  Error! Bookmark not defined. \nThe Infinity MPA ................................ ................................ .......................  Error! Bookmark not defined. \nKey Features and Benefits ................................ ................................ ................................ ..........  5 \nSystem Components ................................ ................................ ................................ ...................  8 \nFront Panel ................................ ................................ ................................ ................................ ..........  8 \nBack Panel ................................ ................................ ................................ ................................ ...........  9 \nInfinity MPA ................................ ................................ ................................ ................................ .......  10 \nChapter 2. Upon Receiving the Infinity MTx ........................",
-                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
-                }
-            ],
-            "confidence": 95
-        },
-        {
             "start_cell": "A7",
             "row_type": "table_data",
-            "photo_no": "guide",
+            "photo_no": "4",
             "item_no": "5",
-            "name": "Power Cord",
-            "manufacturer": null,
-            "type_model": null,
+            "name": "TIM-BRAID-ENCLOSURE",
+            "manufacturer": "Client1, Inc. (USA)",
+            "type_model": "100-056852",
             "technical_data": null,
             "marks_of_conf": null,
             "field_merged": false,
@@ -137,25 +137,25 @@
             "task_type": "extraction",
             "user_editable": true,
             "ai_fillable": true,
-            "accuracy_level": false,
-            "image_support": null,
+            "accuracy_level": true,
+            "image_support": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/device_images/side-view.jpg?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D",
             "text_support": [
                 {
-                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
-                    "page": 1,
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
                     "similarity_score": null,
-                    "preview_text": "Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 1 of 50 \nCellFE Infinity MTx Operating Manual \n \n \n \nCellFE Biotech, Inc. \n980 Atlantic Avenue, Suite 110 \nAlameda, CA  94501-1098 \n(512)-914-2840 \nsupport@cellfebiotech.com \nhttps://www.cellfebiotech.com \n\u00a9 2023, CellFE Biotech, Inc. \n \n \n \n \nFor Research Use Only. Not for use in diagnostic procedures. \nPlaceholder: Image of Infinity MTx \n Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 2 of 50 \n \nTable of Contents \nChapter 1. Product Information ................................ ................................ ................................ .. 5 \nIntroduction ................................ ................................ ....................  Error! Bookmark not defined. \nProduct Description ................................ ................................ ................................ ....................  5 \nThe Infinity MTx ................................ ................................ ........................  Error! Bookmark not defined. \nThe Infinity MPA ................................ ................................ .......................  Error! Bookmark not defined. \nKey Features and Benefits ................................ ................................ ................................ ..........  5 \nSystem Components ................................ ................................ ................................ ...................  8 \nFront Panel ................................ ................................ ................................ ................................ ..........  8 \nBack Panel ................................ ................................ ................................ ................................ ...........  9 \nInfinity MPA ................................ ................................ ................................ ................................ .......  10 \nChapter 2. Upon Receiving the Infinity MTx ........................",
-                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
                 }
             ],
-            "confidence": 95
+            "confidence": 80
         },
         {
             "start_cell": "A8",
             "row_type": "table_data",
-            "photo_no": "guide",
+            "photo_no": "5",
             "item_no": "6",
-            "name": "Power Supply",
+            "name": "Ground Strap, Braided Copper, 1/2x1/16in",
             "manufacturer": null,
             "type_model": null,
             "technical_data": null,
@@ -167,15 +167,15 @@
             "task_type": "extraction",
             "user_editable": true,
             "ai_fillable": true,
-            "accuracy_level": false,
-            "image_support": null,
+            "accuracy_level": true,
+            "image_support": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/device_images/front-view.jpg?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D",
             "text_support": [
                 {
-                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
-                    "page": 1,
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
                     "similarity_score": null,
-                    "preview_text": "........ ................................ ...............  12 \nProvided Materials ................................ ................................ ....................  Error! Bookmark not defined. \nEquipment ..................................................................................................................... Error! Bookmark not defined. \nOptimizer Kit and Contents ......................................................................................................................................... 7 \nSite Preparations ................................ ................................ ................................ ...............................  12 \nPhysical Space Requirements ....................................................................................... Error! Bookmark not defined. \nElectrical Requirements ............................................................................................................................................. 12 \nInfrastructure Requirements ..................................................................................................................................... 12 \nSafety and Environmental Considerations .................................................................. Error! Bookmark not defined. \nSetting Up the Infinity MTx ................................ ................................ ................................ .................  13 \nUnpacking and Inspecting ......................................................................................................................................... 13 \nAssembling and Connecting ...................................................................................................................................... 14 \nTesting Functionality .................................................................................................................................................. 14 \nUsing the Infinity MTx .......................",
-                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
                 }
             ],
             "confidence": 95
@@ -183,11 +183,11 @@
         {
             "start_cell": "A9",
             "row_type": "table_data",
-            "photo_no": "guide",
+            "photo_no": "Not Shown",
             "item_no": "7",
-            "name": "Power Switch",
-            "manufacturer": null,
-            "type_model": null,
+            "name": "AC/DC DESKTOP ADAPTER 48V 221W",
+            "manufacturer": "Inventus Power",
+            "type_model": "MWA220048A-11A",
             "technical_data": null,
             "marks_of_conf": null,
             "field_merged": false,
@@ -197,27 +197,507 @@
             "task_type": "extraction",
             "user_editable": true,
             "ai_fillable": true,
-            "accuracy_level": false,
+            "accuracy_level": true,
             "image_support": null,
             "text_support": [
                 {
-                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
-                    "page": 1,
+                    "filename": "500-052455 ASM POWER SUPPLY",
+                    "page": "500-052455 ASM POWER SUPPLY",
                     "similarity_score": null,
-                    "preview_text": "Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 1 of 50 \nCellFE Infinity MTx Operating Manual \n \n \n \nCellFE Biotech, Inc. \n980 Atlantic Avenue, Suite 110 \nAlameda, CA  94501-1098 \n(512)-914-2840 \nsupport@cellfebiotech.com \nhttps://www.cellfebiotech.com \n\u00a9 2023, CellFE Biotech, Inc. \n \n \n \n \nFor Research Use Only. Not for use in diagnostic procedures. \nPlaceholder: Image of Infinity MTx \n Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 2 of 50 \n \nTable of Contents \nChapter 1. Product Information ................................ ................................ ................................ .. 5 \nIntroduction ................................ ................................ ....................  Error! Bookmark not defined. \nProduct Description ................................ ................................ ................................ ....................  5 \nThe Infinity MTx ................................ ................................ ........................  Error! Bookmark not defined. \nThe Infinity MPA ................................ ................................ .......................  Error! Bookmark not defined. \nKey Features and Benefits ................................ ................................ ................................ ..........  5 \nSystem Components ................................ ................................ ................................ ...................  8 \nFront Panel ................................ ................................ ................................ ................................ ..........  8 \nBack Panel ................................ ................................ ................................ ................................ ...........  9 \nInfinity MPA ................................ ................................ ................................ ................................ .......  10 \nChapter 2. Upon Receiving the Infinity MTx ........................",
-                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 100
+        },
+        {
+            "start_cell": "A10",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "8",
+            "name": "ASM LED POWER",
+            "manufacturer": "Client1, Inc. (USA)",
+            "type_model": "500-052458",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 90
+        },
+        {
+            "start_cell": "A11",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "9",
+            "name": "ASM POWER",
+            "manufacturer": "Client1, Inc. (USA)",
+            "type_model": "500-052456",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 90
+        },
+        {
+            "start_cell": "A12",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "10",
+            "name": "ASM POWER BUTTON",
+            "manufacturer": "Client1, Inc. (USA)",
+            "type_model": "500-052457",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 80
+        },
+        {
+            "start_cell": "A13",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "11",
+            "name": "ASM POWER SUPPLY",
+            "manufacturer": "Client1, Inc. (USA)",
+            "type_model": "500-052455",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 90
+        },
+        {
+            "start_cell": "A14",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "12",
+            "name": "Battery, Lithium, Coin, 3V, 20mm",
+            "manufacturer": "Panasonic-BSG",
+            "type_model": "cr2032",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 80
+        },
+        {
+            "start_cell": "A15",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "13",
+            "name": "Blower w/ Heatsink, 12V, 23cfm, tach",
+            "manufacturer": "OLC Inc",
+            "type_model": "ACM5B12X-S-IP55-KS",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "500-052459 ASM FAN",
+                    "page": "500-052459 ASM FAN",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 80
+        },
+        {
+            "start_cell": "A16",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "14",
+            "name": "Button, Momentary, lit, Panel",
+            "manufacturer": "E-Switch",
+            "type_model": "SV4FW3SS-641",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "500-052457 ASM POWER BUTTON",
+                    "page": "500-052457 ASM POWER BUTTON",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 80
+        },
+        {
+            "start_cell": "A17",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "15",
+            "name": "CABLE POWER EXTENSION",
+            "manufacturer": "Client1, Inc. (USA)",
+            "type_model": "500-057653",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 80
+        },
+        {
+            "start_cell": "A18",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "16",
+            "name": "Cable, USB2, Waterproof, Bulkhead, Type A Female, Micro Male",
+            "manufacturer": "USBFireWire.com",
+            "type_model": "RR-PROTO-10456",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 80
+        },
+        {
+            "start_cell": "A19",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "17",
+            "name": "Cable, USB3, Waterproof, Bulkhead, Female-Male",
+            "manufacturer": "USB Fire Wire",
+            "type_model": "RR-118300-02-12",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 80
+        },
+        {
+            "start_cell": "A20",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "18",
+            "name": "Cap, Bulkhead Seal, Screw lock",
+            "manufacturer": "USB Fire Wire",
+            "type_model": "RR-1C533122",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 80
+        },
+        {
+            "start_cell": "A21",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "19",
+            "name": "Cap, Bulkhead Seal, Twist lock",
+            "manufacturer": "USB Fire Wire",
+            "type_model": "RR-1C542122",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 80
+        },
+        {
+            "start_cell": "A22",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "20",
+            "name": "Carrier Board, Nvidia Jetson",
+            "manufacturer": "Ximea",
+            "type_model": "XEC2-4P-X2G2-PHS",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 90
+        },
+        {
+            "start_cell": "A23",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "21",
+            "name": "Discs, Kapton, 1mil, Dia 1/4in",
+            "manufacturer": "ULine",
+            "type_model": "S-17221",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 70
+        },
+        {
+            "start_cell": "A24",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "22",
+            "name": "Gasket, EMI, 2.5x1.5mm",
+            "manufacturer": "Laird Technologies",
+            "type_model": "4358PA51H01800",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 70
+        },
+        {
+            "start_cell": "A25",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "23",
+            "name": "Plug, Female, Sealed, M12, 2pos",
+            "manufacturer": "TE",
+            "type_model": "T4110011021-000",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "500-052455 ASM POWER SUPPLY",
+                    "page": "500-052455 ASM POWER SUPPLY",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
                 }
             ],
             "confidence": 95
         },
         {
-            "start_cell": "A10",
+            "start_cell": "A26",
             "row_type": "table_data",
-            "photo_no": "guide",
-            "item_no": "8",
-            "name": "Sample Input Port",
-            "manufacturer": null,
-            "type_model": null,
+            "photo_no": "Not Shown",
+            "item_no": "24",
+            "name": "Plug, Female, Sealed, Right, M12, 2pos",
+            "manufacturer": "TE",
+            "type_model": "T4112011021-000",
             "technical_data": null,
             "marks_of_conf": null,
             "field_merged": false,
@@ -227,25 +707,205 @@
             "task_type": "extraction",
             "user_editable": true,
             "ai_fillable": true,
-            "accuracy_level": false,
+            "accuracy_level": true,
             "image_support": null,
             "text_support": [
                 {
-                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
-                    "page": 1,
+                    "filename": "500-057653 CABLE, POWER, EXTEN",
+                    "page": "500-057653 CABLE, POWER, EXTEN",
                     "similarity_score": null,
-                    "preview_text": "Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 1 of 50 \nCellFE Infinity MTx Operating Manual \n \n \n \nCellFE Biotech, Inc. \n980 Atlantic Avenue, Suite 110 \nAlameda, CA  94501-1098 \n(512)-914-2840 \nsupport@cellfebiotech.com \nhttps://www.cellfebiotech.com \n\u00a9 2023, CellFE Biotech, Inc. \n \n \n \n \nFor Research Use Only. Not for use in diagnostic procedures. \nPlaceholder: Image of Infinity MTx \n Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 2 of 50 \n \nTable of Contents \nChapter 1. Product Information ................................ ................................ ................................ .. 5 \nIntroduction ................................ ................................ ....................  Error! Bookmark not defined. \nProduct Description ................................ ................................ ................................ ....................  5 \nThe Infinity MTx ................................ ................................ ........................  Error! Bookmark not defined. \nThe Infinity MPA ................................ ................................ .......................  Error! Bookmark not defined. \nKey Features and Benefits ................................ ................................ ................................ ..........  5 \nSystem Components ................................ ................................ ................................ ...................  8 \nFront Panel ................................ ................................ ................................ ................................ ..........  8 \nBack Panel ................................ ................................ ................................ ................................ ...........  9 \nInfinity MPA ................................ ................................ ................................ ................................ .......  10 \nChapter 2. Upon Receiving the Infinity MTx ........................",
-                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 95
+        },
+        {
+            "start_cell": "A27",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "25",
+            "name": "Plug, Male, Sealed, M12, 2pos",
+            "manufacturer": "TE",
+            "type_model": "T4111011021-000",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "500-057653 CABLE, POWER, EXTEN",
+                    "page": "500-057653 CABLE, POWER, EXTEN",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 95
+        },
+        {
+            "start_cell": "A28",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "26",
+            "name": "Power Distribution PCA",
+            "manufacturer": "Client1, Inc. (USA)",
+            "type_model": "650-051836",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 98
+        },
+        {
+            "start_cell": "A29",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "27",
+            "name": "Receptacle, Circular, Solder Cup, M12, 2pos",
+            "manufacturer": "TE",
+            "type_model": "T4132012021-000",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "500-052456 ASM POWER",
+                    "page": "500-052456 ASM POWER",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 95
+        },
+        {
+            "start_cell": "A30",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "28",
+            "name": "STRAIN-RELIEF-CARRIER",
+            "manufacturer": "Client1, Inc. (USA)",
+            "type_model": "450-057131",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
                 }
             ],
             "confidence": 80
         },
         {
-            "start_cell": "A11",
+            "start_cell": "A31",
             "row_type": "table_data",
-            "photo_no": "guide",
-            "item_no": "9",
-            "name": "Sample Output Port",
+            "photo_no": "Not Shown",
+            "item_no": "29",
+            "name": "TIM-LED-PCA",
+            "manufacturer": "Client1, Inc. (USA)",
+            "type_model": "100-056740",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 80
+        },
+        {
+            "start_cell": "A32",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "30",
+            "name": "Wire, 1 Pair, Twisted, Shielded, Black, 18awg",
+            "manufacturer": "Alpha Wire",
+            "type_model": "M9528010 BK005",
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "500-057653 CABLE, POWER, EXTEN",
+                    "page": "500-057653 CABLE, POWER, EXTEN",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 95
+        },
+        {
+            "start_cell": "A33",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "31",
+            "name": "Cord, IEC C13 to NEMA 5-15, 9.5ft",
             "manufacturer": null,
             "type_model": null,
             "technical_data": null,
@@ -257,18 +917,78 @@
             "task_type": "extraction",
             "user_editable": true,
             "ai_fillable": true,
-            "accuracy_level": false,
+            "accuracy_level": true,
             "image_support": null,
             "text_support": [
                 {
-                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
-                    "page": 1,
+                    "filename": "600-051755 PFMD",
+                    "page": "600-051755 PFMD",
                     "similarity_score": null,
-                    "preview_text": "Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 1 of 50 \nCellFE Infinity MTx Operating Manual \n \n \n \nCellFE Biotech, Inc. \n980 Atlantic Avenue, Suite 110 \nAlameda, CA  94501-1098 \n(512)-914-2840 \nsupport@cellfebiotech.com \nhttps://www.cellfebiotech.com \n\u00a9 2023, CellFE Biotech, Inc. \n \n \n \n \nFor Research Use Only. Not for use in diagnostic procedures. \nPlaceholder: Image of Infinity MTx \n Infinity MTx Operating Manual \nIFU-001 Rev. A 08/24/2023 2 of 50 \n \nTable of Contents \nChapter 1. Product Information ................................ ................................ ................................ .. 5 \nIntroduction ................................ ................................ ....................  Error! Bookmark not defined. \nProduct Description ................................ ................................ ................................ ....................  5 \nThe Infinity MTx ................................ ................................ ........................  Error! Bookmark not defined. \nThe Infinity MPA ................................ ................................ .......................  Error! Bookmark not defined. \nKey Features and Benefits ................................ ................................ ................................ ..........  5 \nSystem Components ................................ ................................ ................................ ...................  8 \nFront Panel ................................ ................................ ................................ ................................ ..........  8 \nBack Panel ................................ ................................ ................................ ................................ ...........  9 \nInfinity MPA ................................ ................................ ................................ ................................ .......  10 \nChapter 2. Upon Receiving the Infinity MTx ........................",
-                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/cellFE-1614-new/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
                 }
             ],
-            "confidence": 80
+            "confidence": 95
+        },
+        {
+            "start_cell": "A34",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "32",
+            "name": "Cord grip, Brass, Ni Plate 0.08-0.24in",
+            "manufacturer": null,
+            "type_model": null,
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "500-052459 ASM FAN",
+                    "page": "500-052459 ASM FAN",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 95
+        },
+        {
+            "start_cell": "A35",
+            "row_type": "table_data",
+            "photo_no": "Not Shown",
+            "item_no": "33",
+            "name": "Tubing, Heat Shrink, Moisture seal, 2.5:1, 0.13\"OD",
+            "manufacturer": null,
+            "type_model": null,
+            "technical_data": null,
+            "marks_of_conf": null,
+            "field_merged": false,
+            "fm_range": null,
+            "value_merged": false,
+            "vm_range": null,
+            "task_type": "extraction",
+            "user_editable": true,
+            "ai_fillable": true,
+            "accuracy_level": true,
+            "image_support": null,
+            "text_support": [
+                {
+                    "filename": "500-052459 ASM FAN",
+                    "page": "500-052459 ASM FAN",
+                    "similarity_score": null,
+                    "preview_text": null,
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/PRJ_000001_Test2/source_documents/999-051754_Critical_Components_List.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+                }
+            ],
+            "confidence": 90
         }
     ]
 }
