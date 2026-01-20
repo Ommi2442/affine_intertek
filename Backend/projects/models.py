@@ -77,9 +77,8 @@ class FinalizeReportPayload(BaseModel):
     reportType: str  # "TRF" or "CDR"
     data: dict       # FULL FINAL JSON
 
-
 class LetterGeneration(BaseModel):
     projectId: str
-    trf_urls: str
-    cdr_urls: str
-    # other_urls: str
+    trf_urls: Optional[str] = None
+    cdr_urls: Optional[str] = None
+    # other_urls: Optional[str] = None
