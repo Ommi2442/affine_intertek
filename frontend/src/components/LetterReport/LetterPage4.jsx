@@ -1,10 +1,25 @@
 import React from 'react';
-import { IntertekLogo } from './LetterComponents/IntertekLogo';
+import LetterHeader from './LetterComponents/LetterHeader';
 
-const LetterPage4 = () => {
+const LetterPage4 = ({
+  json,
+  editMode,
+  handleApprove,
+  openComment,
+  onBookmarkClick,
+}) => {
+  const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
   return (
     <div className="letter-page">
-      <IntertekLogo />
+      <LetterHeader
+        json={json}
+        editMode={editMode}
+        onChange={forceUpdate}
+        onApprove={handleApprove}
+        onComment={openComment}
+        onBookmark={onBookmarkClick}
+      />
+
       <h3 style={{ marginBottom: '5%' }}>Letter Report</h3>
       <p>
         Details for the following critical components or materials have not been

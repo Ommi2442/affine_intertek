@@ -1,9 +1,9 @@
 import React from 'react';
-import { IntertekLogo } from './LetterComponents/IntertekLogo';
 import SignatureBlock from './LetterComponents/SignatureBlock';
 import LetterSmartField from './LetterComponents/LetterSmartField';
 import { getLetterItem } from '../../utils/letterResolver';
 import LetterPhotoSection from './LetterComponents/LetterPhotoSection';
+import LetterHeader from './LetterComponents/LetterHeader';
 
 const LetterPage5 = ({
   json,
@@ -16,7 +16,14 @@ const LetterPage5 = ({
   const item = getLetterItem(json, 'photograph');
   return (
     <div className="letter-page">
-      <IntertekLogo />
+      <LetterHeader
+        json={json}
+        editMode={editMode}
+        onChange={forceUpdate}
+        onApprove={handleApprove}
+        onComment={openComment}
+        onBookmark={onBookmarkClick}
+      />
       <h3 style={{ marginBottom: '5%' }}>Letter Report</h3>
       <h3 className="section">SECTION 5</h3>
       <span>

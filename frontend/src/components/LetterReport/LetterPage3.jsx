@@ -1,12 +1,12 @@
 import React from 'react';
 import { getLetterItem } from '../../utils/letterResolver';
-import { IntertekLogo } from './LetterComponents/IntertekLogo';
 import LetterDataFrameTable from './LetterComponents/LetterDataFrameTable';
 import LetterSmartField from './LetterComponents/LetterSmartField';
 import { IconButton } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
+import LetterHeader from './LetterComponents/LetterHeader';
 
 const LetterPage3 = ({
   json,
@@ -68,7 +68,7 @@ const LetterPage3 = ({
               return;
             }
 
-            // 🔁 Normal DataTable path
+            // Normal DataTable path
             if (tIdx != null && iIdx != null) {
               openComment?.(tIdx, iIdx);
             }
@@ -100,32 +100,14 @@ const LetterPage3 = ({
 
   return (
     <div className="letter-page">
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <IntertekLogo />
-        <div>
-          <LetterSmartField
-            json={json}
-            name="«AppCOMPANYNAME»"
-            editMode={editMode}
-            onChange={forceUpdate}
-            onApprove={handleApprove}
-            onComment={openComment}
-            onBookmark={onBookmarkClick}
-          />
-          <div style={{ display: 'flex' }}>
-            <div> Intertek Report: No: </div>
-            <LetterSmartField
-              json={json}
-              name="«ReportNumber»"
-              editMode={editMode}
-              onChange={forceUpdate}
-              onApprove={handleApprove}
-              onComment={openComment}
-              onBookmark={onBookmarkClick}
-            />
-          </div>
-        </div>
-      </div>
+      <LetterHeader
+        json={json}
+        editMode={editMode}
+        onChange={forceUpdate}
+        onApprove={handleApprove}
+        onComment={openComment}
+        onBookmark={onBookmarkClick}
+      />
 
       <h3 style={{ marginBottom: '5%' }}>Letter Report</h3>
       <p>
