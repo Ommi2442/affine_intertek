@@ -29,6 +29,8 @@ try:
     COSMOS_DB_project_Container = projects_container
     COSMOS_DB_project_trf_Container = COSMOS_DB_project_TRF_Container
     COSMOS_DB_project_cdr_Container = COSMOS_DB_project_CDR_Container
+    COSMOS_DB_project_LETTER_Container = COSMOS_DB_project_LETTER_Container
+
     print(" Connected to Cosmos DB successfully.")
 
 except Exception as e:

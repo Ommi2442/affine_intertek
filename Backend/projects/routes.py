@@ -1,3 +1,4 @@
+from utility.letter_report.deploymentV1.letter_regenerator import rebuild_letter_docx_from_json
 from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
 from pathlib import Path
@@ -1530,7 +1531,7 @@ async def finalize_reports(payload: FinalizeReportPayload):
         if not project_id:
             raise HTTPException(400, "projectId is required")
 
-        if report_type not in ("TRF", "CDR"):
+        if report_type not in ("TRF", "CDR", "LETTER"):
             raise HTTPException(400, "Invalid reportType")
 
         if not isinstance(updated_data, dict):
@@ -1539,11 +1540,21 @@ async def finalize_reports(payload: FinalizeReportPayload):
         # --------------------------------------------------
         # Choose Cosmos container
         # --------------------------------------------------
-        container = (
+        if report_type == "TRF":
             COSMOS_DB_project_TRF_Container
-            if report_type == "TRF"
-            else COSMOS_DB_project_CDR_Container
-        )
+        elif report_type == "CDR":
+            container = COSMOS_DB_project_CDR_Container
+        else:
+            container = COSMOS_DB_project_LETTER_Container
+
+        
+        
+        # container = (
+        #     COSMOS_DB_project_TRF_Container
+        #     if report_type == "TRF"
+        #     else COSMOS_DB_project_CDR_Container
+        # )
+
         print("Finalize api for CDR Generating for --- ",container)
         # --------------------------------------------------
         # Fetch Cosmos record
@@ -1555,17 +1566,18 @@ async def finalize_reports(payload: FinalizeReportPayload):
         # --------------------------------------------------
         # Replace JSON in Blob
         # --------------------------------------------------
-        replace_json_blob(
+        
+        # --------------------------------------------------
+        # Replace local final_output.json
+        # --------------------------------------------------
+        if report_type == "TRF":
+            replace_json_blob(
             blob_service=blob_service,
             container_name=CONTAINER_NAME,
             blob_path=blob_path,
             json_data=updated_data
         )
         
-        # --------------------------------------------------
-        # Replace local final_output.json
-        # --------------------------------------------------
-        if report_type == "TRF":
             replace_local_final_json(project_id, updated_data)
             BASE_DIR = Path(__file__).resolve().parent.parent
             DATA_DIR = BASE_DIR / "data" 
@@ -1580,7 +1592,7 @@ async def finalize_reports(payload: FinalizeReportPayload):
                 output_docx_path=OUTPUT_DOCX_PATH,
             )
         
-        if report_type == "CDR":
+        elif report_type == "CDR":
             print("---- inside the CDR update-----")
             BASE_DIR = Path(__file__).resolve().parents[1]
             DATA_DIR = BASE_DIR / "data"
@@ -1621,6 +1633,57 @@ async def finalize_reports(payload: FinalizeReportPayload):
                 status_code=500,
                 detail=f"CDR Excel generation failed: {str(e)}"
                 )
+        
+        elif report_type == "LETTER":
+            print("------ Letter finalizeeeee ------")
+            # filter both the ourl from the container
+            try:
+                record = fetch_final_json_record(container, project_id)
+                blob_url = record["blob_url"]
+                
+                BASE_DIR = Path(__file__).resolve().parents[1]
+                DATA_DIR = BASE_DIR / "data"
+                project_dir = DATA_DIR / project_id
+                letter_temp_path = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "Letter_Template.docx"
+                project_dir.mkdir(parents=True, exist_ok=True)
+                local_letter_json_body = project_dir / f"letter_body_iec_output_{project_id}_updated.json"
+                local_letter_json_header = project_dir / f"letter_header_iec_output_{project_id}_updated.json"
+                letter_docx_file_updated = project_dir / f"letter_iec_output_{project_id}_updated.docx"
+                
+                body = updated_data['body']
+                header = updated_data['header']
+
+                with open(local_letter_json_body, "w", encoding="utf-8") as f:
+                    json.dump(body, f, indent=2, ensure_ascii=False)
+                
+                with open(local_letter_json_header, "w", encoding="utf-8") as f:
+                    json.dump(header, f, indent=2, ensure_ascii=False)
+                
+                print("Letter Path -- ",letter_temp_path)
+                
+                rebuild_letter_docx_from_json(
+                letter_json_path=local_letter_json_body,
+                letter_header_json_path=local_letter_json_header,
+                letter_template_docx = letter_temp_path,
+                output_letter_docx=letter_docx_file_updated )
+                
+                save_local_jsons_and_docx_to_blob_and_cosmos_for_letter(
+                                        str(local_letter_json_body),
+                                        str(local_letter_json_header),
+                                        str(letter_docx_file_updated),
+                                        project_id=project_id
+                                        )
+                
+                return {
+                "status": "Letter finalize successfully",
+                "reportType": report_type,
+                "projectId": project_id,
+                "blob_url":blob_url
+                }
+            
+            except Exception as e:
+                print(traceback.format_exc())
+        
         return {
             "status": "success",
             "reportType": report_type,
