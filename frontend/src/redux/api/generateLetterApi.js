@@ -18,8 +18,6 @@ export const triggerGenerateLetterApi = async (
       projectId: projectId,
       trf_urls: trfBlobUrl,
       cdr_urls: cdrBlobUrl,
-      other_urls:
-        'https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G105000001/user_uploaded_CDR_file/iec_output_sheet_G10501.xlsx',
     },
     {
       headers: {
