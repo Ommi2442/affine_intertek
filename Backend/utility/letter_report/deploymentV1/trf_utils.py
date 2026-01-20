@@ -441,6 +441,7 @@ def process_blob_urls_2(blob_urls, conn_str, container,
       - returns (extracted_texts, image_urls, downloaded_pdf_paths, converted_pdf_paths)
         extracted_texts: list of dicts { 'filename': ..., 'text': ..., optional 'pages': [...] }
     """
+    print('download_dir', download_dir)
     tempdir = None
     if download_dir:
         os.makedirs(download_dir, exist_ok=True)
