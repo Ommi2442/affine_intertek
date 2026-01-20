@@ -1794,10 +1794,10 @@ async def letter_implementation(payload: LetterGeneration):
             image_container = f"vectorstorecontainer_new_itk_image_{first_name}_{project_id}"
             import time;time.sleep(10)
             print("Starting full ingestion for Letter Generation...")
-            run_full_ingestion(Source_Doc_urls,text_container,image_container)
+            run_full_ingestion(project_id,Source_Doc_urls,text_container,image_container)
             blob_urls_trf=blob_urls+ Source_Doc_urls
             print("Blob URLs for Letter Generation after ingestion:", blob_urls_trf)
-            f=main(blob_urls,text_container,image_container)
+            f=main(projectId,blob_urls,text_container,image_container)
             
             if f:
                 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -1811,12 +1811,17 @@ async def letter_implementation(payload: LetterGeneration):
                 letter_json_path = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "letter.json"
                 letter_header_json_path = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "letter_header.json"
                 letter_template_docx = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "Letter_Template.docx"
+
+                letter_src_files = BASE_DIR / "data" / projectId / "letter_src_files"
+
+                trf_src_files = BASE_DIR / "data" / projectId / "trf_src_files"
+
                 
                 g=letter_gen(
                 blob_urls=blob_urls,
                 container_name=BLOB_CONTAINER_NAME,
-                src_files_dir="letter_src_files",
-                src_files_trf="trf_src_files",  
+                src_files_dir=letter_src_files,
+                src_files_trf=trf_src_files,  
                 
                 letter_json_path=letter_json_path,
                 letter_header_json_path=letter_header_json_path,
@@ -1991,12 +1996,12 @@ async def upload_files(
  
     COSMOS_DB_project_Container.upsert_item(project_doc)
  
-    background_tasks.add_task(
-        process_citation_documents,
-        projectId,
-        blob_service,
-        CONTAINER_NAME
-    )
+    # background_tasks.add_task(
+    #     process_citation_documents,
+    #     projectId,
+    #     blob_service,
+    #     CONTAINER_NAME
+    # )
  
     first_file = uploaded_urls[0]
  
@@ -2071,13 +2076,13 @@ async def upload_files(
     # Save back to Cosmos DB
     COSMOS_DB_project_Container.upsert_item(project_doc)
  
-    # Background processing
-    background_tasks.add_task(
-        process_citation_documents,
-        projectId,
-        blob_service,
-        CONTAINER_NAME
-    )
+    # # Background processing
+    # background_tasks.add_task(
+    #     process_citation_documents,
+    #     projectId,
+    #     blob_service,
+    #     CONTAINER_NAME
+    # )
  
     first_file = uploaded_urls[0]
  

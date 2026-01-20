@@ -85,12 +85,12 @@ COSMOS_CONT_IMAGE = CONT_NAME_IMG
 BLOB_CONT_NAME= os.getenv("BLOB_CONTAINER")
 ENABLE_CAD_SCHEMATICS = os.getenv("ENABLE_CAD_SCHEMATICS")
 FLATTENED_DIR = os.getenv("FLATTENED_DIR")
-IMAGES_ROOT =os.getenv("IMAGES_ROOT")
-DOWNLOAD_DIR = os.getenv("TRF_DOWNLOAD_DIR")
+LT_IMAGES_ROOT =os.getenv("LT_IMAGES_ROOT")
+LT_DOWNLOAD_DIR_Folder_Name = os.getenv("TRF_DOWNLOAD_DIR")
 
 COSMOS_CONT_TEXT = os.getenv("COSMOS_CONT_TEXT")
 COSMOS_DB_TEXT=os.getenv("COSMOS_DB_TEXT")
-print("@@@@@@@@ ",DOWNLOAD_DIR)
+
 
 
 # ----------------------------------------------------------------------------------------
@@ -1325,7 +1325,7 @@ def append_cis_images_to_image_metadata(images_root: str, image_page_metadata: l
 # ------------------------------------------------------------
 # Master Orchestration Function
 # ------------------------------------------------------------
-def run_full_ingestion(blob_urls,text_container,image_container):
+def run_full_ingestion(project_id,blob_urls,text_container,image_container):
     """
     Master ingestion function to be called externally.
 
@@ -1341,6 +1341,11 @@ def run_full_ingestion(blob_urls,text_container,image_container):
     print("\n==============================")
     print("   STEP 1 — PROCESS BLOB URLs ")
     print("==============================\n")
+
+    BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+
+    LT_DOWNLOAD_DIR = BASE_DIR / "data" / project_id / LT_DOWNLOAD_DIR_Folder_Name
+
 
     client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY)
 
@@ -1365,7 +1370,7 @@ def run_full_ingestion(blob_urls,text_container,image_container):
         blob_urls,
         AZURE_CONN_STRING,
         container=BLOB_CONT_NAME,   # SAME as notebook
-        download_dir=DOWNLOAD_DIR, #DOWNLOAD_DIR from environment
+        download_dir=LT_DOWNLOAD_DIR, #LT_DOWNLOAD_DIR from environment
         keep_files=True,
         verbose=True
     )
@@ -1375,12 +1380,12 @@ def run_full_ingestion(blob_urls,text_container,image_container):
     
 
 
-    # cis_info = extract_cis(src_root=DOWNLOAD_DIR,
+    # cis_info = extract_cis(src_root=LT_DOWNLOAD_DIR,
     #     flattened_dir=FLATTENED_DIR,
-    #     images_root=IMAGES_ROOT)
+    #     images_root=LT_IMAGES_ROOT)
     cis_info, editable_pdfs = extract_cis(
-        src_root=DOWNLOAD_DIR,
-        images_root=IMAGES_ROOT
+        src_root=LT_DOWNLOAD_DIR,
+        images_root=LT_IMAGES_ROOT
     )
 
     # ✅ Remove editable PDFs from PDF ingestion list (they are handled via OCR images)
@@ -1391,8 +1396,8 @@ def run_full_ingestion(blob_urls,text_container,image_container):
 
     
     copy_extracted_images_to_src(
-    page_images_root=IMAGES_ROOT,
-    src_root=DOWNLOAD_DIR)
+    page_images_root=LT_IMAGES_ROOT,
+    src_root=LT_DOWNLOAD_DIR)
     
     extracted_texts += cis_info
 
@@ -1421,7 +1426,7 @@ def run_full_ingestion(blob_urls,text_container,image_container):
 
     # ✅ Add CIS extracted images into CAD schematic pipeline
     append_cis_images_to_image_metadata(
-        images_root=IMAGES_ROOT,
+        images_root=LT_IMAGES_ROOT,
         image_page_metadata=image_page_metadata
     )
 
