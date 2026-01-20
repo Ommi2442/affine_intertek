@@ -599,10 +599,10 @@ table {
   color: white !important;
 }
 
-.letter-page-nav {
+/* .letter-page-nav {
   margin-top: 16px;
   padding-bottom: 10px;
-}
+} */
 
 .letter-single-page-container {
   width: 100%;
@@ -627,22 +627,22 @@ table {
 }
 
 /* Left panel should be a column layout */
-.left-panel {
-  display: flex;
-  flex-direction: column;
+.left-panel-letter {
+  flex: 0 0 75%;
+  padding: 16px;
   height: calc(100vh - 140px); /* adjust based on header height */
 }
 
 /* This is the scrollable letter content */
-.letter-scroll-container {
+/* .letter-scroll-container {
   flex: 1;
   overflow-y: auto;
   padding-right: 6px;
-}
+} */
 /* -------- LETTER PAGINATION -------- */
-.letter-pagination {
+/* .letter-pagination {
   position: sticky;
-  top: 0; /* 👈 stick below page-1 top */
+  top: 0;
   background: #fff;
   padding: 10px 8px;
   border-bottom: 1px solid #e0e0e0;
@@ -651,4 +651,4 @@ table {
   justify-content: center;
   align-items: center;
   z-index: 50;
-}
+} */
