@@ -16,7 +16,7 @@ import uuid, os
 from fastapi import Depends
 from api.auth.jwt_auth.utils import get_current_user
 from db.database import *
-from db.database import COSMOS_DB_project_Container, COSMOS_DB_URI,COSMOS_DB_KEY,COSMOS_DB_DATABASE,COSMOS_DB_project_TRF_Container,COSMOS_DB_project_CDR_Container
+from db.database import COSMOS_DB_project_Container, COSMOS_DB_URI,COSMOS_DB_KEY,COSMOS_DB_DATABASE,COSMOS_DB_project_TRF_Container,COSMOS_DB_project_CDR_Container,COSMOS_DB_project_trf_Container
 from projects.models import Project,ProjectCreate,ProjectFilter,FinalizeReportPayload,LetterGeneration
 from azure.cosmos import exceptions
 from azure.storage.blob import BlobServiceClient
@@ -1550,7 +1550,7 @@ def get_trf_json_part(
 
 @router.post("/finalize_report")
 async def finalize_reports(payload: FinalizeReportPayload):
-    try:
+    # try:
         project_id = payload.projectId
         report_type = payload.reportType.upper()
         updated_data = payload.data
@@ -1564,40 +1564,12 @@ async def finalize_reports(payload: FinalizeReportPayload):
         if not isinstance(updated_data, dict):
             raise HTTPException(400, "data must be a valid JSON object")
 
-        # --------------------------------------------------
-        # Choose Cosmos container
-        # --------------------------------------------------
+        # try:
         if report_type == "TRF":
-            COSMOS_DB_project_TRF_Container
-        elif report_type == "CDR":
-            container = COSMOS_DB_project_CDR_Container
-        else:
-            container = COSMOS_DB_project_LETTER_Container
-
-        
-        
-        # container = (
-        #     COSMOS_DB_project_TRF_Container
-        #     if report_type == "TRF"
-        #     else COSMOS_DB_project_CDR_Container
-        # )
-
-        print("Finalize api for CDR Generating for --- ",container)
-        # --------------------------------------------------
-        # Fetch Cosmos record
-        # --------------------------------------------------
-        record = fetch_final_json_record(container, project_id)
-        
-        blob_path = record["blob_path"]
-        blob_url = record["blob_url"]
-        # --------------------------------------------------
-        # Replace JSON in Blob
-        # --------------------------------------------------
-        
-        # --------------------------------------------------
-        # Replace local final_output.json
-        # --------------------------------------------------
-        if report_type == "TRF":
+            container_trf = COSMOS_DB_project_trf_Container
+            print('container_trf', container_trf)
+            record = fetch_final_json_record(container_trf, project_id)
+            blob_path = record["blob_path"]
             replace_json_blob(
             blob_service=blob_service,
             container_name=CONTAINER_NAME,
@@ -1617,14 +1589,26 @@ async def finalize_reports(payload: FinalizeReportPayload):
                 input_docx_path=OUTPUT_DOCX_PATH,
                 input_json_path=OUTPUT_JSON_PATH,
                 output_docx_path=OUTPUT_DOCX_PATH,
+                projectId=project_id
             )
+            return {
+                    "status": "success",
+                    "reportType": report_type,
+                    "projectId": project_id,
+                    "blob_url": blob_url
+            }
         
         elif report_type == "CDR":
             print("---- inside the CDR update-----")
+            container = COSMOS_DB_project_CDR_Container
+            container_cdr = COSMOS_DB_project_cdr_Container
             BASE_DIR = Path(__file__).resolve().parents[1]
             DATA_DIR = BASE_DIR / "data"
             DATA_DIR.mkdir(parents=True, exist_ok=True)
 
+            record = fetch_final_json_record(container_cdr,project_id)
+            blob_url = record["blob_url"]
+            print("++++  blob_url",blob_url)
             OUTPUT_JSON_PATH = DATA_DIR / f"iec_output_cdr_{project_id}.json"
             OUTPUT_JSON_PATH_local = DATA_DIR / f"iec_output_cdr_{project_id}_updated.json" 
 
@@ -1642,93 +1626,105 @@ async def finalize_reports(payload: FinalizeReportPayload):
 
             output_excel_path = DATA_DIR / f"iec_output_sheet_{project_id}.xlsx"
             
-            try:
-                user_id="Akshay"
-                init_runtime(project_id=project_id, user_id=user_id)
-                fill_excel_from_json(updated_json_data, str(output_excel_path))
-                cosmos_item = save_local_xlsx_to_blob_and_cosmos_cdr(str(output_excel_path), project_id)
-                first_item = cosmos_item[0]
-                blob_url_xlsx = first_item['blob_url']
-                record = fetch_final_json_record(container, project_id)
-                blob_url = record["blob_url"]
-                clear_runtime(project_id=project_id, user_id=user_id)
-                
-                if not cosmos_item:
-                    raise HTTPException(
-                        status_code=500,
-                        detail="CDR Excel upload failed"
-                    )
-            except Exception as e:
-                raise HTTPException(
-                status_code=500,
-                detail=f"CDR Excel generation failed: {str(e)}"
+            # try:
+            query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
+            docs = list(
+                projects_container.query_items(
+                    query=query,
+                    enable_cross_partition_query=True,
                 )
+            )
+            project_doc = docs[0]
+            user_name = project_doc.get("User_Name") or []
+            user_id = user_name.split()[0]
+            init_runtime(project_id=project_id, user_id=user_id)
+            fill_excel_from_json(updated_json_data, str(output_excel_path))
+            cosmos_item = save_local_xlsx_to_blob_and_cosmos_cdr(str(output_excel_path), project_id)
+            first_item = cosmos_item[0]
+            blob_url_xlsx = first_item['blob_url']
+            record = fetch_final_json_record(container, project_id)
+            blob_url = record["blob_url"]
+            clear_runtime(project_id=project_id, user_id=user_id)
+            
+            if not cosmos_item:
+                raise HTTPException(
+                    status_code=500,
+                    detail="CDR Excel upload failed"
+                )
+
+            return {
+                "status": "success",
+                "reportType": report_type,
+                "projectId": project_id,
+                "blob_url": blob_url
+            }
+            # except Exception as e:
+            #     raise HTTPException(
+            #     status_code=500,
+            #     detail=f"CDR Excel generation failed: {str(e)}"
+            #     )
         
         elif report_type == "LETTER":
             print("------ Letter finalizeeeee ------")
             # filter both the ourl from the container
-            try:
-                record = fetch_final_json_record(container, project_id)
-                blob_url = record["blob_url"]
-                
-                BASE_DIR = Path(__file__).resolve().parents[1]
-                DATA_DIR = BASE_DIR / "data"
-                project_dir = DATA_DIR / project_id
-                letter_temp_path = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "Letter_Template.docx"
-                project_dir.mkdir(parents=True, exist_ok=True)
-                local_letter_json_body = project_dir / f"letter_body_iec_output_{project_id}_updated.json"
-                local_letter_json_header = project_dir / f"letter_header_iec_output_{project_id}_updated.json"
-                letter_docx_file_updated = project_dir / f"letter_iec_output_{project_id}_updated.docx"
-                
-                body = updated_data['body']
-                header = updated_data['header']
-
-                with open(local_letter_json_body, "w", encoding="utf-8") as f:
-                    json.dump(body, f, indent=2, ensure_ascii=False)
-                
-                with open(local_letter_json_header, "w", encoding="utf-8") as f:
-                    json.dump(header, f, indent=2, ensure_ascii=False)
-                
-                print("Letter Path -- ",letter_temp_path)
-                
-                rebuild_letter_docx_from_json(
-                letter_json_path=local_letter_json_body,
-                letter_header_json_path=local_letter_json_header,
-                letter_template_docx = letter_temp_path,
-                output_letter_docx=letter_docx_file_updated )
-                
-                save_local_jsons_and_docx_to_blob_and_cosmos_for_letter(
-                                        str(local_letter_json_body),
-                                        str(local_letter_json_header),
-                                        str(letter_docx_file_updated),
-                                        project_id=project_id
-                                        )
-                
-                return {
-                "status": "Letter finalize successfully",
-                "reportType": report_type,
-                "projectId": project_id,
-                "blob_url":blob_url
-                }
+            container = COSMOS_DB_project_LETTER_Container
+            # try:
+            record = fetch_final_json_record(container, project_id)
+            blob_url = record["blob_url"]
             
-            except Exception as e:
-                print(traceback.format_exc())
-        
-        return {
-            "status": "success",
+            BASE_DIR = Path(__file__).resolve().parents[1]
+            DATA_DIR = BASE_DIR / "data"
+            project_dir = DATA_DIR / project_id
+            letter_temp_path = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "Letter_Template.docx"
+            project_dir.mkdir(parents=True, exist_ok=True)
+            local_letter_json_body = project_dir / f"letter_body_iec_output_{project_id}_updated.json"
+            local_letter_json_header = project_dir / f"letter_header_iec_output_{project_id}_updated.json"
+            letter_docx_file_updated = project_dir / f"letter_iec_output_{project_id}_updated.docx"
+            
+            body = updated_data['body']
+            header = updated_data['header']
+
+            with open(local_letter_json_body, "w", encoding="utf-8") as f:
+                json.dump(body, f, indent=2, ensure_ascii=False)
+            
+            with open(local_letter_json_header, "w", encoding="utf-8") as f:
+                json.dump(header, f, indent=2, ensure_ascii=False)
+            
+            print("Letter Path -- ",letter_temp_path)
+            
+            rebuild_letter_docx_from_json(
+            letter_json_path=local_letter_json_body,
+            letter_header_json_path=local_letter_json_header,
+            letter_template_docx = letter_temp_path,
+            output_letter_docx=letter_docx_file_updated )
+            
+            save_local_jsons_and_docx_to_blob_and_cosmos_for_letter(
+                                    str(local_letter_json_body),
+                                    str(local_letter_json_header),
+                                    str(letter_docx_file_updated),
+                                    project_id=project_id
+                                    )
+            
+            return {
+            "status": "Letter finalize successfully",
             "reportType": report_type,
             "projectId": project_id,
-            "blob_url": blob_url
-        }
+            "blob_url":blob_url
+            }
+                
+                # except Exception as e:
+                #     print(traceback.format_exc())
+            
 
-    except HTTPException:
-        raise
 
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Unhandled error: {str(e)}"
-        )
+    #     except HTTPException:
+    #         raise
+
+    # except Exception as e:
+    #     raise HTTPException(
+    #         status_code=500,
+    #         detail=f"Unhandled error: {str(e)}"
+    #     )
 
 def sanitize_json(obj):
     if isinstance(obj, float):
