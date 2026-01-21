@@ -223,7 +223,13 @@ def run_formatter():
         current_row_meta += ROW_GAP
 
     # Continue photo numbering after matched photos
-    max_photo_no = int(matched_df["photo_no"].max())
+    max_photo_no = (
+    matched_df["photo_no"]
+    .dropna()
+    .astype(float)
+    .max()
+    )
+    max_photo_no = int(max_photo_no) if pd.notna(max_photo_no) else 0
     next_photo_no = max_photo_no + 1
 
     # ---------------- ADD UNMATCHED IMAGES ----------------
