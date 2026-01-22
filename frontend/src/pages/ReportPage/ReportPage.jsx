@@ -54,6 +54,11 @@ const ReportPage = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
 
+  const letterPercentage =
+    typeof state?.letterPercentage === 'number'
+      ? state.letterPercentage
+      : Number(state?.letterPercentage) || 0;
+
   const navigationType = useNavigationType();
 
   //const navEntry = performance.getEntriesByType('navigation')[0];
@@ -89,6 +94,7 @@ const ReportPage = () => {
 
   const [trfEditMode, setTrfEditMode] = useState(false);
   const [trfFinalised, setTrfFinalised] = useState(false);
+  const [letterGenerating, setLetterGenerating] = useState(false);
 
   //const [cdrEditMode, setCdrEditMode] = useState(false);
   const [cdrFinalised, setCdrFinalised] = useState(false);
@@ -238,8 +244,30 @@ const ReportPage = () => {
     //dispatch(generateCdrRequest(projectId));
   };
 
-  const handleGenerateLetter = () => {
-    navigate('/report-page/letter');
+  const handleGenerateLetter = async () => {
+    if (letterPercentage <= 100 && letterPercentage > 10) {
+      navigate('/report-page/letter', {
+        state: {
+          projectId,
+          standard,
+          clientName,
+          product,
+          source: 'trf',
+          letterPercentage,
+        },
+      });
+    } else {
+      navigate('/create-project-letter', {
+        state: {
+          projectId,
+          standard,
+          clientName,
+          product,
+          source: 'trf',
+          letterPercentage,
+        },
+      });
+    }
   };
 
   // --------------------------------------------------
@@ -266,6 +294,32 @@ const ReportPage = () => {
       setRefreshing(false);
     }
   };
+
+  if (letterGenerating) {
+    return (
+      <Box
+        sx={{
+          minHeight: '300px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 2,
+          background: '#f9fafb',
+          borderRadius: 2,
+          border: '1px dashed #d0d7de',
+        }}
+      >
+        <CircularProgress size={48} thickness={4} />
+        <Typography sx={{ fontWeight: 600, fontSize: 16 }}>
+          Preparing TRF for Letter...
+        </Typography>
+        <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
+          Please wait while we generate the report.
+        </Typography>
+      </Box>
+    );
+  }
 
   // useEffect(() => {
   //   let mounted = true;
@@ -313,7 +367,7 @@ const ReportPage = () => {
   useEffect(() => {
     const isReportPage = location.pathname.includes('report-page');
 
-    // 🔥 Clear IndexedDB when user navigates BACK or FORWARD
+    //  Clear IndexedDB when user navigates BACK or FORWARD
     // and is NOT explicitly staying on report-page
     if (navigationType === 'POP' && !isReportPage) {
       console.log('Leaving report page → clearing IndexedDB');
@@ -327,7 +381,7 @@ const ReportPage = () => {
     // First check
     checkStatus();
 
-    // ✅ Do not start polling if already complete
+    //  Do not start polling if already complete
     if (progress === 100) return;
 
     const id = setInterval(() => {
@@ -389,7 +443,7 @@ const ReportPage = () => {
     };
   }, [currentPart, projectID]);
 
-  console.log('isFinalJsonLoaded', isFinalJsonLoaded);
+  //console.log('isFinalJsonLoaded', isFinalJsonLoaded);
 
   // ---------------- BOOKMARK HANDLING ----------------
   const handleBookmarkFromChild = (data) => {
@@ -1068,7 +1122,7 @@ const ReportPage = () => {
                           //if (!isFinalise) return;
                           if (reportClick === 'trf' && !isFinalJsonLoaded)
                             return;
-                          if (label === 'Letter') return;
+                          //if (label === 'Letter') return;
                           // still prevent action
                           if (label === 'CDR') {
                             //console.log('cddddd');

@@ -7,6 +7,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 import LetterHeader from './LetterComponents/LetterHeader';
+import LetterCriticalDataFrameTable from './LetterComponents/LetterCriticalDataFrameTable';
 
 const LetterPage3 = ({
   json,
@@ -14,6 +15,7 @@ const LetterPage3 = ({
   handleApprove,
   openComment,
   onBookmarkClick,
+  onConfidenceChange,
 }) => {
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
   //  Hover actions for Letter tables (Approve / Comment / Bookmark)
@@ -39,8 +41,7 @@ const LetterPage3 = ({
       typeof item.value === 'string' &&
       item.value.trim().toLowerCase() === 'tbd-info not available';
 
-    const canApprove =
-      item.ai_fillable === true && item.accuracy_level === true;
+    const canApprove = item.ai_fillable === true;
 
     return (
       <div className="dt-hover-actions">
@@ -125,6 +126,7 @@ const LetterPage3 = ({
           onApprove={handleApprove}
           onComment={openComment}
           onBookmark={onBookmarkClick}
+          onConfidenceChange={onConfidenceChange}
         />
         samples or technical documentation are required to support the testing
         of your product, these will be detailed along with any non-conformity
@@ -184,10 +186,11 @@ const LetterPage3 = ({
         ) {
           return (
             item?.value && (
-              <LetterDataFrameTable
+              <LetterCriticalDataFrameTable
                 item={item}
                 editMode={editMode}
                 onChange={forceUpdate}
+                renderHoverActions={renderHoverActions}
               />
             )
           );
