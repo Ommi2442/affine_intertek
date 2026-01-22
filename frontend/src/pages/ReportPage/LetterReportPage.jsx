@@ -70,13 +70,28 @@ const LetterReportPage = () => {
   /* ---------------- SAVE EVERY CHANGE ---------------- */
   useEffect(() => {
     if (!dataTableRef.current) return;
-    const updated = dataTableRef.current.getUpdatedJson();
-    if (!updated) return;
 
-    idb_set(storageKey, updated, STORES.LETTER);
+    const updated = dataTableRef.current.getUpdatedJson();
+
+    // DO NOT overwrite valid IDB with empty
+    if (
+      !updated ||
+      !Array.isArray(updated?.Tables) ||
+      updated.Tables.length === 0 ||
+      !headerJson ||
+      Object.keys(headerJson).length === 0
+    ) {
+      return;
+    }
+
+    const payload = {
+      Letter_header_json: updated,
+      Letter_json_body: headerJson,
+    };
+
+    idb_set(storageKey, payload, STORES.LETTER);
     setLiveLetterData(updated);
-  }, [confidenceTick]);
-  console.log('lett', letterJson);
+  }, [confidenceTick, headerJson]);
 
   /* ---------------- LOAD LOGIC ---------------- */
   useEffect(() => {
@@ -88,7 +103,8 @@ const LetterReportPage = () => {
       //  Always try IndexedDB first
       const cached = await idb_get(storageKey, STORES.LETTER);
       if (cached) {
-        setLetterJson(cached);
+        setLetterJson(cached.Letter_header_json);
+        setHeaderJson(cached.Letter_json_body);
         setLoading(false);
         return;
       }
@@ -129,13 +145,14 @@ const LetterReportPage = () => {
         console.log('Letter generation response:', res);
 
         if (res) {
-          await idb_set(
-            storageKey,
-            res?.Data?.Letter_header_json,
-            STORES.LETTER
-          );
-          setLetterJson(res?.Data?.Letter_header_json);
-          setHeaderJson(res?.Data?.Letter_json_body);
+          const payload = {
+            Letter_header_json: res?.Data?.Letter_header_json,
+            Letter_json_body: res?.Data?.Letter_json_body,
+          };
+
+          await idb_set(storageKey, payload, STORES.LETTER);
+          setLetterJson(payload.Letter_header_json);
+          setHeaderJson(payload.Letter_json_body);
         }
       }
 
@@ -185,12 +202,14 @@ const LetterReportPage = () => {
     const payload = dataTableRef.current.getUpdatedJson();
 
     if (!payload) return;
-    let letter_payload = {
-      Letter_header_json: letterJson,
+
+    // Persist to IndexedDB
+    const letter_payload = {
+      Letter_header_json: payload,
       Letter_json_body: headerJson,
     };
-    // Persist to IndexedDB
-    await idb_set(storageKey, payload, STORES.LETTER);
+
+    await idb_set(storageKey, letter_payload, STORES.LETTER);
 
     setLetterJson(payload);
     setFinalised(true);
@@ -238,7 +257,7 @@ const LetterReportPage = () => {
   /* ---------------- UI ---------------- */
   return (
     <Box>
-      {/* 🔷 Header same as CDR */}
+      {/* Header same as CDR */}
       <Box className="report-title-container">
         <Typography sx={{ fontWeight: 700, fontSize: 20 }}>
           LETTER REPORT
@@ -464,9 +483,9 @@ const LetterReportPage = () => {
               </CardContent>
             </Card>
 
-            {(liveLetterData || letterJson) && (
+            {(liveLetterData?.Letter_header_json || letterJson) && (
               <ConfidenceScore
-                data={liveLetterData || letterJson}
+                data={liveLetterData?.Letter_header_json || letterJson}
                 reportType="letter"
                 confidenceTick={confidenceTick}
                 projectId={projectId}

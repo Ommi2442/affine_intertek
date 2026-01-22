@@ -10,7 +10,8 @@ export default function RouteDbGuard() {
     console.log('location', location.pathname);
     if (
       location.pathname !== '/report-page/trf' &&
-      location.pathname !== '/report-page/cdr'
+      location.pathname !== '/report-page/cdr' &&
+      location.pathname !== '/report-page/letter'
     ) {
       idb_clear_all();
     }
