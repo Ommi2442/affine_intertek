@@ -35,8 +35,8 @@ from utility.cdr_report.CDR_Pipelines.configs import (
 # AZURE_OPENAI_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION")
 
 # 🔍 Optional sanity check (don’t print the key!)
-print("Endpoint:", AZURE_OPENAI_ENDPOINT)
-print("API version:", AZURE_OPENAI_API_VERSION)
+#print("Endpoint:", AZURE_OPENAI_ENDPOINT)
+#print("API version:", AZURE_OPENAI_API_VERSION)
 
 # ✅ Azure OpenAI client
 client = AzureOpenAI(
@@ -281,35 +281,35 @@ def process_pdfs(
 
     results: Dict[str, Any] = {}
 
-    print(f"Scanning {src_root.resolve()} ...")
+    #print(f"Scanning {src_root.resolve()} ...")
 
     for pdf_path in src_root.glob("*.pdf"):
         if not pdf_path.is_file():
             continue
 
-        print(f"\nChecking {pdf_path.name}...")
+        #print(f"\nChecking {pdf_path.name}...")
 
         if not is_editable_form_pdf(pdf_path):
-            print(" → Not editable. Skipping.")
+            #print(" → Not editable. Skipping.")
             continue
 
-        print(" → Editable PDF detected.")
+        #print(" → Editable PDF detected.")
 
         # 1) Flatten PDF
         flat_pdf_path = flattened_dir / f"{pdf_path.stem}_flat.pdf"
         pixmaps = flatten_and_get_images(str(pdf_path), str(flat_pdf_path), dpi=dpi)
-        print(" ✔ Flattened PDF created.")
+        #print(" ✔ Flattened PDF created.")
 
         # 2) Archive original (now outside src_root)
         archive_path = archive_root / pdf_path.name
-        print(f"   → Archiving original editable to {archive_path}")
+        #print(f"   → Archiving original editable to {archive_path}")
 
         for attempt in range(3):
             try:
                 shutil.move(str(pdf_path), str(archive_path))
                 break
             except PermissionError as e:
-                print(f"   ⚠️ PermissionError on move (attempt {attempt+1}/3): {e}")
+                #print(f"   ⚠️ PermissionError on move (attempt {attempt+1}/3): {e}")
                 if attempt == 2:
                     print("   ❌ Skipping archive for this file. It may be open in another program.")
                 else:
@@ -321,7 +321,7 @@ def process_pdfs(
 
         llm_outputs = []
         for img_path in img_paths:
-            print(f"   → Sending {img_path.name} to GPT-4.1...")
+            #print(f"   → Sending {img_path.name} to GPT-4.1...")
             output = extract_page_with_llm(img_path)
             llm_outputs.append(output)
 

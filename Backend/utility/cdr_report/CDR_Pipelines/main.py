@@ -105,7 +105,7 @@ def main2(project_id, user_id, input_json, output_excel_path):
 def main3(project_id, user_id, input_json, output_excel_path):
     paths = project_paths(project_id)
 
-    print(f"[RUNTIME] Running project {project_id}")
+    #print(f"[RUNTIME] Running project {project_id}")
 
     TOTAL = 16
     step = 0
@@ -190,7 +190,7 @@ def main3(project_id, user_id, input_json, output_excel_path):
     container_obj = utils.create_db_and_container()
 
     db = cosmos_client.get_database_client(DB_NAME)
-    print(f"db_created:{db}", flush=True)
+    #print(f"db_created:{db}", flush=True)
     
     
     # --------------------------------------------------

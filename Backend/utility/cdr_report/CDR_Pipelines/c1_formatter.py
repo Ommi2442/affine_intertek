@@ -63,7 +63,7 @@ def build_text_support_list(sheet_name, source_doc):
 def run_formatter():
     configs.require_runtime()
 
-    print("Starting Formatting...")
+    #print("Starting Formatting...")
 
     # ===================== PART 1: COMPONENT JSON =====================
     START_ROW = 3
@@ -84,12 +84,12 @@ def run_formatter():
     unmatched_df = df[~matched_mask].copy()
 
 
-    print("Total rows in sheet           :", len(df))
-    print("Rows with image match (true) :", len(matched_df))
+    #print("Total rows in sheet           :", len(df))
+    #print("Rows with image match (true) :", len(matched_df))
 
     if matched_df.empty:
         print("⚠ No image matches found — marking all components as Not Shown")
-
+        print("---------------------------------------------------------------")
 
     # Assign Photo Numbers
     photo_map = {}
@@ -103,7 +103,7 @@ def run_formatter():
         return photo_map[url]
 
     matched_df["photo_no"] = matched_df["image_url"].apply(assign_photo_no)
-    print("Unique photos detected:", len(photo_map))
+    #print("Unique photos detected:", len(photo_map))
     unmatched_df["photo_no"] = "Not Shown"
 
 
@@ -118,11 +118,11 @@ def run_formatter():
     ignore_index=True
 )
 
-    print("Rows sorted by photo number")
+    #print("Rows sorted by photo number")
 
     # Persist photo_no back to Excel
     final_df.to_excel(configs.FINAL_OUTPUT_WITH_EVIDENCE, index=False)
-    print("✔ photo_no persisted to Excel for all rows")
+    #print("✔ photo_no persisted to Excel for all rows")
 
 
     # Build Items
@@ -173,8 +173,8 @@ def run_formatter():
     with open(configs.OUTPUT_JSON_COMPONENTS, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=4)
 
-    print("✔ Component JSON created successfully")
-    print("✔ Output file:", configs.OUTPUT_JSON_COMPONENTS)
+    #print("✔ Component JSON created successfully")
+    #print("✔ Output file:", configs.OUTPUT_JSON_COMPONENTS)
 
     # ===================== PART 2: PHOTO METADATA JSON =====================
     ROW_GAP = 8
@@ -273,5 +273,5 @@ def run_formatter():
     with open(configs.OUTPUT_JSON_METADATA, "w", encoding="utf-8") as f:
         json.dump({"Items": items_meta}, f, indent=4)
 
-    print("✔ Photo metadata JSON created")
-    print("✔ Output file:", configs.OUTPUT_JSON_METADATA) 
+    #print("✔ Photo metadata JSON created")
+    #print("✔ Output file:", configs.OUTPUT_JSON_METADATA) 

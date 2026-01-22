@@ -569,10 +569,10 @@ def download_images_from_blob_urls(
 def create_db_and_container():
     ctx = configs.require_runtime()
     CONT_NAME = configs.build_cosmos_cont_name()
-    print("→ Ensuring database...")
+    #print("→ Ensuring database...")
     #db = client.create_database_if_not_exists(DB_NAME)
     db = cosmos_client.create_database_if_not_exists(DB_NAME)
-    print("✔ Database ready:", DB_NAME)
+    #print("✔ Database ready:", DB_NAME)
 
     vector_embedding_policy = {
         "vectorEmbeddings": [
@@ -591,16 +591,18 @@ def create_db_and_container():
         "vectorIndexes": [{"path": VECTOR_PATH, "type": "quantizedFlat"}],
     }
 
-    print("→ Removing old container if exists (to avoid schema conflicts)...")
+    #print("→ Removing old container if exists (to avoid schema conflicts)...")
     try:
         c_old = db.get_container_client(CONT_NAME)
         c_old.read()  # will throw if not found
         db.delete_container(CONT_NAME)
-        print("✔ Old container deleted")
+        #print("✔ Old container deleted")
     except exceptions.CosmosResourceNotFoundError:
-        print(" ℹ No old container")
+        #print(" ℹ No old container")
+        print("----------------------------------------------------------------------")
 
-    print("→ Creating container with vector policy...")
+
+    #print("→ Creating container with vector policy...")
     try:
         container = db.create_container(
             id=CONT_NAME,
@@ -610,12 +612,12 @@ def create_db_and_container():
             # If your account requires explicit RU: uncomment next line
             # offer_throughput=400,
         )
-        print("✔ Container created:", CONT_NAME)
+        #print("✔ Container created:", CONT_NAME)
         return container
     except exceptions.CosmosHttpResponseError as e:
-        print("❌ Failed to create container")
+        #print("❌ Failed to create container")
         print("StatusCode:", getattr(e, "status_code", None))
-        print("Message:", getattr(e, "message", str(e)))
+        #print("Message:", getattr(e, "message", str(e)))
         raise
 
 def add_ids_to_chunks(chunks):
@@ -643,18 +645,18 @@ def ingest_to_cosmos_parallel(vs, chunks, batch_size=10, max_workers=10):
             except HttpResponseError as e:
                 if "Request rate is large" in str(e) or e.status_code == 429:
                     wait = (attempt + 1) * 2
-                    print(f"⚠️ 429 Rate Limit → retrying in {wait}s")
+                    #print(f"⚠️ 429 Rate Limit → retrying in {wait}s")
                     time.sleep(wait)
                 else:
-                    print(f"❌ Unhandled error: {e}")
+                    #print(f"❌ Unhandled error: {e}")
                     return None
-        print("❌ Failed after retries")
+        #print("❌ Failed after retries")
         return None
 
     # Sequential batches (safe for Cosmos)
     for i in range(0, len(chunks), batch_size):
         batch = chunks[i:i + batch_size]
-        print(f"\n🔵 Ingesting batch {i} → {i + len(batch) - 1}")
+        #print(f"\n🔵 Ingesting batch {i} → {i + len(batch) - 1}")
 
         # Parallel within each batch
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -665,8 +667,8 @@ def ingest_to_cosmos_parallel(vs, chunks, batch_size=10, max_workers=10):
                 try:
                     future.result()
                 except Exception as e:
-                    print(f"❌ Error inserting doc: {e}")
-
+                    print(f"!!! Error inserting doc: {e}")
+                    print("-----------------------------------------------------------")
 
 def build_vectorstore(embeddings):
     # cosmos_client = CosmosClient(
@@ -756,7 +758,7 @@ def build_embeddings():
 #         #         extracted = extract_relevant_pdf_page_images(path)
 #         #         image_page_metadata.extend(extracted)
 #         #     except Exception as e:
-#         #         print(f"[WARN] selective image extraction failed for {path}: {e}")
+#         #         #print(f"[WARN] selective image extraction failed for {path}: {e}")
 
 #     # ----- STEP 3: External extracted text -----
 #     # -------------------------------------------------------------
@@ -819,7 +821,7 @@ def load_and_split_pdfs_text(pdf_paths, extracted_texts=None):
         - mixed list containing either form
     Returns: list of chunks (output of splitter.split_documents)
     """
-    print('START OF CHUNKING')
+    #print('START OF CHUNKING')
     docs = []
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE,
@@ -884,7 +886,7 @@ def load_and_split_pdfs_text(pdf_paths, extracted_texts=None):
             doc = SimpleNamespace(page_content=text or "", metadata=metadata)
 
             docs.append(doc)
-    print('END OF CHUNKING FUNCTION')
+    #print('END OF CHUNKING FUNCTION')
     # finally split all collected documents (pdf chunks + plain-text docs)
     return splitter.split_documents(docs)
 
@@ -1064,7 +1066,7 @@ def get_image_urls_from_container_sas() -> list[str]:
     prefix = f"Documents/{project_id}/source_documents/"
     blobs = list(container_client.list_blobs(name_starts_with=prefix))
 
-    print(f"Blobs found in container: {len(blobs)}")
+    #print(f"Blobs found in container: {len(blobs)}")
 
     for blob in blobs:
         name = blob.name.lower()
@@ -1072,7 +1074,7 @@ def get_image_urls_from_container_sas() -> list[str]:
             blob_client = container_client.get_blob_client(blob.name)
             image_urls.append(blob_client.url)
 
-    print(f"Image URLs collected: {len(image_urls)}")
+    #print(f"Image URLs collected: {len(image_urls)}")
     return image_urls
 
 
@@ -1126,12 +1128,12 @@ def move_device_images_in_blob(
         try:
             src_blob_name = blob_name_from_url(url, container_name)
         except ValueError as e:
-            print(f"⚠ {e}")
+            #print(f"⚠ {e}")
             continue
 
         src_blob_client = container_client.get_blob_client(src_blob_name)
         if not src_blob_client.exists():
-            print(f"❌ Source blob missing: {src_blob_name}")
+            #print(f"❌ Source blob missing: {src_blob_name}")
             continue
 
         ext = Path(src_blob_name).suffix or ".png"
@@ -1150,7 +1152,7 @@ def move_device_images_in_blob(
         moved_blobs.append(dest_blob_name)
         photo_idx += 1
 
-        print(f"✅ Moved device image → {dest_blob_name}")
+        #print(f"✅ Moved device image → {dest_blob_name}")
 
     return moved_blobs
 
@@ -1285,7 +1287,7 @@ def invoke_with_rate_limit_retry(
 
             # Rate limit -> wait and retry
             sleep_for = wait_seconds + random.uniform(0, jitter)
-            print(f"[RATE_LIMIT] attempt {attempt}/{retries} -> sleeping {sleep_for:.2f}s then retrying...")
+            #print(f"[RATE_LIMIT] attempt {attempt}/{retries} -> sleeping {sleep_for:.2f}s then retrying...")
             time.sleep(sleep_for)
 
     # exhausted
@@ -1309,11 +1311,11 @@ def delete_cosmos_container(
         database = client.get_database_client(database_name)
         database.delete_container(container_name)
         
-        print("\n===============================================")
-        print(f" DELETING THE VECTOR COSMOS DB Container '{container_name}'")
-        print("===============================================")
+        #print("\n===============================================")
+        #print(f" DELETING THE VECTOR COSMOS DB Container '{container_name}'")
+        #print("===============================================")
 
-        print(f"Container '{container_name}' deleted successfully.")
+        #print(f"Container '{container_name}' deleted successfully.")
 
 
     except ResourceNotFoundError:

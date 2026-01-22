@@ -186,6 +186,198 @@ def update_docx_tables_from_json_arial(docx_path, json_path, output_path):
 
 
 
+def table2_json_rows_only(json_path):
+    """
+    Reads Table 2 from JSON and returns ONLY rows (no header).
+    """
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    # Find Table 2
+    table_2 = next(t for t in data["Tables"] if t["Table"] == 2)
+
+    columns = []
+    for item in table_2["Items"]:
+        if isinstance(item.get("value"), list):
+            columns.append(item["value"])
+
+    # Transpose columns → rows
+    df = pd.DataFrame(list(zip(*columns)))
+
+    return df
+
+from docx import Document
+from docx.shared import Pt
+
+def insert_rows_into_attachments_table(
+    input_docx,
+    output_docx,
+    df,
+    anchor_text
+):
+    if df is None or df.empty:
+        print("⚠️ DataFrame is empty. Skipping insertion.")
+        return
+
+    doc = Document(input_docx)
+    target_table = None
+
+    # 1️⃣ Find the table containing the anchor text
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                if anchor_text.strip() in cell.text:
+                    target_table = table
+                    break
+            if target_table:
+                break
+        if target_table:
+            break
+
+    if target_table is None:
+        raise ValueError("Anchor table not found.")
+
+    # 2️⃣ Remove all rows BELOW header row (keep title + header)
+    while len(target_table.rows) > 2:
+        target_table._tbl.remove(target_table.rows[2]._tr)
+
+    # 3️⃣ Insert rows immediately under header
+    for _, row_data in df.iterrows():
+        cells = target_table.add_row().cells
+
+        for i, value in enumerate(row_data):
+            cell = cells[i]
+            cell.text = ""  # clear default paragraph
+
+            p = cell.paragraphs[0]
+            run = p.add_run(str(value))
+
+            # 🔤 FONT SETTINGS
+            run.font.name = "Arial"
+            run.font.size = Pt(10)
+
+    doc.save(output_docx)
+    print("✅ Rows inserted in Arial, font size 7, with no extra space.")
+
+import json
+import pandas as pd
+
+def table3_json_to_df(json_path):
+    """
+    Creates a row-ready DataFrame for Table 3.
+    No header. Columns are positional.
+    """
+
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    table_3 = next(t for t in data["Tables"] if t["Table"] == 3)
+
+    # If values exist later, collect them
+    columns = []
+    for item in table_3["Items"]:
+        if "rendering_column" in item:
+            values = item.get("value")
+            if isinstance(values, list):
+                columns.append(values)
+
+    # If JSON has no rows yet → return empty DF with 3 columns
+    if not columns:
+        return pd.DataFrame(columns=[0, 1, 2])
+
+    # Otherwise transpose into rows
+    df = pd.DataFrame(list(zip(*columns)))
+    return df
+
+from docx import Document
+from docx.shared import Pt
+
+def insert_rows_into_table_by_anchor_no_gap(
+    input_docx,
+    output_docx,
+    df,
+    anchor_text
+):
+    if df is None or df.empty:
+        print("⚠️ DataFrame empty. No rows inserted.")
+        return
+
+    doc = Document(input_docx)
+    target_table = None
+
+    # 1️⃣ Locate table by anchor text
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                if anchor_text.strip() in cell.text:
+                    target_table = table
+                    break
+            if target_table:
+                break
+        if target_table:
+            break
+
+    if target_table is None:
+        raise ValueError("Target table not found for anchor.")
+
+    # 2️⃣ Remove all rows below header
+    while len(target_table.rows) > 2:
+        target_table._tbl.remove(target_table.rows[2]._tr)
+
+    # 3️⃣ Insert rows directly under header (Arial, size 7)
+    for _, row_data in df.iterrows():
+        cells = target_table.add_row().cells
+
+        for i, value in enumerate(row_data):
+            cell = cells[i]
+            cell.text = ""  # clear default content
+
+            p = cell.paragraphs[0]
+            run = p.add_run(str(value))
+
+            # 🔤 FONT SETTINGS
+            run.font.name = "Arial"
+            run.font.size = Pt(10)
+
+    doc.save(output_docx)
+    print("✅ Table updated (Arial, size 7) with no gaps.")
+
+def run_table_insert_pipeline(
+    json_path,
+    input_docx,
+    output_docx
+):
+    """
+    Orchestrates Table 2 and Table 3 insertion
+    using already-defined helper functions.
+    """
+
+    # ----------------------------
+    # TABLE 2
+    # ----------------------------
+    df_table_2 = table2_json_rows_only(json_path)
+
+    insert_rows_into_attachments_table(
+        input_docx=input_docx,
+        output_docx=output_docx,
+        df=df_table_2,
+        anchor_text="List of Attachments (including a total number of pages in each attachment)"
+    )
+
+    # ----------------------------
+    # TABLE 3
+    # ----------------------------
+    df_table_3 = table3_json_to_df(json_path)
+
+    insert_rows_into_table_by_anchor_no_gap(
+        input_docx=output_docx,  # IMPORTANT: chain output
+        output_docx=output_docx,
+        df=df_table_3,
+        anchor_text="Documents referenced by this report (available on request):"
+    )
+
+    print("✅ Table 2 and Table 3 pipeline completed.")
+
 
 def update_docx_from_existing_json(
     input_docx_path: str,
@@ -262,7 +454,6 @@ def update_docx_from_existing_json(
     )
 
 
-
     # ---------------------------------------------------------
     # STEP 6 — INSERT MARKING PLATE IMAGES (FROM JSON)
     # ---------------------------------------------------------
@@ -283,7 +474,11 @@ def update_docx_from_existing_json(
         width_inches=2
     )
 
-
+    run_table_insert_pipeline(
+        input_json_path,
+        output_docx_path,
+        output_docx_path
+    )
 
     print("\n✅ JSON → DOCX POPULATION COMPLETE")
     return output_docx_path

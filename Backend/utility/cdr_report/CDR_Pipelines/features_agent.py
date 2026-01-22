@@ -156,9 +156,9 @@ def features_tools_main(
     tools = build_tools(vs, image_urls)
     
     import os, threading
-    print("MAIN:", os.getpid(), threading.get_ident())
+    #print("MAIN:", os.getpid(), threading.get_ident())
 
-    print("TOOL:", tools["pid_check_tool"].invoke({}))
+    #print("TOOL:", tools["pid_check_tool"].invoke({}))
 
     # 1) Run compiler tool (same output as features_main)
     features_out_text = tools["compiler_agent_tool"].invoke({})

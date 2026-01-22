@@ -7,13 +7,13 @@ import utility.cdr_report.CDR_Pipelines.configs as configs
 def run_case2_pipeline():
     configs.require_runtime()
     
-    print("Step 1 : Extracting . . .")
+    #print("Step 1 : Extracting . . .")
     c2_extractor.run_extractor()
     
-    print("Step 2 : Processing . . .")
+    #print("Step 2 : Processing . . .")
     c2_processor.run_processor()
     
-    print("Step 3 : Formatting JSON . . .")
+    #print("Step 3 : Formatting JSON . . .")
     c2_formatter.run_formatter()
 
 

@@ -26,16 +26,16 @@ def update_sheet1_items_from_template(cdr, template):
     )
 
     if not cdr_sheet1 or not tpl_sheet1:
-        print("⚠ Sheet 1 missing in CDR or template. Skipping.")
+        #print("⚠ Sheet 1 missing in CDR or template. Skipping.")
         return
 
     tpl_items = tpl_sheet1.get("Items")
     if not isinstance(tpl_items, list):
-        print("⚠ Template Sheet 1 Items invalid. Skipping.")
+        #print("⚠ Template Sheet 1 Items invalid. Skipping.")
         return
 
     cdr_sheet1["Items"] = tpl_items
-    print(f"✅ Sheet 1 replaced with {len(tpl_items)} template items")
+    #print(f"✅ Sheet 1 replaced with {len(tpl_items)} template items")
 
 
 # ------------------------------------------------------------
@@ -48,7 +48,7 @@ def update_sheet2_items_from_description(cdr, description):
     )
 
     if sheet2 is None:
-        print("⚠ Sheet 2 not found. Skipping.")
+        #print("⚠ Sheet 2 not found. Skipping.")
         return
 
     items = sheet2.setdefault("Items", [])
@@ -65,15 +65,15 @@ def update_sheet2_items_from_description(cdr, description):
     elif isinstance(description, dict):
         new_items = description.get("Items", [])
     else:
-        print("⚠ description invalid type. Skipping Sheet 2.")
+        #print("⚠ description invalid type. Skipping Sheet 2.")
         return
 
     if not isinstance(new_items, list):
-        print("⚠ description.Items invalid. Skipping Sheet 2.")
+        #print("⚠ description.Items invalid. Skipping Sheet 2.")
         return
 
     sheet2["Items"] = preserved + new_items
-    print(f"✅ Sheet 2 updated with {len(new_items)} items")
+    #print(f"✅ Sheet 2 updated with {len(new_items)} items")
 
 
 # ------------------------------------------------------------
@@ -86,7 +86,7 @@ def update_sheet3_items(cdr, s3j):
     )
 
     if sheet3 is None:
-        print("⚠ Sheet 3 not found. Skipping.")
+        #print("⚠ Sheet 3 not found. Skipping.")
         return
 
     items = sheet3.setdefault("Items", [])
@@ -98,11 +98,11 @@ def update_sheet3_items(cdr, s3j):
 
     new_items = s3j.get("Items", [])
     if not isinstance(new_items, list):
-        print("⚠ 3c2.Items invalid. Skipping Sheet 3.")
+        #print("⚠ 3c2.Items invalid. Skipping Sheet 3.")
         return
 
     sheet3["Items"] = preserved + new_items
-    print(f"✅ Sheet 3 updated with {len(new_items)} items")
+    #print(f"✅ Sheet 3 updated with {len(new_items)} items")
 
 
 # ------------------------------------------------------------
@@ -115,7 +115,7 @@ def update_sheet4_rows(cdr, s4j):
     )
 
     if sheet4 is None:
-        print("⚠ Sheet 4 not found. Skipping.")
+        #print("⚠ Sheet 4 not found. Skipping.")
         return
 
     rows = sheet4.setdefault("Rows", [])
@@ -127,11 +127,11 @@ def update_sheet4_rows(cdr, s4j):
 
     new_rows = s4j.get("Items", [])
     if not isinstance(new_rows, list):
-        print("⚠ 4c2.Items invalid. Skipping Sheet 4.")
+        #print("⚠ 4c2.Items invalid. Skipping Sheet 4.")
         return
 
     sheet4["Rows"] = preserved + new_rows
-    print(f"✅ Sheet 4 updated with {len(new_rows)} rows")
+    #print(f"✅ Sheet 4 updated with {len(new_rows)} rows")
 
 
 # ------------------------------------------------------------
@@ -149,16 +149,16 @@ def update_sheet6_items_from_features(cdr, features):
     )
 
     if not cdr_sheet6 or not features_sheet6:
-        print("⚠ Sheet 6 missing in CDR or features. Skipping.")
+        #print("⚠ Sheet 6 missing in CDR or features. Skipping.")
         return
 
     features_items = features_sheet6.get("Items")
     if not isinstance(features_items, list):
-        print("⚠ Features Sheet 6 Items invalid. Skipping.")
+        #print("⚠ Features Sheet 6 Items invalid. Skipping.")
         return
 
     cdr_sheet6["Items"] = features_items
-    print(f"✅ Sheet 6 replaced with {len(features_items)} features items")
+    #print(f"✅ Sheet 6 replaced with {len(features_items)} features items")
 
 
 # ------------------------------------------------------------

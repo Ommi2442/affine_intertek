@@ -481,6 +481,7 @@ def handle_sheet_3(ws, items):
                 f"⚠ Sheet 3 image skipped | "
                 f"cell={answer_cell} | error={e}"
             )
+            print("----------------------------------------------------------------")
 
 
 
@@ -655,7 +656,7 @@ def fill_excel_from_json(JSON_PATH, OUTPUT_EXCEL_PATH):
     force_all_text_black(wb)
 
     wb.save(OUTPUT_EXCEL_PATH)
-    print(f"✅ Excel generated: {OUTPUT_EXCEL_PATH}")
+    #print(f"✅ Excel generated: {OUTPUT_EXCEL_PATH}")
 
     return OUTPUT_EXCEL_PATH
 

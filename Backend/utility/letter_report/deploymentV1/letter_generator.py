@@ -31,6 +31,7 @@ from utility.letter_report.deploymentV1.ocr_image_processor import load_and_proc
 from utility.letter_report.deploymentV1.trf_essential import *
 from utility.letter_report.deploymentV1.trf_utils import *
 from utility.letter_report.deploymentV1.core import *
+from utility.letter_report.deploymentV1.prompts import get_iec61010_non_conformance_prompt
 
 from azure.storage.blob import BlobClient
 from azure.core.exceptions import ResourceNotFoundError, AzureError
@@ -81,42 +82,84 @@ from fuzzywuzzy import fuzz
 #START FROM HERE
 import fitz
 
+# def contains_prepared_for_table(pdf_path):
+#     """
+#     Check if PDF contains the specific 'Prepared For:' table with expected structure.
+#     Looks for key indicators like name, company, address, phone, email pattern.
+#     """
+#     text = ""
+#     with fitz.open(pdf_path) as doc:
+#         for page in doc:
+#             t = page.get_text()
+#             if t:
+#                 text += t + "\n"
+    
+#     # Look for "Prepared For:" header
+#     if not re.search(r"Prepared\s*For\s*:", text, re.IGNORECASE):
+#         return False
+    
+#     # Extract the section after "Prepared For:"
+#     match = re.search(r"Prepared\s*For\s*:(.{0,500})", text, re.IGNORECASE | re.DOTALL)
+#     if not match:
+#         return False
+    
+#     section = match.group(1)
+    
+#     # Check for multiple indicators that this is the specific table structure
+#     indicators = [
+#         r"Gener8\s*LLC",  # Company name
+#         r"\(\d{3}\)\s*\d{3}-\d{4}",  # Phone number pattern like (650) 940-9898
+#         r"\w+@\w+\.\w+",  # Email pattern
+#         r"San\s*Jose|CA\s*95134|USA",  # Address components
+#         r"Consultant"  # Role/title
+#     ]
+    
+#     # Require at least 3 of these indicators to be present in the section
+#     matches = sum(1 for pattern in indicators if re.search(pattern, section, re.IGNORECASE))
+    
+#     return matches >= 3
+
+
 def contains_prepared_for_table(pdf_path):
     """
     Check if PDF contains the specific 'Prepared For:' table with expected structure.
     Looks for key indicators like name, company, address, phone, email pattern.
     """
-    text = ""
+    """
+    Detect Intertek Quote / Project Proposal PDF based on fixed template structure.
+    Client-specific values are ignored.
+    """
+
+    full_text = ""
+
     with fitz.open(pdf_path) as doc:
         for page in doc:
-            t = page.get_text()
-            if t:
-                text += t + "\n"
-    
-    # Look for "Prepared For:" header
-    if not re.search(r"Prepared\s*For\s*:", text, re.IGNORECASE):
-        return False
-    
-    # Extract the section after "Prepared For:"
-    match = re.search(r"Prepared\s*For\s*:(.{0,500})", text, re.IGNORECASE | re.DOTALL)
-    if not match:
-        return False
-    
-    section = match.group(1)
-    
-    # Check for multiple indicators that this is the specific table structure
-    indicators = [
-        r"Gener8\s*LLC",  # Company name
-        r"\(\d{3}\)\s*\d{3}-\d{4}",  # Phone number pattern like (650) 940-9898
-        r"\w+@\w+\.\w+",  # Email pattern
-        r"San\s*Jose|CA\s*95134|USA",  # Address components
-        r"Consultant"  # Role/title
+            text = page.get_text()
+            if text:
+                full_text += text + "\n"
+
+    # Normalize text
+    text = full_text.lower()
+
+    # Required structural keywords (format-level)
+    required_patterns = [
+        r"project\s+proposal",
+        r"quote\s+no",
+        r"project\s+name",
+        r"compiled\s+by",
+        r"date",
+        r"prepared\s+for\s*:",
+        r"prepared\s+by\s*:",
+        r"intertek"
     ]
-    
-    # Require at least 3 of these indicators to be present in the section
-    matches = sum(1 for pattern in indicators if re.search(pattern, section, re.IGNORECASE))
-    
-    return matches >= 3
+
+    matches = 0
+    for pattern in required_patterns:
+        if re.search(pattern, text, re.IGNORECASE):
+            matches += 1
+
+    # Require at least 5 strong structural indicators
+    return matches >= 5
 
 
 def find_prepared_for_pdf(folder_path: str):
@@ -519,36 +562,247 @@ def read_docx_full(path):
     return "\n".join(content)
 
 
+
+
+def run_iec61010_non_conformance_extraction(
+    docx_path,
+    deployment_name,
+    chunk_size=800,
+    chunk_overlap=100,
+    fuzzy_threshold=40
+):
+    """
+    One-call function.
+    Returns final DataFrame with REAL PDF page numbers.
+
+    REQUIREMENTS:
+    pip install docx2pdf pdfplumber rapidfuzz langchain-text-splitters python-docx
+    """
+
+    # ---------------- imports ----------------
+    from pathlib import Path
+    from docx import Document
+    from docx2pdf import convert
+    import pdfplumber
+    from rapidfuzz import fuzz
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+    # ---------------- 1. DOCX → PDF ----------------
+    pdf_path = Path(docx_path).with_suffix(".pdf")
+    convert(docx_path, pdf_path)
+
+    # ---------------- 2. Read PDF pages ----------------
+    pdf_pages = {}
+    with pdfplumber.open(pdf_path) as pdf:
+        for i, page in enumerate(pdf.pages, start=1):
+            pdf_pages[i] = (page.extract_text() or "").replace("\n", " ")
+
+    # ---------------- 3. Read DOCX blocks ----------------
+    doc = Document(docx_path)
+    blocks = []
+
+    para_idx = 0
+    table_idx = 0
+
+    for p in doc.paragraphs:
+        if p.text.strip():
+            para_idx += 1
+            blocks.append({
+                "text": p.text.strip(),
+                "source_ref": f"Paragraph {para_idx}"
+            })
+
+    for table in doc.tables:
+        table_idx += 1
+        for r_idx, row in enumerate(table.rows, start=1):
+            row_text = " | ".join(
+                c.text.strip() for c in row.cells if c.text.strip()
+            )
+            if row_text:
+                blocks.append({
+                    "text": row_text,
+                    "source_ref": f"Table {table_idx}, Row {r_idx}"
+                })
+
+    # # ---------------- 4. Map blocks → REAL PDF pages ----------------
+    # for block in blocks:
+    #     best_page = None
+    #     best_score = 0
+
+    #     for page_num, page_text in pdf_pages.items():
+    #         score = fuzz.partial_ratio(
+    #             block["text"][:300],   # anchor slice (REQUIRED)
+    #             page_text
+    #         )
+    #         if score > best_score:
+    #             best_score = score
+    #             best_page = page_num
+
+    #     block["pdf_page"] = best_page if best_score >= fuzzy_threshold else None
+    # ---------------- 4. Map blocks → REAL PDF pages ----------------
+    for block in blocks:
+        best_page = None
+        best_score = 0
+    
+        for page_num, page_text in pdf_pages.items():
+            score = fuzz.partial_ratio(
+                block["text"][:300],   # anchor slice (REQUIRED)
+                page_text
+            )
+            if score > best_score:
+                best_score = score
+                best_page = page_num
+    
+        # 👇 ADD THIS DEBUG LINE HERE
+        if best_score < fuzzy_threshold:
+            print(
+                "UNMAPPED:",
+                block["source_ref"],
+                "|",
+                block["text"][:120]
+            )
+    
+        block["pdf_page"] = best_page if best_score >= fuzzy_threshold else None
+
+
+    # ---------------- 5. Split using RecursiveCharacterTextSplitter ----------------
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        separators=["\n\n", "\n", " | ", " ", ""]
+    )
+
+    document_chunks = []
+    ref_id = 1
+
+    for block in blocks:
+        for chunk in splitter.split_text(block["text"]):
+            document_chunks.append({
+                "ref_id": ref_id,
+                "text": chunk,
+                "pdf_page": block["pdf_page"],
+                "source_ref": block["source_ref"]
+            })
+            ref_id += 1
+
+    # ---------------- 6. CALL YOUR EXISTING FUNCTION ----------------
+    df = extract_iec61010_non_conformances_full_doc(
+        document_chunks=document_chunks,
+        deployment_name=deployment_name
+    )
+
+    return df
+
+IEC_61010_NON_CONFORMANCE_PROMPT = get_iec61010_non_conformance_prompt()
+
+
+
+
+# def extract_iec61010_non_conformances_full_doc(
+#     document_text,
+#     deployment_name
+# ):
+#     system_prompt = """
+# You are an IEC 61010-1 CB Scheme compliance expert.
+
+# TASK:
+# - Review the FULL Test Report Form (TRF)
+# - Compare each clause with IEC 61010-1 requirements
+# - Identify ONLY NON-CONFORMANCES
+
+# RULES:
+# - Verdict = F → Non-conformance
+# - Missing mandatory markings or documentation → Non-conformance
+# - TBD = testing not yet performed → DO NOT list
+# - N/A with justification → Ignore
+# - Do NOT invent issues
+
+# OUTPUT (STRICT JSON ARRAY):
+# [
+#   {
+#     "clause": "5.1.3",
+#     "requirement": "Equipment shall be marked with rated voltage, current, and frequency",
+#     "finding": "No electrical ratings marked on the equipment"
+#   }
+# ]
+
+# Return [] if no non-conformances exist.
+# """
+#     client = AzureOpenAI(
+#         api_key=AOAI_KEY,
+#         api_version=API_VERSION,
+#         azure_endpoint=AOAI_ENDPOINT
+#     )
+
+#     response = client.chat.completions.create(
+#         model=deployment_name,   # MUST be Azure deployment name
+#         temperature=0,
+#         messages=[
+#             {"role": "system", "content": system_prompt},
+#             {
+#                 "role": "user",
+#                 "content": f"""
+# FULL TRF DOCUMENT:
+# ------------------
+# {document_text}
+# ------------------
+# """
+#             }
+#         ]
+#     )
+
+#     output = response.choices[0].message.content.strip()
+#     findings = json.loads(output)
+
+#     return pd.DataFrame(
+#         findings,
+#         columns=["clause", "requirement", "finding"]
+#     ).rename(columns={
+#         "clause": "Clause",
+#         "requirement": "Requirement of the Clause",
+#         "finding": "Remark and Findings"
+#     })
+
+
+
+
 def extract_iec61010_non_conformances_full_doc(
-    document_text,
+    document_chunks,
     deployment_name
 ):
-    system_prompt = """
-You are an IEC 61010-1 CB Scheme compliance expert.
+    import json
+    import re
+    import pandas as pd
 
-TASK:
-- Review the FULL Test Report Form (TRF)
-- Compare each clause with IEC 61010-1 requirements
-- Identify ONLY NON-CONFORMANCES
+    def extract_json_array(text):
+        """
+        Safely extract the first JSON array from LLM output.
+        Returns [] if nothing valid is found.
+        """
+        if not text:
+            return []
 
-RULES:
-- Verdict = F → Non-conformance
-- Missing mandatory markings or documentation → Non-conformance
-- TBD = testing not yet performed → DO NOT list
-- N/A with justification → Ignore
-- Do NOT invent issues
+        match = re.search(r"\[\s*{.*?}\s*\]", text, re.DOTALL)
+        if not match:
+            return []
 
-OUTPUT (STRICT JSON ARRAY):
-[
-  {
-    "clause": "5.1.3",
-    "requirement": "Equipment shall be marked with rated voltage, current, and frequency",
-    "finding": "No electrical ratings marked on the equipment"
-  }
-]
+        try:
+            return json.loads(match.group())
+        except json.JSONDecodeError:
+            return []
 
-Return [] if no non-conformances exist.
-"""
+    def normalize(text):
+        """Normalize text for stable comparison."""
+        return " ".join(text.split()).lower()
+
+    # ---------- Build LLM input ----------
+    flat_text = "\n".join(
+        f"[REF:{c['ref_id']} | Page {c['pdf_page']}] {c['text']}"
+        for c in document_chunks
+    )
+
+    system_prompt = IEC_61010_NON_CONFORMANCE_PROMPT
+
     client = AzureOpenAI(
         api_key=AOAI_KEY,
         api_version=API_VERSION,
@@ -556,33 +810,45 @@ Return [] if no non-conformances exist.
     )
 
     response = client.chat.completions.create(
-        model=deployment_name,   # MUST be Azure deployment name
+        model=deployment_name,
         temperature=0,
         messages=[
             {"role": "system", "content": system_prompt},
-            {
-                "role": "user",
-                "content": f"""
-FULL TRF DOCUMENT:
-------------------
-{document_text}
-------------------
-"""
-            }
+            {"role": "user", "content": flat_text}
         ]
     )
 
-    output = response.choices[0].message.content.strip()
-    findings = json.loads(output)
+    raw_output = response.choices[0].message.content
+    findings = extract_json_array(raw_output)
 
-    return pd.DataFrame(
-        findings,
-        columns=["clause", "requirement", "finding"]
-    ).rename(columns={
+    # ---------- Return empty but typed DF ----------
+    if not findings:
+        return pd.DataFrame(
+            columns=[
+                "Clause",
+                "Requirement of the Clause",
+                "Remark and Findings",
+                "Page Reference"
+            ]
+        )
+
+    # ---------- Map ref_id → page ----------
+    ref_map = {c["ref_id"]: c for c in document_chunks}
+
+    for f in findings:
+        ref = ref_map.get(f.get("ref_id"))
+        f["Page Reference"] = (
+            f"Page {ref['pdf_page']}"
+            if ref and ref.get("pdf_page")
+            else "Unknown"
+        )
+
+    return pd.DataFrame(findings).rename(columns={
         "clause": "Clause",
         "requirement": "Requirement of the Clause",
         "finding": "Remark and Findings"
     })
+
 
 
 
@@ -1566,7 +1832,7 @@ def generate_letter_pipeline(
         image_container
     )
 
-    retriever = vs.as_retriever(search_kwargs={"k": 5})
+    text_retriever_agent = vs.as_retriever(search_kwargs={"k": 5})
 
     llm = AzureChatOpenAI(
         azure_endpoint=AOAI_ENDPOINT,
@@ -1577,12 +1843,9 @@ def generate_letter_pipeline(
     ).with_config({"response_format": "json_object"})
 
 
-    
-
-
 
     rag_image = build_rag_image_pipeline_v5(
-        retriever,
+        text_retriever_agent,
         llm,
         build_vision_message_v5,
         attach_supporting_refs_grey,
@@ -1604,15 +1867,15 @@ def generate_letter_pipeline(
     # -------------------------------------------------------
 
     tasks, item_refs = build_tasks_with_custom_prompt_letter(data)
-    retriever2 = vs2.as_retriever(search_kwargs={"k": 5})
-    tasks = update_tasks_with_top5_images(tasks, retriever2)
+    image_retriever_agent = vs2.as_retriever(search_kwargs={"k": 5})
+    tasks = update_tasks_with_top5_images(tasks, image_retriever_agent)
 
     print(tasks[0])
     print("###############################")
     print(tasks[1])
 
     tasks_header, item_refs_header = build_tasks_with_custom_prompt_letter(data_header)
-    tasks_header = update_tasks_with_top5_images(tasks_header, retriever2)
+    tasks_header = update_tasks_with_top5_images(tasks_header, image_retriever_agent)
 
     # -------------------------------------------------------
     # STEP 3 — Run RAG
@@ -1682,6 +1945,7 @@ def generate_letter_pipeline(
         if docx_trf:
             try:
                 df_1a = extract_table1a(docx_trf)
+                df_1a = format_critical_components_df(df_1a)
             except IndexError:
                 df_1a = None  # Table not found → fallback
 
@@ -1732,9 +1996,16 @@ def generate_letter_pipeline(
 
     #print(text)
 
-    df_9_nonpass = extract_iec61010_non_conformances_full_doc(
-        document_text=text,
-        deployment_name=CHAT_DEPLOY
+    # df_9_nonpass = extract_iec61010_non_conformances_full_doc(
+    #     document_text=text,
+    #     deployment_name=CHAT_DEPLOY
+    # )
+    df_9_nonpass=run_iec61010_non_conformance_extraction(
+        docx_trf,
+        deployment_name=CHAT_DEPLOY,
+        chunk_size=800,
+        chunk_overlap=100,
+        fuzzy_threshold=50
     )
     print('######'*5)
     #print(df_9_nonpass)
@@ -1758,36 +2029,75 @@ def generate_letter_pipeline(
     # STEP 7 — Image Compliance Pipeline (uses SAME blob_urls)
     # -------------------------------------------------------
 
-    non_conforming_images=orchestrate_iec61010_image_compliance_pipeline(
-        blob_file_list=blob_urls,   # SAME LIST
-        local_download_dir=src_files_dir,
-        source_docx_name=output_letter_docx,
-        output_docx_path=output_letter_docx,
-        connection_string=AZURE_CONN_STRING,
-        container_name=BLOB_CONTAINER_NAME
-    )
-    print("Conforming Images : #####################")
+    # non_conforming_images=orchestrate_iec61010_image_compliance_pipeline(
+    #     blob_file_list=blob_urls,   # SAME LIST
+    #     local_download_dir=src_files_dir,
+    #     source_docx_name=output_letter_docx,
+    #     output_docx_path=output_letter_docx,
+    #     connection_string=AZURE_CONN_STRING,
+    #     container_name=BLOB_CONTAINER_NAME
+    # )
+    # print("Conforming Images : #####################")
 
-    print(non_conforming_images)
+    # print(non_conforming_images)
 
-    from pathlib import Path
+    # from pathlib import Path
 
 
-    base_path = Path("Documents") / project_Id
-    final_letter_images_path = base_path / "letter_images"
+    # base_path = Path("Documents") / project_Id
+    # final_letter_images_path = base_path / "letter_images"
 
-    blob_urls_non_conform = upload_images_to_blob(
-    non_conforming_images=non_conforming_images,
-    connection_string=AZURE_CONN_STRING,
-    container_name=BLOB_CONTAINER_NAME,
-    base_path=base_path,
-    final_letter_images_path=final_letter_images_path
-    )
+    # blob_urls_non_conform = upload_images_to_blob(
+    # non_conforming_images=non_conforming_images,
+    # connection_string=AZURE_CONN_STRING,
+    # container_name=BLOB_CONTAINER_NAME,
+    # base_path=base_path,
+    # final_letter_images_path=final_letter_images_path
+    # )
 
-    # print("blob urls: ###################################")
-    # print(blob_urls_non_conform)
+    # # print("blob urls: ###################################")
+    # # print(blob_urls_non_conform)
 
-    update_non_conforming_urls_from_blob(data, blob_urls_non_conform)
+    # update_non_conforming_urls_from_blob(data, blob_urls_non_conform)
+
+    try:
+        # Run IEC61010 image compliance pipeline
+        non_conforming_images = orchestrate_iec61010_image_compliance_pipeline(
+            blob_file_list=blob_urls,   # SAME LIST
+            local_download_dir=src_files_dir,
+            source_docx_name=output_letter_docx,
+            output_docx_path=output_letter_docx,
+            connection_string=AZURE_CONN_STRING,
+            container_name=BLOB_CONTAINER_NAME
+        )
+
+        # If pipeline returns empty or None
+        if not non_conforming_images:
+            raise ValueError("No non-conforming images found.")
+
+        base_path = Path("Documents") / project_Id
+        final_letter_images_path = base_path / "letter_images"
+
+        # Upload images to blob
+        blob_urls_non_conform = upload_images_to_blob(
+            non_conforming_images=non_conforming_images,
+            connection_string=AZURE_CONN_STRING,
+            container_name=BLOB_CONTAINER_NAME,
+            base_path=base_path,
+            final_letter_images_path=final_letter_images_path
+        )
+
+        # Update URLs in final letter JSON
+        update_non_conforming_urls_from_blob(data, blob_urls_non_conform)
+
+        print("✔ Non-conforming images processed and uploaded successfully.")
+
+    except Exception as e:
+        print("⚠ Image compliance pipeline skipped.")
+        print("Reason:", str(e))
+
+        # Optional: ensure downstream code doesn't fail
+        blob_urls_non_conform = []
 
 
 
