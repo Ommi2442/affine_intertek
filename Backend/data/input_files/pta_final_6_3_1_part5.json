@@ -3190,8 +3190,8 @@
           "value": null,
           "task_type": "verdict",
           "user_editable": true,
-          "ai_fillable": false,
-          "accuracy_level": false,
+          "ai_fillable": true,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 39,
           "custom_prompt": "Verify that incase the equipment produces sound emissions then the instructions describes measures of protection."
@@ -3474,7 +3474,7 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 39,
           "custom_prompt": "Verify that if the equipment emits ultrasonic emissions and the ultrasonic pressure levels exceed the specified safe limits, dimesnions of useful beam are mentioned in the documentation.Mention 'No ultrasonic emissions' incase the equipment does not produce ultrasonic emissions."

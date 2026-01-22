@@ -90,7 +90,7 @@ def _process_single_image(img_url):
 
     except Exception as e:
         print("⚠ Image failed:", img_url, e)
-
+        print("--------------------------------------------------------------------------")
     return image_meta, comps
 
 
@@ -242,7 +242,7 @@ def merge_components(image_components, guide_components):
 def run_extractor():
     configs.require_runtime()
 
-    print("--- Starting Pipeline ---")
+    #print("--- Starting Pipeline ---")
 
     # 1. DISCOVERY
     image_urls = c2_utils.get_image_urls_from_container_sas()
@@ -263,17 +263,17 @@ def run_extractor():
     )
 
 
-    print(f"Guide text length: {len(guide_text)}")
+    #print(f"Guide text length: {len(guide_text)}")
 
     # 2. EXTRACTION
-    print("\n--- Extracting Components ---")
+    #print("\n--- Extracting Components ---")
 
     image_captions, image_components = extract_components_from_images(image_urls)
 
     combined_components = merge_components(image_components, guide_components)
 
-    print(f"Image comps: {len(image_components)}, Guide comps: {len(guide_components)}")
-    print(f"Combined unique: {len(combined_components)}")
+    #print(f"Image comps: {len(image_components)}, Guide comps: {len(guide_components)}")
+    #print(f"Combined unique: {len(combined_components)}")
 
     # 3. BUILD IMAGE CAPTION LOOKUP
     image_caption_map = {
@@ -311,7 +311,7 @@ def run_extractor():
     df_raw = pd.DataFrame(rows)
     df_raw.to_excel(configs.OUTPUT_EXCEL_RAW, index=False)
 
-    print(f"✔ Combined output written: {configs.OUTPUT_EXCEL_RAW}")
-    print("✔ Extraction completed successfully")
+    #print(f"✔ Combined output written: {configs.OUTPUT_EXCEL_RAW}")
+    #print("✔ Extraction completed successfully")
 
     

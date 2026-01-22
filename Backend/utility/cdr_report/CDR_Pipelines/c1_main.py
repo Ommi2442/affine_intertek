@@ -9,15 +9,15 @@ def run_case1_pipeline(*, vs):
     configs.require_runtime()
 
 
-    print("Step 1 : Creating Master BOM . . .")
+    #print("Step 1 : Creating Master BOM . . .")
     c1_master_bom.run_master_bom(vs=vs)
     
-    print("Step 2 : Extracting . . .")
+    #print("Step 2 : Extracting . . .")
     c1_extractor.run_extraction()
     
-    print("Step 3 : Tagging Photos . . .")
+    #print("Step 3 : Tagging Photos . . .")
     c1_tagger.run_phototagging()
     
-    print("Step 4 : Formatting JSON . . .")
+    #print("Step 4 : Formatting JSON . . .")
     c1_formatter.run_formatter()
 

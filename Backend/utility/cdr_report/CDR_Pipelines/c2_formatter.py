@@ -8,7 +8,7 @@ def create_s4_json(input_excel, output_json):
     df = pd.read_excel(input_excel, dtype=str)
     
     if "photo_no" not in df.columns:
-        print("photo_no column missing.")
+        #print("photo_no column missing.")
         return
 
     def photo_sort_key(v):
@@ -65,7 +65,7 @@ def create_s4_json(input_excel, output_json):
 
     with open(output_json, "w", encoding="utf-8") as f:
         json.dump({"Items": items}, f, indent=4)
-    print("✔ JSON created successfully:", output_json)
+    #print("✔ JSON created successfully:", output_json)
 
 
 
@@ -75,7 +75,7 @@ def create_s3_json(input_excel, output_json):
     REQUIRED_COLS = {"photo_no", "URL", "Source Type"}
     missing = REQUIRED_COLS - set(df.columns)
     if missing:
-        print(f"⚠ Missing required columns for Sheet 3: {missing}")
+        #print(f"⚠ Missing required columns for Sheet 3: {missing}")
         return
 
     # --------------------------------
@@ -122,7 +122,7 @@ def create_s3_json(input_excel, output_json):
         with open(output_json, "w", encoding="utf-8") as f:
             json.dump({"Items": [null_item]}, f, indent=4)
 
-        print("✔ Sheet 3 JSON created with NULL placeholder item:", output_json)
+        #print("✔ Sheet 3 JSON created with NULL placeholder item:", output_json)
         return
 
     # --------------------------------
@@ -177,7 +177,7 @@ def create_s3_json(input_excel, output_json):
     with open(output_json, "w", encoding="utf-8") as f:
         json.dump({"Items": items}, f, indent=4)
 
-    print("✔ Sheet 3 JSON created with image items:", output_json)
+    #print("✔ Sheet 3 JSON created with image items:", output_json)
 
     
     
@@ -185,6 +185,6 @@ def run_formatter():
     configs.require_runtime()
 
         # 5. FORMATTING (JSON)
-    print("\n--- Formatting JSONs ---")
+    #print("\n--- Formatting JSONs ---")
     create_s4_json(configs.OUTPUT_EXCEL_DEDUPED, configs.OUTPUT_JSON_S4)
     create_s3_json(configs.OUTPUT_EXCEL_DEDUPED, configs.OUTPUT_JSON_S3)

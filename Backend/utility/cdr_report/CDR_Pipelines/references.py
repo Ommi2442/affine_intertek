@@ -316,7 +316,7 @@ def references_main(vs, ref):
 
     cosmos_container = configs.get_cosmos_container_client()  # ✅ per request
 
-    print('inside reference_main')
+    # print('inside reference_main')
     retriever = vs.as_retriever(
         search_type="vector",
         k=20,
@@ -347,7 +347,7 @@ def references_main(vs, ref):
         })
     )
 
-    print('rag_chain_got')
+    # print('rag_chain_got')
     CURRENT_QUESTION = (
         "Extract the Applicant and ALL Manufacturer/Factory details (including all manufacturer contacts and emails). "
         "Look for sections like Applicant, Bill-To, Manufacturer, Legal Entity Name, Street Address."
@@ -355,16 +355,16 @@ def references_main(vs, ref):
 
     out = rag_chain_debug.invoke(CURRENT_QUESTION)
 
-    print("\n===== ANSWER (JSON) =====\n")
-    print(out["answer"])
+    # print("\n===== ANSWER (JSON) =====\n")
+    # print(out["answer"])
 
-    print("\n===== FINAL CHUNKS USED AS CONTEXT =====\n")
+    # print("\n===== FINAL CHUNKS USED AS CONTEXT =====\n")
     for i, d in enumerate(out["docs"], 1):
         src = d.metadata.get("citation") or d.metadata.get("source_file") or d.metadata.get("source") or ""
-        print(f"\n--- CHUNK {i} ---")
-        print("Source:", src)
-        print("Score:", doc_usefulness_score(d))
-        print("Content:\n", (d.page_content or "")[:3500])
+        # print(f"\n--- CHUNK {i} ---")
+        # print("Source:", src)
+        # print("Score:", doc_usefulness_score(d))
+        # print("Content:\n", (d.page_content or "")[:3500])
 
     top5 = top_chunks_as_json(vs, CURRENT_QUESTION, k_search=300, top_k=5)
     #####
@@ -393,11 +393,11 @@ def references_main(vs, ref):
     with open("confidence.json", "w", encoding="utf-8") as f:
         json.dump(scores_obj, f, indent=4, ensure_ascii=False, default=str)
 
-    print("✅ Saved: confidence.json")
+    #print("✅ Saved: confidence.json")
 
 
     result = to_tabular_json(out['answer'])
-    print(result["ApplicantSection"])
+    #print(result["ApplicantSection"])
     data_json=ref|result
     template = json.loads(configs.TEMPLATE_PATH.read_text(encoding="utf-8"))
 
@@ -415,14 +415,14 @@ def references_main(vs, ref):
 
     template = sheet1_json_main(data_json, template)
     template = enrich_sheet1_extractions_by_headers(template, scores)
-    print('confidence populated')
+    #print('confidence populated')
     template['Sheets'][0]['Items'][7]['text_support']=top5
-    print('text_support populated')
-    print('=================================================')
-    print(template['Sheets'][0]['Items'][7]['text_support'])
-    print('=================================================')
+    #print('text_support populated')
+    #print('=================================================')
+    #print(template['Sheets'][0]['Items'][7]['text_support'])
+    #print('=================================================')
     OUTPUT_PATH.write_text(json.dumps(template, indent=2, ensure_ascii=False), encoding="utf-8")
-    print("Saved:", OUTPUT_PATH)
+    #print("Saved:", OUTPUT_PATH)
 
     return template
 #OUTPUT_PATH.write_text(json.dumps(template, indent=2, ensure_ascii=False), encoding="utf-8")

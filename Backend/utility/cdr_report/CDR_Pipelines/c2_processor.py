@@ -96,7 +96,7 @@ def run_classification(df):
                 results_map.update(batch_result)
             except Exception as e:
                 print("⚠ Batch classification failed:", e)
-
+                print("----------------------------------------------------------------")
     result_rows = []
     for i in range(len(records)):
         result_rows.append(results_map.get(i, {
@@ -183,14 +183,14 @@ def run_processor():
     configs.require_runtime()
 
         # 3. CLASSIFICATION
-    print("\n--- Classifying Components ---")
+    #print("\n--- Classifying Components ---")
     df_raw = pd.read_excel(configs.OUTPUT_EXCEL_RAW, dtype=str)
     df_classified = run_classification(df_raw)
     df_classified.to_excel(configs.OUTPUT_EXCEL_CLASSIFIED, index=False)
-    print(f"✔ Classified excel written: {configs.OUTPUT_EXCEL_CLASSIFIED}")
+    #print(f"✔ Classified excel written: {configs.OUTPUT_EXCEL_CLASSIFIED}")
 
     # 4. DEDUPLICATION
-    print("\n--- Deduplicating ---")
+    #print("\n--- Deduplicating ---")
     df_deduped = deduplicate_components(df_classified)
     df_deduped.to_excel(configs.OUTPUT_EXCEL_DEDUPED, index=False)
-    print(f"✔ Deduplicated excel written: {configs.OUTPUT_EXCEL_DEDUPED}")
+    #print(f"✔ Deduplicated excel written: {configs.OUTPUT_EXCEL_DEDUPED}")

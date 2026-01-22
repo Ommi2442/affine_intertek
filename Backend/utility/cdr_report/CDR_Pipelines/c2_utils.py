@@ -65,7 +65,7 @@ def get_image_urls_from_container_sas():
     ])
 
     
-    print("Blobs found in container:", len(blob_names))
+    #print("Blobs found in container:", len(blob_names))
     if not blob_names:
         return []
 
@@ -73,7 +73,7 @@ def get_image_urls_from_container_sas():
     base = base.rstrip("/")
     
     image_urls = [f"{base}/{quote(blob_name)}?{sas}" for blob_name in blob_names]
-    print("Image URLs constructed:", len(image_urls))
+    #print("Image URLs constructed:", len(image_urls))
     return image_urls
 
 
@@ -100,7 +100,7 @@ def find_user_guide_blob():
 
 
     if not all_blobs:
-        print("❌ Container is empty.")
+        #print("❌ Container is empty.")
         return None, None
 
     guide_keywords = ["user", "guide", "manual", "operation", "instruction"]
@@ -114,7 +114,7 @@ def find_user_guide_blob():
             candidates.append(name)
 
     if not candidates:
-        print("❌ No guide/manual detected.")
+        #print("❌ No guide/manual detected.")
         return None, None
 
     candidates.sort(key=len)
@@ -134,7 +134,7 @@ def find_user_guide_blob():
         f"{quote(blob_name)}"
     )
 
-    print("✔ Selected user guide:", blob_name)
+    #print("✔ Selected user guide:", blob_name)
     return blob_name, blob_url
 
  
@@ -156,7 +156,7 @@ def download_blob(blob_name: str) -> str:
     data = blob_client.download_blob().readall()
 
     if not data:
-        print(f"Downloaded blob is empty: {blob_name}")
+        #print(f"Downloaded blob is empty: {blob_name}")
         return
 
     with open(local_path, "wb") as f:
@@ -170,7 +170,7 @@ def extract_text_from_file(path: str) -> str:
     if path.lower().endswith(".docx"):
         doc = Document(path)
         return "\n".join(p.text for p in doc.paragraphs)
-    print("Unsupported guide format")
+    #print("Unsupported guide format")
     return
 
 # ===================== NORMALIZATION =====================
