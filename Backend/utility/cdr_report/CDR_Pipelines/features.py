@@ -210,7 +210,7 @@ def llm_generate_multimodal(messages, llm: AzureChatOpenAI) -> Dict[str, Any]:
     try:
         data = json.loads(content)
     except Exception as e:
-        print("[WARN] JSON parse failed, returning raw content. Error:", e)
+        #print("[WARN] JSON parse failed, returning raw content. Error:", e)
         data = {"raw_content": content}
 
     return data

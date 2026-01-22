@@ -54,6 +54,7 @@ from types import SimpleNamespace
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from azure.core.exceptions import HttpResponseError
 import time
+from utility.letter_report.deploymentV1.prompts import *
 from langchain_community.callbacks import get_openai_callback
 pd.set_option('display.max_colwidth', None)  # Don't truncate cell text
 pd.set_option('display.max_rows', None)      # Show all rows (optional)
@@ -610,6 +611,131 @@ def load_and_process_images(image_urls,MAX_THREADS,MAX_RETRIES, INITIAL_BACKOFF,
     return docs
 
 
+# def build_vision_message_v5(inputs):
+#     """
+#     Simplified v5:
+#     - No task_type
+#     - No grey_mode
+#     - Single execution path
+#     - Evidence-driven extraction only
+#     """
+
+#     # ----------------------------------------------------
+#     # Extract fields
+#     # ----------------------------------------------------
+#     question = inputs.get("question", "")
+#     docs = inputs.get("context", [])
+#     image_urls = inputs.get("image", [])
+#     custom_prompt = inputs.get("custom_prompt")
+
+#     active_prompt = (
+#         custom_prompt.strip()
+#         if custom_prompt and str(custom_prompt).strip()
+#         else question
+#     )
+
+#     # ----------------------------------------------------
+#     # Build RAG text context
+#     # ----------------------------------------------------
+#     context_text = "\n\n".join(d.page_content for d in docs)
+
+#     # ----------------------------------------------------
+#     # Collect text filenames
+#     # ----------------------------------------------------
+#     text_files = list({d.metadata.get("source_file", "unknown") for d in docs})
+
+#     # ----------------------------------------------------
+#     # Normalize image filenames
+#     # ----------------------------------------------------
+#     def compute_image_file(img):
+#         """
+#         Manual.pdf/page_6.png → Manual.pdf_page_6.png
+#         """
+#         url = img["url"] if isinstance(img, dict) else img
+#         parts = url.split("/")
+#         pdf_file = parts[-2]
+#         png_name = parts[-1].split("?")[0]
+#         return f"{pdf_file}_{png_name}"
+
+#     image_files = list({compute_image_file(img) for img in image_urls})
+
+#     # ----------------------------------------------------
+#     # Evidence rules
+#     # ----------------------------------------------------
+#     evidence_block = f"""
+# EVIDENCE SOURCE RULES (follow EXACTLY):
+
+# 1. Classify files ONLY by extension:
+#    - ".pdf" → text_files
+#    - ".jpg" / ".jpeg" / ".png" → image_files
+#    - PDF-derived images (xxx_page_7.png) → image_files
+
+# 2. NEVER mix file types.
+# 3. Include ONLY files that provide evidence.
+
+# Available files:
+# TEXT FILES: {text_files}
+# IMAGE FILES: {image_files}
+
+# JSON schema (MANDATORY):
+
+# "evidence_source": {{
+#     "type": "text" | "image" | "both",
+#     "files": {{
+#         "text_files": [],
+#         "image_files": []
+#     }}
+# }}
+# """
+
+#     # ----------------------------------------------------
+#     # System prompt (single path)
+#     # ----------------------------------------------------
+#     system_prompt = f"""
+# You are an expert electrical safety compliance engineer specializing in IEC 61010-1.
+
+# Rules:
+# - Do NOT guess or infer missing information
+# - Use IEC 61010-1 only as interpretive guidance
+# - Base answers strictly on provided TRF text and images
+# - Every answer must be evidence-based
+
+# TASK:
+# {active_prompt}
+
+# Provide ONLY the following JSON keys:
+# 1. "response": concise extracted answer (max 10 words)
+# 2. "confidence": integer score from 1–100 based on evidence strength
+# 3. "evidence_source": {{
+#       "type": "text" | "image" | "both",
+#       "files": {{
+#           "text_files": [],
+#           "image_files": []
+#       }}
+# }}
+
+# {evidence_block}
+
+# TRF TEXT CONTEXT:
+# {context_text}
+# """.strip()
+
+#     # ----------------------------------------------------
+#     # Build Vision message
+#     # ----------------------------------------------------
+#     content_blocks = [{"type": "text", "text": system_prompt}]
+
+#     for img in image_urls:
+#         url = img["url"] if isinstance(img, dict) else img
+#         content_blocks.append({
+#             "type": "image_url",
+#             "image_url": {"url": url}
+#         })
+
+#     return [{"role": "user", "content": content_blocks}]
+
+
+
 def build_vision_message_v5(inputs):
     """
     Simplified v5:
@@ -647,9 +773,6 @@ def build_vision_message_v5(inputs):
     # Normalize image filenames
     # ----------------------------------------------------
     def compute_image_file(img):
-        """
-        Manual.pdf/page_6.png → Manual.pdf_page_6.png
-        """
         url = img["url"] if isinstance(img, dict) else img
         parts = url.split("/")
         pdf_file = parts[-2]
@@ -688,36 +811,13 @@ JSON schema (MANDATORY):
 """
 
     # ----------------------------------------------------
-    # System prompt (single path)
+    # System prompt (EXTERNALIZED)
     # ----------------------------------------------------
-    system_prompt = f"""
-You are an expert electrical safety compliance engineer specializing in IEC 61010-1.
-
-Rules:
-- Do NOT guess or infer missing information
-- Use IEC 61010-1 only as interpretive guidance
-- Base answers strictly on provided TRF text and images
-- Every answer must be evidence-based
-
-TASK:
-{active_prompt}
-
-Provide ONLY the following JSON keys:
-1. "response": concise extracted answer (max 10 words)
-2. "confidence": integer score from 1–100 based on evidence strength
-3. "evidence_source": {{
-      "type": "text" | "image" | "both",
-      "files": {{
-          "text_files": [],
-          "image_files": []
-      }}
-}}
-
-{evidence_block}
-
-TRF TEXT CONTEXT:
-{context_text}
-""".strip()
+    system_prompt = get_iec61010_vision_prompt_v5(
+        active_prompt=active_prompt,
+        evidence_block=evidence_block,
+        context_text=context_text
+    )
 
     # ----------------------------------------------------
     # Build Vision message
@@ -732,6 +832,7 @@ TRF TEXT CONTEXT:
         })
 
     return [{"role": "user", "content": content_blocks}]
+
 
 
 ######v5---final
@@ -1349,6 +1450,30 @@ def update_json_item_letter(item, result):
     item["evidence_type"] = evidence.get("type") or "text"
     item["confidence"] = confidence
 
+
+from langchain_core.tools import tool
+
+def generator_evaluator_agent(rag_image):
+
+    @tool("run_single_task")
+    def run_single_task_tool(task: dict):
+        """
+        Runs a single RAG image task with retry handling.
+        """
+        return run_single_task(task, rag_image)
+
+    return run_single_task_tool
+
+
+# run_single_task_tool = generator_evaluator_agent(rag_image)
+
+# def generator_evaluator_agent_tool(task):
+#     return run_single_task_tool.invoke({"task": task})
+
+def generator_evaluator_agent_tool(run_single_task_tool, task):
+    return run_single_task_tool.invoke({"task": task})
+
+
 #### Updated v5.1
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
@@ -1459,7 +1584,8 @@ def process_tasks_with_batches_parallel_grey(
                 if stats:
                     fut = exe.submit(run_single_task_stats, task, rag_image)
                 else:
-                    fut = exe.submit(run_single_task, task, rag_image)
+                    # fut = exe.submit(run_single_task, task, rag_image)
+                    fut=exe.submit(generator_evaluator_agent_tool, run_single_task_tool, task)
 
                 futures[fut] = idx
 

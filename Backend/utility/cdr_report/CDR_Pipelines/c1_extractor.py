@@ -34,7 +34,7 @@ def classify_in_batches(df, batch_size):
         batch_result = c1_utils.safe_json_load(raw_text)
 
         if batch_result is None:
-            print("⚠️ JSON parse failed, marking batch as LOW confidence")
+            #print("⚠️ JSON parse failed, marking batch as LOW confidence")
             for row_id in batch["row_id"]:
                 results.append({
                     "row_id": row_id,
@@ -51,7 +51,7 @@ def classify_in_batches(df, batch_size):
 def run_extraction():
     configs.require_runtime()
 
-    print("Starting Extraction...")
+    #print("Starting Extraction...")
     # Load master sheet
     master_df = pd.read_excel(configs.MASTER_SHEET_PATH, dtype=str)
 
@@ -79,5 +79,5 @@ def run_extraction():
     # Export
     final_df.to_excel(configs.OUTPUT_PATH_FINAL, index=False)
 
-    print("✔ Critical component classification complete")
-    print(f"✔ Output saved to: {configs.OUTPUT_PATH_FINAL}")
+    #print("✔ Critical component classification complete")
+    #print(f"✔ Output saved to: {configs.OUTPUT_PATH_FINAL}")

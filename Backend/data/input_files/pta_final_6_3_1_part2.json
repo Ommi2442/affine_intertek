@@ -1561,7 +1561,7 @@
           "task_type": "verdict_dependency",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": [
             198
           ],

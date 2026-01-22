@@ -430,6 +430,58 @@ def add_ids_to_chunks(chunks):
         )
     return docs
 
+
+
+#### For Linux ######
+def convert_docx_to_pdf_linux(docx_path: str, pdf_path: str):
+    system = platform.system().lower()
+
+    if system == "linux":
+        subprocess.run(
+            [
+                "soffice",
+                "--headless",
+                "--convert-to",
+                "pdf",
+                "--outdir",
+                os.path.dirname(pdf_path),
+                docx_path,
+            ],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        return
+
+    raise RuntimeError(f"Unsupported OS for DOCX conversion: {system}")
+
+
+
+#### For Linux ######
+def convert_doc_to_pdf_linux(doc_path: str, pdf_path: str):
+    system = platform.system().lower()
+
+    if system == "linux":
+        subprocess.run(
+            [
+                "soffice",
+                "--headless",
+                "--convert-to",
+                "pdf",
+                "--outdir",
+                os.path.dirname(pdf_path),
+                doc_path,
+            ],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        return
+
+    raise RuntimeError(f"Unsupported OS for DOC conversion: {system}")
+
+
+
 def process_blob_urls_2(blob_urls, conn_str, container,
                       download_dir=None, keep_files=False, verbose=True):
     """
@@ -441,6 +493,7 @@ def process_blob_urls_2(blob_urls, conn_str, container,
       - returns (extracted_texts, image_urls, downloaded_pdf_paths, converted_pdf_paths)
         extracted_texts: list of dicts { 'filename': ..., 'text': ..., optional 'pages': [...] }
     """
+    print('download_dir', download_dir)
     tempdir = None
     if download_dir:
         os.makedirs(download_dir, exist_ok=True)
@@ -504,21 +557,33 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                 if ext == "docx":
                     pdf_path = os.path.splitext(local_path)[0] + ".pdf"
                     try:
-                        pdf_convert(local_path, pdf_path)
-                        # record converted pdf path
+                        system = platform.system().lower()
+                        if system == "windows":
+                            import pythoncom
+                            from docx2pdf import convert
+                            pythoncom.CoInitialize()
+                            try:
+                                convert(local_path, pdf_path)
+                            finally:
+                                pythoncom.CoUninitialize()
+                        else:
+                            convert_docx_to_pdf_linux(local_path, pdf_path)
+
                         converted_pdf_paths.append(pdf_path)
                         if verbose:
                             print(f"[INFO] Converted DOCX to PDF: {local_path} -> {pdf_path}")
+
                     except Exception as e:
                         if verbose:
                             print(f"[WARN] docx->pdf conversion failed for {base_name}: {e}")
-                    # do NOT extract text for docx as per request
+
                     continue
 
                 # 🆕 DOC → convert to pdf (using your working helper)
                 if ext == "doc":
+                    pdf_path = os.path.splitext(local_path)[0] + ".pdf"
                     try:
-                        pdf_path = convert_doc_to_pdf(local_path)  # your working function
+                        convert_doc_to_pdf_linux(local_path, pdf_path)
                         converted_pdf_paths.append(pdf_path)
                         if verbose:
                             print(f"[INFO] Converted DOC to PDF: {local_path} -> {pdf_path}")

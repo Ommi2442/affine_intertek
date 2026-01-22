@@ -12,16 +12,16 @@ const LetterHoverField = ({
   onApprove,
   onComment,
   onBookmark,
+  onConfidenceChange,
   wide = false,
 }) => {
   const [hover, setHover] = useState(false);
-  console.log('wide', wide);
   if (!item) return null;
 
   const hasValue =
     item.value !== null && String(item.value || '').trim() !== '';
 
-  const canApprove = item.ai_fillable === true && item.accuracy_level === true;
+  const canApprove = item.ai_fillable === true;
 
   return (
     <Box
@@ -43,6 +43,7 @@ const LetterHoverField = ({
         item={item}
         editMode={editMode}
         onChange={onChange}
+        onConfidenceChange={onConfidenceChange}
         wide={wide}
       />
 
@@ -60,8 +61,7 @@ const LetterHoverField = ({
         sx={{
           position: 'absolute',
           right: 0,
-          top: '50%',
-          transform: 'translateY(-50%)',
+          top: '-19px',
           zIndex: 5,
           pointerEvents: hover ? 'auto' : 'none',
         }}

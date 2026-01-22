@@ -22,7 +22,9 @@ def image_name_no_ext(url):
 def build_text_support_list(sheet_name, source_doc):
     """
     Builds a list of text_support dicts.
-    Handles pipe-separated filenames / URLs correctly.
+    - page comes from sheet_name
+    - filename is extracted from the URL
+    - Handles pipe-separated sheet names and URLs
     """
 
     def split(v):
@@ -30,32 +32,38 @@ def build_text_support_list(sheet_name, source_doc):
             return []
         return [x.strip() for x in str(v).split("|")]
 
-    filenames = split(sheet_name)
+    def filename_from_url(url):
+        if not url:
+            return None
+        path = unquote(urlparse(url).path)
+        return os.path.basename(path)
+
+    pages = split(sheet_name)
     urls = split(source_doc)
 
-    max_len = max(len(filenames), len(urls))
+    max_len = max(len(pages), len(urls))
 
     supports = []
 
     for i in range(max_len):
-        filename = filenames[i] if i < len(filenames) else None
+        page = pages[i] if i < len(pages) else None
         url = urls[i] if i < len(urls) else None
 
         supports.append({
-            "filename": filename,
-            "page": filename,   # ← your expected behavior
+            "filename": filename_from_url(url),
+            "page": page,               # sheet name only
             "similarity_score": None,
-            "preview_text": None,
+            "text": None,
             "url": url
         })
 
-    return supports
+    return supports 
 
 
 def run_formatter():
     configs.require_runtime()
 
-    print("Starting Formatting...")
+    #print("Starting Formatting...")
 
     # ===================== PART 1: COMPONENT JSON =====================
     START_ROW = 3
@@ -76,12 +84,12 @@ def run_formatter():
     unmatched_df = df[~matched_mask].copy()
 
 
-    print("Total rows in sheet           :", len(df))
-    print("Rows with image match (true) :", len(matched_df))
+    #print("Total rows in sheet           :", len(df))
+    #print("Rows with image match (true) :", len(matched_df))
 
     if matched_df.empty:
         print("⚠ No image matches found — marking all components as Not Shown")
-
+        print("---------------------------------------------------------------")
 
     # Assign Photo Numbers
     photo_map = {}
@@ -95,7 +103,7 @@ def run_formatter():
         return photo_map[url]
 
     matched_df["photo_no"] = matched_df["image_url"].apply(assign_photo_no)
-    print("Unique photos detected:", len(photo_map))
+    #print("Unique photos detected:", len(photo_map))
     unmatched_df["photo_no"] = "Not Shown"
 
 
@@ -110,11 +118,11 @@ def run_formatter():
     ignore_index=True
 )
 
-    print("Rows sorted by photo number")
+    #print("Rows sorted by photo number")
 
     # Persist photo_no back to Excel
     final_df.to_excel(configs.FINAL_OUTPUT_WITH_EVIDENCE, index=False)
-    print("✔ photo_no persisted to Excel for all rows")
+    #print("✔ photo_no persisted to Excel for all rows")
 
 
     # Build Items
@@ -165,8 +173,8 @@ def run_formatter():
     with open(configs.OUTPUT_JSON_COMPONENTS, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=4)
 
-    print("✔ Component JSON created successfully")
-    print("✔ Output file:", configs.OUTPUT_JSON_COMPONENTS)
+    #print("✔ Component JSON created successfully")
+    #print("✔ Output file:", configs.OUTPUT_JSON_COMPONENTS)
 
     # ===================== PART 2: PHOTO METADATA JSON =====================
     ROW_GAP = 8
@@ -223,7 +231,13 @@ def run_formatter():
         current_row_meta += ROW_GAP
 
     # Continue photo numbering after matched photos
-    max_photo_no = int(matched_df["photo_no"].max())
+    max_photo_no = (
+    matched_df["photo_no"]
+    .dropna()
+    .astype(float)
+    .max()
+    )
+    max_photo_no = int(max_photo_no) if pd.notna(max_photo_no) else 0
     next_photo_no = max_photo_no + 1
 
     # ---------------- ADD UNMATCHED IMAGES ----------------
@@ -259,5 +273,5 @@ def run_formatter():
     with open(configs.OUTPUT_JSON_METADATA, "w", encoding="utf-8") as f:
         json.dump({"Items": items_meta}, f, indent=4)
 
-    print("✔ Photo metadata JSON created")
-    print("✔ Output file:", configs.OUTPUT_JSON_METADATA) 
+    #print("✔ Photo metadata JSON created")
+    #print("✔ Output file:", configs.OUTPUT_JSON_METADATA) 

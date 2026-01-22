@@ -197,7 +197,7 @@ def _parse_bom_with_vs(
     rows = []
 
     chunks = _retrieve_bom_chunks(source_name, vs=vs)
-    print(f"{source_name}: retrieved {len(chunks)} chunks")
+    #print(f"{source_name}: retrieved {len(chunks)} chunks")
 
     for idx, text in enumerate(chunks, start=1):
         try:
@@ -321,7 +321,7 @@ def deduplicate_master_bom(df: pd.DataFrame) -> pd.DataFrame:
 # ============================================================
 
 def _process_single_bom_file(f: dict, *, vs) -> pd.DataFrame | None:
-    print(f"Processing BOM: {f['name']}")
+    #print(f"Processing BOM: {f['name']}")
 
     if f["type"] == "xlsx":
         df = merge_bom_sheets_from_sas_url(f["url"])
@@ -329,10 +329,10 @@ def _process_single_bom_file(f: dict, *, vs) -> pd.DataFrame | None:
         confidence = structured_bom_confidence(df)
 
         if confidence >= CONF_THRESHOLD:
-            print(f"✔ Structured BOM detected ({confidence:.2f}) — using Excel parser")
+            #print(f"✔ Structured BOM detected ({confidence:.2f}) — using Excel parser")
             return df.reindex(columns=MASTER_BOM_COLUMNS)
 
-        print("⚠ Low structure confidence — falling back to RAG for XLSX")
+        #print("⚠ Low structure confidence — falling back to RAG for XLSX")
         return _parse_bom_with_vs(
             source_url=f["url"],
             source_name=f["name"],
@@ -365,7 +365,7 @@ def run_master_bom(
         bom_files = find_bom_blob_url()
 
     if not bom_files:
-        print("⚠ No BOM files found. Skipping Master BOM.")
+        #print("⚠ No BOM files found. Skipping Master BOM.")
         return
 
     all_dfs: list[pd.DataFrame] = []
@@ -385,16 +385,16 @@ def run_master_bom(
                 continue
 
     if not all_dfs:
-        print("⚠ BOM files detected but no rows extracted.")
+        #print("⚠ BOM files detected but no rows extracted.")
         return
 
     master_df = pd.concat(all_dfs, ignore_index=True)
     master_df = master_df.reindex(columns=MASTER_BOM_COLUMNS)
 
-    print(f"Before dedupe: {len(master_df)} rows")
+    #print(f"Before dedupe: {len(master_df)} rows")
     master_df = deduplicate_master_bom(master_df)
-    print(f"After dedupe: {len(master_df)} rows")
+    #print(f"After dedupe: {len(master_df)} rows")
 
     master_df.to_excel(configs.MASTER_SHEET_PATH, index=False)
 
-    print("✅ master_bom.xlsx generated successfully")
+    #print("✅ master_bom.xlsx generated successfully")

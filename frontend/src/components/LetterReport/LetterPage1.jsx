@@ -10,20 +10,23 @@ const LetterPage1 = ({
   handleApprove,
   openComment,
   onBookmarkClick,
+  onConfidenceChange,
 }) => {
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
 
   useEffect(() => {
     const item = getLetterItem(json, 'KEY3'); // Issue Date key
+
     if (!item) return;
 
-    // Only auto-fill once
-    if (!item.value) {
+    // Auto-fill only if empty or placeholder
+    if (!item.value || item.value === 'KEY3') {
       item.value = formatIssueDate();
       item.is_user_edited = false; // system-filled
       forceUpdate();
     }
-  }, [json]);
+  }, []);
+
   return (
     <div className="letter-page">
       <IntertekLogo />
@@ -36,6 +39,7 @@ const LetterPage1 = ({
           onApprove={handleApprove}
           onComment={openComment}
           onBookmark={onBookmarkClick}
+          onConfidenceChange={onConfidenceChange}
         />
       </h1>
       <h2 className="page1_letter_report">LETTER REPORT</h2>
@@ -48,6 +52,7 @@ const LetterPage1 = ({
         onApprove={handleApprove}
         onComment={openComment}
         onBookmark={onBookmarkClick}
+        onConfidenceChange={onConfidenceChange}
         wide={true}
       />
 
@@ -60,6 +65,7 @@ const LetterPage1 = ({
         onApprove={handleApprove}
         onComment={openComment}
         onBookmark={onBookmarkClick}
+        onConfidenceChange={onConfidenceChange}
       />
 
       <div style={{ display: 'flex' }}>
@@ -73,6 +79,7 @@ const LetterPage1 = ({
             onApprove={handleApprove}
             onComment={openComment}
             onBookmark={onBookmarkClick}
+            onConfidenceChange={onConfidenceChange}
           />
         </div>
 
@@ -86,6 +93,7 @@ const LetterPage1 = ({
             onApprove={handleApprove}
             onComment={openComment}
             onBookmark={onBookmarkClick}
+            onConfidenceChange={onConfidenceChange}
           />
         </div>
       </div>
@@ -102,6 +110,7 @@ const LetterPage1 = ({
               onApprove={handleApprove}
               onComment={openComment}
               onBookmark={onBookmarkClick}
+              onConfidenceChange={onConfidenceChange}
             />
           </div>
           <div style={{ fontWeight: 700, marginTop: '10%' }}>

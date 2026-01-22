@@ -166,8 +166,8 @@ def sheet1_json_main(data_json, template):
     # replace sheet1 items with expanded list
     sheet1["Items"] = new_items
 
-    print("Original manufacturers in data:", len(mfgs))
-    print("Total Sheet1 items after expansion:", len(sheet1["Items"]))
+    #print("Original manufacturers in data:", len(mfgs))
+    #print("Total Sheet1 items after expansion:", len(sheet1["Items"]))
     return template
 import re
 

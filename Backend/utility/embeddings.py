@@ -371,9 +371,9 @@ def extract_relevant_pdf_page_images(pdf_path, dpi=200):
         # --- EXACT strict rules from notebook ---
         should_extract = False
 
-        if raster_area > 500000:
+        if raster_area > 750000:
             should_extract = True
-        elif vector_ops > 150:
+        elif vector_ops > 150 and text_len < 800:
             should_extract = True
         elif text_len < 30:
             should_extract = True
@@ -1009,7 +1009,22 @@ def get_or_create_vector_container_serverless(
         return container
 
 
-
+from pathlib import Path
+from typing import List, Dict, Any
+from PyPDF2 import PdfReader
+from PyPDF2.generic import IndirectObject
+import fitz  # PyMuPDF
+import base64
+from dotenv import load_dotenv
+import os
+from pathlib import Path
+import json
+from openai import OpenAI
+import os
+import importlib
+# importlib.reload(configs)
+from openai import AzureOpenAI
+ 
 
 def _resolve_indirect(obj):
     if isinstance(obj, IndirectObject):
@@ -1366,6 +1381,145 @@ def append_cis_images_to_image_metadata(images_root: str, image_page_metadata: l
 
 
 
+def clean_text(text: str) -> str:
+    if not text or not isinstance(text, str):
+        return ""
+
+    t = text
+
+    # -------------------------------------------------
+    # 1. Remove URLs (inline and bracketed)
+    # -------------------------------------------------
+    t = re.sub(r"<https?://[^>]+>", " ", t)
+    t = re.sub(r"https?://\S+", " ", t)
+
+    # -------------------------------------------------
+    # 2. Remove common email headers / reply markers
+    # -------------------------------------------------
+    t = re.sub(
+        r"(^|\n)(from|sent|to|cc|subject):.*",
+        " ",
+        t,
+        flags=re.IGNORECASE
+    )
+
+    # -------------------------------------------------
+    # 3. Remove legal / disclaimer style blocks
+    #    (generic wording, multiline)
+    # -------------------------------------------------
+    disclaimer_patterns = [
+        r"confidentiality notice.*",
+        r"this email.*confidential.*",
+        r"this message.*confidential.*",
+        r"export (control|notification).*",
+        r"unauthorized.*prohibited.*",
+        r"intended recipient.*",
+        r"do not (print|forward|distribute).*",
+    ]
+
+    for p in disclaimer_patterns:
+        t = re.sub(p, " ", t, flags=re.IGNORECASE | re.DOTALL)
+
+    # -------------------------------------------------
+    # 4. Remove spam / scanner / tracker messages
+    # -------------------------------------------------
+    scanner_patterns = [
+        r"scanned for (spam|viruses).*",
+        r"click here.*",
+        r"report this email.*",
+        r"external sender.*",
+    ]
+
+    for p in scanner_patterns:
+        t = re.sub(p, " ", t, flags=re.IGNORECASE | re.DOTALL)
+
+    # -------------------------------------------------
+    # 5. Remove excessive punctuation / separators
+    # -------------------------------------------------
+    t = re.sub(r"_+", " ", t)
+    t = re.sub(r"-{3,}", " ", t)
+    t = re.sub(r"={3,}", " ", t)
+
+    # -------------------------------------------------
+    # 6. Normalize whitespace
+    # -------------------------------------------------
+    t = re.sub(r"\n{3,}", "\n\n", t)
+    t = re.sub(r"[ \t]{2,}", " ", t)
+
+    # -------------------------------------------------
+    # 7. Drop very short junk lines
+    # -------------------------------------------------
+    lines = []
+    for line in t.splitlines():
+        stripped = line.strip()
+        if len(stripped) < 10:
+            continue
+        if stripped.lower() in {"click here", "here", "thanks", "thank you"}:
+            continue
+        lines.append(stripped)
+
+    t = "\n".join(lines)
+
+    return t.strip()
+
+
+def normalize_whitespace_only(text: str) -> str:
+    if not text:
+        return ""
+
+    t = text
+    t = re.sub(r"\r\n", "\n", t)
+    t = re.sub(r"\n{3,}", "\n\n", t)
+    t = re.sub(r"[ \t]{2,}", " ", t)
+
+    return t.strip()
+
+
+def clean_extracted_texts(extracted_texts):
+    """
+    Applies clean_text safely based on file type.
+    Preserves tables and structured content.
+    """
+    cleaned_items = []
+
+    for item in extracted_texts:
+        if not isinstance(item, dict):
+            continue
+
+        filename = item.get("filename", "unknown")
+        text = item.get("text", "")
+
+        if not text:
+            continue
+
+        fname = filename.lower()
+
+        # --------------------------------------------
+        # Email-like files → aggressive cleanup
+        # --------------------------------------------
+        if fname.endswith((".eml", ".msg")):
+            cleaned_text = clean_text(text)
+
+        # --------------------------------------------
+        # Spreadsheet / table text → VERY LIGHT cleanup
+        # --------------------------------------------
+        elif fname.endswith((".xlsx", ".xls", ".csv")):
+            cleaned_text = normalize_whitespace_only(text)
+
+        # --------------------------------------------
+        # Everything else → moderate cleanup
+        # --------------------------------------------
+        else:
+            cleaned_text = clean_text(text)
+
+        cleaned_items.append({
+            "filename": filename,
+            "text": cleaned_text
+        })
+
+    return cleaned_items
+
+
 
 def ingest_files_from_blob_urls_create_embeddings(download_dir,blob_urls: list, project_id: str,
 textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose: bool = True):
@@ -1447,12 +1601,14 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
     copy_extracted_images_to_src(
     page_images_root=IMAGES_ROOT,
     src_root=DOWNLOAD_DIR)
+
+    extracted_texts=clean_extracted_texts(extracted_texts)
     
     extracted_texts += cis_info
 
-    print("###################### CIS INFO ##################################")
-    print(cis_info)
-    print("###################################################################")
+    # print("###################### CIS INFO ##################################")
+    # print(cis_info)
+    # print("###################################################################")
 
 
     print("\n======================================")
@@ -1510,7 +1666,7 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
             unique_metadata.append(item)
 
     image_urls = upload_pdf_images_and_append_urls(
-        image_page_metadata=image_page_metadata,
+        image_page_metadata=unique_metadata,
         image_urls=image_urls_raw,
         conn_str=AZURE_CONN_STRING,
         container=BLOB_CONTAINER,   # same notebook container

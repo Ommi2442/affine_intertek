@@ -25,7 +25,7 @@ def embed_text(text):
             input=text
         ).data[0].embedding
     except Exception as e:
-        print(f"⚠ Embedding failed: {e}")
+        #print(f"⚠ Embedding failed: {e}")
         return None
 
 
@@ -50,7 +50,7 @@ def get_image_urls_from_container_sas():
         blob_client = container_client.get_blob_client(blob.name)
         blob_urls.append(blob_client.url)   # ✅ SAFE, SDK-built URL
 
-    print("Blobs found in device_images:", len(blob_urls))
+    #print("Blobs found in device_images:", len(blob_urls))
     return blob_urls
 
 def describe_image(image_url):
@@ -100,7 +100,7 @@ def describe_image(image_url):
         return json.loads(raw)
 
     except Exception as e:
-        print(f"⚠ Image not readable by Vision ({image_url}): {e}")
+        #print(f"⚠ Image not readable by Vision ({image_url}): {e}")
         return None
 
 def extract_visible_elements(description):
@@ -141,7 +141,7 @@ def calculate_cosine_distances_matrix(comp_embeddings, img_embeddings):
 def run_phototagging():
     configs.require_runtime()
 
-    print("Starting Phototagging (Optimized)...")
+    #print("Starting Phototagging (Optimized)...")
 
     # STEP 0: LOAD ORIGINAL & FILTER CRITICAL
     df_all = pd.read_excel(configs.OUTPUT_PATH_FINAL, dtype=str)
@@ -157,23 +157,23 @@ def run_phototagging():
         df_all["is_critical_norm"].isin(["true", "1", "yes", "y"])
     ].copy()
 
-    print("===== FILTER CHECK =====")
-    print("Total rows in original file :", len(df_all))
-    print("Critical rows selected      :", len(critical_df))
+    #print("===== FILTER CHECK =====")
+    #print("Total rows in original file :", len(df_all))
+    #print("Critical rows selected      :", len(critical_df))
 
     if critical_df.empty:
-        print("No critical components found.")
+        #print("No critical components found.")
         return
 
     critical_df.to_excel(configs.CRITICAL_ONLY_EXCEL, index=False)
 
     # STEP 1: RELOAD CRITICAL-ONLY FILE
     df = pd.read_excel(configs.CRITICAL_ONLY_EXCEL, dtype=str)
-    print("Working rows (critical only):", len(df))
+    #print("Working rows (critical only):", len(df))
 
     # STEP 2: IMAGE DISCOVERY + DESCRIPTION (PARALLEL)
     image_urls = get_image_urls_from_container_sas()
-    print(f"Image URLs supplied: {len(image_urls)}")
+    #print(f"Image URLs supplied: {len(image_urls)}")
     # SAVE ALL IMAGE URLS FOR FORMATTER
     pd.Series(image_urls, name="image_url").to_csv(
         configs.ALL_IMAGE_URLS_CSV,
@@ -183,7 +183,7 @@ def run_phototagging():
     has_images = len(image_urls) > 0
 
 
-    print("...Generating Image Descriptions (Parallel)...")
+    #print("...Generating Image Descriptions (Parallel)...")
     with ThreadPoolExecutor(max_workers=configs.MAX_WORKERS) as exe:
         image_meta = list(exe.map(describe_image, image_urls))
 
@@ -197,11 +197,11 @@ def run_phototagging():
                 "visible": meta.get("visible_elements")
             })
 
-    print(f"Images successfully described: {len(valid_items)}")
+    #print(f"Images successfully described: {len(valid_items)}")
 
 
     # STEP 3: IMAGE EMBEDDINGS (PARALLEL)
-    print("...Generating Image Embeddings (Parallel)...")
+    #print("...Generating Image Embeddings (Parallel)...")
     visible_texts = [item["visible"] for item in valid_items]
 
     with ThreadPoolExecutor(max_workers=configs.MAX_WORKERS) as exe:
@@ -216,12 +216,12 @@ def run_phototagging():
                 "caption": f'{item["view"]} ({item["type"]})'
             })
 
-    print(f"Images with usable embeddings: {len(image_items)}")
+    #print(f"Images with usable embeddings: {len(image_items)}")
 
 
     # STEP 4: COMPONENT EMBEDDINGS (ONLY IF IMAGES EXIST)
     if has_images:
-        print("...Generating Component Embeddings (Parallel)...")
+        #print("...Generating Component Embeddings (Parallel)...")
 
         df["component_text"] = df.apply(
             lambda r: f"{r.get('Component Name','')} {r.get('Description','')}",
@@ -232,15 +232,15 @@ def run_phototagging():
             comp_embeddings = list(exe.map(embed_text, df["component_text"].tolist()))
 
         df["embedding"] = comp_embeddings
-        print(f"Component embeddings created: {len(df)}")
+        #print(f"Component embeddings created: {len(df)}")
 
     else:
-        print("⚠ No images found — skipping component embeddings")
+        #print("⚠ No images found — skipping component embeddings")
         df["embedding"] = None
 
 
    # STEP 5: MATCHING + JUSTIFICATION (VECTORIZED)
-    print("...Calculating Matches...")
+    #print("...Calculating Matches...")
 
     results = []
 
@@ -248,7 +248,7 @@ def run_phototagging():
     # FAST PATH: NO IMAGES AVAILABLE
     # ===============================
     if not image_items:
-        print("⚠ No images available — pushing all components forward")
+        #print("⚠ No images available — pushing all components forward")
 
         for _, row in df.iterrows():
             name = row.get("Component Name", "")
@@ -345,4 +345,4 @@ def run_phototagging():
 
     # STEP 6: EXPORT FINAL OUTPUT
     df.to_excel(configs.FINAL_OUTPUT_WITH_EVIDENCE, index=False)
-    print(f"✔ Completed. Output: {configs.FINAL_OUTPUT_WITH_EVIDENCE}")
+    #print(f"✔ Completed. Output: {configs.FINAL_OUTPUT_WITH_EVIDENCE}")

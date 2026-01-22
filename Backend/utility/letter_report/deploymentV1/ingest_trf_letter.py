@@ -85,12 +85,12 @@ COSMOS_CONT_IMAGE = CONT_NAME_IMG
 BLOB_CONT_NAME= os.getenv("BLOB_CONTAINER")
 ENABLE_CAD_SCHEMATICS = os.getenv("ENABLE_CAD_SCHEMATICS")
 FLATTENED_DIR = os.getenv("FLATTENED_DIR")
-IMAGES_ROOT =os.getenv("IMAGES_ROOT")
-DOWNLOAD_DIR = os.getenv("TRF_DOWNLOAD_DIR")
+LT_IMAGES_ROOT =os.getenv("LT_IMAGES_ROOT")
+LT_DOWNLOAD_DIR_Folder_Name = os.getenv("TRF_DOWNLOAD_DIR")
 
 COSMOS_CONT_TEXT = os.getenv("COSMOS_CONT_TEXT")
 COSMOS_DB_TEXT=os.getenv("COSMOS_DB_TEXT")
-print("@@@@@@@@ ",DOWNLOAD_DIR)
+
 
 
 # ----------------------------------------------------------------------------------------
@@ -112,6 +112,81 @@ aoai_client = AzureOpenAI(
 # ----------------------------------------------------------------------------------------
 from langchain_openai import AzureOpenAIEmbeddings
 
+
+
+def get_or_create_vector_container_serverless(
+    client: CosmosClient,
+    DB_NAME: str,
+    CONT_NAME: str,
+    VECTOR_PATH: str,
+    EMBED_DIM: int,
+):
+    """
+    Serverless-safe Cosmos vector container creator.
+    - Database must already exist
+    - Creates container only if missing
+    - Does NOT delete existing container
+    - Does NOT set throughput (serverless limitation)
+    """
+
+    print("→ Using existing database:", DB_NAME)
+    db = client.get_database_client(DB_NAME)
+
+    try:
+        db.read()
+    except exceptions.CosmosResourceNotFoundError:
+        raise RuntimeError(f"[FATAL] Database does not exist: {DB_NAME}")
+
+    # ---- Vector embedding policy ----
+    vector_embedding_policy = {
+        "vectorEmbeddings": [
+            {
+                "path": VECTOR_PATH,
+                "dataType": "float32",
+                "dimensions": EMBED_DIM,
+                "distanceFunction": "cosine",
+            }
+        ]
+    }
+
+    # ---- Indexing policy ----
+    indexing_policy = {
+        "includedPaths": [{"path": "/*"}],
+        "excludedPaths": [
+            {"path": "/\"_etag\"/?"},
+            {"path": f"{VECTOR_PATH}/*"}
+        ],
+        "vectorIndexes": [
+            {
+                "path": VECTOR_PATH,
+                "type": "quantizedFlat"
+            }
+        ],
+    }
+
+    # ---- Check container ----
+    try:
+        container = db.get_container_client(CONT_NAME)
+        container.read()
+        print("✔ Container exists:", CONT_NAME)
+        return container
+
+    except exceptions.CosmosResourceNotFoundError:
+        print("→ Creating vector container (serverless-safe):", CONT_NAME)
+
+        container = db.create_container(
+            id=CONT_NAME,
+            partition_key=PartitionKey(path="/id"),
+            indexing_policy=indexing_policy,
+            vector_embedding_policy=vector_embedding_policy
+        )
+
+        print("✔ Vector container created:", CONT_NAME)
+        return container
+
+
+
+
 def build_embeddings():
     return AzureOpenAIEmbeddings(
         azure_endpoint=AOAI_ENDPOINT,
@@ -127,7 +202,7 @@ def build_embeddings():
 # ----------------------------------------------------------------------------------------
 
 
-def build_vectorstore_text():
+def build_vectorstore_text(textDB_container_name):
     cosmos_client = CosmosClient(
         url=COSMOS_URL,
         credential=COSMOS_KEY
@@ -137,7 +212,7 @@ def build_vectorstore_text():
         cosmos_client=cosmos_client,
         embedding=build_embeddings(),
         database_name=COSMOS_DB_TEXT,
-        container_name=COSMOS_CONT_TEXT,
+        container_name=textDB_container_name,
 
         vector_embedding_policy={
             "vectorEmbeddings": [{
@@ -166,7 +241,7 @@ def build_vectorstore_text():
 # Vector Store Builder (for IMAGES)
 # EXACT logic from notebook (not altered)
 # ----------------------------------------------------------------------------------------
-def build_vectorstore_image():
+def build_vectorstore_image(image_container):
     cosmos_client = CosmosClient(
         url=COSMOS_URL,
         credential=COSMOS_KEY
@@ -176,7 +251,7 @@ def build_vectorstore_image():
         cosmos_client=cosmos_client,
         embedding=build_embeddings(),
         database_name=COSMOS_DB_IMAGE,
-        container_name=COSMOS_CONT_IMAGE,
+        container_name=image_container,
 
         vector_embedding_policy={
             "vectorEmbeddings": [{
@@ -258,9 +333,9 @@ def extract_relevant_pdf_page_images(pdf_path, dpi=200):
         # --- EXACT strict rules from notebook ---
         should_extract = False
 
-        if raster_area > 500000:
+        if raster_area > 750000:
             should_extract = True
-        elif vector_ops > 150:
+        elif vector_ops > 150 and text_len < 800:
             should_extract = True
         elif text_len < 30:
             should_extract = True
@@ -1244,13 +1319,152 @@ def append_cis_images_to_image_metadata(images_root: str, image_page_metadata: l
                 "reason": "editable_pdf_page"
             })
 
- 
+
+def clean_text(text: str) -> str:
+    if not text or not isinstance(text, str):
+        return ""
+
+    t = text
+
+    # -------------------------------------------------
+    # 1. Remove URLs (inline and bracketed)
+    # -------------------------------------------------
+    t = re.sub(r"<https?://[^>]+>", " ", t)
+    t = re.sub(r"https?://\S+", " ", t)
+
+    # -------------------------------------------------
+    # 2. Remove common email headers / reply markers
+    # -------------------------------------------------
+    t = re.sub(
+        r"(^|\n)(from|sent|to|cc|subject):.*",
+        " ",
+        t,
+        flags=re.IGNORECASE
+    )
+
+    # -------------------------------------------------
+    # 3. Remove legal / disclaimer style blocks
+    #    (generic wording, multiline)
+    # -------------------------------------------------
+    disclaimer_patterns = [
+        r"confidentiality notice.*",
+        r"this email.*confidential.*",
+        r"this message.*confidential.*",
+        r"export (control|notification).*",
+        r"unauthorized.*prohibited.*",
+        r"intended recipient.*",
+        r"do not (print|forward|distribute).*",
+    ]
+
+    for p in disclaimer_patterns:
+        t = re.sub(p, " ", t, flags=re.IGNORECASE | re.DOTALL)
+
+    # -------------------------------------------------
+    # 4. Remove spam / scanner / tracker messages
+    # -------------------------------------------------
+    scanner_patterns = [
+        r"scanned for (spam|viruses).*",
+        r"click here.*",
+        r"report this email.*",
+        r"external sender.*",
+    ]
+
+    for p in scanner_patterns:
+        t = re.sub(p, " ", t, flags=re.IGNORECASE | re.DOTALL)
+
+    # -------------------------------------------------
+    # 5. Remove excessive punctuation / separators
+    # -------------------------------------------------
+    t = re.sub(r"_+", " ", t)
+    t = re.sub(r"-{3,}", " ", t)
+    t = re.sub(r"={3,}", " ", t)
+
+    # -------------------------------------------------
+    # 6. Normalize whitespace
+    # -------------------------------------------------
+    t = re.sub(r"\n{3,}", "\n\n", t)
+    t = re.sub(r"[ \t]{2,}", " ", t)
+
+    # -------------------------------------------------
+    # 7. Drop very short junk lines
+    # -------------------------------------------------
+    lines = []
+    for line in t.splitlines():
+        stripped = line.strip()
+        if len(stripped) < 10:
+            continue
+        if stripped.lower() in {"click here", "here", "thanks", "thank you"}:
+            continue
+        lines.append(stripped)
+
+    t = "\n".join(lines)
+
+    return t.strip()
+
+import re
+
+def normalize_whitespace_only(text: str) -> str:
+    if not text:
+        return ""
+
+    t = text
+    t = re.sub(r"\r\n", "\n", t)
+    t = re.sub(r"\n{3,}", "\n\n", t)
+    t = re.sub(r"[ \t]{2,}", " ", t)
+
+    return t.strip()
+
+
+def clean_extracted_texts(extracted_texts):
+    """
+    Applies clean_text safely based on file type.
+    Preserves tables and structured content.
+    """
+    cleaned_items = []
+
+    for item in extracted_texts:
+        if not isinstance(item, dict):
+            continue
+
+        filename = item.get("filename", "unknown")
+        text = item.get("text", "")
+
+        if not text:
+            continue
+
+        fname = filename.lower()
+
+        # --------------------------------------------
+        # Email-like files → aggressive cleanup
+        # --------------------------------------------
+        if fname.endswith((".eml", ".msg")):
+            cleaned_text = clean_text(text)
+
+        # --------------------------------------------
+        # Spreadsheet / table text → VERY LIGHT cleanup
+        # --------------------------------------------
+        elif fname.endswith((".xlsx", ".xls", ".csv")):
+            cleaned_text = normalize_whitespace_only(text)
+
+        # --------------------------------------------
+        # Everything else → moderate cleanup
+        # --------------------------------------------
+        else:
+            cleaned_text = clean_text(text)
+
+        cleaned_items.append({
+            "filename": filename,
+            "text": cleaned_text
+        })
+
+    return cleaned_items
+
 
 
 # ------------------------------------------------------------
 # Master Orchestration Function
 # ------------------------------------------------------------
-def run_full_ingestion(blob_urls):
+def run_full_ingestion(project_id,blob_urls,text_container,image_container):
     """
     Master ingestion function to be called externally.
 
@@ -1267,11 +1481,35 @@ def run_full_ingestion(blob_urls):
     print("   STEP 1 — PROCESS BLOB URLs ")
     print("==============================\n")
 
+    BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+
+    LT_DOWNLOAD_DIR = BASE_DIR / "data" / project_id / LT_DOWNLOAD_DIR_Folder_Name
+
+
+    client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY)
+
+
+    container_client_text = get_or_create_vector_container_serverless(
+        client=client,
+        DB_NAME=COSMOS_DB_TEXT,
+        CONT_NAME=text_container,
+        VECTOR_PATH=VECTOR_PATH,
+        EMBED_DIM=EMBED_DIM
+    )
+
+    container_client_image = get_or_create_vector_container_serverless(
+        client=client,
+        DB_NAME=COSMOS_DB_IMAGE,
+        CONT_NAME=image_container,
+        VECTOR_PATH=VECTOR_PATH,
+        EMBED_DIM=EMBED_DIM
+    )
+
     extracted_texts, image_urls_raw, downloaded_pdf_paths, converted_pdf_paths = process_blob_urls_2(
         blob_urls,
         AZURE_CONN_STRING,
         container=BLOB_CONT_NAME,   # SAME as notebook
-        download_dir=DOWNLOAD_DIR, #DOWNLOAD_DIR from environment
+        download_dir=LT_DOWNLOAD_DIR, #LT_DOWNLOAD_DIR from environment
         keep_files=True,
         verbose=True
     )
@@ -1281,12 +1519,12 @@ def run_full_ingestion(blob_urls):
     
 
 
-    # cis_info = extract_cis(src_root=DOWNLOAD_DIR,
+    # cis_info = extract_cis(src_root=LT_DOWNLOAD_DIR,
     #     flattened_dir=FLATTENED_DIR,
-    #     images_root=IMAGES_ROOT)
+    #     images_root=LT_IMAGES_ROOT)
     cis_info, editable_pdfs = extract_cis(
-        src_root=DOWNLOAD_DIR,
-        images_root=IMAGES_ROOT
+        src_root=LT_DOWNLOAD_DIR,
+        images_root=LT_IMAGES_ROOT
     )
 
     # ✅ Remove editable PDFs from PDF ingestion list (they are handled via OCR images)
@@ -1297,20 +1535,20 @@ def run_full_ingestion(blob_urls):
 
     
     copy_extracted_images_to_src(
-    page_images_root=IMAGES_ROOT,
-    src_root=DOWNLOAD_DIR)
+    page_images_root=LT_IMAGES_ROOT,
+    src_root=LT_DOWNLOAD_DIR)
+
+    extracted_texts=clean_extracted_texts(extracted_texts)
     
     extracted_texts += cis_info
 
-    print("###################### CIS INFO ##################################")
-    print(cis_info)
-    print("###################################################################")
+    # print("###################### CIS INFO ##################################")
+    # print(cis_info)
+    # print("###################################################################")
 
-
-
-    print(f"[INFO] Extracted text files: {len(extracted_texts)}")
-    print(f"[INFO] Initial image URLs: {len(image_urls_raw)}")
-    print(f"[INFO] Total PDFs: {len(pdf_paths)}\n")
+    # print(f"[INFO] Extracted text files: {len(extracted_texts)}")
+    # print(f"[INFO] Initial image URLs: {len(image_urls_raw)}")
+    # print(f"[INFO] Total PDFs: {len(pdf_paths)}\n")
 
 
     print("\n======================================")
@@ -1327,7 +1565,7 @@ def run_full_ingestion(blob_urls):
 
     # ✅ Add CIS extracted images into CAD schematic pipeline
     append_cis_images_to_image_metadata(
-        images_root=IMAGES_ROOT,
+        images_root=LT_IMAGES_ROOT,
         image_page_metadata=image_page_metadata
     )
 
@@ -1341,9 +1579,9 @@ def run_full_ingestion(blob_urls):
     print("======================================\n")
 
     # Clear DB (EXACT notebook logic)
-    clear_cosmos_container(COSMOS_DB_TEXT, COSMOS_CONT_TEXT)
+    clear_cosmos_container(COSMOS_DB_TEXT, text_container)
 
-    vectorstore_text = build_vectorstore_text()
+    vectorstore_text = build_vectorstore_text(text_container)
 
     # Assign UUIDs to each chunk
     chunks_uuid = add_ids_to_chunks(chunks)
@@ -1403,9 +1641,9 @@ def run_full_ingestion(blob_urls):
     print("==============================================\n")
 
     # Clear DB (EXACT notebook logic)
-    clear_cosmos_container(COSMOS_DB_IMAGE, COSMOS_CONT_IMAGE)
+    clear_cosmos_container(COSMOS_DB_IMAGE, image_container)
 
-    vectorstore_image = build_vectorstore_image()
+    vectorstore_image = build_vectorstore_image(image_container)
 
     # Assign UUIDs to image docs
     docs_image_uuid = add_ids_to_chunks(docs_image)

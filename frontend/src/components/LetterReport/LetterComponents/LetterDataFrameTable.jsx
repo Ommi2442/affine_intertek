@@ -14,14 +14,25 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import { renderConfidenceColor } from '../../../utils/renderConfidenceColor';
 
-const HEADERS = ['Clause', 'Requirement of the Clause', 'Remark and Findings'];
+//const HEADERS = ['Clause', 'Requirement of the Clause', 'Remark and Findings'];
 
-const emptyRow = () => ({
-  Clause: '',
-  'Requirement of the Clause': '',
-  'Remark and Findings': '',
-  __isNew: true,
-});
+// const emptyRow = () => ({
+//   Clause: '',
+//   'Requirement of the Clause': '',
+//   'Remark and Findings': '',
+//   __isNew: true,
+// });
+const makeEmptyRow = (headers) => {
+  const row = {};
+  headers.forEach((h) => {
+    row[h] = '';
+  });
+  row.__isNew = true;
+  return row;
+};
+
+const normalizeKey = (k) =>
+  typeof k === 'string' ? k.trim().replace(/\s+/g, ' ') : k;
 
 const LetterDataFrameTable = ({
   item,
@@ -32,19 +43,50 @@ const LetterDataFrameTable = ({
   if (!item || !Array.isArray(item.value)) return null;
 
   const rows = item.value;
+  // -------- DERIVE HEADERS DYNAMICALLY --------
+  const HEADERS = React.useMemo(() => {
+    if (!rows.length) return [];
+
+    const keySet = new Set();
+
+    rows.forEach((r) => {
+      if (r && typeof r === 'object') {
+        Object.keys(r).forEach((k) => {
+          const nk = normalizeKey(k);
+          if (!nk.startsWith('__')) keySet.add(nk);
+        });
+      }
+    });
+
+    return Array.from(keySet);
+  }, [rows]);
+
   const [hoveredRow, setHoveredRow] = React.useState(null);
 
   /* -------- UPDATE CELL -------- */
   const updateCell = (rowIndex, key, value) => {
     const next = [...rows];
-    next[rowIndex] = { ...next[rowIndex], [key]: value };
-    item.value = next; // mutate source json (same as your LetterField pattern)
+
+    const originalKey =
+      Object.keys(next[rowIndex]).find((k) => normalizeKey(k) === key) ?? key;
+
+    next[rowIndex] = {
+      ...next[rowIndex],
+      [originalKey]: value,
+    };
+
+    item.value = next;
     onChange?.();
   };
 
   /* -------- ADD ROW -------- */
+  // const addRow = () => {
+  //   item.value = [...rows, emptyRow()];
+  //   onChange?.();
+  // };
   const addRow = () => {
-    item.value = [...rows, emptyRow()];
+    const next = [...rows, makeEmptyRow(HEADERS)];
+    item.value = next;
     onChange?.();
   };
 
@@ -111,7 +153,13 @@ const LetterDataFrameTable = ({
                   <TextField
                     fullWidth
                     size="small"
-                    value={row[key] ?? ''}
+                    value={
+                      row[key] ??
+                      row[
+                        Object.keys(row).find((k) => normalizeKey(k) === key)
+                      ] ??
+                      ''
+                    }
                     InputProps={{ readOnly: !editMode }}
                     onChange={(e) => updateCell(rowIndex, key, e.target.value)}
                   />

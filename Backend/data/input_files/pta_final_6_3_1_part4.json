@@ -303,8 +303,8 @@
           "value": null,
           "task_type": "verdict_dependency",
           "user_editable": true,
-          "ai_fillable": true,
-          "accuracy_level": true,
+          "ai_fillable": false,
+          "accuracy_level": false,
           "dependency_rows": [567, 568, 569, 570, 571, 572, 573, 574],
           "page_no": 28
         },
@@ -1836,7 +1836,7 @@
           "task_type": "remark",
           "user_editable": true,
           "ai_fillable": true,
-          "accuracy_level": false,
+          "accuracy_level": true,
           "dependency_rows": null,
           "page_no": 30
         },

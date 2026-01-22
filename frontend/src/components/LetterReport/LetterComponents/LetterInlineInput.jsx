@@ -1,19 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-const LetterInlineInput = ({ item, onChange, editMode, wide }) => {
+const LetterInlineInput = ({
+  item,
+  onChange,
+  editMode,
+  onConfidenceChange,
+  wide,
+}) => {
   if (!item) return null;
 
-  const displayValue = item.value && item.value !== '' ? item.value : item.key;
+  const [localValue, setLocalValue] = useState(item.value ?? item.key ?? '');
+
+  // Sync when item changes externally
+  useEffect(() => {
+    setLocalValue(item.value ?? '');
+  }, [item.value]);
 
   return (
     <input
       type="text"
-      value={displayValue}
-      disabled={!editMode} //  THIS is the key
+      value={localValue}
+      disabled={!editMode}
       onChange={(e) => {
-        if (!editMode) return; // safety
-        item.value = e.target.value;
-        onChange?.();
+        if (!editMode) return;
+        setLocalValue(e.target.value); // fast typing, no global re-render
+      }}
+      onBlur={() => {
+        if (!editMode) return;
+        item.value = localValue; // commit on blur
+        item.is_user_edited = true;
+        onChange?.(); // one re-render only
+        onConfidenceChange?.();
       }}
       style={{
         border: '1px solid #535353',
