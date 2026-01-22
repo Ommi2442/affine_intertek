@@ -14,6 +14,7 @@ const LetterSmartField = ({
   onApprove,
   onComment,
   onBookmark,
+  onConfidenceChange,
   wide = false,
 }) => {
   const item = getLetterItem(json, name);
@@ -30,6 +31,7 @@ const LetterSmartField = ({
       onApprove={() => onApprove?.(item)}
       onComment={() => onComment?.(item)}
       onBookmark={() => onBookmark?.(item)}
+      onConfidenceChange={onConfidenceChange}
       wide={wide}
     />
   );

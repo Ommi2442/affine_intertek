@@ -10,6 +10,7 @@ const LetterPage6 = ({
   handleApprove,
   openComment,
   onBookmarkClick,
+  onConfidenceChange,
 }) => {
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
   return (
@@ -34,6 +35,7 @@ const LetterPage6 = ({
           onApprove={handleApprove}
           onComment={openComment}
           onBookmark={onBookmarkClick}
+          onConfidenceChange={onConfidenceChange}
         />
       </p>
       <p>

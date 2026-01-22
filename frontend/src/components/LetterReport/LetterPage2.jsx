@@ -11,25 +11,28 @@ const LetterPage2 = ({
   handleApprove,
   openComment,
   onBookmarkClick,
+  onConfidenceChange,
 }) => {
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
   useEffect(() => {
-    const item1 = getLetterItem(json, '«IssuedDate»'); // Issue Date key
-    if (!item1) return;
+    const item1 = getLetterItem(json, '«IssuedDate»');
     const item2 = getLetterItem(json, '«ProjectNumber»');
-    if (!item2) return;
-    // Only auto-fill once
-    if (!item1.value) {
+
+    if (!item1 || !item2) return;
+
+    if (!item1.value || item1.value === '«IssuedDate»') {
       item1.value = formatIssueDate();
-      item1.is_user_edited = false; // system-filled
-      forceUpdate();
+      item1.is_user_edited = false;
     }
-    if (!item2.value) {
+
+    if (!item2.value || item2.value === '«ProjectNumber»') {
       item2.value = localStorage.getItem('projectId');
       item2.is_user_edited = false;
-      forceUpdate();
     }
-  }, [json]);
+
+    forceUpdate();
+  }, []);
+
   return (
     <div className="letter-page">
       <div
@@ -68,6 +71,7 @@ const LetterPage2 = ({
               onApprove={handleApprove}
               onComment={openComment}
               onBookmark={onBookmarkClick}
+              onConfidenceChange={onConfidenceChange}
             />
           </div>
           <br />
@@ -80,6 +84,7 @@ const LetterPage2 = ({
               onApprove={handleApprove}
               onComment={openComment}
               onBookmark={onBookmarkClick}
+              onConfidenceChange={onConfidenceChange}
             />
           </div>
           <br />
@@ -92,6 +97,7 @@ const LetterPage2 = ({
               onApprove={handleApprove}
               onComment={openComment}
               onBookmark={onBookmarkClick}
+              onConfidenceChange={onConfidenceChange}
             />
           </div>
           <br />
@@ -104,6 +110,7 @@ const LetterPage2 = ({
               onApprove={handleApprove}
               onComment={openComment}
               onBookmark={onBookmarkClick}
+              onConfidenceChange={onConfidenceChange}
             />
           </div>
           <br />
@@ -116,6 +123,7 @@ const LetterPage2 = ({
               onApprove={handleApprove}
               onComment={openComment}
               onBookmark={onBookmarkClick}
+              onConfidenceChange={onConfidenceChange}
             />
           </div>
         </div>
@@ -132,6 +140,7 @@ const LetterPage2 = ({
                 onApprove={handleApprove}
                 onComment={openComment}
                 onBookmark={onBookmarkClick}
+                onConfidenceChange={onConfidenceChange}
               />
             </span>
           </div>
@@ -150,6 +159,7 @@ const LetterPage2 = ({
                 onApprove={handleApprove}
                 onComment={openComment}
                 onBookmark={onBookmarkClick}
+                onConfidenceChange={onConfidenceChange}
               />
             </span>
           </div>
@@ -168,6 +178,7 @@ const LetterPage2 = ({
                 onApprove={handleApprove}
                 onComment={openComment}
                 onBookmark={onBookmarkClick}
+                onConfidenceChange={onConfidenceChange}
               />
             </span>
           </div>
@@ -186,6 +197,7 @@ const LetterPage2 = ({
                 onApprove={handleApprove}
                 onComment={openComment}
                 onBookmark={onBookmarkClick}
+                onConfidenceChange={onConfidenceChange}
               />
             </span>
           </div>
@@ -204,6 +216,7 @@ const LetterPage2 = ({
                 onApprove={handleApprove}
                 onComment={openComment}
                 onBookmark={onBookmarkClick}
+                onConfidenceChange={onConfidenceChange}
               />
             </span>
           </div>
@@ -219,6 +232,7 @@ const LetterPage2 = ({
           onApprove={handleApprove}
           onComment={openComment}
           onBookmark={onBookmarkClick}
+          onConfidenceChange={onConfidenceChange}
           wide
         />
       </div>
@@ -233,6 +247,7 @@ const LetterPage2 = ({
           onApprove={handleApprove}
           onComment={openComment}
           onBookmark={onBookmarkClick}
+          onConfidenceChange={onConfidenceChange}
         />
       </div>
       <p>
@@ -249,6 +264,7 @@ const LetterPage2 = ({
           onApprove={handleApprove}
           onComment={openComment}
           onBookmark={onBookmarkClick}
+          onConfidenceChange={onConfidenceChange}
         />
       </div>
       <h3 className="section">
@@ -269,6 +285,7 @@ const LetterPage2 = ({
           onApprove={handleApprove}
           onComment={openComment}
           onBookmark={onBookmarkClick}
+          onConfidenceChange={onConfidenceChange}
         />
         , non-conformances or additional information have been identified.{' '}
       </div>
@@ -309,6 +326,7 @@ const LetterPage2 = ({
           onApprove={handleApprove}
           onComment={openComment}
           onBookmark={onBookmarkClick}
+          onConfidenceChange={onConfidenceChange}
         />
 
         <span> </span>
@@ -320,6 +338,7 @@ const LetterPage2 = ({
           onApprove={handleApprove}
           onComment={openComment}
           onBookmark={onBookmarkClick}
+          onConfidenceChange={onConfidenceChange}
         />
 
         <span>
@@ -336,6 +355,7 @@ const LetterPage2 = ({
           onApprove={handleApprove}
           onComment={openComment}
           onBookmark={onBookmarkClick}
+          onConfidenceChange={onConfidenceChange}
         />
 
         <span>

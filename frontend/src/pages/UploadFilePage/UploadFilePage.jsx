@@ -431,6 +431,7 @@ const UploadFilePage = () => {
           <Button
             variant="contained"
             sx={{ mt: 2, backgroundColor: '#0d99ff' }}
+            disabled={!(recentUploads?.length > 0)}
             onClick={handleGenerateTrf}
           >
             Generate TRF

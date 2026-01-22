@@ -100,6 +100,7 @@ const LetterReport = forwardRef(
                   handleApprove={handleApprove}
                   openComment={openComment}
                   onBookmarkClick={onBookmarkClick}
+                  onConfidenceChange={onConfidenceChange}
                 />
               )}
               {p === 2 && (
@@ -109,6 +110,7 @@ const LetterReport = forwardRef(
                   handleApprove={handleApprove}
                   openComment={openComment}
                   onBookmarkClick={onBookmarkClick}
+                  onConfidenceChange={onConfidenceChange}
                 />
               )}
               {p === 3 && (
@@ -118,6 +120,7 @@ const LetterReport = forwardRef(
                   handleApprove={handleApprove}
                   openComment={openComment}
                   onBookmarkClick={onBookmarkClick}
+                  onConfidenceChange={onConfidenceChange}
                 />
               )}
               {p === 4 && (
@@ -127,6 +130,7 @@ const LetterReport = forwardRef(
                   handleApprove={handleApprove}
                   openComment={openComment}
                   onBookmarkClick={onBookmarkClick}
+                  onConfidenceChange={onConfidenceChange}
                 />
               )}
               {p === 5 && (
@@ -136,6 +140,7 @@ const LetterReport = forwardRef(
                   handleApprove={handleApprove}
                   openComment={openComment}
                   onBookmarkClick={onBookmarkClick}
+                  onConfidenceChange={onConfidenceChange}
                 />
               )}
               {p === 6 && (
@@ -145,6 +150,7 @@ const LetterReport = forwardRef(
                   handleApprove={handleApprove}
                   openComment={openComment}
                   onBookmarkClick={onBookmarkClick}
+                  onConfidenceChange={onConfidenceChange}
                 />
               )}
             </div>

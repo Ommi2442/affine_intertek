@@ -32,6 +32,7 @@ import { idb_get, idb_set, STORES } from '../../utils/idb';
 import { truncateWords } from '../../Helpers/truncateWords';
 import { normalizeNewLines } from '../../Helpers/normalizeNewLines';
 import { RenderImageThumbnails } from '../../Helpers/renderImageThumbnails';
+import { useLocation } from 'react-router-dom';
 
 const STORAGE_KEY_PREFIX = 'cdr_report_';
 
@@ -39,6 +40,12 @@ const CdrReportPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const dataTableRef = useRef(null);
+  const { state } = useLocation();
+
+  const letterPercentage =
+    typeof state?.letterPercentage === 'number'
+      ? state.letterPercentage
+      : Number(localStorage.getItem(`letter_percentage_${projectId}`)) || 0;
 
   const projectId = localStorage.getItem('projectId');
   const storageKey = `${STORAGE_KEY_PREFIX}${projectId}`;
@@ -188,7 +195,23 @@ const CdrReportPage = () => {
 
   const handleRegenerate = () => navigate('/create-project');
   const handleGenerateLetter = () => {
-    finalised && navigate('/create-project-letter');
+    if (letterPercentage === 100) {
+      navigate('/report-page/letter', {
+        state: {
+          projectId,
+          source: 'cdr',
+          letterPercentage,
+        },
+      });
+    } else {
+      navigate('/create-project-letter', {
+        state: {
+          projectId,
+          source: 'cdr',
+          letterPercentage,
+        },
+      });
+    }
   };
 
   /* ---------------- BOOKMARK ---------------- */
@@ -382,7 +405,7 @@ const CdrReportPage = () => {
                     variant="contained"
                     className="generate-btn"
                     style={{
-                      background: finalised ? '#417581' : '#A9A9A9',
+                      background: '#417581',
                     }}
                     onClick={handleGenerateLetter}
                   >
