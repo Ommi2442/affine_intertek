@@ -14,10 +14,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-COSMOS_DB_URI = os.getenv("COSMOS_DB_URI")
-COSMOS_DB_KEY = os.getenv("COSMOS_DB_KEY")
-COSMOS_DB_DATABASE = os.getenv("COSMOS_DB_DATABASE")
-COSMOS_PROJECT_CONTAINER = os.getenv("COSMOS_DB_project_Container")
+COSMOS_DB_URI = os.getenv("cosmos-db-url")
+COSMOS_DB_KEY = os.getenv("cosmos-db-key")
+COSMOS_DB_DATABASE = os.getenv("cosmos-db-database")
+COSMOS_PROJECT_CONTAINER = os.getenv("cosmos-db-project-container")
 
 
 cosmos_client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)

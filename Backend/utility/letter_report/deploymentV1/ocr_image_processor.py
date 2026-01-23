@@ -11,37 +11,37 @@ from dotenv import load_dotenv
 load_dotenv()
 import os
 
-AZURE_CONN_STRING = os.getenv("AZURE_CONN_STRING")
-DB_NAME_IMG = os.getenv("COSMOS_DB_IMAGE")
-CONT_NAME_IMG = os.getenv("COSMOS_CONT_IMAGE")
-CHUNK_SIZE = int(os.getenv("CHUNK_SIZE"))
-CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP"))
-TOP_K = int(os.getenv("LT_TOP_K"))
-EMBED_DIM = int(os.getenv("EMBED_DIM"))
-VECTOR_PATH = os.getenv("VECTOR_PATH")
+AZURE_CONN_STRING = os.getenv("azure-conn-string")
+DB_NAME_IMG = os.getenv("cosmos-db-image")
+CONT_NAME_IMG = os.getenv("cosmos-cont-image")
+CHUNK_SIZE = int(os.getenv("chunk-size"))
+CHUNK_OVERLAP = int(os.getenv("chunk-overlap"))
+TOP_K = int(os.getenv("lt-top-k"))
+EMBED_DIM = int(os.getenv("embed-dim"))
+VECTOR_PATH = os.getenv("vector-path")
 
-BLOB_CONTAINER_NAME = os.getenv("BLOB_CONTAINER")
+BLOB_CONTAINER_NAME = os.getenv("blob-container")
 CONN_STR = os.getenv("LT_conn_str")
 
-IMAGE_EXTS = os.getenv("LT_IMAGE_EXTS")
+IMAGE_EXTS = os.getenv("lt-image-exts")
 
-AOAI_ENDPOINT = os.getenv("AOAI_ENDPOINT")
-AOAI_KEY = os.getenv("AOAI_KEY")
-API_VERSION = os.getenv("API_VERSION")
-EMBED_DEPLOY = os.getenv("EMBED_DEPLOY")
-CHAT_DEPLOY = os.getenv("CHAT_DEPLOY")
+AOAI_ENDPOINT = os.getenv("aoai-endpoint")
+AOAI_KEY = os.getenv("aoai-key")
+API_VERSION = os.getenv("api-version")
+EMBED_DEPLOY = os.getenv("embed-deploy")
+CHAT_DEPLOY = os.getenv("chat-deploy")
 
-COSMOS_URL = os.getenv("COSMOS_URL")
-COSMOS_KEY = os.getenv("COSMOS_KEY")
-COSMOS_DB = os.getenv("COSMOS_DB_TEXT")
-COSMOS_CONT = os.getenv("COSMOS_CONT_TEXT")
+COSMOS_URL = os.getenv("cosmos-url")
+COSMOS_KEY = os.getenv("cosmos-key")
+COSMOS_DB = os.getenv("cosmos-db-text")
+COSMOS_CONT = os.getenv("cosmos-cont-text")
 
-DB_NAME = os.getenv("COSMOS_DB_TEXT")
-CONT_NAME = os.getenv("COSMOS_CONT_TEXT")
+DB_NAME = os.getenv("cosmos-db-text")
+CONT_NAME = os.getenv("cosmos-cont-text")
 
-MAX_THREADS = int(os.getenv("LT_MAX_THREADS"))
-MAX_RETRIES = int(os.getenv("LT_TOP_K"))
-INITIAL_BACKOFF = int(os.getenv("LT_INITIAL_BACKOFF"))
+MAX_THREADS = int(os.getenv("lt-max-threads"))
+MAX_RETRIES = int(os.getenv("lt-top-k"))
+INITIAL_BACKOFF = int(os.getenv("lt-initial-backoff"))
  
 
 
