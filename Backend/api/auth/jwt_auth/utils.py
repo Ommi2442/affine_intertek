@@ -5,6 +5,10 @@ from jose import jwt
 import os
 from dotenv import load_dotenv
 
+from projects.keyvault_load import *
+load_keyvault_secrets()
+
+
 load_dotenv()
 security = HTTPBearer()
 

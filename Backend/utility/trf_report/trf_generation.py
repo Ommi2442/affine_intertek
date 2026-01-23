@@ -113,6 +113,8 @@ CHUNK_OVERLAP = 150
 EMBED_DIM = 1536
 VECTOR_PATH = "/vector"
 
+from projects.keyvault_load import *
+load_keyvault_secrets()
 
 
 # Load environment variables

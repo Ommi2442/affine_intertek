@@ -11,6 +11,9 @@ from dotenv import load_dotenv
 load_dotenv()
 import os
 
+from projects.keyvault_load import *
+load_keyvault_secrets()
+
 AZURE_CONN_STRING = os.getenv("azure-conn-string")
 DB_NAME_IMG = os.getenv("cosmos-db-image")
 CONT_NAME_IMG = os.getenv("cosmos-cont-image")

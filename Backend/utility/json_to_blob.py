@@ -40,6 +40,9 @@ from fastapi import HTTPException
 from dotenv import load_dotenv
 load_dotenv()
 
+from projects.keyvault_load import *
+load_keyvault_secrets()
+
 AZURE_STORAGE_CONNECTION_STRING = os.getenv("azure-conn-string")
 blob_container = os.getenv("blob-container")
 blob_service = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)

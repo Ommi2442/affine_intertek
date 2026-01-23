@@ -134,6 +134,9 @@ def build_cosmos_cont_name() -> str:
 
 load_dotenv()
 
+from projects.keyvault_load import *
+load_keyvault_secrets()
+
 AOAI_ENDPOINT = os.getenv("aoai-endpoint")
 AOAI_KEY = os.getenv("aoai-key")
 API_VERSION = os.getenv("api-version")

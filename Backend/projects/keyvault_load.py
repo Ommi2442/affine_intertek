@@ -11,12 +11,12 @@ ENV = os.getenv("ENVIRONMENT", "local")
 
 def load_keyvault_secrets():
 
-    # 🧪 Local → .env only
+    # Local → .env only
     if ENV.lower() == "local":
         print("🔹 Running in LOCAL mode – using .env")
         return
 
-    # 🚀 Production → Key Vault
+    # Production → Key Vault
     if not VAULT_NAME:
         raise RuntimeError("AZURE_KEYVAULT_NAME not set")
 
@@ -30,4 +30,4 @@ def load_keyvault_secrets():
     for secret in client.list_properties_of_secrets():
         os.environ[secret.name] = client.get_secret(secret.name).value
 
-    print("🔐 Key Vault secrets loaded")
+    print("Key Vault secrets loaded")

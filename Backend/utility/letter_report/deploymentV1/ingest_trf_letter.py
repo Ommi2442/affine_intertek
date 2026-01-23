@@ -78,6 +78,10 @@ from openai import AzureOpenAI
 
 from dotenv import load_dotenv
 load_dotenv()
+
+from projects.keyvault_load import *
+load_keyvault_secrets()
+
 AZURE_CONN_STRING = os.getenv("azure-conn-string")
 COSMOS_CONT_TEXT = COSMOS_CONT
 COSMOS_DB_IMAGE  = DB_NAME_IMG
