@@ -14,7 +14,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-print("CONN:", repr(os.getenv("AZURE_CONNECTION_STRING")))
-
 app.include_router(login_router, tags=["Authentication"])
 app.include_router(projects_router, prefix="/projects", tags=["Projects"])

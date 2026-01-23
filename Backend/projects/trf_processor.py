@@ -14,6 +14,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from projects.keyvault_load import *
+load_keyvault_secrets()
+
 COSMOS_DB_URI = os.getenv("cosmos-db-url")
 COSMOS_DB_KEY = os.getenv("cosmos-db-key")
 COSMOS_DB_DATABASE = os.getenv("cosmos-db-database")

@@ -65,6 +65,9 @@ from azure.cosmos.exceptions import CosmosResourceNotFoundError
 import shutil
 
 
+from projects.keyvault_load import *
+load_keyvault_secrets()
+
 load_dotenv()
 
 # Chunking config
