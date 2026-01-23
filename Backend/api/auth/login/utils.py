@@ -18,7 +18,7 @@
 # SMTP_PASSWORD = os.getenv("SMTP_PASSWORD") 
 
 # # OTP Encryption Configuration
-# OTP_LOGIN_SECRET_KEY = os.getenv("OTP_SECRET_KEY")  
+# OTP_LOGIN_SECRET_KEY = os.getenv("otp-secret-key")  
 # cipher = Fernet(OTP_LOGIN_SECRET_KEY.encode())
 
 # def generate_otp():
@@ -157,7 +157,7 @@ SMTP_USERNAME = os.getenv("SMTP_USERNAME")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 
 # You can store this securely
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("secret-key")
 cipher = Fernet(Fernet.generate_key())
 
 def generate_otp() -> str:

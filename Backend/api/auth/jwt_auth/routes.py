@@ -15,7 +15,7 @@ router = APIRouter()
 
 load_dotenv()
 
-LOGIN_URL = os.getenv("APP_URL") 
+# LOGIN_URL = os.getenv("app-url") 
 
 @router.post("/add_user")
 async def add_user(user: User, current_user: dict = Depends(get_current_user)):
@@ -61,7 +61,7 @@ async def add_user(user: User, current_user: dict = Depends(get_current_user)):
 
     try:
         # Send welcome email
-        await send_welcome_email(user.email, LOGIN_URL)
+        # await send_welcome_email(user.email, LOGIN_URL)
 
     except HTTPException as email_err:
         # Log but do not fail the whole user creation due to email issue

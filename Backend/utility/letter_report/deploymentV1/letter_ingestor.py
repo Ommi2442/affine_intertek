@@ -14,12 +14,12 @@ from utility.letter_report.deploymentV1.config import AZURE_CONN_STRING, DB_NAME
 COSMOS_DB_IMAGE  = DB_NAME_IMG
 COSMOS_CONT_IMAGE = CONT_NAME_IMG
 BLOB_CONT_NAME= os.getenv("BLOB_CONT_NAME")
-ENABLE_CAD_SCHEMATICS = os.getenv("ENABLE_CAD_SCHEMATICS")
-# FLATTENED_DIR = os.getenv("FLATTENED_DIR")
-# LT_IMAGES_ROOT =os.getenv("LT_IMAGES_ROOT")
-LT_DOWNLOAD_DIR = os.getenv("LT_DOWNLOAD_DIR")
-COSMOS_CONT_TEXT = os.getenv("COSMOS_CONT_TEXT")
-COSMOS_DB_TEXT=os.getenv("COSMOS_DB_TEXT")
+ENABLE_CAD_SCHEMATICS = os.getenv("enable-cad-schematics")
+# FLATTENED_DIR = os.getenv("flattened-dir")
+# LT_IMAGES_ROOT =os.getenv("lt-images-root")
+LT_DOWNLOAD_DIR = os.getenv("lt-download-dir")
+COSMOS_CONT_TEXT = os.getenv("cosmos-cont-text")
+COSMOS_DB_TEXT=os.getenv("cosmos-db-text")
 
 print("FOR------LT_DOWNLOAD_DIR ----",LT_DOWNLOAD_DIR)
 

@@ -45,13 +45,13 @@ projects_container = db.get_container_client(COSMOS_PROJECT_CONTAINER)
 ############################ TRF OPENAI CREDENTIALS ###################################
 
 # Load environment variables
-AOAI_ENDPOINT      = os.getenv("AOAI_ENDPOINT")
-AOAI_KEY           = os.getenv("AOAI_KEY")
-API_VERSION        = os.getenv("API_VERSION")
-EMBED_DEPLOY       = os.getenv("EMBED_DEPLOY")
-RAG_AZURE_CONN_STRING  = os.getenv("AZURE_CONN_STRING")
-RAG_COSMOS_URL         = os.getenv("COSMOS_URL")
-RAG_COSMOS_KEY         = os.getenv("COSMOS_KEY")
+AOAI_ENDPOINT      = os.getenv("aoai-endpoint")
+AOAI_KEY           = os.getenv("aoai-key")
+API_VERSION        = os.getenv("api-version")
+EMBED_DEPLOY       = os.getenv("embed-deploy")
+RAG_AZURE_CONN_STRING  = os.getenv("azure-conn-string")
+RAG_COSMOS_URL         = os.getenv("cosmos-url")
+RAG_COSMOS_KEY         = os.getenv("cosmos-key")
 
 
 
