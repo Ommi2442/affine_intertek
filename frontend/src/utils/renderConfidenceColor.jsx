@@ -12,6 +12,10 @@ const getConfidenceColor = (
   aiFillable,
   accuracyLevel
 ) => {
+  if (accuracyLevel !== true) return null;
+  if (isUserEdited === true) return 'grey';
+  if (aiFillable !== true) return null;
+
   // Not an AI confidence field → no color
   if (aiFillable !== true || accuracyLevel !== true) return null;
 

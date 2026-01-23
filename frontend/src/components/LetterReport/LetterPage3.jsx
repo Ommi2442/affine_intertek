@@ -37,9 +37,9 @@ const LetterPage3 = ({
     const hasValueField = Object.prototype.hasOwnProperty.call(item, 'value');
     if (!hasValueField) return null;
 
-    const isTbdNotAvailable =
-      typeof item.value === 'string' &&
-      item.value.trim().toLowerCase() === 'tbd-info not available';
+    // const isTbdNotAvailable =
+    //   typeof item.value === 'string' &&
+    //   item.value.trim().toLowerCase() === 'tbd-info not available';
 
     const canApprove = item.ai_fillable === true;
 
@@ -79,7 +79,7 @@ const LetterPage3 = ({
         </IconButton>
 
         {/* BOOKMARK */}
-        {!isTbdNotAvailable && (
+        {
           <IconButton
             size="small"
             onClick={() => {
@@ -94,7 +94,7 @@ const LetterPage3 = ({
           >
             <MenuBookOutlinedIcon className="dt-icon-bookmark" />
           </IconButton>
-        )}
+        }
       </div>
     );
   };

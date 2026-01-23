@@ -34,11 +34,13 @@ from projects.helpers import *
 from projects.keyvault_load import *
 from utility.cdr_report.CDR_Pipelines.main import main2
 from utility.cdr_report.CDR_Pipelines.compiler import fill_excel_from_json
-
+from utility.cdr_report.CDR_Pipelines.configs import init_runtime, clear_runtime
 from utility.letter_report.deploymentV1.letter_ingestor import main
+from utility.letter_report.deploymentV1.letter_regenerator import rebuild_letter_docx_from_json
 from utility.letter_report.deploymentV1.letter_generator import letter_gen
 from utility.cdr_report.CDR_Pipelines.configs import OUTPUT_EXCEL_AI_FINAL_PATH
 from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_cdr_local_json_to_blob_and_cosmos_cdr,save_local_xlsx_to_blob_and_cosmos_cdr
+save_local_jsons_and_docx_to_blob_and_cosmos_for_letter
 import logging
 from pathlib import Path
 import asyncio
@@ -230,7 +232,8 @@ async def get_all_projects(payload: ProjectFilter):
         for p in items:
             progress = p.get("Project_Progress") or {}
             cdr_progress = p.get("CDR_Project_Progress") or {}
-
+            letter_progress = p.get("Letter_Project_Progress") or {}
+ 
             projects.append({
                 "Project_Id": p.get("Project_Id"),
                 "Standard": p.get("Standard"),
@@ -239,23 +242,23 @@ async def get_all_projects(payload: ProjectFilter):
                 "Proj_Created_On": p.get("Proj_Created_On"),
                 "Proj_Created_By": p.get("Proj_Created_By"),
                 "Proj_Archived": p.get("Proj_Archived"),
-                "trf_percentage": progress.get("trf_percentage", 10),
+                "trf_percentage": progress.get("trf_percentage", 0),
                 "trf_step": progress.get("trf_step"),
                 "trf_last_updated": progress.get("trf_last_updated"),
                 "trf_error": progress.get("trf_error"),
                 "trf_completed": progress.get("trf_completed", "No"),
 
-                "cdr_percentage": cdr_progress.get("cdr_percentage"),
+                "cdr_percentage": cdr_progress.get("cdr_percentage",0),
                 "cdr_step": cdr_progress.get("cdr_step"),
                 "cdr_last_updated": cdr_progress.get("last_updated"),
                 "cdr_error": cdr_progress.get("error"),
                 "cdr_completed": cdr_progress.get("cdr_completed", "No"),
 
-                "letter_percentage": progress.get("letter_percentage", 10),
-                "letter_step": progress.get("letter_step"),
-                "letter_last_updated": progress.get("letter_last_updated"),
-                "letter_error": progress.get("letter_error"),
-                "letter_completed": progress.get("letter_completed", "No")
+                "letter_percentage": letter_progress.get("letter_percentage", 0),
+                "letter_step": letter_progress.get("letter_stage"),
+                "letter_last_updated": letter_progress.get("last_updated"),
+                "letter_error": letter_progress.get("error"),
+                "letter_completed": letter_progress.get("letter_completed", "No")
             })
 
         return {
