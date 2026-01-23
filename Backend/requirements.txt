@@ -61,3 +61,5 @@ xlrd
 extract-msg
 numpy
 pdfplumber
+azure-identity
+azure-keyvault-secrets
