@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React from 'react';
 import { IconButton } from '@mui/material';
-
+import './HoverActionsWrapper.css';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
@@ -13,7 +13,7 @@ const HoverActionWrapper = ({ show, onApprove, onComment, onBookmark }) => {
   if (!show) return null;
 
   return (
-    <div className="dt-hover-actions">
+    <div className="dt-hover-actions-cdr">
       {/* APPROVE → render ONLY when allowed */}
       {typeof onApprove === 'function' && (
         <IconButton size="small" onClick={onApprove}>

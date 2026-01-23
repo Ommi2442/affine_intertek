@@ -132,8 +132,7 @@
 .dt-hover-actions {
   position: absolute;
   right: 6px;
-  top: 50%;
-  transform: translateY(-50%); /* center vertically inside the textarea */
+  top: -37%; /* center vertically inside the textarea */
   display: flex;
   gap: 4px;
   background: rgba(255, 255, 255, 0.95);
