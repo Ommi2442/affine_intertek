@@ -39,14 +39,13 @@ const CdrReportPage = () => {
   const dataTableRef = useRef(null);
   const { state } = useLocation();
 
+  const projectId = localStorage.getItem('projectId');
+  const storageKey = `${STORAGE_KEY_PREFIX}${projectId}`;
+
   const letterPercentage =
     typeof state?.letterPercentage === 'number'
       ? state.letterPercentage
       : Number(localStorage.getItem(`letter_percentage_${projectId}`)) || 0;
-
-  const projectId = localStorage.getItem('projectId');
-  const storageKey = `${STORAGE_KEY_PREFIX}${projectId}`;
-
   /* ---------------- STATE ---------------- */
   const [cdrJson, setCdrJson] = useState(null);
   const [loading, setLoading] = useState(true);
