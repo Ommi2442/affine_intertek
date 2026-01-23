@@ -13,7 +13,7 @@ def load_keyvault_secrets():
 
     # Local → .env only
     if ENV.lower() == "local":
-        print("🔹 Running in LOCAL mode – using .env")
+        print("Running in LOCAL mode – using .env")
         return
 
     # Production → Key Vault

@@ -466,6 +466,69 @@ def get_first_doc_or_docx(folder_path):
 # read_docx_full
 # extract_iec61010_non_conformances_full_doc
 
+# def insert_dataframe_below_anchor(
+#     input_docx,
+#     output_docx,
+#     df,
+#     anchor_text
+# ):
+#     doc = Document(input_docx)
+
+#     anchor_paragraph = None
+#     for para in doc.paragraphs:
+#         if anchor_text in para.text:
+#             anchor_paragraph = para
+#             break
+
+#     if anchor_paragraph is None:
+#         raise ValueError("Anchor text not found in document.")
+
+#     # -------------------------------------------------
+#     # INSERT BLANK PARAGRAPH AFTER ANCHOR (XML SAFE)
+#     # -------------------------------------------------
+#     blank_p = OxmlElement("w:p")
+#     anchor_paragraph._p.addnext(blank_p)
+
+#     # -------------------------------------------------
+#     # CREATE TABLE
+#     # -------------------------------------------------
+#     rows, cols = df.shape
+#     table = doc.add_table(rows=rows + 1, cols=cols)
+#     table.style = "Table Grid"
+
+#     # -----------------------------
+#     # Header row (Amber background)
+#     # -----------------------------
+#     for col_idx, col_name in enumerate(df.columns):
+#         cell = table.rows[0].cells[col_idx]
+#         cell.text = str(col_name)
+
+#         tc_pr = cell._tc.get_or_add_tcPr()
+#         shd = OxmlElement("w:shd")
+#         shd.set(qn("w:fill"), "FFC000")  # Amber
+#         tc_pr.append(shd)
+
+#     # -----------------------------
+#     # Data rows
+#     # -----------------------------
+#     for row_idx in range(rows):
+#         for col_idx in range(cols):
+#             table.rows[row_idx + 1].cells[col_idx].text = str(df.iat[row_idx, col_idx])
+
+#     # -------------------------------------------------
+#     # INSERT TABLE AFTER BLANK PARAGRAPH
+#     # -------------------------------------------------
+#     blank_p.addnext(table._element)
+
+#     doc.save(output_docx)
+
+
+
+from docx import Document
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+
+
 def insert_dataframe_below_anchor(
     input_docx,
     output_docx,
@@ -474,6 +537,9 @@ def insert_dataframe_below_anchor(
 ):
     doc = Document(input_docx)
 
+    # -------------------------------------------------
+    # FIND ANCHOR PARAGRAPH
+    # -------------------------------------------------
     anchor_paragraph = None
     for para in doc.paragraphs:
         if anchor_text in para.text:
@@ -488,6 +554,22 @@ def insert_dataframe_below_anchor(
     # -------------------------------------------------
     blank_p = OxmlElement("w:p")
     anchor_paragraph._p.addnext(blank_p)
+
+    # -------------------------------------------------
+    # HANDLE NONE OR EMPTY DATAFRAME SAFELY
+    # -------------------------------------------------
+    if df is None or df.empty:
+        # Optional: insert a message instead of a table
+        msg_para = OxmlElement("w:p")
+        run = OxmlElement("w:r")
+        text = OxmlElement("w:t")
+        text.text = "No non-conformances were identified."
+        run.append(text)
+        msg_para.append(run)
+
+        blank_p.addnext(msg_para)
+        doc.save(output_docx)
+        return
 
     # -------------------------------------------------
     # CREATE TABLE
@@ -513,7 +595,9 @@ def insert_dataframe_below_anchor(
     # -----------------------------
     for row_idx in range(rows):
         for col_idx in range(cols):
-            table.rows[row_idx + 1].cells[col_idx].text = str(df.iat[row_idx, col_idx])
+            table.rows[row_idx + 1].cells[col_idx].text = str(
+                df.iat[row_idx, col_idx]
+            )
 
     # -------------------------------------------------
     # INSERT TABLE AFTER BLANK PARAGRAPH
@@ -521,6 +605,7 @@ def insert_dataframe_below_anchor(
     blank_p.addnext(table._element)
 
     doc.save(output_docx)
+
 
 
 
@@ -578,6 +663,15 @@ def run_iec61010_non_conformance_extraction(
     REQUIREMENTS:
     pip install docx2pdf pdfplumber rapidfuzz langchain-text-splitters python-docx
     """
+import pythoncom
+from docx2pdf import convert
+
+def convert_docx_to_pdf(docx_path, pdf_path):
+    pythoncom.CoInitialize()   # 🔑 REQUIRED per-thread
+    try:
+        convert(docx_path, pdf_path)
+    finally:
+        pythoncom.CoUninitialize()
 
     # ---------------- imports ----------------
     from pathlib import Path
@@ -589,7 +683,7 @@ def run_iec61010_non_conformance_extraction(
 
     # ---------------- 1. DOCX → PDF ----------------
     pdf_path = Path(docx_path).with_suffix(".pdf")
-    convert(docx_path, pdf_path)
+    convert_docx_to_pdf(docx_path, pdf_path)
 
     # ---------------- 2. Read PDF pages ----------------
     pdf_pages = {}
@@ -1183,7 +1277,7 @@ def extract_images_from_excel(excel_path, output_dir=None):
 
     return extracted_paths
 
-
+ 
 
 
 
@@ -1968,6 +2062,7 @@ def generate_letter_pipeline(
         print("####################### Critical Components Table ######################", df_1a)
 
         # Step 3: Insert table
+        
         insert_dataframe_below_anchor(
             input_docx=output_letter_docx,
             output_docx=output_letter_docx,
