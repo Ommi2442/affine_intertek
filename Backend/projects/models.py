@@ -73,9 +73,8 @@ class ProjectFilter(BaseModel):
 
 
 class FinalizeReportPayload(BaseModel):
-    projectId: str
-    reportType: str  # "TRF" or "CDR"
-    data: dict       # FULL FINAL JSON
+    projectId: str  
+    data: dict      
 
 class LetterGeneration(BaseModel):
     projectId: str

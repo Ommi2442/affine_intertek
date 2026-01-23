@@ -10,6 +10,8 @@ import archieveProjectReducer from '../redux/features/archieveProject/archievePr
 import confidenceReducer from '../redux/features/confidence/confidenceSlice';
 import generateCdrReducer from '../redux/features/generateCdr/generateCdrSlice';
 import generateLetterReducer from '../redux/features/generateLetter/generateLetterSlice';
+import finaliseLetterReportReducer from '../redux/features/finaliseLetterReport/finaliseLetterReportSlice';
+import finaliseCdrReportReducer from '../redux/features/finaliseCdrReport/finaliseCdrReportSlice';
 import rootSaga from './rootSaga';
 //import downloadReportReducer from '../redux/features/downloadReport/downloadReportSlice';
 
@@ -28,6 +30,8 @@ export const store = configureStore({
     //downloadReport: downloadReportReducer,
     cdr: generateCdrReducer,
     letter: generateLetterReducer,
+    finaliseLetterReport: finaliseLetterReportReducer,
+    finaliseCdrReport: finaliseCdrReportReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware),

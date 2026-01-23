@@ -37,7 +37,13 @@ const LetterCriticalDataFrameTable = ({
   const HEADERS = React.useMemo(() => {
     if (!rows.length) return [];
     const colSet = new Set();
-    rows.forEach((r) => Object.keys(r).forEach((k) => colSet.add(String(k))));
+    rows.forEach((r) =>
+      Object.keys(r).forEach((k) => {
+        if (k !== 'text_support' && k !== '__isNew') {
+          colSet.add(String(k));
+        }
+      })
+    );
     return Array.from(colSet).sort((a, b) => Number(a) - Number(b));
   }, [rows]);
 
@@ -141,7 +147,12 @@ const LetterCriticalDataFrameTable = ({
                 onMouseLeave={() => setHoveredRow(null)}
               >
                 {!row.__isNew &&
-                  renderConfidenceColor(item.confidence, false, true, true)}
+                  renderConfidenceColor(
+                    item.confidence,
+                    row.is_user_edited,
+                    row.ai_fillable,
+                    true
+                  )}
 
                 {hoveredRow === rowIndex &&
                   typeof renderHoverActions === 'function' &&

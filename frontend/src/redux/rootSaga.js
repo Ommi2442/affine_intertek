@@ -8,6 +8,8 @@ import deleteProjectSaga from './features/deleteProject/deleteProjectSaga';
 import archieveProjectSaga from './features/archieveProject/archieveProjectSaga';
 import generateCdrSaga from './features/generateCdr/generateCdrSaga';
 import generateLetterSaga from './features/generateLetter/generateLetterSaga';
+import finaliseLetterReportSaga from './features/finaliseLetterReport/finaliseLetterReportSaga';
+import finaliseCdrReportSaga from './features/finaliseCdrReport/finaliseCdrReportSaga';
 
 export default function* rootSaga() {
   yield all([
@@ -20,5 +22,7 @@ export default function* rootSaga() {
     archieveProjectSaga(),
     generateCdrSaga(),
     generateLetterSaga(),
+    finaliseLetterReportSaga(),
+    finaliseCdrReportSaga(),
   ]);
 }

@@ -14,16 +14,29 @@ import LetterPage5 from './LetterPage5';
 import LetterPage6 from './LetterPage6';
 import CommentDialog from '../CommentDialog';
 import { useLetterCommentActions } from '../Common/useLetterCommentActions';
+import { idb_get, idb_set, STORES } from '../../utils/idb';
 
 const TOTAL_PAGES = 6;
 
 const LetterReport = forwardRef(
   (
-    { jsonData, editMode, onPageChange, onConfidenceChange, onBookmarkClick },
+    {
+      jsonData,
+      editMode,
+      projectId,
+      onPageChange,
+      onConfidenceChange,
+      onBookmarkClick,
+    },
     ref
   ) => {
+    const storageKey = `letter_report_${projectId ?? 'default'}`;
+
     const pageRefs = useRef([]);
     const containerRef = useRef(null);
+    const [fullJson, setFullJson] = React.useState(null);
+    const effectiveJson = fullJson || jsonData;
+
     const {
       isCommentOpen,
       setIsCommentOpen,
@@ -32,29 +45,85 @@ const LetterReport = forwardRef(
       setCurrentCommentText,
       openComment,
       saveComment,
-    } = useLetterCommentActions(jsonData);
+    } = useLetterCommentActions(effectiveJson);
 
     useImperativeHandle(ref, () => ({
-      getUpdatedJson: () => jsonData,
+      getUpdatedJson: () => effectiveJson,
       scrollToPage: (page) => {
         const el = pageRefs.current[page - 1];
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       },
     }));
 
-    const handleApprove = (item) => {
+    const handleApprove = async (item) => {
       if (!item) return;
 
-      const c = Number(item.confidence);
-      const normalized = c <= 1 ? Math.round(c * 100) : Math.round(c);
+      let updatedJson = null;
 
-      if (normalized < 75 || item.is_user_edited) {
-        item.confidence = 100;
+      setFullJson((prev) => {
+        if (!prev) return prev;
+
+        const next = JSON.parse(JSON.stringify(prev));
+
+        next.Tables.forEach((t) => {
+          t.Items.forEach((i) => {
+            if (
+              (i.field && item.field && i.field === item.field) ||
+              (i.label && item.label && i.label === item.label)
+            ) {
+              const c = Number(i.confidence);
+              const normalized = c <= 1 ? Math.round(c * 100) : Math.round(c);
+              const isMediumOrLow =
+                !Number.isNaN(normalized) && normalized < 75;
+
+              i.is_user_edited = true;
+              i.is_user_approved = true;
+              i.confidence = isMediumOrLow ? 100 : i.confidence;
+            }
+          });
+        });
+
+        updatedJson = next;
+        return next;
+      });
+
+      if (updatedJson) {
+        await idb_set(storageKey, updatedJson, STORES.LETTER);
       }
 
-      item.is_user_approved = true;
       onConfidenceChange?.();
     };
+
+    useEffect(() => {
+      if (!projectId) return;
+
+      let cancelled = false;
+
+      const load = async () => {
+        const saved = await idb_get(storageKey, STORES.LETTER);
+
+        // CASE 1: IndexedDB exists → use it (refresh / revisit)
+        if (saved) {
+          console.log('Letter loaded from IndexedDB');
+          if (!cancelled) setFullJson(normalizeLetterJson(saved));
+          return;
+        }
+
+        // CASE 2: First time for this project → use API and cache it
+        if (jsonData) {
+          console.log('Letter loaded from API and cached');
+          const normalized = normalizeLetterJson(jsonData);
+          if (!cancelled) setFullJson(normalized);
+          await idb_set(storageKey, normalized, STORES.LETTER);
+        }
+      };
+
+      load();
+
+      return () => {
+        cancelled = true;
+      };
+    }, [storageKey]);
 
     /*  Detect which page is in view while scrolling */
     useEffect(() => {
@@ -81,6 +150,7 @@ const LetterReport = forwardRef(
 
       return () => observer.disconnect();
     }, [onPageChange]);
+    if (!effectiveJson) return null;
 
     return (
       <div ref={containerRef} className="letter-scroll-container">
@@ -95,7 +165,7 @@ const LetterReport = forwardRef(
             >
               {p === 1 && (
                 <LetterPage1
-                  json={jsonData}
+                  json={effectiveJson}
                   editMode={editMode}
                   handleApprove={handleApprove}
                   openComment={openComment}
@@ -105,7 +175,7 @@ const LetterReport = forwardRef(
               )}
               {p === 2 && (
                 <LetterPage2
-                  json={jsonData}
+                  json={effectiveJson}
                   editMode={editMode}
                   handleApprove={handleApprove}
                   openComment={openComment}
@@ -115,7 +185,7 @@ const LetterReport = forwardRef(
               )}
               {p === 3 && (
                 <LetterPage3
-                  json={jsonData}
+                  json={effectiveJson}
                   editMode={editMode}
                   handleApprove={handleApprove}
                   openComment={openComment}
@@ -125,7 +195,7 @@ const LetterReport = forwardRef(
               )}
               {p === 4 && (
                 <LetterPage4
-                  json={jsonData}
+                  json={effectiveJson}
                   editMode={editMode}
                   handleApprove={handleApprove}
                   openComment={openComment}
@@ -135,7 +205,7 @@ const LetterReport = forwardRef(
               )}
               {p === 5 && (
                 <LetterPage5
-                  json={jsonData}
+                  json={effectiveJson}
                   editMode={editMode}
                   handleApprove={handleApprove}
                   openComment={openComment}
@@ -145,7 +215,7 @@ const LetterReport = forwardRef(
               )}
               {p === 6 && (
                 <LetterPage6
-                  json={jsonData}
+                  json={effectiveJson}
                   editMode={editMode}
                   handleApprove={handleApprove}
                   openComment={openComment}
