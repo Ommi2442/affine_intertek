@@ -82,6 +82,9 @@ from fuzzywuzzy import fuzz
 #START FROM HERE
 import fitz
 
+import platform
+
+
 # def contains_prepared_for_table(pdf_path):
 #     """
 #     Check if PDF contains the specific 'Prepared For:' table with expected structure.
@@ -663,15 +666,19 @@ def run_iec61010_non_conformance_extraction(
     REQUIREMENTS:
     pip install docx2pdf pdfplumber rapidfuzz langchain-text-splitters python-docx
     """
-import pythoncom
-from docx2pdf import convert
+
+
 
 def convert_docx_to_pdf(docx_path, pdf_path):
-    pythoncom.CoInitialize()   # 🔑 REQUIRED per-thread
-    try:
-        convert(docx_path, pdf_path)
-    finally:
-        pythoncom.CoUninitialize()
+    system = platform.system().lower()
+    if system == "windows":
+        import pythoncom
+        from docx2pdf import convert
+        pythoncom.CoInitialize()   # 🔑 REQUIRED per-thread
+        try:
+            convert(docx_path, pdf_path)
+        finally:
+            pythoncom.CoUninitialize()
 
     # ---------------- imports ----------------
     from pathlib import Path
@@ -2337,6 +2344,3 @@ def letter_gen(blob_urls,
         database_name=DB_NAME_IMG,
         container_name=image_container
         )
-
-
-
