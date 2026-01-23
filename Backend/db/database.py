@@ -2,6 +2,9 @@ from dotenv import load_dotenv
 import os
 from azure.cosmos import CosmosClient
 
+from projects.keyvault_load import *
+load_keyvault_secrets()
+
 load_dotenv()
 
 COSMOS_DB_URI = os.getenv("cosmos-db-url")

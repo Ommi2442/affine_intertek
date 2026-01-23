@@ -10,10 +10,12 @@ from pathlib import Path
 
 from utility.letter_report.deploymentV1.config import AZURE_CONN_STRING, DB_NAME_IMG, CONT_NAME_IMG, CHUNK_SIZE, CHUNK_OVERLAP, TOP_K, EMBED_DIM, VECTOR_PATH, BLOB_CONTAINER_NAME, conn_str, IMAGE_EXTS, AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY, CHAT_DEPLOY, COSMOS_URL, COSMOS_KEY, COSMOS_DB, COSMOS_CONT, DB_NAME, CONT_NAME, MAX_THREADS, MAX_RETRIES, INITIAL_BACKOFF
 
+from projects.keyvault_load import *
+load_keyvault_secrets()
 
 COSMOS_DB_IMAGE  = DB_NAME_IMG
 COSMOS_CONT_IMAGE = CONT_NAME_IMG
-BLOB_CONT_NAME= os.getenv("BLOB_CONT_NAME")
+
 ENABLE_CAD_SCHEMATICS = os.getenv("enable-cad-schematics")
 # FLATTENED_DIR = os.getenv("flattened-dir")
 # LT_IMAGES_ROOT =os.getenv("lt-images-root")

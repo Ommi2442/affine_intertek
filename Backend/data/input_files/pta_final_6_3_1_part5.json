@@ -1499,7 +1499,7 @@
           "clause": null,
           "question_row": 804,
           "question_column": 1,
-          "field": "Parts of refrigerating systems meets pressure-related requirements of EN 378-2 or IEC 60335-2-89 as applicable.",
+          "field": "Parts of refrigerating systems meets pressure-related requirements of EN 378-2 or IEC 60335-2-89 as applicable",
           "answer_row": 804,
           "answer_column": 2,
           "value": null,
@@ -1509,7 +1509,7 @@
           "accuracy_level": false,
           "dependency_rows": null,
           "page_no": 37,
-          "custom_prompt": "Verify that Parts of refrigerating systems meets pressure-related requirements of EN 378-2 or IEC 60335-2-89 as applicable."
+          "custom_prompt": "Verify that Parts of refrigerating systems meets pressure-related requirements of EN 378-2 or IEC 60335-2-89 as applicable"
         },
         {
           "clause_row": 804,

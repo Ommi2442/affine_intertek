@@ -522,7 +522,6 @@ const ReportPage = () => {
     dispatch(
       finaliseReportRequest({
         projectId,
-        reportType: reportClick,
         data: updatedPayload,
       })
     );

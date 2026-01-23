@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from datetime import datetime, timedelta, timezone
 from .models import EmailRequest, OTPVerifyRequest
-from .utils import generate_otp, encrypt_otp, decrypt_otp, send_email
+# from .utils import generate_otp, encrypt_otp, decrypt_otp
 from db.database import COSMOS_DB_users_Container,COSMOS_DB_users_registration
 from api.auth.jwt_auth.utils import create_access_token 
 import hmac
@@ -14,6 +14,10 @@ import os
 from azure.cosmos import CosmosClient
 from utility.trf_utils import ensure_cosmos_database
 from dotenv import load_dotenv
+
+from projects.keyvault_load import *
+load_keyvault_secrets()
+
 
 load_dotenv()
 
@@ -77,91 +81,91 @@ from api.users.models import User
 #         logging.error(f"Error in welcome_application: {e}")
 #         raise HTTPException(status_code=500, detail="Internal server error")
 
-@router.post("/request-otp")
-async def request_otp(data: EmailRequest):
-    try:
-        query = "SELECT * FROM users u WHERE u.email = @email" 
-        user_query = list(COSMOS_DB_users_Container.query_items(
-            query=query,
-            parameters=[{"name": "@email", "value": data.email}],
-            enable_cross_partition_query=True
-        ))
+# @router.post("/request-otp")
+# async def request_otp(data: EmailRequest):
+#     try:
+#         query = "SELECT * FROM users u WHERE u.email = @email" 
+#         user_query = list(COSMOS_DB_users_Container.query_items(
+#             query=query,
+#             parameters=[{"name": "@email", "value": data.email}],
+#             enable_cross_partition_query=True
+#         ))
 
-        if not user_query:
-            raise HTTPException(status_code=404, detail="Email not registered") 
+#         if not user_query:
+#             raise HTTPException(status_code=404, detail="Email not registered") 
 
-        user = user_query[0] 
+#         user = user_query[0] 
 
-        if not user.get("is_active", False):
-            raise HTTPException(status_code=401, detail="User is not active") 
+#         if not user.get("is_active", False):
+#             raise HTTPException(status_code=401, detail="User is not active") 
 
-        otp = generate_otp() 
-        encrypted_otp = encrypt_otp(otp) 
-        expiry_time = datetime.now(timezone.utc) + timedelta(minutes=5) 
+#         otp = generate_otp() 
+#         encrypted_otp = encrypt_otp(otp) 
+#         expiry_time = datetime.now(timezone.utc) + timedelta(minutes=5) 
 
-        user["otp"] = encrypted_otp 
-        user["otp_expiry"] = expiry_time.isoformat() 
+#         user["otp"] = encrypted_otp 
+#         user["otp_expiry"] = expiry_time.isoformat() 
 
-        COSMOS_DB_users_Container.replace_item(item=user["id"], body=user) 
+#         COSMOS_DB_users_Container.replace_item(item=user["id"], body=user) 
 
-        await send_email(user["email"], otp) 
+#         # await send_email(user["email"], otp) 
 
-        return {"status": "success", "message": "OTP sent successfully"}
+#         return {"status": "success", "message": "OTP sent successfully"}
 
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        logging.error(f"Error in request_otp: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+#     except HTTPException as http_ex:
+#         raise http_ex
+#     except Exception as e:
+#         logging.error(f"Error in request_otp: {e}")
+#         raise HTTPException(status_code=500, detail="Internal server error")
 
-@router.post("/verify-otp")
-def verify_otp(data: OTPVerifyRequest):
-    try:
-        query = """
-        SELECT u.otp, u.otp_expiry, u.email, u.user_role, u.is_active
-        FROM users u WHERE u.email = @email
-        """
-        user_data = list(COSMOS_DB_users_Container.query_items(
-            query=query,
-            parameters=[{"name": "@email", "value": data.email}],
-            enable_cross_partition_query=True
-        ))
+# @router.post("/verify-otp")
+# def verify_otp(data: OTPVerifyRequest):
+#     try:
+#         query = """
+#         SELECT u.otp, u.otp_expiry, u.email, u.user_role, u.is_active
+#         FROM users u WHERE u.email = @email
+#         """
+#         user_data = list(COSMOS_DB_users_Container.query_items(
+#             query=query,
+#             parameters=[{"name": "@email", "value": data.email}],
+#             enable_cross_partition_query=True
+#         ))
 
-        if not user_data:
-            raise HTTPException(status_code=404, detail="Email not registered")
+#         if not user_data:
+#             raise HTTPException(status_code=404, detail="Email not registered")
         
-        user = user_data[0]
+#         user = user_data[0]
         
-        if not user.get("is_active", False):
-            raise HTTPException(status_code=401, detail="User is inactive.")
+#         if not user.get("is_active", False):
+#             raise HTTPException(status_code=401, detail="User is inactive.")
 
-        encrypted_otp = user.get("otp")
-        expires_at = datetime.fromisoformat(user["otp_expiry"]).replace(tzinfo=timezone.utc)
+#         encrypted_otp = user.get("otp")
+#         expires_at = datetime.fromisoformat(user["otp_expiry"]).replace(tzinfo=timezone.utc)
 
-        if datetime.now(timezone.utc) > expires_at:
-            raise HTTPException(status_code=401, detail="OTP expired")
+#         if datetime.now(timezone.utc) > expires_at:
+#             raise HTTPException(status_code=401, detail="OTP expired")
 
-        decrypted_otp = decrypt_otp(encrypted_otp)
+#         decrypted_otp = decrypt_otp(encrypted_otp)
 
-        if not hmac.compare_digest(decrypted_otp, data.otp):
-            raise HTTPException(status_code=401, detail="Invalid OTP")
+#         if not hmac.compare_digest(decrypted_otp, data.otp):
+#             raise HTTPException(status_code=401, detail="Invalid OTP")
 
-        access_token = create_access_token(data={
-            "sub": user["email"],
-            "role": user.get("user_role", "user")
-        })
+#         access_token = create_access_token(data={
+#             "sub": user["email"],
+#             "role": user.get("user_role", "user")
+#         })
 
-        return {
-            "status": "success",
-            "message": "Login successful",
-            "access_token": access_token
-        }
+#         return {
+#             "status": "success",
+#             "message": "Login successful",
+#             "access_token": access_token
+#         }
 
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        logging.error(f"Error verifying OTP: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+#     except HTTPException as http_ex:
+#         raise http_ex
+#     except Exception as e:
+#         logging.error(f"Error verifying OTP: {e}")
+#         raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.post("/sso-login")

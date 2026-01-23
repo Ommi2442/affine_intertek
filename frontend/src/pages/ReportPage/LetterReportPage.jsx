@@ -19,8 +19,6 @@ import CloseIcon from '@mui/icons-material/Close';
 //import localLetterJson from '../../utils/letter_output_4.json';
 import LetterReport from '../../components/LetterReport/LetterReport';
 import ConfidenceScore from './ConfidenceScore';
-
-import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 import { idb_get, idb_set, STORES } from '../../utils/idb';
 import LetterLoader from '../../components/LetterReport/LetterLoader';
 import { truncateWords } from '../../Helpers/truncateWords';
@@ -29,6 +27,7 @@ import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 import PdfViewer from '../../components/PdfViewer';
 import { loadPdfWithCache } from '../../components/loadPdfWithCache';
 import { triggerGenerateLetterApi } from '../../redux/api/generateLetterApi';
+import { finaliseLetterReportRequest } from '../../redux/features/finaliseLetterReport/finaliseLetterReportSlice';
 
 const STORAGE_KEY_PREFIX = 'letter_report_';
 
@@ -216,9 +215,8 @@ const LetterReportPage = () => {
     setEditMode(false);
 
     dispatch(
-      finaliseReportRequest({
+      finaliseLetterReportRequest({
         projectId,
-        reportType: 'letter',
         data: letter_payload,
       })
     );
@@ -275,6 +273,7 @@ const LetterReportPage = () => {
                 ref={dataTableRef}
                 jsonData={letterJson}
                 editMode={editMode}
+                projectId={projectId}
                 onConfidenceChange={() => setConfidenceTick((v) => v + 1)}
                 onBookmarkClick={handleBookmarkFromChild}
                 isHardRefresh={isHardRefresh}
@@ -356,7 +355,7 @@ const LetterReportPage = () => {
               const truncatedText = truncateWords(cleanedText, 20);
 
               return (
-                <Card key={idx} sx={{ mb: 2 }}>
+                <Card key={idx} sx={{ mb: 2, mr: 3 }}>
                   <CardContent>
                     {/* Truncated text */}
                     <Typography sx={{ whiteSpace: 'pre-wrap', fontSize: 14 }}>
@@ -389,6 +388,7 @@ const LetterReportPage = () => {
                           color: '#1976d2',
                           cursor: 'pointer',
                           textDecoration: 'underline',
+                          wordBreak: 'break-word',
                         }}
                         onClick={() =>
                           handleCitationLinkClick(

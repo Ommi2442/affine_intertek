@@ -20,19 +20,16 @@ import CdrReport from '../../components/CdrReport/CdrReport';
 import CdrLoader from '../../components/CdrReport/CdrLoader';
 import ConfidenceScore from './ConfidenceScore';
 import CloseIcon from '@mui/icons-material/Close';
-
 import { triggerGenerateCdrApi } from '../../redux/api/generateCdrApi';
-import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 import PdfViewer from '../../components/PdfViewer';
 import { loadPdfWithCache } from '../../components/loadPdfWithCache';
-
 import { idb_get, idb_set, STORES } from '../../utils/idb';
-
 import { truncateWords } from '../../Helpers/truncateWords';
 import { normalizeNewLines } from '../../Helpers/normalizeNewLines';
 import { RenderImageThumbnails } from '../../Helpers/renderImageThumbnails';
 import { useLocation } from 'react-router-dom';
+import { finaliseCdrReportRequest } from '../../redux/features/finaliseCdrReport/finaliseCdrReportSlice';
 
 const STORAGE_KEY_PREFIX = 'cdr_report_';
 
@@ -42,14 +39,13 @@ const CdrReportPage = () => {
   const dataTableRef = useRef(null);
   const { state } = useLocation();
 
+  const projectId = localStorage.getItem('projectId');
+  const storageKey = `${STORAGE_KEY_PREFIX}${projectId}`;
+
   const letterPercentage =
     typeof state?.letterPercentage === 'number'
       ? state.letterPercentage
       : Number(localStorage.getItem(`letter_percentage_${projectId}`)) || 0;
-
-  const projectId = localStorage.getItem('projectId');
-  const storageKey = `${STORAGE_KEY_PREFIX}${projectId}`;
-
   /* ---------------- STATE ---------------- */
   const [cdrJson, setCdrJson] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -177,9 +173,8 @@ const CdrReportPage = () => {
     setEditMode(false);
 
     dispatch(
-      finaliseReportRequest({
+      finaliseCdrReportRequest({
         projectId,
-        reportType: 'cdr',
         data: payload,
       })
     );

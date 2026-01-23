@@ -149,45 +149,49 @@ import smtplib
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
 
+# from projects.keyvault_load import *
+# load_keyvault_secrets()
+
+
 load_dotenv()
 
-SMTP_SERVER = os.getenv("SMTP_SERVER")
-SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
-SMTP_USERNAME = os.getenv("SMTP_USERNAME")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
+# SMTP_SERVER = os.getenv("SMTP_SERVER")
+# SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
+# SMTP_USERNAME = os.getenv("SMTP_USERNAME")
+# SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 
 # You can store this securely
-SECRET_KEY = os.getenv("secret-key")
-cipher = Fernet(Fernet.generate_key())
+# SECRET_KEY = os.getenv("secret-key")
+# cipher = Fernet(Fernet.generate_key())
 
-def generate_otp() -> str:
-    """Generate a random 6-digit OTP."""
-    return str(random.randint(100000, 999999))
+# def generate_otp() -> str:
+#     """Generate a random 6-digit OTP."""
+#     return str(random.randint(100000, 999999))
 
-def encrypt_otp(otp: str) -> str:
-    """Encrypt OTP before storing."""
-    return cipher.encrypt(otp.encode()).decode()
+# def encrypt_otp(otp: str) -> str:
+#     """Encrypt OTP before storing."""
+#     return cipher.encrypt(otp.encode()).decode()
 
-def decrypt_otp(encrypted_otp: str) -> str:
-    """Decrypt OTP."""
-    return cipher.decrypt(encrypted_otp.encode()).decode()
+# def decrypt_otp(encrypted_otp: str) -> str:
+#     """Decrypt OTP."""
+#     return cipher.decrypt(encrypted_otp.encode()).decode()
 
-async def send_email(recipient: str, otp: str):
-    """Send OTP email."""
-    subject = "Your OTP Code"
-    body = f"Your OTP code is: {otp}\nThis code will expire in 5 minutes."
+# async def send_email(recipient: str, otp: str):
+#     """Send OTP email."""
+#     subject = "Your OTP Code"
+#     body = f"Your OTP code is: {otp}\nThis code will expire in 5 minutes."
 
-    msg = MIMEText(body)
-    msg["From"] = SMTP_USERNAME
-    msg["To"] = recipient
-    msg["Subject"] = subject
+#     msg = MIMEText(body)
+#     msg["From"] = SMTP_USERNAME
+#     msg["To"] = recipient
+#     msg["Subject"] = subject
 
-    try:
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-            server.starttls()
-            server.login(SMTP_USERNAME, SMTP_PASSWORD)
-            server.send_message(msg)
-        print(f" OTP email sent to {recipient}")
-    except Exception as e:
-        print(f"❌ Failed to send email: {e}")
-        raise
+#     try:
+#         with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+#             server.starttls()
+#             server.login(SMTP_USERNAME, SMTP_PASSWORD)
+#             server.send_message(msg)
+#         print(f" OTP email sent to {recipient}")
+#     except Exception as e:
+#         print(f"❌ Failed to send email: {e}")
+#         raise
