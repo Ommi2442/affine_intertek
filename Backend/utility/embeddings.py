@@ -76,21 +76,21 @@ TOP_K = 5
 
 
 # Load environment variables
-AOAI_ENDPOINT      = os.getenv("AOAI_ENDPOINT")
-AOAI_KEY           = os.getenv("AOAI_KEY")
-API_VERSION        = os.getenv("API_VERSION")
-EMBED_DEPLOY       = os.getenv("EMBED_DEPLOY")
-COSMOS_DB_TEXT     = os.getenv("COSMOS_DB_TEXT")
-COSMOS_CONT_TEXT   = os.getenv("COSMOS_CONT_TEXT")
-AZURE_CONN_STRING  = os.getenv("AZURE_CONN_STRING")
-BLOB_CONTAINER     = os.getenv("BLOB_CONTAINER")
-COSMOS_URL         = os.getenv("COSMOS_URL")
-COSMOS_KEY         = os.getenv("COSMOS_KEY")
-CHAT_DEPLOY        = os.getenv("CHAT_DEPLOY")
-BLOB_CONTAINER     = os.getenv("BLOB_CONTAINER")
-COSMOS_DB_IMAGE    = os.getenv("COSMOS_DB_IMAGE")
-COSMOS_CONT_IMAGE  = os.getenv("COSMOS_CONT_IMAGE")
-ENABLE_CAD_SCHEMATICS  = os.getenv("ENABLE_CAD_SCHEMATICS")
+AOAI_ENDPOINT      = os.getenv("aoai-endpoint")
+AOAI_KEY           = os.getenv("aoai-key")
+API_VERSION        = os.getenv("api-version")
+EMBED_DEPLOY       = os.getenv("embed-deploy")
+COSMOS_DB_TEXT     = os.getenv("cosmos-db-text")
+COSMOS_CONT_TEXT   = os.getenv("cosmos-cont-text")
+AZURE_CONN_STRING  = os.getenv("azure-conn-string")
+BLOB_CONTAINER     = os.getenv("blob-container")
+COSMOS_URL         = os.getenv("cosmos-url")
+COSMOS_KEY         = os.getenv("cosmos-key")
+CHAT_DEPLOY        = os.getenv("chat-deploy")
+BLOB_CONTAINER     = os.getenv("blob-container")
+COSMOS_DB_IMAGE    = os.getenv("cosmos-db-image")
+COSMOS_CONT_IMAGE  = os.getenv("cosmos-cont-image")
+ENABLE_CAD_SCHEMATICS  = os.getenv("enable-cad-schematics")
 
 
 

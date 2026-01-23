@@ -4,15 +4,15 @@ from azure.cosmos import CosmosClient
 
 load_dotenv()
 
-COSMOS_DB_URI = os.getenv("COSMOS_DB_URI")
-COSMOS_DB_KEY = os.getenv("COSMOS_DB_KEY")
-COSMOS_DB_DATABASE = os.getenv("COSMOS_DB_DATABASE")
-COSMOS_DB_users_Container = os.getenv("COSMOS_DB_users_Container")
-COSMOS_DB_users_registration=os.getenv("COSMOS_DB_users_registration")
-COSMOS_DB_project_Container_name = os.getenv("COSMOS_DB_project_Container")
-COSMOS_DB_project_TRF_Container = os.getenv("COSMOS_DB_project_TRF_Container")
-COSMOS_DB_project_CDR_Container = os.getenv("COSMOS_DB_project_CDR_Container")
-COSMOS_DB_project_LETTER_Container = os.getenv("COSMOS_DB_project_Letter_Container")
+COSMOS_DB_URI = os.getenv("cosmos-db-url")
+COSMOS_DB_KEY = os.getenv("cosmos-db-key")
+COSMOS_DB_DATABASE = os.getenv("cosmos-db-database")
+COSMOS_DB_users_Container = os.getenv("cosmos-db-users-container")
+COSMOS_DB_users_registration=os.getenv("cosmos-db-users-registration")
+COSMOS_DB_project_Container_name = os.getenv("cosmos-db-project-container")
+COSMOS_DB_project_TRF_Container = os.getenv("cosmos-db-project-trf-container")
+COSMOS_DB_project_CDR_Container = os.getenv("cosmos-db-project-cdr-container")
+COSMOS_DB_project_LETTER_Container = os.getenv("cosmos-db-project-letter-container")
 
 try:
     print(" Connecting to Cosmos DB...")

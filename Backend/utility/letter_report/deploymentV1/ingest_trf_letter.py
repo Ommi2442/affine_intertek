@@ -78,18 +78,18 @@ from openai import AzureOpenAI
 
 from dotenv import load_dotenv
 load_dotenv()
-AZURE_CONN_STRING = os.getenv("AZURE_CONN_STRING")
+AZURE_CONN_STRING = os.getenv("azure-conn-string")
 COSMOS_CONT_TEXT = COSMOS_CONT
 COSMOS_DB_IMAGE  = DB_NAME_IMG
 COSMOS_CONT_IMAGE = CONT_NAME_IMG
-BLOB_CONT_NAME= os.getenv("BLOB_CONTAINER")
-ENABLE_CAD_SCHEMATICS = os.getenv("ENABLE_CAD_SCHEMATICS")
-FLATTENED_DIR = os.getenv("FLATTENED_DIR")
-LT_IMAGES_ROOT =os.getenv("LT_IMAGES_ROOT")
-LT_DOWNLOAD_DIR_Folder_Name = os.getenv("TRF_DOWNLOAD_DIR")
+BLOB_CONT_NAME= os.getenv("blob-container")
+ENABLE_CAD_SCHEMATICS = os.getenv("enable-cad-schematics")
+FLATTENED_DIR = os.getenv("flattened-dir")
+LT_IMAGES_ROOT =os.getenv("lt-images-root")
+LT_DOWNLOAD_DIR_Folder_Name = os.getenv("trf-download-dir")
 
-COSMOS_CONT_TEXT = os.getenv("COSMOS_CONT_TEXT")
-COSMOS_DB_TEXT=os.getenv("COSMOS_DB_TEXT")
+COSMOS_CONT_TEXT = os.getenv("cosmos-cont-text")
+COSMOS_DB_TEXT=os.getenv("cosmos-db-text")
 
 
 

@@ -6,7 +6,7 @@ from db.database import COSMOS_DB_users_Container,COSMOS_DB_users_registration
 from api.auth.jwt_auth.utils import create_access_token 
 import hmac
 import logging
-from .email_utils import send_welcome_email
+# from .email_utils import send_welcome_email
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -17,19 +17,19 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SMTP_SERVER = os.getenv("SMTP_SERVER")  
-SMTP_PORT = int(os.getenv("SMTP_PORT", 587)) 
-SMTP_USERNAME = os.getenv("SMTP_USERNAME")  
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD") 
-LOGIN_URL = os.getenv("LOGIN_URL") 
+# SMTP_SERVER = os.getenv("SMTP_SERVER")  
+# SMTP_PORT = int(os.getenv("SMTP_PORT", 587)) 
+# SMTP_USERNAME = os.getenv("SMTP_USERNAME")  
+# SMTP_PASSWORD = os.getenv("SMTP_PASSWORD") 
+# LOGIN_URL = os.getenv("LOGIN_URL") 
 
 
-COSMOS_URL = os.getenv("COSMOS_URL")
-COSMOS_KEY = os.getenv("COSMOS_KEY")
-COSMOS_DB_TEXT     = os.getenv("COSMOS_DB_TEXT")
-COSMOS_CONT_TEXT   = os.getenv("COSMOS_CONT_TEXT")
-COSMOS_DB_IMAGE   = os.getenv("COSMOS_DB_IMAGE")
-COSMOS_CONT_IMAGE   = os.getenv("COSMOS_CONT_IMAGE")
+COSMOS_URL = os.getenv("cosmos-url")
+COSMOS_KEY = os.getenv("cosmos-key")
+COSMOS_DB_TEXT     = os.getenv("cosmos-db-text")
+COSMOS_CONT_TEXT   = os.getenv("cosmos-cont-text")
+COSMOS_DB_IMAGE   = os.getenv("cosmos-db-image")
+COSMOS_CONT_IMAGE   = os.getenv("cosmos-cont-image")
 EMBED_DIM = 1536
 
 client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY)
@@ -40,42 +40,42 @@ ensure_cosmos_database(client, COSMOS_DB_IMAGE)
 router = APIRouter()
 
 from api.users.models import User
-@router.post("/welcome")
-async def welcome_application(data: EmailRequest):
-    try:
-        query = "SELECT * FROM users u WHERE u.email = @email"
-        existing_user = list(COSMOS_DB_users_Container.query_items(
-            query=query,
-            parameters=[{"name": "@email", "value": data.email}],
-            enable_cross_partition_query=True
-        ))
-        if existing_user:
-            return {"status": "success", "message": "User has already been created"}
+# @router.post("/welcome")
+# async def welcome_application(data: EmailRequest):
+#     try:
+#         query = "SELECT * FROM users u WHERE u.email = @email"
+#         existing_user = list(COSMOS_DB_users_Container.query_items(
+#             query=query,
+#             parameters=[{"name": "@email", "value": data.email}],
+#             enable_cross_partition_query=True
+#         ))
+#         if existing_user:
+#             return {"status": "success", "message": "User has already been created"}
             
-        new_user = {
-            "id": data.email,
-            "email": data.email,
-            "is_active": True,
-            "user_role": ["Creator","Reviewer"],
-            "created_at": datetime.now(timezone.utc).isoformat(),
-        }
+#         new_user = {
+#             "id": data.email,
+#             "email": data.email,
+#             "is_active": True,
+#             "user_role": ["Creator","Reviewer"],
+#             "created_at": datetime.now(timezone.utc).isoformat(),
+#         }
         
         
-        COSMOS_DB_users_Container.create_item(body=new_user)
-        msg = MIMEMultipart()
-        msg["From"] = SMTP_USERNAME
-        msg["To"] = data.email
-        msg["Subject"] = "Welcome! Please login to your account"
-        print("---------User has been created inside the cosmos DB -------------")
-        await send_welcome_email(data.email,"intertek")
-        logging.info(f"Welcome email sent successfully to {data.email}")
-        return {"status": "success", "message": "User created and welcome email sent"}
+#         COSMOS_DB_users_Container.create_item(body=new_user)
+#         msg = MIMEMultipart()
+#         msg["From"] = SMTP_USERNAME
+#         msg["To"] = data.email
+#         msg["Subject"] = "Welcome! Please login to your account"
+#         print("---------User has been created inside the cosmos DB -------------")
+#         await send_welcome_email(data.email,"intertek")
+#         logging.info(f"Welcome email sent successfully to {data.email}")
+#         return {"status": "success", "message": "User created and welcome email sent"}
 
-    except HTTPException:
-        raise
-    except Exception as e:
-        logging.error(f"Error in welcome_application: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         logging.error(f"Error in welcome_application: {e}")
+#         raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.post("/request-otp")
 async def request_otp(data: EmailRequest):
