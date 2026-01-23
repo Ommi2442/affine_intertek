@@ -38,6 +38,7 @@ from utility.cdr_report.CDR_Pipelines.configs import init_runtime, clear_runtime
 from utility.letter_report.deploymentV1.letter_ingestor import main
 from utility.letter_report.deploymentV1.letter_regenerator import rebuild_letter_docx_from_json
 from utility.letter_report.deploymentV1.letter_generator import letter_gen
+from utility.letter_report.deploymentV1.ingest_trf_letter import run_full_ingestion
 from utility.cdr_report.CDR_Pipelines.configs import OUTPUT_EXCEL_AI_FINAL_PATH
 from utility.json_to_blob import save_local_json_to_blob_and_cosmos,save_cdr_local_json_to_blob_and_cosmos_cdr,save_local_xlsx_to_blob_and_cosmos_cdr
 save_local_jsons_and_docx_to_blob_and_cosmos_for_letter
@@ -1113,6 +1114,29 @@ def get_project_report_status(id: str):
     }
 
 
+
+def update_project_progress_CDR(
+    project_doc: dict,
+    cdr_stage: str,
+    cdr_percentage: int,
+    cdr_step: str | None = None,
+    error: str | None = None,
+    last_updated: datetime | None = None,
+    cdr_completed: bool = False
+):
+    project_doc["CDR_Project_Progress"] = {
+        "cdr_stage": cdr_stage,
+        "cdr_percentage": cdr_percentage,
+        "cdr_step": cdr_step,
+        "last_updated": (last_updated or datetime.utcnow()).isoformat(),
+        "error": error,
+        "cdr_completed": cdr_completed
+    }
+
+    projects_container.upsert_item(project_doc)
+    print(f" Progress updated → {cdr_percentage}% | {cdr_stage} --- {cdr_completed}")
+
+
 @router.post("/generate-cdr")
 def generate_cdr(projectId: str):
     try:
@@ -1670,10 +1694,17 @@ async def letter_implementation(payload: LetterGeneration):
             print("Source Document URLs for Letter Generation:\n\n\n", Source_Doc_urls)
             import time;time.sleep(10)
             print("Starting full ingestion for Letter Generation...")
-            run_full_ingestion(Source_Doc_urls)
+            user_name = project_doc.get("User_Name") or ""
+            first_name = user_name.split()[0]
+
+            text_container = f"vectorstorecontainer_new_itk_text_{first_name}_{project_id}"
+            image_container = f"vectorstorecontainer_new_itk_image_{first_name}_{project_id}"
+            import time;time.sleep(10)
+            print("Starting full ingestion for Letter Generation...")
+            run_full_ingestion(project_id,Source_Doc_urls,text_container,image_container)
             blob_urls_trf=blob_urls+ Source_Doc_urls
             print("Blob URLs for Letter Generation after ingestion:", blob_urls_trf)
-            f=main(blob_urls)
+            f=main(projectId,blob_urls,text_container,image_container)
             
             if f:
                 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -1687,12 +1718,16 @@ async def letter_implementation(payload: LetterGeneration):
                 letter_json_path = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "letter.json"
                 letter_header_json_path = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "letter_header.json"
                 letter_template_docx = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "Letter_Template.docx"
+
+                letter_src_files = BASE_DIR / "data" / projectId / "letter_src_files"
+
+                trf_src_files = BASE_DIR / "data" / projectId / "trf_src_files"
                 
                 g=letter_gen(
                 blob_urls=blob_urls,
                 container_name=BLOB_CONTAINER_NAME,
-                src_files_dir="letter_src_files",
-                src_files_trf="trf_src_files",  
+                src_files_dir=letter_src_files,
+                src_files_trf=trf_src_files,  
                 
                 letter_json_path=letter_json_path,
                 letter_header_json_path=letter_header_json_path,
@@ -1702,7 +1737,9 @@ async def letter_implementation(payload: LetterGeneration):
                 letter_json_path_output=letter_json1,
                 letter_header_json_path_output=letter_json2,
                 project_Id=projectId,
-                blob_urls_trf=blob_urls_trf )
+                blob_urls_trf=blob_urls_trf,
+                text_container=text_container,
+                image_container=image_container)
 
                 print("----- Saving Letter JSON and DOCX to Blob and CosmosDB -----")
                 
