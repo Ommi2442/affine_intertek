@@ -1807,73 +1807,73 @@ import pandas as pd
 
 import pandas as pd
 
-def format_critical_components_df(raw_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Formats extracted IEC table into clean Critical Components table.
-    - Drops first 3 and last 3 rows
-    - Resets Item numbering starting from 1
-    """
+# def format_critical_components_df(raw_df: pd.DataFrame) -> pd.DataFrame:
+#     """
+#     Formats extracted IEC table into clean Critical Components table.
+#     - Drops first 3 and last 3 rows
+#     - Resets Item numbering starting from 1
+#     """
 
-    # --------------------------------------------------
-    # 1. Rename columns by position
-    # --------------------------------------------------
-    df = raw_df.rename(columns={
-        0: "Name",
-        2: "Manufacturer/ trademark",
-        3: "Type / Model",
-        5: "Technical data and securement means",
-        9: "Mark(s) of conformity"
-    })
+#     # --------------------------------------------------
+#     # 1. Rename columns by position
+#     # --------------------------------------------------
+#     df = raw_df.rename(columns={
+#         0: "Name",
+#         2: "Manufacturer/ trademark",
+#         3: "Type / Model",
+#         5: "Technical data and securement means",
+#         9: "Mark(s) of conformity"
+#     })
 
-    # --------------------------------------------------
-    # 2. Keep only required columns
-    # --------------------------------------------------
-    df = df[
-        [
-            "Name",
-            "Manufacturer/ trademark",
-            "Type / Model",
-            "Technical data and securement means",
-            "Mark(s) of conformity"
-        ]
-    ]
+#     # --------------------------------------------------
+#     # 2. Keep only required columns
+#     # --------------------------------------------------
+#     df = df[
+#         [
+#             "Name",
+#             "Manufacturer/ trademark",
+#             "Type / Model",
+#             "Technical data and securement means",
+#             "Mark(s) of conformity"
+#         ]
+#     ]
 
-    # --------------------------------------------------
-    # 3. Remove header / note / empty rows
-    # --------------------------------------------------
-    df = df[
-        df["Name"].notna()
-        & ~df["Name"].str.contains(
-            r"IEC|Clause|table|NOTE|List all|May include|licence",
-            case=False,
-            na=False
-        )
-    ]
+#     # --------------------------------------------------
+#     # 3. Remove header / note / empty rows
+#     # --------------------------------------------------
+#     df = df[
+#         df["Name"].notna()
+#         & ~df["Name"].str.contains(
+#             r"IEC|Clause|table|NOTE|List all|May include|licence",
+#             case=False,
+#             na=False
+#         )
+#     ]
 
-    # --------------------------------------------------
-    # 4. Drop first 3 and last 3 rows
-    # --------------------------------------------------
-    df = df.iloc[3:-3].reset_index(drop=True)
+#     # --------------------------------------------------
+#     # 4. Drop first 3 and last 3 rows
+#     # --------------------------------------------------
+#     df = df.iloc[3:-3].reset_index(drop=True)
 
-    # --------------------------------------------------
-    # 5. Remove Item column if already present
-    # --------------------------------------------------
-    if "Item" in df.columns:
-        df = df.drop(columns=["Item"])
+#     # --------------------------------------------------
+#     # 5. Remove Item column if already present
+#     # --------------------------------------------------
+#     if "Item" in df.columns:
+#         df = df.drop(columns=["Item"])
 
-    # --------------------------------------------------
-    # 6. Add Item column as first column (reset counter)
-    # --------------------------------------------------
-    df.insert(0, "Item", range(1, len(df) + 1))
+#     # --------------------------------------------------
+#     # 6. Add Item column as first column (reset counter)
+#     # --------------------------------------------------
+#     df.insert(0, "Item", range(1, len(df) + 1))
 
-    # --------------------------------------------------
-    # 7. Clean whitespace
-    # --------------------------------------------------
-    df = df.applymap(
-        lambda x: " ".join(str(x).split()) if pd.notna(x) else x
-    )
+#     # --------------------------------------------------
+#     # 7. Clean whitespace
+#     # --------------------------------------------------
+#     df = df.applymap(
+#         lambda x: " ".join(str(x).split()) if pd.notna(x) else x
+#     )
 
-    return df
+#     return df
 
 
 from docx import Document
@@ -2478,7 +2478,7 @@ def format_critical_components_df(raw_df: pd.DataFrame) -> pd.DataFrame:
     # --------------------------------------------------
     # 7. Clean whitespace
     # --------------------------------------------------
-    df = df.applymap(
+    df = df.map(
         lambda x: " ".join(str(x).split()) if pd.notna(x) else x
     )
 

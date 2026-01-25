@@ -896,6 +896,8 @@ def run_iec61010_non_conformance_extraction(
         deployment_name=deployment_name
     )
 
+    df=df.drop('ref_id',axis=1)
+
     return df
 
 IEC_61010_NON_CONFORMANCE_PROMPT = get_iec61010_non_conformance_prompt()
