@@ -122,7 +122,7 @@ def rebuild_letter_docx_from_json(
     df_critical = extract_table_from_json(data, "Critical components table")
 
     if df_critical is not None and not df_critical.empty:
-        insert_dataframe_below_anchor(
+        insert_dataframe_below_anchor_critical_components(
             input_docx=output_letter_docx,
             output_docx=output_letter_docx,
             df=df_critical,
@@ -130,6 +130,12 @@ def rebuild_letter_docx_from_json(
         )
         print("✅ Critical components table inserted")
     else:
+        insert_dataframe_below_anchor_critical_components(
+            input_docx=output_letter_docx,
+            output_docx=output_letter_docx,
+            df=df_critical,
+            anchor_text="Details for the following critical components or materials have not been provided as required:"
+        )
         print("⚠️ No critical components table found in JSON")
 
     # -------------------------------------------------------
@@ -141,7 +147,7 @@ def rebuild_letter_docx_from_json(
     df_nonpass = extract_table_from_json(data, "Non-conformance Table")
 
     if df_nonpass is not None and not df_nonpass.empty:
-        insert_dataframe_below_anchor(
+        insert_dataframe_below_anchor_non_conformance(
             input_docx=output_letter_docx,
             output_docx=output_letter_docx,
             df=df_nonpass,
@@ -149,6 +155,12 @@ def rebuild_letter_docx_from_json(
         )
         print("✅ Non-conformance table inserted")
     else:
+        insert_dataframe_below_anchor_non_conformance(
+            input_docx=output_letter_docx,
+            output_docx=output_letter_docx,
+            df=df_nonpass,
+            anchor_text="The shared documents were evaluated during the intrinsic safety analysis and constructional evaluation and following non-conformances were observed:"
+        )
         print("⚠️ No non-conformance table found in JSON")
 
     # -------------------------------------------------------
