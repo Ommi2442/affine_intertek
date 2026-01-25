@@ -63,3 +63,5 @@ numpy
 pdfplumber
 azure-identity
 azure-keyvault-secrets
+fuzzywuzzy
+rapidfuzz
