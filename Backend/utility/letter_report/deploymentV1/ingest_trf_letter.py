@@ -89,7 +89,7 @@ COSMOS_CONT_IMAGE = CONT_NAME_IMG
 BLOB_CONT_NAME= os.getenv("blob-container")
 ENABLE_CAD_SCHEMATICS = os.getenv("enable-cad-schematics")
 FLATTENED_DIR = os.getenv("flattened-dir")
-LT_IMAGES_ROOT =os.getenv("lt-images-root")
+LT_IMAGES_ROOT_Folder_Name =os.getenv("lt-images-root")
 LT_DOWNLOAD_DIR_Folder_Name = os.getenv("trf-download-dir")
 
 COSMOS_CONT_TEXT = os.getenv("cosmos-cont-text")
@@ -1488,6 +1488,8 @@ def run_full_ingestion(project_id,blob_urls,text_container,image_container):
     BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
     LT_DOWNLOAD_DIR = BASE_DIR / "data" / project_id / LT_DOWNLOAD_DIR_Folder_Name
+
+    LT_IMAGES_ROOT = BASE_DIR / "data" / project_id / LT_IMAGES_ROOT_Folder_Name
 
 
     client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY)
