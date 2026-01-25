@@ -3110,6 +3110,35 @@ def load_cdr_components_df(directory: str) -> Optional[pd.DataFrame]:
 import os
 from urllib.parse import unquote
 
+# def attach_blob_urls_to_text_support_letter(data, blob_urls):
+#     """
+#     Add 'url' to each text_support item by matching base filenames.
+#     Works with data.pages[].items[].text_support[] structure.
+#     """
+
+#     # Build filename → blob URL map
+#     blob_map = {}
+#     for url in blob_urls:
+#         fname = unquote(url.split("/")[-1])
+#         base = os.path.splitext(fname)[0]
+#         blob_map.setdefault(base, url)
+
+#     # Traverse updated JSON structure
+#     for page in data.get("pages", []):
+#         for item in page.get("items", []):
+#             for ts in item.get("text_support", []):
+#                 ts["url"] = None  # default
+
+#                 fname = ts.get("filename")
+#                 if not fname:
+#                     continue
+
+#                 base = os.path.splitext(fname)[0]
+#                 ts["url"] = blob_map.get(base)
+
+#     return data
+
+
 def attach_blob_urls_to_text_support_letter(data, blob_urls):
     """
     Add 'url' to each text_support item by matching base filenames.
@@ -3119,6 +3148,9 @@ def attach_blob_urls_to_text_support_letter(data, blob_urls):
     # Build filename → blob URL map
     blob_map = {}
     for url in blob_urls:
+        if not url or not isinstance(url, str):
+            continue  # ✅ skip None / invalid entries
+
         fname = unquote(url.split("/")[-1])
         base = os.path.splitext(fname)[0]
         blob_map.setdefault(base, url)
@@ -3137,6 +3169,7 @@ def attach_blob_urls_to_text_support_letter(data, blob_urls):
                 ts["url"] = blob_map.get(base)
 
     return data
+ 
  
 
 import os
