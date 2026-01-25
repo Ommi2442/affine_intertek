@@ -3142,24 +3142,55 @@ def attach_blob_urls_to_text_support_letter(data, blob_urls):
 import os
 from urllib.parse import unquote
 
+# def attach_blob_urls_to_image_support_letter(data, blob_urls):
+#     """
+#     Add 'file_url' to each image_support entry based on pdf_file basename.
+#     Works with data.pages[].items[].image_support[] structure.
+#     """
+
+#     # Build pdf base filename → blob URL map
+#     blob_map = {}
+#     for url in blob_urls:
+#         fname = unquote(url.split("/")[-1])
+#         base = os.path.splitext(fname)[0]
+#         blob_map.setdefault(base, url)
+
+#     # Traverse updated JSON structure
+#     for page in data.get("pages", []):
+#         for item in page.get("items", []):
+#             for img in item.get("image_support", []):
+#                 img["file_url"] = None  # default
+
+#                 pdf_file = img.get("pdf_file")
+#                 if not pdf_file:
+#                     continue
+
+#                 base = os.path.splitext(pdf_file)[0]
+#                 img["file_url"] = blob_map.get(base)
+
+#     return data
+
+
 def attach_blob_urls_to_image_support_letter(data, blob_urls):
     """
     Add 'file_url' to each image_support entry based on pdf_file basename.
     Works with data.pages[].items[].image_support[] structure.
     """
 
-    # Build pdf base filename → blob URL map
     blob_map = {}
+
     for url in blob_urls:
+        if not url or not isinstance(url, str):
+            continue  # ✅ skip None / invalid entries
+
         fname = unquote(url.split("/")[-1])
         base = os.path.splitext(fname)[0]
         blob_map.setdefault(base, url)
 
-    # Traverse updated JSON structure
     for page in data.get("pages", []):
         for item in page.get("items", []):
             for img in item.get("image_support", []):
-                img["file_url"] = None  # default
+                img["file_url"] = None
 
                 pdf_file = img.get("pdf_file")
                 if not pdf_file:
@@ -3169,6 +3200,7 @@ def attach_blob_urls_to_image_support_letter(data, blob_urls):
                 img["file_url"] = blob_map.get(base)
 
     return data
+ 
  
 
 from urllib.parse import unquote
