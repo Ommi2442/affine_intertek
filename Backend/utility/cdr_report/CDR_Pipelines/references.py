@@ -25,9 +25,16 @@ from utility.cdr_report.CDR_Pipelines.prompts import score_prompt
 # cosmos_container = cosmos_client.get_database_client(DB_NAME).get_container_client(CONT_NAME)
 
 EMAIL_RE = re.compile(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", re.I)
-PHONE_RE = re.compile(r"(\+\d[\d\s\-\(\)]{6,}\d|\(\d{3}\)\s*\d{3}\-\d{4})")
+# PHONE_RE = re.compile(r"(\+\d[\d\s\-\(\)]{6,}\d|\(\d{3}\)\s*\d{3}\-\d{4})")
+PHONE_RE = re.compile(
+    r"(\+\d[\d\s\-\(\)]{6,}\d|\(\d{3}\)\s*\d{3}\-\d{4}|\b\d{3}[\s.-]?\d{3}[\s.-]?\d{4}\b)"
+)
+# ADDR_HINT_RE = re.compile(
+#     r"(Street Address|Address|City, State|Postal|Zip|Country|Name and address of factory|Factory|Manufacturer|Bill-To|Applicant|Legal Entity Name)",
+#     re.I,
+# )
 ADDR_HINT_RE = re.compile(
-    r"(Street Address|Address|City, State|Postal|Zip|Country|Name and address of factory|Factory|Manufacturer|Bill-To|Applicant|Legal Entity Name)",
+    r"(Street Address|Address|City, State|Postal|Zip|Country|Name and address of factory|Factory|Manufacturer|Bill-To|Applicant|Legal Entity Name|Prepared\s*For|Prepared\s*by)",
     re.I,
 )
 FORM_FILENAME_RE = re.compile(r"(cis|client[_\s-]?information|customer[_\s-]?information|agreement|agent)", re.I)
@@ -65,22 +72,39 @@ from utility.cdr_report.CDR_Pipelines.json_utils import top_chunks_as_json
 # extracted = out["answer"]                         # already a dict if JsonOutputParser used
 
 
+# def get_bom_source_files() -> set[str]:
+#     configs.require_runtime()
+#     return switch.get_bom_filenames()
+
 def get_bom_source_files() -> set[str]:
     configs.require_runtime()
-    return switch.get_bom_filenames()
+    BOM_SOURCE_FILES = switch.get_bom_filenames()
+    ex_files = {x.lower() for x in BOM_SOURCE_FILES}
+    return ex_files
 
 
-def exclude_bom_docs(docs: list[Document]) -> list[Document]:
-    bom_files = get_bom_source_files()
-    filtered = []
-
+# from langchain_core.runnables import RunnableLambda, RunnableParallel, RunnablePassthrough
+# BOM_SOURCE_FILES = switch.get_bom_filenames()
+# ex_files = {x.lower() for x in BOM_SOURCE_FILES}
+def drop_excluded(docs, ex_files):
+    kept = []
     for d in docs:
         sf = (d.metadata.get("source_file") or "").lower()
-        if sf and sf in bom_files:
-            continue
-        filtered.append(d)
+        if sf not in ex_files:
+            kept.append(d)
+    return kept
 
-    return filtered
+# def exclude_bom_docs(docs: list[Document]) -> list[Document]:
+#     bom_files = get_bom_source_files()
+#     filtered = []
+
+#     for d in docs:
+#         sf = (d.metadata.get("source_file") or "").lower()
+#         if sf and sf in bom_files:
+#             continue
+#         filtered.append(d)
+
+#     return filtered
 
 
 
@@ -221,14 +245,21 @@ def cap_per_source(docs: List[Document], max_per_source: int = 4) -> List[Docume
     return out
 
 
+# def build_fallback_query(user_question: str) -> str:
+#     # You can tune this. Goal: pull anything that contains relevant structured identifiers.
+#     return (
+#         user_question
+#         + " Applicant Bill-To Manufacturer Name Address Contacts Email Phone Fax "
+#         + " Name and address of factory"
+#     )
 def build_fallback_query(user_question: str) -> str:
     # You can tune this. Goal: pull anything that contains relevant structured identifiers.
     return (
         user_question
-        + " Applicant Bill-To Manufacturer Name Address Contacts Email Phone Fax "
-        + " Name and address of factory"
+        + " Applicant Bill-To Manufacturer Factory Legal Entity Name Street Address Contacts Email Phone Fax "
+        + " Name and address of factory" 
+        + "Prepared For:"
     )
-
 
 def add_general_fallback(
     docs: List[Document],
@@ -274,8 +305,8 @@ def add_general_fallback(
 
     return docs + chosen
 
-def build_context_docs(vs, container, retrieved_docs: List[Document], user_question: str, max_final: int = 25) -> List[Document]:
-    original = exclude_bom_docs(list(retrieved_docs))
+def build_context_docs(vs, container, retrieved_docs: List[Document], user_question: str, ex_files, max_final: int = 25) -> List[Document]:
+    original = list(retrieved_docs)
 
     # Expand CIS/Agreement-like sources (and ideally remove originals for those expanded sources)
     expanded = expand_form_sources(container, original, max_sources=3)
@@ -283,14 +314,19 @@ def build_context_docs(vs, container, retrieved_docs: List[Document], user_quest
 
     # Second retrieval pass: real fallback to other files not in initial top-k
     fallback_query = build_fallback_query(user_question)
-    fallback_candidates = exclude_bom_docs(
-    vs.similarity_search(
+#     fallback_candidates = exclude_bom_docs(
+#     vs.similarity_search(
+#         fallback_query,
+#         k=80,
+#         search_type="vector"
+#     )
+# )
+    fallback_candidates = vs.similarity_search(
         fallback_query,
         k=80,
         search_type="vector"
     )
-)
-
+    fallback_candidates = drop_excluded(fallback_candidates, ex_files)
 
     # Merge candidates broadly (include expanded so novelty selection sees everything)
     merged_candidates = dedupe_docs(expanded + fallback_candidates)
@@ -302,11 +338,11 @@ def build_context_docs(vs, container, retrieved_docs: List[Document], user_quest
         require_any_email=True
     )
 
-    final_docs = dedupe_docs(final_docs)
-    final_docs.sort(key=doc_usefulness_score, reverse=True)
-    final_docs = cap_per_source(final_docs, max_per_source=4)
-    final_docs = dedupe_docs(final_docs)
-    final_docs = exclude_bom_docs(final_docs)
+#     final_docs = dedupe_docs(final_docs)
+#     final_docs.sort(key=doc_usefulness_score, reverse=True)
+#     final_docs = cap_per_source(final_docs, max_per_source=4)
+#     final_docs = dedupe_docs(final_docs)
+#     final_docs = exclude_bom_docs(final_docs)
     
     return final_docs[:max_final]
 
@@ -315,7 +351,7 @@ def references_main(vs, ref):
     configs.require_runtime()
 
     cosmos_container = configs.get_cosmos_container_client()  # ✅ per request
-
+    ex_files=get_bom_source_files()
     # print('inside reference_main')
     retriever = vs.as_retriever(
         search_type="vector",
@@ -325,12 +361,12 @@ def references_main(vs, ref):
 
     rag_chain_debug = (
         RunnableParallel(
-            docs=retriever,
+            docs=retriever | RunnableLambda(lambda docs: drop_excluded(docs, ex_files)),
             question=RunnablePassthrough(),
         )
         | RunnableLambda(lambda x: {
             "raw_docs": x["docs"],
-            "docs": build_context_docs(vs, cosmos_container, x["docs"], x["question"]),
+            "docs": build_context_docs(vs, cosmos_container, x["docs"], x["question"], ex_files),
             "question": x["question"],
         })
         | RunnableLambda(lambda x: {
@@ -428,3 +464,4 @@ def references_main(vs, ref):
 #OUTPUT_PATH.write_text(json.dumps(template, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
+ 

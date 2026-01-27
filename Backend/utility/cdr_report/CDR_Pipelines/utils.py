@@ -812,6 +812,91 @@ def build_embeddings():
 
 
 
+# def load_and_split_pdfs_text(pdf_paths, extracted_texts=None):
+#     """
+#     pdf_paths: iterable of file paths (existing behavior — only PDFs processed)
+#     extracted_texts: optional list of dicts. Supported shapes:
+#         - { "filename.ext": "text..." }
+#         - { "filename": "...", "text": "..." }
+#         - mixed list containing either form
+#     Returns: list of chunks (output of splitter.split_documents)
+#     """
+#     #print('START OF CHUNKING')
+#     docs = []
+#     splitter = RecursiveCharacterTextSplitter(
+#         chunk_size=CHUNK_SIZE,
+#         chunk_overlap=CHUNK_OVERLAP,
+#         separators=["\n\n", "\n", ". ", " "],
+#         keep_separator=False,
+#     )
+
+#     # --- existing PDF flow (unchanged) ---
+#     for path in pdf_paths:
+#         if not str(path).lower().endswith(".pdf"):
+#             continue
+#         loader = PyPDFLoader(str(path))
+#         raw_docs = loader.load()
+#         base = os.path.basename(str(path))
+#         for d in raw_docs:
+#             page = int(d.metadata.get("page", 1))
+#             d.metadata["source_file"] = base
+#             d.metadata["page"] = page
+#             d.metadata["citation"] = f"{base}#page={page}"
+#         docs.extend(raw_docs)
+
+#     # --- new: accept extracted_texts in multiple sensible shapes ---
+#     if extracted_texts:
+#         for item in extracted_texts:
+#             if not isinstance(item, dict):
+#                 continue
+
+#             # Case A: explicit keys 'filename' and 'text'
+#             if "filename" in item and "text" in item:
+#                 filename = item["filename"]
+#                 text = item["text"]
+#             # Case B: single-key mapping { "actual_filename": "text..." }
+#             elif len(item) == 1:
+#                 filename, text = next(iter(item.items()))
+#             # Case C: has 'text' but no filename key
+#             elif "text" in item:
+#                 filename = item.get("filename") or item.get("name") or "unknown"
+#                 text = item["text"]
+#             else:
+#                 # Fallback: pick first string value
+#                 filename = None
+#                 text = None
+#                 for k, v in item.items():
+#                     if isinstance(v, str) and v.strip():
+#                         filename = k
+#                         text = v
+#                         break
+#                 if text is None:
+#                     filename = item.get("filename") or "unknown"
+#                     text = " ".join(str(v) for v in item.values())
+
+#             base = os.path.basename(str(filename))
+#             metadata = {
+#                 "source_file": base,
+#                 "page": 1,
+#                 "citation": f"{base}"
+#             }
+
+#             # Create a simple Document-like object expected by splitter
+#             # splitter expects attributes like .page_content and .metadata
+#             doc = SimpleNamespace(page_content=text or "", metadata=metadata)
+
+#             docs.append(doc)
+#     #print('END OF CHUNKING FUNCTION')
+#     # finally split all collected documents (pdf chunks + plain-text docs)
+#     return splitter.split_documents(docs)
+
+
+from types import SimpleNamespace
+from collections import defaultdict
+import os
+from types import SimpleNamespace
+import os
+
 def load_and_split_pdfs_text(pdf_paths, extracted_texts=None):
     """
     pdf_paths: iterable of file paths (existing behavior — only PDFs processed)
@@ -821,7 +906,6 @@ def load_and_split_pdfs_text(pdf_paths, extracted_texts=None):
         - mixed list containing either form
     Returns: list of chunks (output of splitter.split_documents)
     """
-    #print('START OF CHUNKING')
     docs = []
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE,
@@ -875,19 +959,21 @@ def load_and_split_pdfs_text(pdf_paths, extracted_texts=None):
                     text = " ".join(str(v) for v in item.values())
 
             base = os.path.basename(str(filename))
+            #NEW: page support (default 1)
+            page = item.get("page", 1)
+            try:
+                page = int(page)
+            except Exception:
+                page = 1
+
+            is_pdf = base.lower().endswith(".pdf")
             metadata = {
-                "source_file": base,
-                "page": 1,
-                "citation": f"{base}"
+            "source_file": base,
+            "page": page,
+            "citation": f"{base}#page={page}" if is_pdf else f"{base}" # ✅ match PDF style
             }
-
-            # Create a simple Document-like object expected by splitter
-            # splitter expects attributes like .page_content and .metadata
             doc = SimpleNamespace(page_content=text or "", metadata=metadata)
-
             docs.append(doc)
-    #print('END OF CHUNKING FUNCTION')
-    # finally split all collected documents (pdf chunks + plain-text docs)
     return splitter.split_documents(docs)
 
 # def add_batch(batch, idx_start, vs):

@@ -4,11 +4,119 @@ import pandas as pd
 import utility.cdr_report.CDR_Pipelines.c2_utils as c2_utils
 import utility.cdr_report.CDR_Pipelines.configs as configs
 
+# def create_s4_json(input_excel, output_json):
+#     df = pd.read_excel(input_excel, dtype=str)
+    
+#     if "photo_no" not in df.columns:
+#         #print("photo_no column missing.")
+#         return
+
+#     def photo_sort_key(v):
+#         if v == "guide" or v is None: return 10_000
+#         try: return int(v)
+#         except: return 10_000
+
+#     df["_photo_sort"] = df["photo_no"].apply(photo_sort_key)
+#     df = df.sort_values(by=["_photo_sort", "Component Name"]).reset_index(drop=True)
+#     df.drop(columns=["_photo_sort"], inplace=True)
+
+#     items = []
+#     current_row = 3
+#     start_column = "A"
+
+#     for idx, row in df.iterrows():
+#         item_no = idx + 1
+#         start_cell = f"{start_column}{current_row}"
+#         item = {
+#             "start_cell": start_cell,
+#             "row_type": "table_data",
+#             "photo_no": c2_utils.clean_value(row.get("photo_no")),
+#             "item_no": str(item_no),
+#             "name": c2_utils.clean_value(row.get("Component Name")),
+#             "manufacturer": None,
+#             "type_model": None,
+#             "technical_data": None,
+#             "marks_of_conf": None,
+#             "field_merged": False,
+#             "fm_range": None,
+#             "value_merged": False,
+#             "vm_range": None,
+#             "task_type": "extraction",
+#             "user_editable": True,
+#             "ai_fillable": True,
+#             "accuracy_level": False,
+#             "image_support": c2_utils.clean_value(row.get("Image URLs")),
+#             "text_support": [
+#                                 {
+#                                     "filename": c2_utils.clean_value(row.get("Filename")),
+#                                     "page": (int(row.get("Page Number"))
+#                                                 if pd.notna(row.get("Page Number"))
+#                                                 else None
+#                                             ),
+#                                     "similarity_score": None,
+#                                     "preview_text": c2_utils.clean_value(row.get("Guide Reference")),
+#                                     "url": c2_utils.clean_value(row.get("URL")),
+#                                 }
+#                             ],
+#             "confidence": int(c2_utils.clean_value(row.get("confidence")))
+#         }
+#         items.append(item)
+#         current_row += 1
+
+#     with open(output_json, "w", encoding="utf-8") as f:
+#         json.dump({"Items": items}, f, indent=4)
+#     #print("✔ JSON created successfully:", output_json)
+
 def create_s4_json(input_excel, output_json):
     df = pd.read_excel(input_excel, dtype=str)
     
+    # --------------------------------
+    # CASE: EMPTY SHEET → CREATE NULL ITEM
+    # --------------------------------
+    if df.empty:
+        null_item = {
+            "start_cell": "A3",
+            "row_type": "table_data",
+            "photo_no": None,
+            "item_no": None,
+            "name": None,
+            "manufacturer": None,
+            "type_model": None,
+            "technical_data": None,
+            "marks_of_conf": None,
+            "field_merged": False,
+            "fm_range": None,
+            "value_merged": False,
+            "vm_range": None,
+            "task_type": "extraction",
+            "user_editable": True,
+            "ai_fillable": True,
+            "accuracy_level": False,
+            "image_support": None,
+            "text_support": [
+                {
+                    "filename": None,
+                    "page": None,
+                    "similarity_score": None,
+                    "text": None,
+                    "url": None
+                }
+            ],
+            "confidence": 0
+        }
+
+        with open(output_json, "w", encoding="utf-8") as f:
+            json.dump({"Items": [null_item]}, f, indent=4)
+
+        print("✔ Sheet 4 JSON created with NULL placeholder item:", output_json)
+        return
+
+        # --------------------------------
+        # CASE: NON-EMPTY SHEET → CREATE ITEMs
+        # --------------------------------
+        
     if "photo_no" not in df.columns:
-        #print("photo_no column missing.")
+        print("photo_no column missing.")
         return
 
     def photo_sort_key(v):
@@ -54,7 +162,7 @@ def create_s4_json(input_excel, output_json):
                                                 else None
                                             ),
                                     "similarity_score": None,
-                                    "preview_text": c2_utils.clean_value(row.get("Guide Reference")),
+                                    "text": c2_utils.clean_value(row.get("Guide Reference")),
                                     "url": c2_utils.clean_value(row.get("URL")),
                                 }
                             ],
@@ -65,9 +173,7 @@ def create_s4_json(input_excel, output_json):
 
     with open(output_json, "w", encoding="utf-8") as f:
         json.dump({"Items": items}, f, indent=4)
-    #print("✔ JSON created successfully:", output_json)
-
-
+    print("✔ JSON created successfully:", output_json)
 
 def create_s3_json(input_excel, output_json):
     df = pd.read_excel(input_excel, dtype=str)
