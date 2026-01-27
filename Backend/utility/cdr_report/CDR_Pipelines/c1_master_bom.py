@@ -128,6 +128,24 @@ from langchain_openai import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 
+# SYSTEM_PROMPT = """
+# You extract Bill of Materials (BOM) line items from technical text.
+
+# Rules:
+# - Use ONLY the provided text
+# - Do NOT invent rows
+# - Do NOT infer missing values
+# - Missing fields must be null
+# - Output MUST be valid JSON
+# - Return a JSON arrays
+# - description only available in columns (description, name, part description) 
+# - if "name" and "value" column present, then Description = "name"+"value"
+# - U/M only available in columns (U/M, uom)
+# - do not use any other columns than those specified, ignore the rest.
+# - manufacturer only available in columns (manufacturer, mfg, mfr, Manufacturer/trademark2)
+# - manufacturer part number only available in columns (manufacturer part number, mfg p/n, mfr-pn, mpn, Type/model2)
+# """
+
 SYSTEM_PROMPT = """
 You extract Bill of Materials (BOM) line items from technical text.
 
@@ -138,12 +156,12 @@ Rules:
 - Missing fields must be null
 - Output MUST be valid JSON
 - Return a JSON arrays
-- description only available in columns (description, name, part description) 
+- description only available in columns (description, name, part description, part) 
 - if "name" and "value" column present, then Description = "name"+"value"
 - U/M only available in columns (U/M, uom)
 - do not use any other columns than those specified, ignore the rest.
-- manufacturer only available in columns (manufacturer, mfg, mfr, Manufacturer/trademark2)
-- manufacturer part number only available in columns (manufacturer part number, mfg p/n, mfr-pn, mpn, Type/model2)
+- manufacturer only available in columns (manufacturer, mfg, mfr, Manufacturer/trademark2, manuf)
+- manufacturer part number only available in columns (manufacturer part number, mfg p/n, mfr-pn, mpn, Type/model2, manuf #)
 """
 
 USER_PROMPT = """

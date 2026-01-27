@@ -14,19 +14,38 @@ CONTAINER_SAS_URL = configs.AZURE_BLOB_CONTAINER_SAS_URL
 
 MAX_HEADER_SCAN_ROWS = 15
 
+# BOM_COLUMNS = {
+#     "line",
+#     "qty",
+#     "u/m",
+#     "name",
+#     "description",
+#     "manufacturer",
+#     "manufacturer part number",
+#     "mfg"
+#     "mfr"
+#     "mpn"
+#     "mfr-pn"
+# }
+
 BOM_COLUMNS = {
-    "line",
-    "qty",
-    "u/m",
-    "name",
-    "description",
-    "manufacturer",
-    "manufacturer part number",
-    "mfg"
-    "mfr"
-    "mpn"
-    "mfr-pn"
-}
+        "line",
+        "qty",
+        "u/m",
+        "name",
+        "description",
+        "manufacturer",
+        "manufacturer part number",
+        "mfg"
+        "mfr"
+        "mpn"
+        "mfr-pn"
+        "part"
+        "manuf"
+        "manuf #"
+        "quantity"
+        "item"
+    }
 
 # ===================== HELPERS =====================
 
@@ -73,7 +92,7 @@ def is_bom_excel(excel_bytes: bytes) -> bool:
                 if cell and str(cell).strip()
             }
 
-            if len(BOM_COLUMNS & found) >= int(0.2727272727 * len(BOM_COLUMNS)):
+            if len(BOM_COLUMNS & found) >= int(0.1875 * len(BOM_COLUMNS)):
                 return True
 
     except Exception:

@@ -10,6 +10,18 @@ from urllib.parse import urlparse
 
 openai_client = c2_utils.get_openai_client()
 
+COLUMNS = [
+        "Component Name",
+        "Category",
+        "Confidence",
+        "Source Type",
+        "URL",
+        "Filename",
+        "Page Number",
+        "Guide Reference",
+        "Evidence"
+    ]
+
 # ------------------------------------------------------------
 # IMAGE COMPONENT EXTRACTION
 # ------------------------------------------------------------
@@ -239,41 +251,120 @@ def merge_components(image_components, guide_components):
 
 
 
+# def run_extractor():
+#     configs.require_runtime()
+
+#     #print("--- Starting Pipeline ---")
+
+#     # 1. DISCOVERY
+#     image_urls = c2_utils.get_image_urls_from_container_sas()
+
+#     guide_blob_name, guide_url = c2_utils.find_user_guide_blob()
+
+#     if not guide_blob_name:
+#         return
+#     guide_filename = guide_blob_name.split("/")[-1]
+#     guide_local_path = c2_utils.download_blob(guide_blob_name)
+#     guide_text = c2_utils.extract_text_from_file(guide_local_path)
+    
+
+#     guide_components = extract_components_from_guide(
+#         guide_text,
+#         guide_filename,
+#         guide_url
+#     )
+
+
+#     #print(f"Guide text length: {len(guide_text)}")
+
+#     # 2. EXTRACTION
+#     #print("\n--- Extracting Components ---")
+
+#     image_captions, image_components = extract_components_from_images(image_urls)
+
+#     combined_components = merge_components(image_components, guide_components)
+
+#     #print(f"Image comps: {len(image_components)}, Guide comps: {len(guide_components)}")
+#     #print(f"Combined unique: {len(combined_components)}")
+
+#     # 3. BUILD IMAGE CAPTION LOOKUP
+#     image_caption_map = {
+#         c["image_url"]: f'{c["view_description"]} ({c["image_type"]})'
+#         for c in image_captions
+#         if c.get("view_description")
+#     }
+
+#     # 4. SAVE COMBINED OUTPUT
+#     rows = []
+
+#     for c in combined_components:
+#         for s in c["sources"]:
+#             rows.append({
+#                 "Component Name": c["component_name"],
+#                 "Category": c["component_category"],
+#                 "Confidence": c["confidence"],
+#                 "Source Type": s["source_type"],
+
+#                 # (1) URL logic
+#                 "URL": s["source_ref"],
+
+#                 # (3) filename
+#                 "Filename": s.get("filename"),
+
+#                 # (4) page number (guide only)
+#                 "Page Number": s.get("page_number"),
+
+#                 # (2) exact chunk
+#                 "Guide Reference": s.get("chunk") if s["source_type"] == "guide" else None,
+
+#                 "Evidence": s.get("evidence")
+#             })
+
+#     df_raw = pd.DataFrame(rows)
+#     df_raw.to_excel(configs.OUTPUT_EXCEL_RAW, index=False)
+
+#     #print(f"✔ Combined output written: {configs.OUTPUT_EXCEL_RAW}")
+#     #print("✔ Extraction completed successfully")
+
+
 def run_extractor():
     configs.require_runtime()
 
-    #print("--- Starting Pipeline ---")
+    print("--- Starting Pipeline ---")
 
     # 1. DISCOVERY
     image_urls = c2_utils.get_image_urls_from_container_sas()
 
     guide_blob_name, guide_url = c2_utils.find_user_guide_blob()
 
-    if not guide_blob_name:
-        return
-    guide_filename = guide_blob_name.split("/")[-1]
-    guide_local_path = c2_utils.download_blob(guide_blob_name)
-    guide_text = c2_utils.extract_text_from_file(guide_local_path)
-    
+    guide_components = []
 
-    guide_components = extract_components_from_guide(
-        guide_text,
-        guide_filename,
-        guide_url
-    )
+    if guide_blob_name:
+        guide_filename = guide_blob_name.split("/")[-1]
+        guide_local_path = c2_utils.download_blob(guide_blob_name)
+        guide_text = c2_utils.extract_text_from_file(guide_local_path)
 
+        print(f"Guide text length: {len(guide_text)}")
 
-    #print(f"Guide text length: {len(guide_text)}")
+        guide_components = extract_components_from_guide(
+            guide_text,
+            guide_filename,
+            guide_url
+        )
+    else:
+        print("⚠ No guide found, continuing without guide components")
+
+    print(f"Guide text length: {len(guide_text)}")
 
     # 2. EXTRACTION
-    #print("\n--- Extracting Components ---")
+    print("\n--- Extracting Components ---")
 
     image_captions, image_components = extract_components_from_images(image_urls)
 
     combined_components = merge_components(image_components, guide_components)
 
-    #print(f"Image comps: {len(image_components)}, Guide comps: {len(guide_components)}")
-    #print(f"Combined unique: {len(combined_components)}")
+    print(f"Image comps: {len(image_components)}, Guide comps: {len(guide_components)}")
+    print(f"Combined unique: {len(combined_components)}")
 
     # 3. BUILD IMAGE CAPTION LOOKUP
     image_caption_map = {
@@ -308,10 +399,10 @@ def run_extractor():
                 "Evidence": s.get("evidence")
             })
 
-    df_raw = pd.DataFrame(rows)
+    df_raw = pd.DataFrame(rows, columns=COLUMNS)
     df_raw.to_excel(configs.OUTPUT_EXCEL_RAW, index=False)
 
-    #print(f"✔ Combined output written: {configs.OUTPUT_EXCEL_RAW}")
-    #print("✔ Extraction completed successfully")
 
+    print(f"✔ Combined output written: {configs.OUTPUT_EXCEL_RAW}")
+    print("✔ Extraction completed successfully")
     

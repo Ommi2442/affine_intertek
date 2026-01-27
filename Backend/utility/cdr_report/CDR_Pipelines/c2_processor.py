@@ -179,18 +179,59 @@ def deduplicate_components(df):
     return deduped_df
 
 
+# def run_processor():
+#     configs.require_runtime()
+
+#         # 3. CLASSIFICATION
+#     #print("\n--- Classifying Components ---")
+#     df_raw = pd.read_excel(configs.OUTPUT_EXCEL_RAW, dtype=str)
+#     df_classified = run_classification(df_raw)
+#     df_classified.to_excel(configs.OUTPUT_EXCEL_CLASSIFIED, index=False)
+#     #print(f"✔ Classified excel written: {configs.OUTPUT_EXCEL_CLASSIFIED}")
+
+#     # 4. DEDUPLICATION
+#     #print("\n--- Deduplicating ---")
+#     df_deduped = deduplicate_components(df_classified)
+#     df_deduped.to_excel(configs.OUTPUT_EXCEL_DEDUPED, index=False)
+#     #print(f"✔ Deduplicated excel written: {configs.OUTPUT_EXCEL_DEDUPED}")
+
 def run_processor():
     configs.require_runtime()
-
-        # 3. CLASSIFICATION
-    #print("\n--- Classifying Components ---")
+    print("\n--- Classifying Components ---")
     df_raw = pd.read_excel(configs.OUTPUT_EXCEL_RAW, dtype=str)
+
+    if df_raw.empty:
+        print("ℹ No components found. Writing empty outputs.")
+
+        classified_cols = list(dict.fromkeys(
+            list(df_raw.columns) + [
+                "critical", "confidence", "rules_passed",
+                "rules_passed_count", "rule_score", "reasoning"
+            ]
+        ))
+
+        pd.DataFrame(columns=classified_cols).to_excel(
+            configs.OUTPUT_EXCEL_CLASSIFIED, index=False
+        )
+
+        dedup_cols = [
+            "Component Name", "Category", "Confidence", "Source Type",
+            "URL", "Filename", "Page Number", "Guide Reference", "Evidence",
+            "critical", "confidence", "rules_passed",
+            "rules_passed_count", "rule_score", "reasoning", "photo_no"
+        ]
+
+        pd.DataFrame(columns=dedup_cols).to_excel(
+            configs.OUTPUT_EXCEL_DEDUPED, index=False
+        )
+
+        return
+
     df_classified = run_classification(df_raw)
     df_classified.to_excel(configs.OUTPUT_EXCEL_CLASSIFIED, index=False)
-    #print(f"✔ Classified excel written: {configs.OUTPUT_EXCEL_CLASSIFIED}")
+    print(f"✔ Classified excel written: {configs.OUTPUT_EXCEL_CLASSIFIED}")
 
-    # 4. DEDUPLICATION
-    #print("\n--- Deduplicating ---")
+    print("\n--- Deduplicating ---")
     df_deduped = deduplicate_components(df_classified)
     df_deduped.to_excel(configs.OUTPUT_EXCEL_DEDUPED, index=False)
-    #print(f"✔ Deduplicated excel written: {configs.OUTPUT_EXCEL_DEDUPED}")
+    print(f"✔ Deduplicated excel written: {configs.OUTPUT_EXCEL_DEDUPED}")
