@@ -7,7 +7,7 @@ trigger:
       - frontend
 
 variables:
-- group: intertek-frontend-dev
+- group: intertek-frontend-tests
 
 pool:
   vmImage: ubuntu-latest
