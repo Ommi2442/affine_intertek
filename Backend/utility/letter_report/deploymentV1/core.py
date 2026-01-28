@@ -1805,77 +1805,6 @@ from typing import Optional
 import os
 import pandas as pd
 
-import pandas as pd
-
-# def format_critical_components_df(raw_df: pd.DataFrame) -> pd.DataFrame:
-#     """
-#     Formats extracted IEC table into clean Critical Components table.
-#     - Drops first 3 and last 3 rows
-#     - Resets Item numbering starting from 1
-#     """
-
-#     # --------------------------------------------------
-#     # 1. Rename columns by position
-#     # --------------------------------------------------
-#     df = raw_df.rename(columns={
-#         0: "Name",
-#         2: "Manufacturer/ trademark",
-#         3: "Type / Model",
-#         5: "Technical data and securement means",
-#         9: "Mark(s) of conformity"
-#     })
-
-#     # --------------------------------------------------
-#     # 2. Keep only required columns
-#     # --------------------------------------------------
-#     df = df[
-#         [
-#             "Name",
-#             "Manufacturer/ trademark",
-#             "Type / Model",
-#             "Technical data and securement means",
-#             "Mark(s) of conformity"
-#         ]
-#     ]
-
-#     # --------------------------------------------------
-#     # 3. Remove header / note / empty rows
-#     # --------------------------------------------------
-#     df = df[
-#         df["Name"].notna()
-#         & ~df["Name"].str.contains(
-#             r"IEC|Clause|table|NOTE|List all|May include|licence",
-#             case=False,
-#             na=False
-#         )
-#     ]
-
-#     # --------------------------------------------------
-#     # 4. Drop first 3 and last 3 rows
-#     # --------------------------------------------------
-#     df = df.iloc[3:-3].reset_index(drop=True)
-
-#     # --------------------------------------------------
-#     # 5. Remove Item column if already present
-#     # --------------------------------------------------
-#     if "Item" in df.columns:
-#         df = df.drop(columns=["Item"])
-
-#     # --------------------------------------------------
-#     # 6. Add Item column as first column (reset counter)
-#     # --------------------------------------------------
-#     df.insert(0, "Item", range(1, len(df) + 1))
-
-#     # --------------------------------------------------
-#     # 7. Clean whitespace
-#     # --------------------------------------------------
-#     df = df.applymap(
-#         lambda x: " ".join(str(x).split()) if pd.notna(x) else x
-#     )
-
-#     return df
-
-
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -2331,12 +2260,27 @@ def ensure_docx(file_path: Optional[str]) -> Optional[str]:
 
 import pandas as pd
 
+
+
 # def format_critical_components_df(raw_df: pd.DataFrame) -> pd.DataFrame:
 #     """
 #     Formats extracted IEC table into clean Critical Components table.
-#     - Drops first 3 and last 3 rows
-#     - Resets Item numbering starting from 1
 #     """
+
+#     # --------------------------------------------------
+#     # 0. Defensive guard
+#     # --------------------------------------------------
+#     if raw_df is None or raw_df.empty:
+#         return pd.DataFrame(
+#             columns=[
+#                 "Item",
+#                 "Name",
+#                 "Manufacturer/ trademark",
+#                 "Type / Model",
+#                 "Technical data and securement means",
+#                 "Mark(s) of conformity"
+#             ]
+#         )
 
 #     # --------------------------------------------------
 #     # 1. Rename columns by position
@@ -2375,9 +2319,11 @@ import pandas as pd
 #     ]
 
 #     # --------------------------------------------------
-#     # 4. Drop first 3 and last 3 rows
+#     # 4. Drop first 3 and last 3 rows (safe slice)
 #     # --------------------------------------------------
-#     df = df.iloc[3:-3].reset_index(drop=True)
+#     if len(df) > 6:
+#         df = df.iloc[3:-3]
+#     df = df.reset_index(drop=True)
 
 #     # --------------------------------------------------
 #     # 5. Remove Item column if already present
@@ -2386,20 +2332,18 @@ import pandas as pd
 #         df = df.drop(columns=["Item"])
 
 #     # --------------------------------------------------
-#     # 6. Add Item column as first column (reset counter)
+#     # 6. Add Item column
 #     # --------------------------------------------------
 #     df.insert(0, "Item", range(1, len(df) + 1))
 
 #     # --------------------------------------------------
 #     # 7. Clean whitespace
 #     # --------------------------------------------------
-#     df = df.applymap(
+#     df = df.map(
 #         lambda x: " ".join(str(x).split()) if pd.notna(x) else x
 #     )
 
 #     return df
-
-import pandas as pd
 
 def format_critical_components_df(raw_df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -2426,9 +2370,9 @@ def format_critical_components_df(raw_df: pd.DataFrame) -> pd.DataFrame:
     # --------------------------------------------------
     df = raw_df.rename(columns={
         0: "Name",
-        2: "Manufacturer/ trademark",
-        3: "Type / Model",
-        5: "Technical data and securement means",
+        3: "Manufacturer/ trademark",
+        5: "Type / Model",
+        7: "Technical data and securement means",
         9: "Mark(s) of conformity"
     })
 
@@ -2483,6 +2427,12 @@ def format_critical_components_df(raw_df: pd.DataFrame) -> pd.DataFrame:
     )
 
     return df
+
+
+ 
+
+
+
 
 
 
@@ -2974,14 +2924,147 @@ import pandas as pd
 from typing import Optional
 from pathlib import Path
 
+# def load_cdr_components_df(directory: str) -> Optional[pd.DataFrame]:
+#     """
+#     Loads CDR Components table from .xlsx / .xls / XML / HTML disguised files.
+#     Removes NOTES automatically.
+#     """
+
+#     print("\n🔍 [CDR EXCEL] Starting Excel-based component extraction")
+#     print(f"📂 Directory: {directory}")
+
+#     for path in Path(directory).iterdir():
+
+#         if path.name.startswith("~$"):
+#             continue
+#         if path.suffix.lower() not in (".xlsx", ".xls"):
+#             continue
+
+#         print(f"\n📄 Checking file: {path}")
+
+#         tables = None
+
+#         try:
+#             # -------------------------------
+#             # Explicit .xls handling
+#             # -------------------------------
+#             if path.suffix.lower() == ".xls":
+#                 print("   ✅ Detected legacy .xls")
+#                 tables = pd.read_excel(
+#                     path,
+#                     sheet_name=None,
+#                     header=None,
+#                     engine="xlrd"
+#                 )
+
+#             else:
+#                 # -------------------------------
+#                 # Inspect header bytes
+#                 # -------------------------------
+#                 with open(path, "rb") as f:
+#                     head = f.read(200)
+
+#                 is_zip = head.startswith(b"PK")
+#                 is_xml = head.lstrip().startswith(b"<?xml")
+#                 is_html = head.lstrip().lower().startswith(b"<html")
+
+#                 if is_zip:
+#                     print("   ✅ Detected real XLSX")
+#                     tables = pd.read_excel(path, sheet_name=None, header=None)
+
+#                 elif is_xml or is_html:
+#                     print("   ✅ Detected XML / HTML export")
+#                     dfs = pd.read_html(path)
+#                     tables = {f"sheet_{i}": df for i, df in enumerate(dfs)}
+
+#                 else:
+#                     print("   ⚠️ Unknown format → trying CSV fallback")
+#                     df = pd.read_csv(path, header=None)
+#                     tables = {"csv": df}
+
+#         except Exception as e:
+#             print(f"   ❌ Failed to read file: {e}")
+#             continue
+
+#         # -------------------------------
+#         # Scan tables for Components header
+#         # -------------------------------
+#         for sheet, df_raw in tables.items():
+#             print(f"   🔎 Scanning: {sheet}")
+
+#             if df_raw is None or df_raw.empty:
+#                 continue
+
+#             header_row = None
+#             for i, row in df_raw.iterrows():
+#                 norm = (
+#                     row.astype(str)
+#                     .str.lower()
+#                     .str.replace(" ", "")
+#                     .str.strip()
+#                 )
+
+#                 if (
+#                     norm.str.contains("photo").any()
+#                     and norm.str.contains("name").any()
+#                     and norm.str.contains("manufacturer").any()
+#                     and norm.str.contains("conform").any()
+#                 ):
+#                     header_row = i
+#                     break
+
+#             if header_row is None:
+#                 continue
+
+#             print(f"   ✅ Header detected at row {header_row}")
+
+#             # -------------------------------
+#             # Extract table
+#             # -------------------------------
+#             headers = (
+#                 df_raw.iloc[header_row]
+#                 .astype(str)
+#                 .str.strip()
+#                 .replace("nan", "")
+#                 .tolist()
+#             )
+
+#             data = df_raw.iloc[header_row + 1:].copy()
+#             data.columns = headers
+
+#             # Remove NOTES and everything below
+#             notes_idx = data[
+#                 data.apply(
+#                     lambda r: r.astype(str)
+#                     .str.contains(r"^notes:", case=False, na=False)
+#                     .any(),
+#                     axis=1
+#                 )
+#             ].index
+
+#             if not notes_idx.empty:
+#                 data = data.loc[: notes_idx[0] - 1]
+
+#             data = data.dropna(axis=1, how="all")
+#             data = data.reset_index(drop=True)
+
+#             print("✅ [CDR EXCEL] Components table extracted")
+#             print(f"   🔢 Shape: {data.shape}")
+
+#             return data
+
+#     print("\n⚠️ [WARN] No valid CDR Components table found")
+#     return None
+
+
 def load_cdr_components_df(directory: str) -> Optional[pd.DataFrame]:
     """
     Loads CDR Components table from .xlsx / .xls / XML / HTML disguised files.
     Removes NOTES automatically.
     """
 
-    print("\n🔍 [CDR EXCEL] Starting Excel-based component extraction")
-    print(f"📂 Directory: {directory}")
+    print("\n [CDR EXCEL] Starting Excel-based component extraction")
+    print(f" Directory: {directory}")
 
     for path in Path(directory).iterdir():
 
@@ -2990,7 +3073,7 @@ def load_cdr_components_df(directory: str) -> Optional[pd.DataFrame]:
         if path.suffix.lower() not in (".xlsx", ".xls"):
             continue
 
-        print(f"\n📄 Checking file: {path}")
+        print(f"\n Checking file: {path}")
 
         tables = None
 
@@ -2999,7 +3082,7 @@ def load_cdr_components_df(directory: str) -> Optional[pd.DataFrame]:
             # Explicit .xls handling
             # -------------------------------
             if path.suffix.lower() == ".xls":
-                print("   ✅ Detected legacy .xls")
+                print("    Detected legacy .xls")
                 tables = pd.read_excel(
                     path,
                     sheet_name=None,
@@ -3019,28 +3102,28 @@ def load_cdr_components_df(directory: str) -> Optional[pd.DataFrame]:
                 is_html = head.lstrip().lower().startswith(b"<html")
 
                 if is_zip:
-                    print("   ✅ Detected real XLSX")
+                    print("    Detected real XLSX")
                     tables = pd.read_excel(path, sheet_name=None, header=None)
 
                 elif is_xml or is_html:
-                    print("   ✅ Detected XML / HTML export")
+                    print("    Detected XML / HTML export")
                     dfs = pd.read_html(path)
                     tables = {f"sheet_{i}": df for i, df in enumerate(dfs)}
 
                 else:
-                    print("   ⚠️ Unknown format → trying CSV fallback")
+                    print("    Unknown format → trying CSV fallback")
                     df = pd.read_csv(path, header=None)
                     tables = {"csv": df}
 
         except Exception as e:
-            print(f"   ❌ Failed to read file: {e}")
+            print(f"    Failed to read file: {e}")
             continue
 
         # -------------------------------
         # Scan tables for Components header
         # -------------------------------
         for sheet, df_raw in tables.items():
-            print(f"   🔎 Scanning: {sheet}")
+            print(f"    Scanning: {sheet}")
 
             if df_raw is None or df_raw.empty:
                 continue
@@ -3066,7 +3149,7 @@ def load_cdr_components_df(directory: str) -> Optional[pd.DataFrame]:
             if header_row is None:
                 continue
 
-            print(f"   ✅ Header detected at row {header_row}")
+            print(f"    Header detected at row {header_row}")
 
             # -------------------------------
             # Extract table
@@ -3095,16 +3178,40 @@ def load_cdr_components_df(directory: str) -> Optional[pd.DataFrame]:
             if not notes_idx.empty:
                 data = data.loc[: notes_idx[0] - 1]
 
+            # data = data.dropna(axis=1, how="all")
+            # data = data.reset_index(drop=True)
+
+            # print(" [CDR EXCEL] Components table extracted")
+            # print(f"    Shape: {data.shape}")
             data = data.dropna(axis=1, how="all")
             data = data.reset_index(drop=True)
 
-            print("✅ [CDR EXCEL] Components table extracted")
-            print(f"   🔢 Shape: {data.shape}")
+            # --------------------------------------------------
+            # DROP first two columns (Excel-specific cleanup)
+            # --------------------------------------------------
+            if data.shape[1] >= 2:
+                data = data.iloc[:, 2:]
+
+            # --------------------------------------------------
+            # ADD Item column as row number
+            # --------------------------------------------------
+            data.insert(0, "Item", range(1, len(data) + 1))
+
+            print(" [CDR EXCEL] Components table extracted")
+            print(f"    Shape: {data.shape}")
+
+
 
             return data
 
     print("\n⚠️ [WARN] No valid CDR Components table found")
     return None
+
+
+
+
+
+
 
 
 import os

@@ -15,8 +15,8 @@ import uuid, os
 from fastapi import Depends
 from api.auth.jwt_auth.utils import get_current_user
 from db.database import *
-from db.database import COSMOS_DB_project_Container, COSMOS_DB_URI,COSMOS_DB_KEY,COSMOS_DB_DATABASE,COSMOS_DB_project_TRF_Container,COSMOS_DB_project_CDR_Container
-from projects.models import Project,ProjectCreate,ProjectFilter,FinalizeReportPayload,LetterGeneration
+from db.database import COSMOS_DB_project_Container, COSMOS_DB_URI,COSMOS_DB_KEY,COSMOS_DB_DATABASE,COSMOS_DB_project_TRF_Container,COSMOS_DB_project_CDR_Container,COSMOS_DB_project_LETTER_Container
+from projects.models import Project,ProjectCreate,ProjectFilter,FinalizeReportPayload,LetterGeneration,RegenratePayload
 from azure.cosmos import exceptions
 from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueClient
@@ -82,7 +82,6 @@ print('COSMOS_DB_DATABASE', COSMOS_DB_DATABASE)
 
 COSMOS_DB_project_TRF_Container = os.getenv("cosmos-db-project-trf-container")
 print('COSMOS_DB_project_TRF_Container', COSMOS_DB_project_TRF_Container)
-
 
 client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
 database = client.get_database_client(COSMOS_DB_DATABASE)
@@ -1169,15 +1168,14 @@ def generate_cdr(projectId: str):
         if cdr_percentage < 100:
             query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
             docs = list(
-                projects_container.query_items(
+                COSMOS_DB_project_Container.query_items(
                     query=query,
                     enable_cross_partition_query=True,
                 )
             )
 
-            if not docs:
-                print(f" Project not found: {project_id}")
-                return True
+            print('docs', docs)
+
 
             project_doc = docs[0]
             update_project_progress_CDR(
@@ -2028,7 +2026,7 @@ async def finalize_trf_report(payload: FinalizeReportPayload):
 
     BASE_DIR = Path(__file__).resolve().parent.parent
     DATA_DIR = BASE_DIR / "data"
-    INPUT_JSON_PATH = DATA_DIR / "input_files" / "input.docx"
+    INPUT_DOCX_PATH = DATA_DIR / "input_files" / "input.docx"
     OUTPUT_JSON_PATH = DATA_DIR / project_id / "final_output.json"
     OUTPUT_DOCX_PATH = DATA_DIR / project_id / "final_output.docx"
 
@@ -2040,7 +2038,7 @@ async def finalize_trf_report(payload: FinalizeReportPayload):
     )
 
     update_docx_from_existing_json(
-        input_docx_path=INPUT_JSON_PATH,
+        input_docx_path=INPUT_DOCX_PATH,
         input_json_path=OUTPUT_JSON_PATH,
         output_docx_path=OUTPUT_DOCX_PATH,
         projectId=project_id
@@ -2151,6 +2149,8 @@ async def finalize_letter_report(payload: FinalizeReportPayload):
     project_dir = DATA_DIR / project_id
     project_dir.mkdir(parents=True, exist_ok=True)
 
+    non_conforming_images_dir = DATA_DIR / project_id / "non_conforming_images"
+
     letter_template_path = (
         BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "Letter_Template.docx"
     )
@@ -2172,7 +2172,8 @@ async def finalize_letter_report(payload: FinalizeReportPayload):
         letter_json_path=local_body_json,
         letter_header_json_path=local_header_json,
         letter_template_docx=letter_template_path,
-        output_letter_docx=output_docx
+        output_letter_docx=output_docx,
+        temp_image_dir=non_conforming_images_dir
     )
 
     save_local_jsons_and_docx_to_blob_and_cosmos_for_letter(
@@ -2188,3 +2189,158 @@ async def finalize_letter_report(payload: FinalizeReportPayload):
         "projectId": project_id,
         "blob_url": blob_url
     }
+
+
+def update_trf_project_progress(
+    project_doc: dict,
+    trf_stage: str,
+    trf_percentage: int = 0,
+    trf_step: str | None = None,
+    error: str | None = None,
+    last_updated: datetime | None = None,
+    trf_completed: bool = False
+):
+    project_doc["Project_Progress"] = {
+        "trf_stage": trf_stage,
+        "trf_percentage": trf_percentage,
+        "trf_step": trf_step,
+        "last_updated": (last_updated or datetime.utcnow()).isoformat(),
+        "error": error,
+        "trf_completed": trf_completed
+    }
+
+    COSMOS_DB_project_Container.upsert_item(project_doc)
+    print(f" Progress updated → {trf_percentage}% | {trf_stage}")
+
+
+
+@router.post("/trf-regenrate-reset")
+async def regenrate_clear(payload: RegenratePayload):
+    try:
+        project_id = payload.projectId
+        trf_report_entry_delete = delete_by_project_id(
+            COSMOS_DB_project_trf_Container, project_id
+        )
+
+        delete_blobs_inside_folder(f"Documents/{project_id}/Generated_trf_Report/",container_client)
+
+        delete_local_project_outputs(project_id,"TRF")
+
+        query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
+        docs = list(
+            projects_container.query_items(
+                query=query,
+                enable_cross_partition_query=True,
+            )
+        )
+
+        if not docs:
+            raise Exception("Project not found")
+
+        project_doc = docs[0]
+
+        update_trf_project_progress(
+            project_doc,
+            trf_stage="TRF Regnerate Initiated",
+            trf_percentage=0,
+            trf_step="TRF Regnerate Clicked",
+            trf_completed=False
+        )
+
+        return {
+            "status": "success",
+            "message": "TRF Regenrate Files Cleanup done successfully"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@router.post("/cdr-regenrate-reset")
+async def regenrate_clear(payload: RegenratePayload):
+    try:
+        project_id = payload.projectId
+        cdr_report_entry_delete = delete_by_project_id(
+            COSMOS_DB_project_CDR_Container, project_id
+        )
+
+        delete_blobs_inside_folder(f"Documents/{project_id}/Generated_cdr_Report/",container_client)
+
+        delete_local_project_outputs(project_id,"CDR")
+
+        query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
+        docs = list(
+            projects_container.query_items(
+                query=query,
+                enable_cross_partition_query=True,
+            )
+        )
+
+        project_doc = docs[0]
+
+        update_project_progress_CDR(
+            project_doc,
+            cdr_stage="CDR Regnerate Initiated",
+            cdr_percentage=0,
+            cdr_step="CDR Regnerate Clicked",
+            cdr_completed=False
+        )
+
+        return {
+            "status": "success",
+            "message": "CDR Regenrate Files Cleanup done successfully"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+@router.post("/letter-regenrate-reset")
+async def regenrate_clear(payload: RegenratePayload):
+    try:
+        project_id = payload.projectId
+        letter_report_entry_delete = delete_by_project_id(
+            COSMOS_DB_project_LETTER_Container, project_id
+        )
+
+        delete_blobs_inside_folder(f"Documents/{project_id}/Letters Templates/",container_client)
+
+        delete_local_project_outputs(project_id,"LETTER")
+
+        query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
+        docs = list(
+            projects_container.query_items(
+                query=query,
+                enable_cross_partition_query=True,
+            )
+        )
+
+        project_doc = docs[0]
+
+        update_letter_progress(
+            project_doc,
+            letter_stage="Letter Regnerate Initiated",
+            letter_percentage=0,
+            letter_step="Letter Regnerate Clicked",
+            letter_completed=False
+        )
+
+        return {
+            "status": "success",
+            "message": "Letter Regenrate Files Cleanup done successfully"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+

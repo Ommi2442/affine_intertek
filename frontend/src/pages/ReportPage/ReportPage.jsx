@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  DialogContentText,
   Tooltip,
   CircularProgress,
 } from '@mui/material';
@@ -45,6 +46,8 @@ import { loadPdfWithCache } from '../../components/loadPdfWithCache';
 import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 import { idb_clear_all, idb_set } from '../../utils/idb';
+import { reGenerateTrfClear } from '../../redux/api/RegenerateApi';
+
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -144,6 +147,9 @@ const ReportPage = () => {
   const [finalTrfJson, setFinalTrfJson] = useState(null);
   const [isFinalJsonLoaded, setIsFinalJsonLoaded] = useState(false);
   const trfTriggeredRef = useRef(false);
+
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const projectMeta = {
     standard: state?.standard || '',
@@ -527,16 +533,30 @@ const ReportPage = () => {
     );
   };
 
-  const handleRegenerate = () => {
-    navigate('/create-project', {
-      state: {
-        standard,
+  const handleConfirmRegenerate = async () => {
+    try {
+      setLoading(true);
+
+      const payload = {
         projectId,
-        clientName,
-        product,
-      },
-    });
+      };
+
+      await reGenerateTrfClear(payload);
+
+      navigate('/create-project', {
+        state: {
+          standard,
+          projectId,
+          clientName,
+          product,
+        },
+      });
+    } finally {
+      setLoading(false);
+      setOpenConfirm(false);
+    }
   };
+
 
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -1054,7 +1074,7 @@ const ReportPage = () => {
                     text: 'Regenerate',
                     icon: '/images/regenrate_icon.png',
                     bg: '#417581',
-                    action: handleRegenerate,
+                    action: () => setOpenConfirm(true),
                   },
                 ].map((btn, i) => (
                   <Button
@@ -1305,7 +1325,52 @@ const ReportPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+    <Dialog
+      open={openConfirm}
+      onClose={() => setOpenConfirm(false)}
+      maxWidth="xs"
+      fullWidth
+    >
+      <DialogTitle>
+        Confirm Regeneration
+      </DialogTitle>
+
+      <DialogContent>
+        <DialogContentText>
+          This action will delete the existing trf report files and regenerate the project.
+          Are you sure you want to continue?
+        </DialogContentText>
+      </DialogContent>
+
+      <DialogActions>
+        <Button
+          onClick={() => setOpenConfirm(false)}
+          color="inherit"
+          disabled={loading}
+        >
+          Cancel
+        </Button>
+
+        <Button
+          onClick={handleConfirmRegenerate}
+          variant="contained"
+          color="primary"
+          sx={{
+            backgroundColor: 'rgb(65, 117, 129)',
+            '&:hover': {
+              backgroundColor: 'rgb(55, 100, 110)',
+            },
+          }}
+          disabled={loading}
+        >
+          {loading ? 'Processing...' : 'Proceed'}
+        </Button>
+      </DialogActions>
+    </Dialog>
+
     </Box>
+    
   );
 };
 

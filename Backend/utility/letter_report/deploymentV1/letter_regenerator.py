@@ -41,14 +41,37 @@ def download_images_from_urls(image_urls, download_dir):
     return downloaded
 
 
+# def extract_table_from_json(data, key_name):
+#     """
+#     Extract dataframe table stored in JSON item.value
+#     """
+#     for page in data.get("pages", []):
+#         for item in page.get("items", []):
+#             if item.get("key") == key_name and isinstance(item.get("value"), list):
+#                 return pd.DataFrame(item["value"])
+
+#     return None
+
+
 def extract_table_from_json(data, key_name):
     """
     Extract dataframe table stored in JSON item.value
+    Ignores text_support metadata columns.
     """
     for page in data.get("pages", []):
         for item in page.get("items", []):
             if item.get("key") == key_name and isinstance(item.get("value"), list):
-                return pd.DataFrame(item["value"])
+
+                df = pd.DataFrame(item["value"])
+
+                # --------------------------------------------------
+                # DROP metadata columns (DO NOT render in DOCX)
+                # --------------------------------------------------
+                for col in ["text_support","is_user_edited"]:
+                    if col in df.columns:
+                        df = df.drop(columns=[col])
+
+                return df
 
     return None
 
