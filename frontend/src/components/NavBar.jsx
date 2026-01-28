@@ -39,7 +39,7 @@ const Navbar = ({ signOutClickHandler, openProjectModal }) => {
 
     // Force MSAL to clear account state
     instance.logoutRedirect({
-      postLogoutRedirectUri: 'http://localhost:5173/',
+      postLogoutRedirectUri: 'https://calm-rock-0311b710f.6.azurestaticapps.net/',
       authority: `https://login.microsoftonline.com/common/oauth2/v2.0/logout`,
     });
 
