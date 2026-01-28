@@ -81,7 +81,15 @@ const RenderSheet1Excel = ({
   };
 
   useEffect(() => {
-    setLocalItems(sheet.Items.map((i) => ({ ...i })));
+    setLocalItems((prev) => {
+      const prevExtra = prev.filter(
+        (p) =>
+          p.prefix?.startsWith('Manufacturer ') &&
+          !sheet.Items.some((s) => s.prefix === p.prefix && s.field === p.field)
+      );
+
+      return [...sheet.Items.map((i) => ({ ...i })), ...prevExtra];
+    });
   }, [sheet.Items]);
 
   const toBackendContact = (value) => {
@@ -208,7 +216,7 @@ const RenderSheet1Excel = ({
 
   /* ---------------- GENERIC TABLE ---------------- */
   const renderTable = (filterFn) => {
-    let lastWasBlank = false; // ✅ must be here
+    let lastWasBlank = false;
 
     return (
       <TableContainer component={Paper} sx={{ width: '100%' }}>
@@ -292,11 +300,17 @@ const RenderSheet1Excel = ({
       }
     });
 
-    const nextPrefix = `Manufacturer ${max + 1}`;
+    const nextIndex = max + 1;
+    const nextPrefix = `Manufacturer ${nextIndex}`;
 
     const clones = base.map((it) => ({
       ...JSON.parse(JSON.stringify(it)),
       prefix: nextPrefix,
+
+      // IMPORTANT: keep row number SAME so layout stays identical
+      question_cell: it.question_cell,
+      answer_cell: `${it.answer_cell}_m${nextIndex}`, // only make answer_cell unique
+
       value: null,
       is_user_modified: false,
       is_user_approved: false,
