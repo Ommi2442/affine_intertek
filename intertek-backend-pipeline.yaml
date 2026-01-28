@@ -1,15 +1,15 @@
 trigger:
   branches:
     include:
-    - Dev
+    - staging_final
   paths:
     include:
       - Backend
 
 variables:
-- group: intertek-backend-dev
+- group: intertek-backend-dev-internal
 - name: IMAGE_TAG
-  value: v45
+  value: v2
 stages:
 - stage: BuildAndPush
   displayName: 'Build and Push Backend Docker Image'
@@ -71,7 +71,15 @@ stages:
           az containerapp update \
             --name $CONTAINER_APP_NAME \
             --resource-group $CONTAINER_APP_RESOURCE_GROUP \
-            --image $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG \
+            --container-name conapp-intertek-esus-staging2 \
+            --image $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG 
+
+          az containerapp update \
+            --name $CONTAINER_APP_NAME \
+            --resource-group $CONTAINER_APP_RESOURCE_GROUP \
+            --container-name container-test-worker \
+            --image $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG 
+            
       env:
         CONTAINER_APP_NAME: $(CONTAINER_APP_NAME)
         CONTAINER_APP_RESOURCE_GROUP: $(RESOURCE_GROUP)
