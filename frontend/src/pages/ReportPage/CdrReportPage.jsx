@@ -400,7 +400,9 @@ const CdrReportPage = () => {
                     variant="contained"
                     className="generate-btn"
                     style={{
-                      background: '#417581',
+                      background: !cdrJson ? '#A9A9A9' : '#417581', // grey out
+                      cursor: !cdrJson ? 'not-allowed' : 'pointer',
+                      opacity: !cdrJson ? 0.7 : 1,
                     }}
                     onClick={handleGenerateLetter}
                   >

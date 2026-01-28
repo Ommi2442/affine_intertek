@@ -34,6 +34,12 @@ const makeEmptyRow = (headers) => {
 const normalizeKey = (k) =>
   typeof k === 'string' ? k.trim().replace(/\s+/g, ' ') : k;
 
+const HIDDEN_COLUMNS = new Set([
+  'text_support',
+  'confidence',
+  'is_user_edited',
+]);
+
 const LetterDataFrameTable = ({
   item,
   editMode,
@@ -53,7 +59,12 @@ const LetterDataFrameTable = ({
       if (r && typeof r === 'object') {
         Object.keys(r).forEach((k) => {
           const nk = normalizeKey(k);
-          if (!nk.startsWith('__')) keySet.add(nk);
+
+          if (nk.startsWith('__') || HIDDEN_COLUMNS.has(nk.toLowerCase())) {
+            return;
+          }
+
+          keySet.add(nk);
         });
       }
     });
@@ -73,6 +84,7 @@ const LetterDataFrameTable = ({
     next[rowIndex] = {
       ...next[rowIndex],
       [originalKey]: value,
+      is_user_edited: true,
     };
 
     item.value = next;
@@ -179,12 +191,17 @@ const LetterDataFrameTable = ({
               >
                 {/*  Show dot only for existing rows */}
                 {!row.__isNew &&
-                  renderConfidenceColor(item.confidence, false, true, true)}
+                  renderConfidenceColor(
+                    item.confidence,
+                    row.is_user_edited,
+                    true,
+                    true
+                  )}
 
                 {/*  Hover buttons after dot */}
                 {hoveredRow === rowIndex &&
                   typeof renderHoverActions === 'function' &&
-                  renderHoverActions(null, null, true, item)}
+                  renderHoverActions(null, null, true, row)}
               </TableCell>
 
               {editMode && (
