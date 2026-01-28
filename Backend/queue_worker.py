@@ -13,6 +13,7 @@ from utility.cdr_report.CDR_Pipelines.main import main2
 from utility.cdr_report.CDR_Pipelines.compiler import fill_excel_from_json
 from pathlib import Path
 
+
 # Azure Config
 # --------------------------
 # CONNECTION_STRING = os.getenv("AZURE_CONNECTION_STRING")
