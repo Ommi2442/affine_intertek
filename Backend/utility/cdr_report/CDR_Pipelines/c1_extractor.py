@@ -48,36 +48,82 @@ def classify_in_batches(df, batch_size):
 
     return pd.DataFrame(results)
 
+# def run_extraction():
+#     configs.require_runtime()
+
+#     #print("Starting Extraction...")
+#     # Load master sheet
+#     master_df = pd.read_excel(configs.MASTER_SHEET_PATH, dtype=str)
+
+#     # Classify
+#     results_df = classify_in_batches(master_df, configs.BATCH_SIZE)
+
+#     # Rule-count scoring
+#     results_df["rules_triggered_count"] = results_df["triggered_rules"].apply(
+#         lambda x: len(x) if isinstance(x, list) else 0
+#     )
+#     results_df["rules_triggered_total"] = 8
+#     results_df["rules_score"] = (
+#         results_df["rules_triggered_count"] /
+#         results_df["rules_triggered_total"]
+#     )
+
+#     # Confidence level
+#     results_df["confidence_level"] = results_df["confidence_score"].apply(c1_rules.confidence_level)
+
+#     # Merge back to master
+#     final_df = master_df.copy()
+#     results_df["row_id"] = results_df["row_id"].astype(int)
+#     final_df = final_df.join(results_df.set_index("row_id"), how="left")
+
+#     # Export
+#     final_df.to_excel(configs.OUTPUT_PATH_FINAL, index=False)
+
+#     #print("✔ Critical component classification complete")
+#     #print(f"✔ Output saved to: {configs.OUTPUT_PATH_FINAL}")
+
 def run_extraction():
-    configs.require_runtime()
+        configs.require_runtime()
 
-    #print("Starting Extraction...")
-    # Load master sheet
-    master_df = pd.read_excel(configs.MASTER_SHEET_PATH, dtype=str)
+        print("Starting Extraction...")
+        # Load master sheet
 
-    # Classify
-    results_df = classify_in_batches(master_df, configs.BATCH_SIZE)
+        master_path = configs.MASTER_SHEET_PATH
 
-    # Rule-count scoring
-    results_df["rules_triggered_count"] = results_df["triggered_rules"].apply(
-        lambda x: len(x) if isinstance(x, list) else 0
-    )
-    results_df["rules_triggered_total"] = 8
-    results_df["rules_score"] = (
-        results_df["rules_triggered_count"] /
-        results_df["rules_triggered_total"]
-    )
+        # --------------------------------
+        # CASE: MASTER BOM DOES NOT EXIST
+        # --------------------------------
+        if not master_path.exists():
+            print("ℹ Master BOM not found. Writing empty extraction output.")
+            return
+        
+        
+        master_df = pd.read_excel(configs.MASTER_SHEET_PATH, dtype=str)
 
-    # Confidence level
-    results_df["confidence_level"] = results_df["confidence_score"].apply(c1_rules.confidence_level)
+        
+        # Classify
+        results_df = classify_in_batches(master_df, configs.BATCH_SIZE)
 
-    # Merge back to master
-    final_df = master_df.copy()
-    results_df["row_id"] = results_df["row_id"].astype(int)
-    final_df = final_df.join(results_df.set_index("row_id"), how="left")
+        # Rule-count scoring
+        results_df["rules_triggered_count"] = results_df["triggered_rules"].apply(
+            lambda x: len(x) if isinstance(x, list) else 0
+        )
+        results_df["rules_triggered_total"] = 8
+        results_df["rules_score"] = (
+            results_df["rules_triggered_count"] /
+            results_df["rules_triggered_total"]
+        )
 
-    # Export
-    final_df.to_excel(configs.OUTPUT_PATH_FINAL, index=False)
+        # Confidence level
+        results_df["confidence_level"] = results_df["confidence_score"].apply(c1_rules.confidence_level)
 
-    #print("✔ Critical component classification complete")
-    #print(f"✔ Output saved to: {configs.OUTPUT_PATH_FINAL}")
+        # Merge back to master
+        final_df = master_df.copy()
+        results_df["row_id"] = results_df["row_id"].astype(int)
+        final_df = final_df.join(results_df.set_index("row_id"), how="left")
+
+        # Export
+        final_df.to_excel(configs.OUTPUT_PATH_FINAL, index=False)
+
+        print("✔ Critical component classification complete")
+        print(f"✔ Output saved to: {configs.OUTPUT_PATH_FINAL}")

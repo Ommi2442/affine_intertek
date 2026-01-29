@@ -23,6 +23,15 @@ const makeEmptyRow = (headers) => {
   return row;
 };
 
+const normalizeKey = (k) =>
+  typeof k === 'string' ? k.trim().replace(/\s+/g, ' ') : k;
+
+const HIDDEN_COLUMNS = new Set([
+  'text_support',
+  'confidence',
+  'is_user_edited',
+]);
+
 const LetterCriticalDataFrameTable = ({
   item,
   editMode,
@@ -33,17 +42,26 @@ const LetterCriticalDataFrameTable = ({
 
   const rows = item.value;
 
-  // 🔹 Matrix-style headers: use all numeric keys
+  // Matrix-style headers: use all numeric keys
   const HEADERS = React.useMemo(() => {
     if (!rows.length) return [];
+
     const colSet = new Set();
-    rows.forEach((r) =>
+
+    rows.forEach((r) => {
+      if (!r || typeof r !== 'object') return;
+
       Object.keys(r).forEach((k) => {
-        if (k !== 'text_support' && k !== '__isNew') {
-          colSet.add(String(k));
+        const nk = normalizeKey(k);
+
+        if (nk.startsWith('__') || HIDDEN_COLUMNS.has(nk.toLowerCase())) {
+          return;
         }
-      })
-    );
+
+        colSet.add(nk);
+      });
+    });
+
     return Array.from(colSet).sort((a, b) => Number(a) - Number(b));
   }, [rows]);
 
@@ -150,13 +168,13 @@ const LetterCriticalDataFrameTable = ({
                   renderConfidenceColor(
                     item.confidence,
                     row.is_user_edited,
-                    row.ai_fillable,
+                    true,
                     true
                   )}
 
                 {hoveredRow === rowIndex &&
                   typeof renderHoverActions === 'function' &&
-                  renderHoverActions(null, null, true, item)}
+                  renderHoverActions(null, null, true, row)}
               </TableCell>
 
               {editMode && (

@@ -2344,3 +2344,81 @@ async def regenrate_clear(payload: RegenratePayload):
 
 
 
+
+@router.post("/upload_images")
+async def upload_images(
+    background_tasks: BackgroundTasks,
+    projectId: str = Form(...),
+    files: list[UploadFile] = File(...),
+    report_type: str = Form(...),
+):
+    report_type = report_type.lower()
+
+    if report_type not in {"trf", "cdr","letter"}:
+        raise HTTPException(400, "Invalid report_type")
+
+    uploaded_urls = []
+
+    
+    user_upload_key = f"User_uploaded_{report_type}_images"
+
+    folder_path = f"{BLOB_PREFIX}/{projectId}/user_uploded_images/{report_type}"
+
+    for file in files:
+        filename = os.path.basename(file.filename)
+        blob_path = f"{folder_path}/{filename}"
+        blob_client = container_client.get_blob_client(blob_path)
+
+        data = await file.read()
+        blob_client.upload_blob(data, overwrite=True)
+
+        uploaded_urls.append({
+            "filename": filename,
+            "blob_url": blob_client.url
+        })
+
+    if not uploaded_urls:
+        raise HTTPException(status_code=400, detail="No files uploaded")
+
+    query = f"SELECT * FROM c WHERE c.Project_Id = '{projectId}'"
+    docs = list(
+        COSMOS_DB_project_Container.query_items(
+            query=query,
+            enable_cross_partition_query=True
+        )
+    )
+
+    if not docs:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    project_doc = docs[0]
+
+    
+    if user_upload_key not in project_doc:
+        project_doc[user_upload_key] = []
+
+    now = datetime.utcnow().isoformat()
+
+    
+    for record in project_doc[user_upload_key]:
+        if record.get("Deleted_At") is None:
+            record["Deleted_At"] = now
+
+
+    for item in uploaded_urls:
+        project_doc[user_upload_key].append({
+            "filename": item["filename"],
+            "url": item["blob_url"],
+            "uploaded_at": now,
+            "Deleted_At": None
+        })
+
+    COSMOS_DB_project_Container.upsert_item(project_doc)
+    first_file = uploaded_urls[0]
+
+    return {
+        "status": "success",
+        "message": f"Image uploaded successfully for {report_type.upper()}",
+        "filename": first_file["filename"],
+        "blob_url": first_file["blob_url"]
+    }

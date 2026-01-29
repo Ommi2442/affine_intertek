@@ -96,26 +96,22 @@ const CdrReport = forwardRef(
       let cancelled = false;
 
       const load = async () => {
-        // HARD REFRESH → reuse IndexedDB only
         if (isHardRefresh) {
           const saved = await idb_get(storageKey, STORES.CDR);
           if (cancelled) return;
 
           if (saved) {
-            console.log('CDR restored from IndexedDB (inside CdrReport)');
             setFullJson(saved);
             setExpandedSheet(saved?.Sheets?.[0]?.sheet_no ?? null);
             return;
           }
 
-          // fallback only if cache truly missing
           console.warn('No CDR cache found → falling back to backend JSON');
           setFullJson(jsonData);
           setExpandedSheet(jsonData?.Sheets?.[0]?.sheet_no ?? null);
           return;
         }
 
-        // NORMAL LOAD → backend is authoritative
         setFullJson(jsonData);
         setExpandedSheet(jsonData?.Sheets?.[0]?.sheet_no ?? null);
 
@@ -174,7 +170,8 @@ const CdrReport = forwardRef(
         if (!sheet) return prev;
 
         const item = sheet.Items[itemIndex];
-        if (!item || item.is_user_approved) return prev;
+        if (!item || item.is_user_approved || item.ai_fillable !== true)
+          return prev;
 
         const c = Number(item.confidence);
         const normalized = c <= 1 ? Math.round(c * 100) : Math.round(c);
@@ -219,9 +216,13 @@ const CdrReport = forwardRef(
 
         item.value = value;
 
-        if (isModified && item.is_user_edited !== true) {
-          item.is_user_edited = true; //  ONLY typing sets this
-          onConfidenceChange?.(); //  realtime user-edited
+        if (
+          isModified &&
+          item.ai_fillable === true &&
+          item.is_user_edited !== true
+        ) {
+          item.is_user_edited = true;
+          onConfidenceChange?.();
         }
 
         persist(next);

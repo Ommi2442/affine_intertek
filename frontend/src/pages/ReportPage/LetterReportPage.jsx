@@ -165,10 +165,13 @@ const LetterReportPage = () => {
 
 
   const handleCitationLinkClick = (filename, page, text, blob_url) => {
-    // ---- XLSX → DOWNLOAD ----
-    if (filename?.toLowerCase().endsWith('.xlsx')) {
+    // ---- XLSX and DOCX → DOWNLOAD ----
+    if (
+      filename?.toLowerCase().endsWith('.xlsx') ||
+      filename?.toLowerCase().endsWith('.docx')
+    ) {
       if (!blob_url) {
-        console.error('Missing blob_url for XLSX:', filename);
+        console.error('Missing blob_url for:', filename);
         return;
       }
 
@@ -437,7 +440,16 @@ const LetterReportPage = () => {
                           )
                         }
                       >
-                        {item.filename} (Page {item.page})
+                        {item.filename}
+                        {item.filename.toLowerCase().endsWith('.xlsx') &&
+                        item.sheet
+                          ? ` (Sheet: ${item.sheet})`
+                          : item.filename.toLowerCase().endsWith('.docx') &&
+                              item.table
+                            ? ` (Table: ${item.table})`
+                            : item.page
+                              ? ` (${item.page})`
+                              : ''}
                       </Typography>
                     )}
                   </CardContent>

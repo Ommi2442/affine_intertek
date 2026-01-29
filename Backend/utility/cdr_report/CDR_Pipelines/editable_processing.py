@@ -162,10 +162,78 @@ def save_pixmaps_to_images(pixmaps: List[fitz.Pixmap], out_dir: Path, stem: str)
     return image_paths
 
 
-prompt_lm = """
-You are reading a scanned "Client Information Sheet".
+# prompt_lm = """
+# You are reading a scanned "Client Information Sheet".
 
-Extract ALL fields into a STRICT JSON object with this exact shape:
+# Extract ALL fields into a STRICT JSON object with this exact shape:
+
+# {
+#   "Applicant": {
+#     "Legal Entity Name": string or null,
+#     "DBA": string or null,
+#     "Street Address": string or null,
+#     "City, State, Postal Code, Country": string or null,
+#     "Phone Number": string or null,
+#     "Email": string or null,
+#     "Contacts": [
+#       {
+#         "Name": string or null,
+#         "Role": string or null,
+#         "Phone Number": string or null,
+#         "Email": string or null
+#       }
+#     ]
+#   },
+#   "Bill-To": {
+#     "Legal Entity Name": string or null,
+#     "Street Address": string or null,
+#     "City, State, Postal Code, Country": string or null,
+#     "Accounts Payable Contact": string or null,
+#     "Phone Number": string or null,
+#     "Email": string or null
+#   },
+#   "Manufacturer": {
+#     "Legal Entity Name": string or null,
+#     "Street Address": string or null,
+#     "City, State, Postal Code, Country": string or null,
+#     "Contacts": [
+#       {
+#         "Name": string or null,
+#         "Role": string or null,
+#         "Phone Number": string or null,
+#         "Email": string or null
+#       }
+#     ],
+#     "Estimated Production Date": string or null,
+#     "Labeling Method": string or null
+#   },
+#   "Completed By": string or null,
+#   "Dates": {
+#     "Form Completion": string or null
+#   },
+#   "Signatures": string or null
+# }
+
+# Rules:
+# - DO NOT put fields like "Legal Entity Name" at the root.
+# - All applicant fields must be inside "Applicant".
+# - All bill-to fields must be inside "Bill-To".
+# - All manufacturer/production facility fields must be inside "Manufacturer".
+# - Use null if something is missing or unreadable.
+# - Return ONLY JSON, no extra text.
+# """
+
+prompt_lm = """
+You are reading a scanned document page.
+
+Step 1 (classification):
+Decide if this page is a "Client Information Sheet (CIS)" containing Applicant and/or Manufacturer sections.
+A page is CIS if it clearly has headings/fields like: Applicant, Bill-To, Manufacturer / Production Facility,
+Legal Entity Name, DBA, Street Address, Contacts, Estimated Production Date, Labeling Method.
+
+Step 2 (output):
+- IF it IS a CIS page:
+  Extract ALL fields into a STRICT JSON object with this exact shape:
 
 {
   "Applicant": {
@@ -215,13 +283,14 @@ Extract ALL fields into a STRICT JSON object with this exact shape:
 }
 
 Rules:
-- DO NOT put fields like "Legal Entity Name" at the root.
-- All applicant fields must be inside "Applicant".
-- All bill-to fields must be inside "Bill-To".
-- All manufacturer/production facility fields must be inside "Manufacturer".
-- Use null if something is missing or unreadable.
-- Return ONLY JSON, no extra text.
+- Use null if missing/unreadable.
+- Do NOT invent or guess values.
+
+- IF it is NOT a CIS page:
+Return ONLY the raw text transcription (plain text).
+Do NOT return JSON, do NOT include is_cis, do NOT add extra labels.
 """
+
 
 def image_to_data_uri(path: Path) -> str:
     b = path.read_bytes()
@@ -334,25 +403,52 @@ def process_pdfs(
 
     return results
 
-def extract_cis():
-    import utility.cdr_report.CDR_Pipelines.configs as configs
-    configs.require_runtime()
-    results = process_pdfs(
-        src_root=configs.SRC_ROOT,
-        flattened_dir=configs.FLAT_ROOT,
-        images_root=configs.IMG_ROOT,
-        dpi=200
-    )
+# def extract_cis():
+#     import utility.cdr_report.CDR_Pipelines.configs as configs
+#     configs.require_runtime()
+#     results = process_pdfs(
+#         src_root=configs.SRC_ROOT,
+#         flattened_dir=configs.FLAT_ROOT,
+#         images_root=configs.IMG_ROOT,
+#         dpi=200
+#     )
 
     
-    all_cis=[]
+#     all_cis=[]
 
-    for pdfs in results.keys():
-        dic_cis={}
-        dic_cis['filename']=pdfs
-        dic_cis['text']=results[pdfs]['extracted'][0]
-        all_cis.append(dic_cis)
+#     for pdfs in results.keys():
+#         dic_cis={}
+#         dic_cis['filename']=pdfs
+#         dic_cis['text']=results[pdfs]['extracted'][0]
+#         all_cis.append(dic_cis)
+#     return all_cis
+
+def extract_cis():
+    results = process_pdfs(
+        src_root="src_files",
+        flattened_dir="flattened_pdfs",
+        images_root="page_images",
+        dpi=200
+    )
+ 
+    
+    all_cis=[]
+    for pdf_name, info in results.items():
+        for idx, page_text in enumerate(info["extracted"], start=1):
+            all_cis.append({
+            "filename": pdf_name, # same filename
+            "page": idx, # different page number
+            "text": page_text # different text/json per page
+            })
+ 
+#     for pdfs in results.keys():
+#         dic_cis={}
+#         dic_cis['filename']=pdfs
+#         dic_cis['text']=results[pdfs]['extracted'][0]
+#         all_cis.append(dic_cis)
     return all_cis
+ 
+
 # with open("src_files\\all_cis_info.txt", "w", encoding="utf-8") as f:
 #     json.dump(all_cis, f, indent=4, default=str)
 
