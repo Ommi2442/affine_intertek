@@ -100,45 +100,45 @@ const LetterReportPage = () => {
     setLiveLetterData(updated);
   }, [confidenceTick, headerJson]);
 
-  const autoFinaliseLetter = async () => {
-    if (!dataTableRef.current) return;
-    if (!headerJson || Object.keys(headerJson).length === 0) return;
+  // const autoFinaliseLetter = async () => {
+  //   if (!dataTableRef.current) return;
+  //   if (!headerJson || Object.keys(headerJson).length === 0) return;
 
-    const payload = dataTableRef.current.getUpdatedJson();
-    if (!payload) return;
+  //   const payload = dataTableRef.current.getUpdatedJson();
+  //   if (!payload) return;
 
-    const letter_payload = {
-      Letter_header_json: payload,
-      Letter_json_body: headerJson,
-    };
+  //   const letter_payload = {
+  //     Letter_header_json: payload,
+  //     Letter_json_body: headerJson,
+  //   };
 
-    // Persist first (same as manual finalize)
-    await idb_set(storageKey, letter_payload, STORES.LETTER);
+  //   // Persist first (same as manual finalize)
+  //   await idb_set(storageKey, letter_payload, STORES.LETTER);
 
-    dispatch(
-      finaliseLetterReportRequest({
-        projectId,
-        data: letter_payload,
-      })
-    );
+  //   dispatch(
+  //     finaliseLetterReportRequest({
+  //       projectId,
+  //       data: letter_payload,
+  //     })
+  //   );
 
-    setFinalised(true);
-  };
+  //   setFinalised(true);
+  // };
 
-  useEffect(() => {
-    if (
-      loading === false &&
-      letterJson &&
-      headerJson &&
-      dataTableRef.current &&
-      !finaliseOnceRef.current
-    ) {
-      finaliseOnceRef.current = true;
-      if (message === 'Letter Generated Successfully') {
-        autoFinaliseLetter();
-      }
-    }
-  }, [loading, letterJson, headerJson]);
+  // useEffect(() => {
+  //   if (
+  //     loading === false &&
+  //     letterJson &&
+  //     headerJson &&
+  //     dataTableRef.current &&
+  //     !finaliseOnceRef.current
+  //   ) {
+  //     finaliseOnceRef.current = true;
+  //     if (message === 'Letter Generated Successfully') {
+  //       autoFinaliseLetter();
+  //     }
+  //   }
+  // }, [loading, letterJson, headerJson]);
 
   const loadLetter = useCallback(async () => {
     if (!projectId) return;
@@ -183,6 +183,11 @@ const LetterReportPage = () => {
       await idb_set(storageKey, payload, STORES.LETTER);
       setLetterJson(payload.Letter_header_json);
       setHeaderJson(payload.Letter_json_body);
+
+      if(message == 'Letter Generated Successfully') {
+        navigate('/dashboard');
+      }
+      
     }
 
     setLoading(false);
