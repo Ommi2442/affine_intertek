@@ -1,5 +1,6 @@
 import { Box, Button, Typography } from '@mui/material';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { uploadReportImage } from '../redux/api/uploadReportImage';
 
 export const RenderPage6Images = ({
   item,
@@ -10,6 +11,11 @@ export const RenderPage6Images = ({
 }) => {
   const images = Array.isArray(item.marking_urls) ? item.marking_urls : [];
   const MAX_IMAGES = 2;
+  const [project_id, setProjectId] = useState('');
+
+  useEffect(() => {
+    setProjectId(localStorage.getItem('projectId'));
+  }, []);
 
   const updateImages = (newImages) => {
     setTables((prev) => {
@@ -23,33 +29,55 @@ export const RenderPage6Images = ({
     });
   };
 
-  const handleReplaceImage = (imgIdx, file) => {
+  // REPLACE IMAGE
+
+  const handleReplaceImage = async (imgIdx, file) => {
     if (!file) return;
-    const newUrl = URL.createObjectURL(file);
-    const updated = images.map((img, i) =>
-      i === imgIdx ? { ...img, url: newUrl } : img
-    );
-    updateImages(updated);
+
+    const existingImage = images[imgIdx];
+    if (!existingImage) return;
+
+    try {
+      const res = await uploadReportImage(project_id, 'trf', [file]);
+
+      const uploadedUrl = res?.blob_url;
+      if (!uploadedUrl) return;
+
+      // Replace ONLY the clicked index
+      const updatedImages = images.map((img, i) =>
+        i === imgIdx ? { id: img.id ?? Date.now(), url: uploadedUrl } : img
+      );
+
+      updateImages(updatedImages);
+    } catch (err) {
+      console.error('Replace image upload failed', err);
+    }
   };
+
+  //  DELETE IMAGE
 
   const handleDeleteImage = (imgIdx) => {
-    const updated = images.filter((_, i) => i !== imgIdx);
-    updateImages(updated);
+    updateImages(images.filter((_, i) => i !== imgIdx));
   };
 
-  const handleAddImage = (file) => {
-    if (!file) return;
-    if (images.length >= MAX_IMAGES) return; // HARD GUARD
+  // ADD IMAGE
 
-    const newUrl = URL.createObjectURL(file);
-    updateImages([
-      ...images,
-      {
-        id: Date.now(),
-        title: '',
-        url: newUrl,
-      },
-    ]);
+  const handleAddImage = async (file) => {
+    if (!file || images.length >= MAX_IMAGES) return;
+
+    const tempId = Date.now();
+
+    try {
+      const res = await uploadReportImage(project_id, 'trf', [file]);
+      console.log('res', res);
+      const uploadedUrl = res?.blob_url;
+
+      if (!uploadedUrl) return;
+
+      updateImages([...images, { id: tempId, url: uploadedUrl }]);
+    } catch (err) {
+      console.error('Image upload failed', err);
+    }
   };
 
   const canAddImage = editMode && images.length < MAX_IMAGES;
@@ -59,7 +87,6 @@ export const RenderPage6Images = ({
       {/* EXISTING IMAGES */}
       {images.map((img, imgIdx) => (
         <Box key={img.id ?? imgIdx} sx={{ mb: 3 }}>
-          {/* IMAGE */}
           <Box
             component="img"
             src={img.url}
@@ -71,7 +98,6 @@ export const RenderPage6Images = ({
             }}
           />
 
-          {/* ACTIONS */}
           {editMode && (
             <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
               <Button variant="outlined" component="label" size="small">

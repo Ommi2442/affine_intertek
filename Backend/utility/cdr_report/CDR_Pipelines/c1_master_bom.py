@@ -193,31 +193,152 @@ parser = JsonOutputParser()
 rag_chain = prompt | llm
 
 
-def _retrieve_bom_chunks(pdf_name: str, *, vs) -> list[str]:
-    """
-    Retrieve BOM-related chunks from the EXISTING vector store.
-    """
-    docs = vs.similarity_search(
-        query="bill of materials part number quantity",
-        k=20
-    )
-    return [d.page_content for d in docs]
+# def _retrieve_bom_chunks(pdf_name: str, *, vs) -> list[str]:
+#     """
+#     Retrieve BOM-related chunks from the EXISTING vector store.
+#     """
+#     docs = vs.similarity_search(
+#         query="bill of materials part number quantity",
+#         k=20
+#     )
+#     return [d.page_content for d in docs]
+from urllib.parse import urlparse
 
+# def same_blob(u1: str, u2: str) -> bool:
+#     return urlparse(u1).path == urlparse(u2).path
+ 
+# def _retrieve_bom_chunks(*, source_url: str, vs):
+#     # docs = [
+#     #     d for d in vs.similarity_search(
+#     #         query="bill of materials part number quantity",
+#     #         k=20
+#     #     )
+#     #     if d.metadata.get("source_doc") == source_url
+#     # ]
+#     docs = [
+#         d for d in vs.similarity_search(
+#             query="bill of materials part number quantity",
+#             k=20
+#         )
+#         if same_blob(d.metadata.get("source_doc", ""), source_url)
+#         ]
+#     return docs
+
+
+ 
 
 import json
 
-def _parse_bom_with_vs(
-    *,
-    source_url: str,
-    source_name: str,
-    vs,
-) -> pd.DataFrame:
+# def _parse_bom_with_vs(
+#     *,
+#     source_url: str,
+#     source_name: str,
+#     vs,
+# ) -> pd.DataFrame:
+#     rows = []
+#     # 🔍 TEMP DEBUG — add this
+#     print("=== DEBUG: source_url path ===")
+#     print("RT:", urlparse(source_url).path)
+
+#     for d in vs.similarity_search(query="bill of materials", k=3):
+#         print("VS:", urlparse(d.metadata.get("source_doc", "")).path)
+
+#     # chunks = _retrieve_bom_chunks(source_name, vs=vs)
+#     chunks = _retrieve_bom_chunks(source_url=source_url, vs=vs)
+#     print(f"{source_url}: retrieved {len(chunks)} chunks")
+
+#     for idx, text in enumerate(chunks, start=1):
+#         try:
+#             raw = rag_chain.invoke({"CONTEXT": text})
+#             raw_text = raw.content if hasattr(raw, "content") else raw
+#             raw_text = raw_text.strip()
+#             if not raw_text:
+#                 continue
+
+#             items = json.loads(raw_text)
+#         except Exception:
+#             continue
+
+#         if not isinstance(items, list):
+#             continue
+
+#         for it in items:
+#             if not any(it.values()):
+#                 continue
+
+#             rows.append({
+#                 "Line": it.get("Line"),
+#                 "Parent Part Number": None,
+#                 "QTY": it.get("QTY"),
+#                 "U/M": it.get("U/M"),
+#                 "Description": it.get("Description"),
+#                 "Manufacturer": it.get("Manufacturer"),
+#                 "Manufacturer Part Number": it.get("Manufacturer Part Number"),
+#                 "Vendor": None,
+#                 "Vendor Part Number": None,
+#                 "Existing Netsuite Item Number": None,
+#                 "Modified PP Item Number": None,
+#                 "CAT": None,
+#                 "SP": None,
+#                 "Rev": it.get("Rev"),
+#                 "Customer Reference Number": None,
+#                 "sheet_name": source_name,
+#                 "source_doc": source_url,
+#             })
+
+#     return pd.DataFrame(rows, columns=MASTER_BOM_COLUMNS)
+
+from urllib.parse import unquote
+from os.path import basename
+
+# def _retrieve_bom_chunks(*, source_name: str, vs):
+#     bom_name = unquote(basename(source_name)).lower()
+
+#     docs = [
+#         d for d in vs.similarity_search(
+#             query="bill of materials part number quantity",
+#             k=20
+#         )
+#         if d.metadata.get("source_file", "").lower() == bom_name
+#     ]
+#     return docs
+
+from urllib.parse import unquote
+
+def normalize(name: str) -> str:
+    """
+    Normalize filenames for reliable matching across:
+    - URLs (%20 etc.)
+    - Different casing
+    - Extra spaces
+    """
+    if not name:
+        return ""
+    return unquote(str(name)).strip().lower()
+ 
+
+def _retrieve_bom_chunks(*, source_name: str, vs):
+    bom_name = normalize(basename(source_name))
+
+    docs = vs.similarity_search(
+        query="bill of materials part number quantity",
+        k=20,
+        filter={
+            "source_file": bom_name
+        }
+    )
+    return docs
+ 
+
+def _parse_bom_with_vs(*, source_url: str, source_name: str, vs) -> pd.DataFrame:
     rows = []
 
-    chunks = _retrieve_bom_chunks(source_name, vs=vs)
+    chunks = _retrieve_bom_chunks(source_name=source_name, vs=vs)
     #print(f"{source_name}: retrieved {len(chunks)} chunks")
 
-    for idx, text in enumerate(chunks, start=1):
+    for idx, d in enumerate(chunks, start=1):
+        text = d.page_content   # ✅ THIS WAS MISSING
+
         try:
             raw = rag_chain.invoke({"CONTEXT": text})
             raw_text = raw.content if hasattr(raw, "content") else raw

@@ -330,13 +330,13 @@ def merge_components(image_components, guide_components):
 def run_extractor():
     configs.require_runtime()
 
-    print("--- Starting Pipeline ---")
+    # print("--- Starting Pipeline ---")
 
     # 1. DISCOVERY
     image_urls = c2_utils.get_image_urls_from_container_sas()
 
     guide_blob_name, guide_url = c2_utils.find_user_guide_blob()
-
+    guide_text=""
     guide_components = []
 
     if guide_blob_name:

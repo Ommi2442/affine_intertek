@@ -2423,14 +2423,16 @@ import os
 def update_pta_with_multiple_iec(
     base_pta_path: str,
     iec_paths: list[str],
-    final_output_path: str
+    final_output_path: str,
+    project_data_dir: Path
+
 ):
     print(f"[START] Base PTA: {base_pta_path}")
     temp_pta = base_pta_path
 
     for i, iec_path in enumerate(iec_paths, start=1):
         is_last = i == len(iec_paths)
-        next_pta = final_output_path if is_last else f"_tmp_pta_{i}.json"
+        next_pta = Path(final_output_path) if is_last else project_data_dir / f"_tmp_pta_{i}.json"
 
         print(f"[STEP {i}/{len(iec_paths)}] Applying IEC: {iec_path}")
         print(f"[INFO] Input PTA : {temp_pta}")
@@ -2439,11 +2441,11 @@ def update_pta_with_multiple_iec(
         update_pta_from_iec_correct(
             pta_path=temp_pta,
             iec_path=iec_path,
-            output_path=next_pta
+            output_path=next_pta,
         )
 
         # ✅ HARD GUARANTEE: file must exist
-        if not os.path.exists(next_pta):
+        if not Path(next_pta).exists():
             raise RuntimeError(f"[ERROR] PTA output not created: {next_pta}")
 
         print(f"[DONE] PTA dumped successfully → {next_pta}\n")
@@ -2692,6 +2694,7 @@ def run_trf_generation(
         base_pta_path,
         iec_paths=iec_paths,
         final_output_path=final_output_path,
+        project_data_dir= project_data_dir
     )
 
     print("\n===============================================")

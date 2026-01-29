@@ -20,7 +20,6 @@ const LetterPage3 = ({
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
   //  Hover actions for Letter tables (Approve / Comment / Bookmark)
   const renderHoverActions = (tIdx, iIdx, userEditable, directItem) => {
-    //  Allow direct item mode (Letter tables)
     const item =
       directItem ??
       (tIdx != null && iIdx != null
@@ -29,29 +28,29 @@ const LetterPage3 = ({
 
     if (!item) return null;
 
-    // For Letter dataframe tables → ignore user_editable gate
-    const isLetterTableItem = item.dataframe_table === true;
+    //  Allow dataframe rows unconditionally
+    if (!directItem) {
+      const isLetterTableItem = item.dataframe_table === true;
+      if (!isLetterTableItem && userEditable !== true) return null;
 
-    if (!isLetterTableItem && userEditable !== true) return null;
-
-    const hasValueField = Object.prototype.hasOwnProperty.call(item, 'value');
-    if (!hasValueField) return null;
-
-    // const isTbdNotAvailable =
-    //   typeof item.value === 'string' &&
-    //   item.value.trim().toLowerCase() === 'tbd-info not available';
-
-    const canApprove = item.ai_fillable === true;
+      const hasValueField = Object.prototype.hasOwnProperty.call(item, 'value');
+      if (!hasValueField) return null;
+    }
+    const isNonConformanceTable = item.key === 'Non-conformance Table';
+    const isDataFrameRow = Boolean(directItem);
+    const canApprove =
+      isNonConformanceTable || isDataFrameRow || item.ai_fillable === true;
 
     return (
       <div className="dt-hover-actions">
-        {/* APPROVE */}
         {canApprove && (
           <IconButton
             size="small"
             onClick={() => {
-              if (tIdx != null && iIdx != null) {
-                handleApprove?.(tIdx, iIdx);
+              if (directItem) {
+                directItem.is_user_edited = true;
+                onConfidenceChange?.();
+                forceUpdate();
               }
             }}
           >
@@ -59,42 +58,13 @@ const LetterPage3 = ({
           </IconButton>
         )}
 
-        {/* COMMENT */}
-        <IconButton
-          size="small"
-          onClick={() => {
-            //  Letter table → open comment using direct item
-            if (directItem) {
-              openComment?.(directItem);
-              return;
-            }
-
-            // Normal DataTable path
-            if (tIdx != null && iIdx != null) {
-              openComment?.(tIdx, iIdx);
-            }
-          }}
-        >
+        <IconButton size="small" onClick={() => openComment?.(item)}>
           <ChatBubbleOutlineOutlinedIcon className="dt-icon-comment" />
         </IconButton>
 
-        {/* BOOKMARK */}
-        {
-          <IconButton
-            size="small"
-            onClick={() => {
-              const row =
-                item ??
-                (tIdx != null && iIdx != null
-                  ? { __t: tIdx, __i: iIdx }
-                  : null);
-
-              if (row) onBookmarkClick?.(row);
-            }}
-          >
-            <MenuBookOutlinedIcon className="dt-icon-bookmark" />
-          </IconButton>
-        }
+        <IconButton size="small" onClick={() => onBookmarkClick?.(item)}>
+          <MenuBookOutlinedIcon className="dt-icon-bookmark" />
+        </IconButton>
       </div>
     );
   };
@@ -147,11 +117,15 @@ const LetterPage3 = ({
       {(() => {
         const item = getLetterItem(json, 'Non-conformance Table');
 
-        if (
-          item?.dataframe_table === true &&
-          Array.isArray(item.value) &&
-          item.value.length > 0
-        ) {
+        if (item?.dataframe_table === true && Array.isArray(item.value)) {
+          if (item.value.length === 0) {
+            return (
+              <p style={{ fontStyle: 'italic', color: '#666', marginTop: 8 }}>
+                No Table Data
+              </p>
+            );
+          }
+
           return (
             <LetterDataFrameTable
               item={item}
@@ -179,20 +153,22 @@ const LetterPage3 = ({
       {(() => {
         const item = getLetterItem(json, 'Critical components table');
 
-        if (
-          item?.dataframe_table === true &&
-          Array.isArray(item.value) &&
-          item.value.length > 0
-        ) {
+        if (item?.dataframe_table === true && Array.isArray(item.value)) {
+          if (item.value.length === 0) {
+            return (
+              <p style={{ fontStyle: 'italic', color: '#666', marginTop: 8 }}>
+                No Data Found
+              </p>
+            );
+          }
+
           return (
-            item?.value && (
-              <LetterCriticalDataFrameTable
-                item={item}
-                editMode={editMode}
-                onChange={forceUpdate}
-                renderHoverActions={renderHoverActions}
-              />
-            )
+            <LetterCriticalDataFrameTable
+              item={item}
+              editMode={editMode}
+              onChange={forceUpdate}
+              renderHoverActions={renderHoverActions}
+            />
           );
         }
 

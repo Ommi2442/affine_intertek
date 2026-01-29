@@ -6,7 +6,7 @@ export default function RouteDbGuard() {
   const location = useLocation();
 
   useEffect(() => {
-    // ✅ Allow IndexedDB ONLY on /report-page
+    // Allow IndexedDB ONLY on /report-page
     console.log('location', location.pathname);
     if (
       location.pathname !== '/report-page/trf' &&

@@ -64,21 +64,36 @@ export const calculateConfidenceScore = (data) => {
   /* ================================
       NEW: LETTER DATAFRAME TABLES
      ================================ */
-  const dataframeHighCount = allEntries.reduce((count, item) => {
-    if (
-      item?.dataframe_table === true &&
-      item?.confidence === 100 &&
-      Array.isArray(item.value)
-    ) {
-      return count + item.value.length;
-    }
-    return count;
-  }, 0);
 
-  if (dataframeHighCount > 0) {
-    high += dataframeHighCount;
-    sumConfidence += dataframeHighCount * 100;
-    aiConfidenceCount += dataframeHighCount;
+  let dataframeHigh = 0;
+  let dataframeUserEdited = 0;
+
+  allEntries.forEach((item) => {
+    if (item?.dataframe_table === true && Array.isArray(item.value)) {
+      item.value.forEach((row) => {
+        if (row?.is_user_edited === true) {
+          dataframeUserEdited++;
+        } else {
+          dataframeHigh++;
+        }
+      });
+    }
+  });
+  // const dataframeHighCount = allEntries.reduce((count, item) => {
+  //   if (
+  //     item?.dataframe_table === true &&
+  //     item?.confidence === 100 &&
+  //     Array.isArray(item.value)
+  //   ) {
+  //     return count + item.value.length;
+  //   }
+  //   return count;
+  // }, 0);
+
+  if (dataframeHigh > 0) {
+    high += dataframeHigh;
+    sumConfidence += dataframeHigh * 100;
+    aiConfidenceCount += dataframeHigh;
   }
 
   const avgConfidence =
@@ -87,7 +102,7 @@ export const calculateConfidenceScore = (data) => {
   const overallLabel =
     avgConfidence < 50 ? 'Low' : avgConfidence < 75 ? 'Medium' : 'High';
 
-  totalAiFields += dataframeHighCount;
+  totalAiFields += dataframeHigh + dataframeUserEdited;
 
   return {
     totalAiFields, // AI fields only
@@ -96,6 +111,7 @@ export const calculateConfidenceScore = (data) => {
     low,
     avgConfidence,
     overallLabel,
-    userEditedCount: userEditedFields.length, // ALL edits
+    userEditedCount: userEditedFields.length + dataframeUserEdited,
+    // ALL edits
   };
 };

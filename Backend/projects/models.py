@@ -81,3 +81,6 @@ class LetterGeneration(BaseModel):
     trf_urls: Optional[str] = None
     cdr_urls: Optional[str] = None
     # other_urls: Optional[str] = None
+
+class RegenratePayload(BaseModel):
+    projectId: str

@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  DialogContentText,
   Tooltip,
   CircularProgress,
 } from '@mui/material';
@@ -45,6 +46,7 @@ import { loadPdfWithCache } from '../../components/loadPdfWithCache';
 import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 import { idb_clear_all, idb_set } from '../../utils/idb';
+import { reGenerateTrfClear } from '../../redux/api/RegenerateApi';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -144,6 +146,9 @@ const ReportPage = () => {
   const [finalTrfJson, setFinalTrfJson] = useState(null);
   const [isFinalJsonLoaded, setIsFinalJsonLoaded] = useState(false);
   const trfTriggeredRef = useRef(false);
+
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const projectMeta = {
     standard: state?.standard || '',
@@ -509,16 +514,16 @@ const ReportPage = () => {
     const updatedPayload = dataTableRef.current.getUpdatedJson();
     if (!updatedPayload?.Tables?.length) return;
 
-    // 🔹 Save user edits to IndexedDB
+    // Save user edits to IndexedDB
     //await idb_set('tables', updatedPayload.Tables, 'trf');
 
-    // 🔹 UI
+    // UI
     setIsFinalise(true);
     setCdrFinalised(true);
     setTrfFinalised(true);
     setTrfEditMode(false);
 
-    // 🔹 API
+    // API
     dispatch(
       finaliseReportRequest({
         projectId,
@@ -527,15 +532,28 @@ const ReportPage = () => {
     );
   };
 
-  const handleRegenerate = () => {
-    navigate('/create-project', {
-      state: {
-        standard,
+  const handleConfirmRegenerate = async () => {
+    try {
+      setLoading(true);
+
+      const payload = {
         projectId,
-        clientName,
-        product,
-      },
-    });
+      };
+
+      await reGenerateTrfClear(payload);
+
+      navigate('/create-project', {
+        state: {
+          standard,
+          projectId,
+          clientName,
+          product,
+        },
+      });
+    } finally {
+      setLoading(false);
+      setOpenConfirm(false);
+    }
   };
 
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -871,16 +889,6 @@ const ReportPage = () => {
             </Button>
           </Box>
 
-          {/* Field Name */}
-          {/* <Typography className="bookmark-field">
-            {bookmarkData?.field}
-          </Typography> */}
-
-          {/* Field Value */}
-          {/* <Typography className="bookmark-value">
-            {bookmarkData?.value}
-          </Typography> */}
-
           {/* SUPPORTING TEXT + HYPERLINKS (Text-level placement) */}
           {bookmarkData?.textSupportRaw?.length > 0 && (
             <Box mt={2}>
@@ -888,7 +896,7 @@ const ReportPage = () => {
                 Supporting Images
               </Typography>
 
-              {/* 🔹 IMAGE THUMBNAILS */}
+              {/* IMAGE THUMBNAILS */}
               <RenderImageThumbnails images={bookmarkData?.image_support} />
 
               <Typography sx={{ fontWeight: 600, mt: 2, mb: 2 }}>
@@ -905,25 +913,12 @@ const ReportPage = () => {
                 rawText = item?.preview_text || '';
                 isTruncated = rawText.split(/\s+/).length > 20;
 
-                // /* -------- CDR -------- */
-                // if (reportClick === 'cdr') {
-                //   // case 1: string
-                //   if (typeof item === 'string') {
-                //     rawText = item;
-                //   }
-                //   // case 2: object with content
-                //   else if (typeof item?.content === 'string') {
-                //     rawText = item.content;
-                //     isTruncated = rawText.split(/\s+/).length > 20;
-                //   }
-                // }
-
                 const cleanedText = normalizeNewLines(rawText);
                 const truncatedText = truncateWords(cleanedText, 20);
 
                 //console.log('urll', item.url);
                 return (
-                  <Card key={idx} sx={{ mb: 2 }}>
+                  <Card key={idx} sx={{ mb: 2, mr: 2 }}>
                     <CardContent>
                       {/* Truncated text */}
                       <Typography sx={{ whiteSpace: 'pre-wrap', fontSize: 14 }}>
@@ -969,29 +964,6 @@ const ReportPage = () => {
                           {item.filename} (Page {item.page})
                         </Typography>
                       )}
-
-                      {/* ---------- CDR LINK ---------- */}
-                      {/* {reportClick === 'cdr' && item?.file && (
-                        <Typography
-                          sx={{
-                            fontSize: 13,
-                            mt: 1,
-                            color: '#1976d2',
-                            cursor: 'pointer',
-                            textDecoration: 'underline',
-                          }}
-                          onClick={() =>
-                            handleCitationLinkClick(
-                              item.file,
-                              item.page,
-                              rawText,
-                              item?.url
-                            )
-                          }
-                        >
-                          {item.file} (Page {item.page})
-                        </Typography>
-                      )} */}
 
                       {/* File + page */}
                     </CardContent>
@@ -1054,7 +1026,7 @@ const ReportPage = () => {
                     text: 'Regenerate',
                     icon: '/images/regenrate_icon.png',
                     bg: '#417581',
-                    action: handleRegenerate,
+                    action: () => setOpenConfirm(true),
                   },
                 ].map((btn, i) => (
                   <Button
@@ -1113,9 +1085,6 @@ const ReportPage = () => {
                             ? 'not-allowed'
                             : 'pointer',
                           opacity: !isFinalJsonLoaded ? 0.7 : 1,
-                          // background: '#417581', // grey out
-                          // cursor: 'pointer',
-                          // opacity: 1,
                         }}
                         onClick={() => {
                           //if (!isFinalise) return;
@@ -1124,12 +1093,10 @@ const ReportPage = () => {
                           //if (label === 'Letter') return;
                           // still prevent action
                           if (label === 'CDR') {
-                            //console.log('cddddd');
-                            handleGenerateCDR(); // <-- your function
+                            handleGenerateCDR();
                           } else if (label === 'Letter') {
-                            handleGenerateLetter(); // <-- your second function
+                            handleGenerateLetter();
                           }
-                          //console.log(label, 'clicked');
                         }}
                       >
                         <img
@@ -1156,17 +1123,6 @@ const ReportPage = () => {
               projectId={projectId}
             />
           )}
-
-          {/* local rendering of cdr report */}
-          {/* {((reportClick === 'trf' && localJson) ||
-            (reportClick === 'cdr' && localCdrJson)) && (
-            <ConfidenceScore
-              data={reportClick === 'trf' ? localJson : localCdrJson}
-              reportType={reportClick}
-              confidenceTick={confidenceTick}
-              projectId={projectId}
-            />
-          )} */}
         </Box>
       )}
 
@@ -1302,6 +1258,47 @@ const ReportPage = () => {
             }}
           >
             Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Confirm Regeneration</DialogTitle>
+
+        <DialogContent>
+          <DialogContentText>
+            This action will delete the existing trf report files and regenerate
+            the project. Are you sure you want to continue?
+          </DialogContentText>
+        </DialogContent>
+
+        <DialogActions>
+          <Button
+            onClick={() => setOpenConfirm(false)}
+            color="inherit"
+            disabled={loading}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            onClick={handleConfirmRegenerate}
+            variant="contained"
+            color="primary"
+            sx={{
+              backgroundColor: 'rgb(65, 117, 129)',
+              '&:hover': {
+                backgroundColor: 'rgb(55, 100, 110)',
+              },
+            }}
+            disabled={loading}
+          >
+            {loading ? 'Processing...' : 'Proceed'}
           </Button>
         </DialogActions>
       </Dialog>

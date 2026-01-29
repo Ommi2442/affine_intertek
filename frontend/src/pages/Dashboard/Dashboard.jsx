@@ -101,33 +101,37 @@ const Dashboard = () => {
     }
   };
 
-  /*  FIX: Pass row details to create-project */
-  const renderYesNo = (row, value, percentage_change, type) => {
-    const val = value === true || value === 'true';
+
+  /* FIX: Pass row details to create-project */
+  const renderYesNo = (row, type) => {
 
     const cellKey = `${row?.Project_Id}-${type}`;
     const isLoading = loadingCell === cellKey;
 
-    const isDependentDisabled =
-      (type === 'CDR' || type === 'LETTER') && row?.trf_percentage !== 100;
+    // const isDependentDisabled =
+    //   row?.trf_percentage !== 100 &&
+    //   (
+    //     (type === 'CDR' && row?.cdr_completed !== true) ||
+    //     (type === 'LETTER' && row?.letter_completed !== true)
+    //   );
+
+    const isDependentDisabled = (type === 'CDR' || type === 'LETTER') && row?.trf_percentage !== 100;
 
     const handleClick = async () => {
       const projectId = row?.Project_Id;
       if (!projectId) return;
       if (isDependentDisabled) return;
+
       localStorage.setItem(
         `letter_percentage_${projectId}`,
         row?.letter_percentage ?? 0
       );
 
-      setLoadingCell(cellKey); //  start loader ONLY for this cell
-      //console.log('precentage', percentage_change, type);
+      setLoadingCell(cellKey);
       try {
         localStorage.setItem('projectId', projectId);
 
-        //const progress = await checkStatus(projectId);
-
-        if (percentage_change < 10 && type == 'TRF') {
+        if (row?.trf_percentage < 10 && type === 'TRF') {
           navigate('/create-project', {
             state: {
               standard: row?.Standard,
@@ -138,8 +142,13 @@ const Dashboard = () => {
               letterPercentage: row?.letter_percentage ?? 0,
             },
           });
-        } else if (percentage_change < 10 && type == 'CDR') {
-          navigate('/create-project', {
+        } 
+        else if (
+          row?.trf_percentage === 100 &&
+          row?.cdr_percentage < 10 &&
+          type === 'CDR'
+        ) {
+          navigate('/report-page/trf', {
             state: {
               standard: row?.Standard,
               projectId,
@@ -149,7 +158,8 @@ const Dashboard = () => {
               letterPercentage: row?.letter_percentage ?? 0,
             },
           });
-        } else if (percentage_change < 10 && type == 'LETTER') {
+        } 
+        else if (row?.letter_percentage < 10 && type === 'LETTER') {
           navigate('/create-project-letter', {
             state: {
               standard: row?.Standard,
@@ -160,22 +170,11 @@ const Dashboard = () => {
               letterPercentage: row?.letter_percentage ?? 0,
             },
           });
-          // } else if (percentage_change === 100 && type == 'CDR') {
-          //   navigate('/report-page/trf', {
-          //     state: {
-          //       standard: row?.Standard,
-          //       projectId,
-          //       clientName: row?.Client_Name,
-          //       product: row?.Product,
-          //       source: type,
-          //       letterPercentage: row?.letter_percentage ?? 0,
-          //     },
-          //   });
-        } else {
+        } 
+        else {
           await preloadProjectPdfs(projectId);
-          // Decide destination based on clicked column
-          let targetRoute = '/report-page/trf';
 
+          let targetRoute = '/report-page/trf';
           if (type === 'CDR') targetRoute = '/report-page/cdr';
           if (type === 'LETTER') targetRoute = '/report-page/letter';
 
@@ -191,9 +190,14 @@ const Dashboard = () => {
           });
         }
       } finally {
-        setLoadingCell(null); //  stop loader
+        setLoadingCell(null);
       }
     };
+
+    const isCompleted =
+      (type === 'TRF' && row?.trf_percentage === 100) ||
+      (type === 'CDR' && row?.cdr_percentage === 100) ||
+      (type === 'LETTER' && row?.letter_percentage === 100);
 
     return (
       <Box
@@ -204,16 +208,16 @@ const Dashboard = () => {
           gap: 1,
           color: isDependentDisabled
             ? 'grey.400'
-            : percentage_change == 100
-              ? 'green'
-              : 'red',
+            : isCompleted
+            ? 'green'
+            : 'red',
           cursor: isDependentDisabled || isLoading ? 'not-allowed' : 'pointer',
           fontWeight: 600,
           justifyContent: 'center',
           opacity: isDependentDisabled ? 0.5 : 1,
         }}
       >
-        <span>{percentage_change == 100 ? 'Yes' : 'No'}</span>
+        <span>{isCompleted ? 'Yes' : 'No'}</span>
 
         {isLoading && (
           <CircularProgress size={16} thickness={5} sx={{ color: 'inherit' }} />
@@ -221,6 +225,7 @@ const Dashboard = () => {
       </Box>
     );
   };
+
 
   /* ---------------- NEW: DELETE ---------------- */
   const handleDelete = async (row) => {
@@ -433,24 +438,18 @@ const Dashboard = () => {
                   <TableCell align="center">
                     {renderYesNo(
                       row,
-                      row.trf_completed,
-                      row.trf_percentage,
                       'TRF'
                     )}
                   </TableCell>
                   <TableCell align="center">
                     {renderYesNo(
                       row,
-                      row.cdr_completed,
-                      row.cdr_percentage,
                       'CDR'
                     )}
                   </TableCell>
                   <TableCell align="center">
                     {renderYesNo(
                       row,
-                      row.letter_completed,
-                      row.letter_percentage,
                       'LETTER'
                     )}
                   </TableCell>
