@@ -2246,6 +2246,10 @@ def generate_letter_pipeline(
     try:
         df_1a = None
 
+        critical_components_source = None  # "docx" | "excel"
+        critical_components_filename = None
+        critical_components_page = None        
+
         # Step 1: Try extracting from DOCX only if available
         if docx_trf:
             try:
