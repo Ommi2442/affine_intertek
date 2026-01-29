@@ -66,6 +66,9 @@ Rules:
 - If a field is missing, set it to null. For missing lists, return [].
 - Output ONLY the JSON object. Do NOT add extra keys or any text.
 - Prefer CIS/Client_Information_Sheet if present, but still work if CIS is missing (use TRF/emails/POs/etc.).
+- Only extract the manufacturer of the final product / final assembly (OEM / Factory of finished goods).
+- Do NOT extract constituent/critical component / spare-part / sub-supplier / distributor manufacturers.
+- If only component manufacturers are found, set manufacturers: [] (don’t guess).
 - Address should be a single string (street + city/state/postal if present).
 - Country must match the text shown in context exactly, else null.
 - Contacts:
