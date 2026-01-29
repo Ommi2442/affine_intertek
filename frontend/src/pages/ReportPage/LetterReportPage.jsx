@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback  } from 'react';
 import {
   Box,
   Card,
@@ -11,6 +11,7 @@ import {
   IconButton,
   DialogContent,
   DialogActions,
+  DialogContentText
 } from '@mui/material';
 import { useNavigate, useNavigationType, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -19,7 +20,7 @@ import CloseIcon from '@mui/icons-material/Close';
 //import localLetterJson from '../../utils/letter_output_4.json';
 import LetterReport from '../../components/LetterReport/LetterReport';
 import ConfidenceScore from './ConfidenceScore';
-import { idb_get, idb_set, STORES } from '../../utils/idb';
+import { idb_get, idb_set, STORES, idb_clear_all } from '../../utils/idb';
 import LetterLoader from '../../components/LetterReport/LetterLoader';
 import { truncateWords } from '../../Helpers/truncateWords';
 import { normalizeNewLines } from '../../Helpers/normalizeNewLines';
@@ -28,6 +29,8 @@ import PdfViewer from '../../components/PdfViewer';
 import { loadPdfWithCache } from '../../components/loadPdfWithCache';
 import { triggerGenerateLetterApi } from '../../redux/api/generateLetterApi';
 import { finaliseLetterReportRequest } from '../../redux/features/finaliseLetterReport/finaliseLetterReportSlice';
+import { reGenerateLetterClear } from '../../redux/api/RegenerateApi';
+
 
 const STORAGE_KEY_PREFIX = 'letter_report_';
 
@@ -61,6 +64,9 @@ const LetterReportPage = () => {
   const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
   const [headerJson, setHeaderJson] = useState({});
 
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [regenloading, setRegenLoading] = useState(false);
+
   const location = useLocation();
 
   const { trfBlobUrl, cdrBlobUrl, standard, clientName, product } =
@@ -92,74 +98,71 @@ const LetterReportPage = () => {
     setLiveLetterData(updated);
   }, [confidenceTick, headerJson]);
 
-  /* ---------------- LOAD LOGIC ---------------- */
-  useEffect(() => {
+
+  const loadLetter = useCallback(async () => {
     if (!projectId) return;
 
-    const load = async () => {
-      setLoading(true);
+    setLoading(true);
 
-      //  Always try IndexedDB first
-      const cached = await idb_get(storageKey, STORES.LETTER);
-      if (cached) {
-        setLetterJson(cached.Letter_header_json);
-        setHeaderJson(cached.Letter_json_body);
-        setLoading(false);
-        return;
-      }
-
-      //  Hard refresh + no cache → do nothing yet
-      if (isHardRefresh) {
-        console.warn('Hard refresh but no LETTER cache found → holding state');
-        setLoading(false);
-        return;
-      }
-
-      // Only call backend if NOT refresh and no cache
-      if (!isHardRefresh) {
-        console.log('Calling backend to generate Letter...');
-
-        let res;
-
-        // Case 1: blobs were passed from Upload page
-        if (trfBlobUrl || cdrBlobUrl) {
-          console.log('Using blob URLs for generation', {
-            trfBlobUrl,
-            cdrBlobUrl,
-          });
-
-          res = await triggerGenerateLetterApi(
-            projectId,
-            trfBlobUrl,
-            cdrBlobUrl
-          );
-        }
-        // Case 2: blobs NOT available (refresh / direct open)
-        else {
-          console.log('No blob URLs found → generating using only projectId');
-
-          res = await triggerGenerateLetterApi(projectId);
-        }
-
-        console.log('Letter generation response:', res);
-
-        if (res) {
-          const payload = {
-            Letter_header_json: res?.Data?.Letter_header_json,
-            Letter_json_body: res?.Data?.Letter_json_body,
-          };
-
-          await idb_set(storageKey, payload, STORES.LETTER);
-          setLetterJson(payload.Letter_header_json);
-          setHeaderJson(payload.Letter_json_body);
-        }
-      }
-
+    //  Always try IndexedDB first
+    const cached = await idb_get(storageKey, STORES.LETTER);
+    if (cached) {
+      setLetterJson(cached.Letter_header_json);
+      setHeaderJson(cached.Letter_json_body);
       setLoading(false);
-    };
+      return;
+    }
 
-    load();
-  }, [projectId, isHardRefresh]);
+    //  Hard refresh + no cache → do nothing yet
+    if (isHardRefresh) {
+      console.warn('Hard refresh but no LETTER cache found → holding state');
+      setLoading(false);
+      return;
+    }
+
+    console.log('Calling backend to generate Letter...');
+    let res;
+
+    // Case 1: blobs were passed from Upload page
+    if (trfBlobUrl || cdrBlobUrl) {
+      res = await triggerGenerateLetterApi(
+        projectId,
+        trfBlobUrl,
+        cdrBlobUrl
+      );
+    }
+    // Case 2: blobs NOT available
+    else {
+      res = await triggerGenerateLetterApi(projectId);
+    }
+
+    if (res) {
+      const payload = {
+        Letter_header_json: res?.Data?.Letter_header_json,
+        Letter_json_body: res?.Data?.Letter_json_body,
+      };
+
+      await idb_set(storageKey, payload, STORES.LETTER);
+      setLetterJson(payload.Letter_header_json);
+      setHeaderJson(payload.Letter_json_body);
+    }
+
+    setLoading(false);
+  }, [
+    projectId,
+    isHardRefresh,
+    trfBlobUrl,
+    cdrBlobUrl,
+    storageKey,
+  ]);
+
+
+
+  /* ---------------- LOAD LOGIC ---------------- */
+  useEffect(() => {
+    loadLetter();
+  }, [loadLetter]);
+
 
   const handleCitationLinkClick = (filename, page, text, blob_url) => {
     // ---- XLSX and DOCX → DOWNLOAD ----
@@ -247,7 +250,42 @@ const LetterReportPage = () => {
     DownloadMissingFieldsExcel(data, projectID, reportClick);
   };
 
-  const handleRegenerate = () => navigate('/create-project');
+
+  const handleConfirmRegenerate = async () => {
+    try {
+      setRegenLoading(true);
+
+      const payload = {
+        projectId,
+      };
+      
+
+      await reGenerateLetterClear(payload);
+
+      setRegenLoading(false);
+      setOpenConfirm(false);
+      idb_clear_all();
+
+      navigate('/create-project-letter');
+        // , {
+      // state: {
+      //   standard: row?.Standard,
+      //   projectId,
+      //   clientName: row?.Client_Name,
+      //   product: row?.Product,
+      //   source: type,
+      //   letterPercentage: row?.letter_percentage ?? 0,
+      // },
+    // });
+
+    } finally {
+      // setRegenLoading(false);
+      // setOpenConfirm(false);
+      // idb_clear_all();
+      // await loadLetter();
+    }
+  };
+
 
   const getCitationDialogText = () => {
     if (!selectedCitation) return '';
@@ -461,7 +499,7 @@ const LetterReportPage = () => {
                       text: 'Regenerate',
                       bg: '#417581',
                       icon: '/images/regenrate_icon.png',
-                      action: handleRegenerate,
+                      action: () => setOpenConfirm(true),
                     },
                   ].map((btn, i) => (
                     <Button
@@ -644,6 +682,48 @@ const LetterReportPage = () => {
           </Box>
         </Box>
       )}
+      <Dialog
+      open={openConfirm}
+      onClose={() => setOpenConfirm(false)}
+      maxWidth="xs"
+      fullWidth
+      >
+      <DialogTitle>
+      Confirm Regeneration
+      </DialogTitle>
+
+      <DialogContent>
+      <DialogContentText>
+      This action will delete the existing letter report files and regenerate the project.
+      Are you sure you want to continue?
+      </DialogContentText>
+      </DialogContent>
+
+      <DialogActions>
+      <Button
+      onClick={() => setOpenConfirm(false)}
+      color="inherit"
+      disabled={regenloading}
+      >
+      Cancel
+      </Button>
+
+      <Button
+      onClick={handleConfirmRegenerate}
+      variant="contained"
+      color="primary"
+      sx={{
+        backgroundColor: 'rgb(65, 117, 129)',
+        '&:hover': {
+          backgroundColor: 'rgb(55, 100, 110)',
+        },
+      }}
+      disabled={regenloading}
+      >
+      {regenloading ? 'Processing...' : 'Proceed'}
+      </Button>
+      </DialogActions>
+      </Dialog>
     </Box>
   );
 };

@@ -1,6 +1,7 @@
 import platform
 import subprocess
 from pathlib import Path
+import shutil
 from docx import Document
 from docx.shared import Pt
 from docx.oxml.ns import qn
@@ -485,6 +486,82 @@ def update_docx_from_existing_json(
 
 
  
+def delete_blobs_inside_folder(folder_path: str, container_client):
+    # Normalize folder path to act like a prefix
+    if not folder_path.endswith("/"):
+        folder_path += "/"
+
+    blobs = container_client.list_blobs(name_starts_with=folder_path)
+
+    deleted_count = 0
+    for blob in blobs:
+        # Safety check: skip the "folder marker" if it exists
+        if blob.name != folder_path:
+            container_client.delete_blob(blob.name)
+            deleted_count += 1
+
+    return deleted_count > 0
 
 
+
+
+def delete_local_project_outputs(project_id: str, reportType: str) -> bool:
+    """
+    Deletes selected files and folders inside:
+    <BASE_DIR>/data/<project_id>/
+    """
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    project_dir = BASE_DIR / "data" / project_id
+
+    if not project_dir.exists():
+        return False
+
+    if not project_dir.is_dir():
+        raise RuntimeError(f"Expected directory but found file: {project_dir}")
+
+    deleted = False
+
+    if reportType == "TRF":
+        target_items = [
+            "final_output.json",
+            "final_output.docx",
+            "pta_final_6_3_1_part1_output.json",
+            "pta_final_6_3_1_part2_output.json",
+            "pta_final_6_3_1_part3_output.json",
+            "pta_final_6_3_1_part4_output.json",
+            "pta_final_6_3_1_part5_output.json",
+            "src_files"
+        ]
+
+    elif reportType == "CDR":
+        target_items = [
+            f"iec_output_cdr_{project_id}.json",
+            f"iec_output_sheet_{project_id}.xlsx",
+        ]
+
+    else:
+        target_items = [
+            f"letter_body_iec_output_{project_id}.json",
+            f"letter_header_iec_output_{project_id}.json",
+            f"letter_iec_output_{project_id}.docx",
+            "letter_page_images",
+            "trf_src_files",
+            "letter_src_files",
+            "non_conforming_images",
+        ]
+
+    for name in target_items:
+        path = project_dir / name
+
+        if path.exists():
+            if path.is_file():
+                path.unlink()
+                deleted = True
+
+            elif path.is_dir():
+                shutil.rmtree(path)
+                deleted = True
+    print('Deleted')
+
+    return deleted
 

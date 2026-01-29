@@ -85,42 +85,6 @@ import fitz
 import platform
 
 
-# def contains_prepared_for_table(pdf_path):
-#     """
-#     Check if PDF contains the specific 'Prepared For:' table with expected structure.
-#     Looks for key indicators like name, company, address, phone, email pattern.
-#     """
-#     text = ""
-#     with fitz.open(pdf_path) as doc:
-#         for page in doc:
-#             t = page.get_text()
-#             if t:
-#                 text += t + "\n"
-    
-#     # Look for "Prepared For:" header
-#     if not re.search(r"Prepared\s*For\s*:", text, re.IGNORECASE):
-#         return False
-    
-#     # Extract the section after "Prepared For:"
-#     match = re.search(r"Prepared\s*For\s*:(.{0,500})", text, re.IGNORECASE | re.DOTALL)
-#     if not match:
-#         return False
-    
-#     section = match.group(1)
-    
-#     # Check for multiple indicators that this is the specific table structure
-#     indicators = [
-#         r"Gener8\s*LLC",  # Company name
-#         r"\(\d{3}\)\s*\d{3}-\d{4}",  # Phone number pattern like (650) 940-9898
-#         r"\w+@\w+\.\w+",  # Email pattern
-#         r"San\s*Jose|CA\s*95134|USA",  # Address components
-#         r"Consultant"  # Role/title
-#     ]
-    
-#     # Require at least 3 of these indicators to be present in the section
-#     matches = sum(1 for pattern in indicators if re.search(pattern, section, re.IGNORECASE))
-    
-#     return matches >= 3
 
 
 def contains_prepared_for_table(pdf_path):
@@ -611,6 +575,8 @@ def insert_dataframe_below_anchor_critical_components(
 
 
 
+
+
 def insert_dataframe_below_anchor_non_conformance(
     input_docx,
     output_docx,
@@ -829,22 +795,6 @@ def run_iec61010_non_conformance_extraction(
                     "source_ref": f"Table {table_idx}, Row {r_idx}"
                 })
 
-    # # ---------------- 4. Map blocks → REAL PDF pages ----------------
-    # for block in blocks:
-    #     best_page = None
-    #     best_score = 0
-
-    #     for page_num, page_text in pdf_pages.items():
-    #         score = fuzz.partial_ratio(
-    #             block["text"][:300],   # anchor slice (REQUIRED)
-    #             page_text
-    #         )
-    #         if score > best_score:
-    #             best_score = score
-    #             best_page = page_num
-
-    #     block["pdf_page"] = best_page if best_score >= fuzzy_threshold else None
-    # ---------------- 4. Map blocks → REAL PDF pages ----------------
     for block in blocks:
         best_page = None
         best_score = 0
@@ -896,9 +846,57 @@ def run_iec61010_non_conformance_extraction(
         deployment_name=deployment_name
     )
 
-    df=df.drop('ref_id',axis=1)
+    # df=df.drop('ref_id',axis=1)
+    if "Page Reference" in df.columns:
+        df["_page_reference"] = df["Page Reference"]
+
+    # Drop internal columns
+    df = df.drop(columns=[c for c in ["ref_id", "Page Reference"] if c in df.columns])
 
     return df
+
+def inject_non_conformance_text_support(
+    data,
+    df_nonpass,
+    source_docx_path
+):
+    """
+    Inject text_support into Non-conformance Table rows.
+    Uses dropped Page Reference stored in _page_reference.
+    """
+
+    if df_nonpass is None or df_nonpass.empty:
+        return data
+
+    filename = os.path.basename(source_docx_path)
+
+    rows = df_nonpass.to_dict(orient="records")
+
+    for page in data.get("pages", []):
+        for item in page.get("items", []):
+
+            if item.get("key") != "Non-conformance Table":
+                continue
+
+            enriched = []
+
+            for row in rows:
+                row = dict(row)
+
+                page_ref = row.pop("_page_reference", "")
+
+                row["text_support"] = [
+                    {
+                        "filename": filename,
+                        "page": page_ref or ""
+                    }
+                ]
+
+                enriched.append(row)
+
+            item["value"] = enriched
+
+    return data
 
 IEC_61010_NON_CONFORMANCE_PROMPT = get_iec61010_non_conformance_prompt()
 
@@ -1555,7 +1553,33 @@ def insert_photos_before_section_6_table(
 
 import os
 
-def inject_dataframes_into_letter_json(data, df_critical, df_nonpass):
+# def inject_dataframes_into_letter_json(data, df_critical, df_nonpass):
+#     """
+#     Injects dataframe dictionaries into JSON placeholders:
+#       - 'Non-conformance Table' -> df_nonpass
+#       - 'Critical components table' -> df_critical
+#     """
+ 
+#     # Convert DataFrames to dict format
+#     critical_dict = df_critical.to_dict(orient="records") if df_critical is not None else []
+#     nonpass_dict = df_nonpass.to_dict(orient="records") if df_nonpass is not None else []
+ 
+#     for page in data.get("pages", []):
+#         for item in page.get("items", []):
+ 
+#             # Inject Non-Conformance Table
+#             if item.get("key") == "Non-conformance Table" and item.get("dataframe_table") is True:
+#                 item["value"] = nonpass_dict
+ 
+#             # Inject Critical Components Table
+#             if item.get("key") == "Critical components table" and item.get("dataframe_table") is True:
+#                 item["value"] = critical_dict
+ 
+#     return data
+
+def inject_dataframes_into_letter_json(data, df_critical, df_nonpass,
+                                       critical_components_filename=None,
+                                       critical_components_page=None):
     """
     Injects dataframe dictionaries into JSON placeholders:
       - 'Non-conformance Table' -> df_nonpass
@@ -1574,10 +1598,41 @@ def inject_dataframes_into_letter_json(data, df_critical, df_nonpass):
                 item["value"] = nonpass_dict
  
             # Inject Critical Components Table
+            # if item.get("key") == "Critical components table" and item.get("dataframe_table") is True:
+            #     item["value"] = critical_dict
             if item.get("key") == "Critical components table" and item.get("dataframe_table") is True:
-                item["value"] = critical_dict
+                if not critical_dict:
+                    continue
+
+                enriched_rows = []
+
+                for row in critical_dict:
+                    row = dict(row)  # defensive copy
+
+                    text_support = {
+                        "filename": critical_components_filename or "",
+                        "page": "",
+                        "table": "",
+                        "sheet": ""
+                    }
+
+                    # DOCX source
+                    if critical_components_page == "TABLE 1.A":
+                        text_support["table"] = "TABLE 1.A"
+
+                    # Excel source
+                    elif critical_components_page == "4.0 Components":
+                        text_support["sheet"] = "4.0 Components"
+
+                    row["text_support"] = [text_support]
+                    enriched_rows.append(row)
+
+                item["value"] = enriched_rows
+
+
  
     return data
+
 
 def orchestrate_iec61010_image_compliance_pipeline(
     blob_file_list,
@@ -1990,7 +2045,50 @@ def clean_dataframe_for_json(df, use_null=True):
 
     return df
 
+from urllib.parse import unquote
+import os
 
+def attach_blob_urls_to_table_text_support(data, blob_urls):
+    """
+    Add 'url' to text_support entries inside table rows.
+    Handles:
+      - Non-conformance Table
+      - Critical components table
+    """
+
+    # -----------------------------------------
+    # Build filename (without ext) → blob URL
+    # -----------------------------------------
+    blob_map = {}
+    for url in blob_urls:
+        fname = unquote(url.split("/")[-1])
+        base = os.path.splitext(fname)[0]
+        blob_map.setdefault(base, url)
+
+    # -----------------------------------------
+    # Traverse JSON
+    # -----------------------------------------
+    for page in data.get("pages", []):
+        for item in page.get("items", []):
+
+            if item.get("key") not in {
+                "Non-conformance Table",
+                "Critical components table"
+            }:
+                continue
+
+            for row in item.get("value", []):
+                for ts in row.get("text_support", []):
+                    ts["url"] = None  # default
+
+                    fname = ts.get("filename")
+                    if not fname:
+                        continue
+
+                    base = os.path.splitext(fname)[0]
+                    ts["url"] = blob_map.get(base)
+
+    return data
 
  
 #entry function
@@ -2152,7 +2250,11 @@ def generate_letter_pipeline(
         if docx_trf:
             try:
                 df_1a = extract_table1a(docx_trf)
-                df_1a = format_critical_components_df(df_1a)
+                if df_1a is not None:
+                    df_1a = format_critical_components_df(df_1a)
+                    critical_components_source = "docx"
+                    critical_components_filename = os.path.basename(docx_trf)
+                    critical_components_page = "TABLE 1.A"
             except IndexError:
                 df_1a = None  # Table not found → fallback
 
@@ -2160,6 +2262,13 @@ def generate_letter_pipeline(
         if df_1a is None :
             print("⚠️ Table 1.A not found or empty. Loading from CDR components.")
             df_1a = load_cdr_components_df(src_files_dir)
+            if df_1a is not None:
+                critical_components_source = "excel"
+                for f in os.listdir(src_files_dir):
+                    if f.lower().endswith((".xls", ".xlsx")):
+                        critical_components_filename = f
+                        break
+                critical_components_page = "4.0 Components"
             #print(df_1a)       
             # df_1a = format_critical_components_df(df_1a)
             # Step 3: Try formatting (NON-BLOCKING)
@@ -2217,13 +2326,22 @@ def generate_letter_pipeline(
     )
     print('######'*5)
     #print(df_9_nonpass)
+    df_9_nonpass = df_9_nonpass.drop(columns=[c for c in ["_page_reference"] if c in df_9_nonpass.columns])
     # ✅ Clean NaN
     df_9_nonpass = clean_dataframe_for_json(df_9_nonpass, use_null=True)
 
     data = inject_dataframes_into_letter_json(
         data=data,
         df_critical=df_1a,
-        df_nonpass=df_9_nonpass
+        df_nonpass=df_9_nonpass,
+        critical_components_filename=critical_components_filename,
+        critical_components_page=critical_components_page
+    )
+
+    data = inject_non_conformance_text_support(
+        data=data,
+        df_nonpass=df_9_nonpass,
+        source_docx_path=docx_trf
     )
 
     insert_dataframe_below_anchor_non_conformance(
@@ -2416,6 +2534,8 @@ def letter_gen(blob_urls,
 
         data_final=attach_blob_urls_to_image_support_letter(data_final, blob_urls_trf)
         data_final=attach_blob_urls_to_text_support_letter(data_final, blob_urls_trf)
+
+        data_final = attach_blob_urls_to_table_text_support(data_final,blob_urls_trf)
 
         with open(letter_json_path_output, "w", encoding="utf-8") as f:
             json.dump(data_final, f, indent=2, ensure_ascii=False)

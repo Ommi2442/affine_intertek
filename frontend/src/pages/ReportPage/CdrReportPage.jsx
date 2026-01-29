@@ -11,6 +11,7 @@ import {
   IconButton,
   DialogContent,
   DialogActions,
+  DialogContentText
 } from '@mui/material';
 import { useNavigate, useNavigationType } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -30,6 +31,7 @@ import { normalizeNewLines } from '../../Helpers/normalizeNewLines';
 import { RenderImageThumbnails } from '../../Helpers/renderImageThumbnails';
 import { useLocation } from 'react-router-dom';
 import { finaliseCdrReportRequest } from '../../redux/features/finaliseCdrReport/finaliseCdrReportSlice';
+import { reGenerateCdrClear } from '../../redux/api/RegenerateApi';
 
 const STORAGE_KEY_PREFIX = 'cdr_report_';
 
@@ -66,6 +68,9 @@ const CdrReportPage = () => {
 
   const navigationType = useNavigationType();
   const isHardRefresh = navigationType === 'POP';
+
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [regenloading, setRegenLoading] = useState(false);
 
   /* ---------------- SAVE EVERY APPROVE ---------------- */
   useEffect(() => {
@@ -188,7 +193,35 @@ const CdrReportPage = () => {
     );
   };
 
-  const handleRegenerate = () => navigate('/create-project');
+  const cdrRegenrate = async () => {
+    setLoading(true);
+    const res = await triggerGenerateCdrApi(projectId);
+      if (res?.data) {
+        await idb_set(storageKey, res.data, STORES.CDR); // overwrite
+        setCdrJson(res.data); // render only backend data
+      }
+    setLoading(false);
+    }
+  
+  const handleConfirmRegenerate = async () => {
+    try {
+      setRegenLoading(true);
+
+      const payload = {
+        projectId,
+      };
+
+      await reGenerateCdrClear(payload);
+
+    } finally {
+      setRegenLoading(false);
+      setOpenConfirm(false);
+      cdrRegenrate();
+    }
+  };
+  
+  
+  
   const handleGenerateLetter = () => {
     if (letterPercentage === 100) {
       navigate('/report-page/letter', {
@@ -358,7 +391,7 @@ const CdrReportPage = () => {
                       text: 'Regenerate',
                       icon: '/images/regenrate_icon.png',
                       bg: '#417581',
-                      action: handleRegenerate,
+                      action: () => setOpenConfirm(true),
                     },
                   ].map((btn, i) => (
                     <Button
@@ -560,6 +593,48 @@ const CdrReportPage = () => {
           </Box>
         </Box>
       )}
+      <Dialog
+      open={openConfirm}
+      onClose={() => setOpenConfirm(false)}
+      maxWidth="xs"
+      fullWidth
+      >
+      <DialogTitle>
+        Confirm Regeneration
+      </DialogTitle>
+
+      <DialogContent>
+        <DialogContentText>
+          This action will delete the existing cdr report files and regenerate the project.
+          Are you sure you want to continue?
+        </DialogContentText>
+      </DialogContent>
+
+      <DialogActions>
+        <Button
+          onClick={() => setOpenConfirm(false)}
+          color="inherit"
+          disabled={regenloading}
+        >
+          Cancel
+        </Button>
+
+        <Button
+          onClick={handleConfirmRegenerate}
+          variant="contained"
+          color="primary"
+          sx={{
+            backgroundColor: 'rgb(65, 117, 129)',
+            '&:hover': {
+              backgroundColor: 'rgb(55, 100, 110)',
+            },
+          }}
+          disabled={regenloading}
+        >
+          {regenloading ? 'Processing...' : 'Proceed'}
+        </Button>
+      </DialogActions>
+      </Dialog>
     </Box>
   );
 };

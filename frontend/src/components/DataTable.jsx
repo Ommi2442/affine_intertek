@@ -68,6 +68,7 @@ const DataTable = forwardRef(
     const commentTargetRef = useRef({ t: null, i: null });
     const [commentHistory, setCommentHistory] = useState([]);
 
+
     // Track whether this page load is a browser refresh
     //const isRefreshRef = useRef(false);
 
