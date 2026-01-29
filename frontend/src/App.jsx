@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Navigate,
   RouterProvider,
@@ -23,28 +23,45 @@ import LetterReportPage from './pages/ReportPage/LetterReportPage.jsx';
 import UploadLetterFilePage from './pages/UploadFilePage/UploadLetterFilePage.jsx';
 
 function App() {
+  useEffect(() => {
+    localStorage.setItem(
+      'accessToken',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ5b2dlc2guc2hhbm11a2hhcHBhQGFmZmluZS5haSIsInJvbGUiOjEsImV4cCI6MTc2OTY4MDQzOX0.9FT2BhekHQvvt6kprGVI1kblxrR3UxQ9AvCdqP5ArC8'
+    );
+
+    localStorage.setItem('email', 'yogesh.shanmukhappa@affine.ai');
+    localStorage.setItem('name', 'Yogesh Shanmukhappa');
+    localStorage.setItem('logintype', 'sso');
+    localStorage.setItem('role', 1);
+  }, []);
   const router = createBrowserRouter([
     // LOGIN PAGE
-    { path: '/', element: <LoginPage /> },
+    { path: '/', element: <MainLayout /> },
 
     // MSAL REDIRECT HANDLER (IMPORTANT FIX)
     {
       path: '/redirect',
-      element: <LoginPage />,
+      element: <MainLayout />,
     },
 
     // Protected Layout (Navbar + Outlet)
     {
       path: '/',
       element: (
-        <ProtectedRoute>
-          <BreadcrumbProvider>
-            <MainLayout />
-          </BreadcrumbProvider>
-        </ProtectedRoute>
+        // <MainLayout />
+        // <ProtectedRoute>
+        //   <BreadcrumbProvider>
+        //     <MainLayout />
+        //   </BreadcrumbProvider>
+        // </ProtectedRoute>
+
+        <BreadcrumbProvider>
+          <MainLayout />
+        </BreadcrumbProvider>
       ),
       children: [
-        { path: 'dashboard', element: <Dashboard /> },
+        { index: true, element: <Dashboard /> },
+        // { path: 'dashboard', element: <Dashboard /> },
         { path: 'create-project', element: <UploadFilePage /> },
         { path: 'create-project-letter', element: <UploadLetterFilePage /> },
         // REPORT ROUTES
@@ -62,8 +79,8 @@ function App() {
     },
     // CATCH-ALL ROUTE (IMPORTANT FIX)
     {
-      path: '*',
-      element: <LoginPage />,
+      path: '/dashboard',
+      element: <Dashboard />,
     },
   ]);
 
