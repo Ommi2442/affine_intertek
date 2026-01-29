@@ -186,6 +186,13 @@ def rebuild_letter_docx_from_json(
         )
         print("⚠️ No non-conformance table found in JSON")
 
+    print("Updating Letter Non ai fillable values")
+    replace_keys_with_values_no_format_change_all(
+            input_docx=output_letter_docx,
+            output_docx=output_letter_docx,
+            data=data
+    )
+
     # -------------------------------------------------------
     # Step 4 — Insert Non-Conforming Images (Section 6)
     # -------------------------------------------------------

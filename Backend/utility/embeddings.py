@@ -574,28 +574,115 @@ def load_and_split_pdfs_text(
 
 
 
+# def upload_pdf_images_and_append_urls(
+#     image_page_metadata,
+#     image_urls,
+#     conn_str,
+#     container,
+#     max_workers=8
+# ):
+#     """
+#     Takes CAD/schematic page images extracted above,
+#     uploads each PNG to blob storage in parallel,
+#     appends URLs in same format as notebook.
+#     """
+
+#     def upload_single(item):
+#         local_path = item["local_image_path"]
+#         pdf_file = item["pdf_file"]
+#         page = item.get("page") or item.get("page_num")
+
+#         safe_pdf_name = sanitize_blob_name(pdf_file)
+#         safe_image_filename = sanitize_blob_name(os.path.basename(local_path))
+
+#         blob_name = f"{safe_pdf_name}/page_{page}.png"
+
+#         try:
+#             blob = BlobClient.from_connection_string(
+#                 conn_str,
+#                 container_name=container,
+#                 blob_name=blob_name,
+#             )
+
+#             with open(local_path, "rb") as f:
+#                 blob.upload_blob(f, overwrite=True)
+
+#             blob_url = blob.url
+
+#             return {
+#                 "url": blob_url,
+#                 "image_file": safe_image_filename,
+#                 "pdf_file": pdf_file,
+#                 "page": page
+#             }
+
+#         except Exception as e:
+#             print(f"[ERROR] Upload failed for {local_path}: {e}")
+#             return None
+
+#     # -------------------------------------------------
+#     # PARALLEL EXECUTION
+#     # -------------------------------------------------
+#     with ThreadPoolExecutor(max_workers=max_workers) as executor:
+#         futures = [
+#             executor.submit(upload_single, item)
+#             for item in image_page_metadata
+#         ]
+
+#         for future in as_completed(futures):
+#             result = future.result()
+#             if result:
+#                 image_urls.append(result)
+
+#     return image_urls
+
+
+
+
+
+from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from azure.storage.blob import BlobClient
+import os
+
 def upload_pdf_images_and_append_urls(
     image_page_metadata,
     image_urls,
     conn_str,
     container,
-    max_workers=8
+    max_workers,
+    project_id      
 ):
     """
     Takes CAD/schematic page images extracted above,
     uploads each PNG to blob storage in parallel,
     appends URLs in same format as notebook.
+
+    Blob path:
+    Documents/<project_id>/pdf_images/<pdf_file>/page_<n>.png
     """
+
+    # -------------------------------------------------
+    # BASE BLOB PATH (matches reference logic)
+    # -------------------------------------------------
+    base_blob_path = (
+        Path("Documents") /
+        str(project_id) /
+        "pdf_images"
+    ).as_posix()   # Azure requires forward slashes
 
     def upload_single(item):
         local_path = item["local_image_path"]
         pdf_file = item["pdf_file"]
         page = item.get("page") or item.get("page_num")
 
-        safe_pdf_name = sanitize_blob_name(pdf_file)
-        safe_image_filename = sanitize_blob_name(os.path.basename(local_path))
+        if not pdf_file or page is None:
+            return None
 
-        blob_name = f"{safe_pdf_name}/page_{page}.png"
+        safe_pdf_name = sanitize_blob_name(pdf_file)
+
+        # ✅ NEW BLOB PATH
+        blob_name = f"{base_blob_path}/{safe_pdf_name}/page_{page}.png"
 
         try:
             blob = BlobClient.from_connection_string(
@@ -607,11 +694,9 @@ def upload_pdf_images_and_append_urls(
             with open(local_path, "rb") as f:
                 blob.upload_blob(f, overwrite=True)
 
-            blob_url = blob.url
-
             return {
-                "url": blob_url,
-                "image_file": safe_image_filename,
+                "url": blob.url,
+                "image_file": os.path.basename(local_path),
                 "pdf_file": pdf_file,
                 "page": page
             }
@@ -621,7 +706,7 @@ def upload_pdf_images_and_append_urls(
             return None
 
     # -------------------------------------------------
-    # PARALLEL EXECUTION
+    # PARALLEL EXECUTION (UNCHANGED)
     # -------------------------------------------------
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = [
@@ -635,6 +720,9 @@ def upload_pdf_images_and_append_urls(
                 image_urls.append(result)
 
     return image_urls
+ 
+
+
 
 
 # ingestion_tool.py (continued)
@@ -1672,8 +1760,11 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
         image_page_metadata=unique_metadata,
         image_urls=image_urls_raw,
         conn_str=AZURE_CONN_STRING,
-        container=BLOB_CONTAINER,   # same notebook container
+        container=BLOB_CONTAINER,
+        max_workers=8,
+        project_id=project_id   
     )
+
 
     # Turn into flat list
     img_links = extract_urls(image_urls)
