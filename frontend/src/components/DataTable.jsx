@@ -496,18 +496,22 @@ const DataTable = forwardRef(
         const isModified = item.value !== val;
         if (!isModified) return prev;
 
+        const isAiFillable = item.ai_fillable === true;
+
         next[t].Items[i] = {
           ...item,
           value: val,
           is_user_modified: true,
-          is_user_edited: true,
+          ...(isAiFillable ? { is_user_edited: true } : {}),
         };
 
         return next;
       });
 
-      // trigger realtime confidence update
-      onConfidenceChange?.();
+      // trigger confidence ONLY if ai_fillable
+      if (tables?.[t]?.Items?.[i]?.ai_fillable === true) {
+        onConfidenceChange?.();
+      }
     };
 
     // COMMENT HANDLING
@@ -515,12 +519,12 @@ const DataTable = forwardRef(
       commentTargetRef.current = { t, i };
       const item = tables?.[t]?.Items?.[i];
 
-      // ✅ get ALL existing comments
+      // get ALL existing comments
       const history = Array.isArray(item?.user_comments)
         ? item.user_comments
         : [];
 
-      // ✅ pick latest comment (if exists)
+      // pick latest comment (if exists)
       const latestComment =
         history.length > 0 ? history[history.length - 1].comment : '';
 
@@ -593,7 +597,7 @@ const DataTable = forwardRef(
           confidence: shouldPromote ? 100 : item.confidence, // do NOT touch user_edited
         };
 
-        // 🔥 Clause row promotion (page 9+)
+        //  Clause row promotion (page 9+)
         if (
           item.task_type === 'remark' ||
           item.task_type === 'verdict' ||
@@ -1044,6 +1048,7 @@ const DataTable = forwardRef(
 
                                   const lines = normalizeToArray(col.value);
                                   const cellValue = lines[rowIdx] ?? '';
+                                  const isAiFillable = col.ai_fillable === true;
 
                                   return (
                                     <TableCell key={idx}>
@@ -1067,15 +1072,19 @@ const DataTable = forwardRef(
 
                                                 next[tIdx].Items[iIdx] = {
                                                   ...next[tIdx].Items[iIdx],
-                                                  value: updated, //  KEEP ARRAY
+                                                  value: updated,
                                                   is_user_modified: true,
-                                                  is_user_edited: true,
+                                                  ...(isAiFillable
+                                                    ? { is_user_edited: true }
+                                                    : {}),
                                                 };
 
                                                 return next;
                                               });
 
-                                              onConfidenceChange?.();
+                                              if (isAiFillable) {
+                                                onConfidenceChange?.();
+                                              }
                                             }}
                                           />
                                         )}
@@ -1994,13 +2003,13 @@ const DataTable = forwardRef(
 
                     const clauseRow = item.clause_row;
                     const clauseField = item.field ?? item.Field ?? '';
-
+                    const isAiFillable = item.ai_fillable === true;
                     // 1update verdict / remark
                     next[tIdx].Items[iIdx] = {
                       ...next[tIdx].Items[iIdx],
                       value: newVal,
                       is_user_modified: true,
-                      is_user_edited: true,
+                      ...(isAiFillable ? { is_user_edited: true } : {}),
                     };
 
                     // 2bubble to clause row (page 9+)
@@ -2013,9 +2022,13 @@ const DataTable = forwardRef(
                       ) {
                         return {
                           ...row,
-                          is_user_modified: true,
-                          is_user_edited: true,
-                          confidence: 100,
+                          ...(row.ai_fillable === true
+                            ? {
+                                is_user_modified: true,
+                                is_user_edited: true,
+                                confidence: 100,
+                              }
+                            : {}),
                         };
                       }
                       return row;
@@ -2024,7 +2037,9 @@ const DataTable = forwardRef(
                     return next;
                   });
 
-                  onConfidenceChange?.();
+                  if (isAiFillable) {
+                    onConfidenceChange?.();
+                  }
                 }}
               />
 

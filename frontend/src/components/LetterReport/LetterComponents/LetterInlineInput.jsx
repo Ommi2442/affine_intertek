@@ -16,6 +16,9 @@ const LetterInlineInput = ({
     setLocalValue(item.value ?? '');
   }, [item.value]);
 
+  const canCountAsUserEdit =
+    item.ai_fillable === true || item.dataframe_table === true;
+
   return (
     <input
       type="text"
@@ -23,14 +26,23 @@ const LetterInlineInput = ({
       disabled={!editMode}
       onChange={(e) => {
         if (!editMode) return;
-        setLocalValue(e.target.value); // fast typing, no global re-render
-      }}
-      onBlur={() => {
-        if (!editMode) return;
-        item.value = localValue; // commit on blur
-        item.is_user_edited = true;
-        onChange?.(); // one re-render only
-        onConfidenceChange?.();
+
+        const val = e.target.value;
+        setLocalValue(val);
+
+        // Always update value
+        item.value = val;
+
+        // ONLY these fields affect user-edited count
+        if (canCountAsUserEdit) {
+          if (!item.is_user_edited) {
+            item.is_user_edited = true;
+          }
+          onConfidenceChange?.();
+        }
+
+        // Persist + rerender
+        onChange?.();
       }}
       style={{
         border: '1px solid #535353',
