@@ -14,24 +14,24 @@ const LetterPage2 = ({
   onConfidenceChange,
 }) => {
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
-  useEffect(() => {
-    const item1 = getLetterItem(json, '«IssuedDate»');
-    const item2 = getLetterItem(json, '«ProjectNumber»');
+  // useEffect(() => {
+  //   const item1 = getLetterItem(json, '«IssuedDate»');
+  //   const item2 = getLetterItem(json, '«ProjectNumber»');
 
-    if (!item1 || !item2) return;
+  //   if (!item1 || !item2) return;
 
-    if (!item1.value || item1.value === '«IssuedDate»') {
-      item1.value = formatIssueDate();
-      item1.is_user_edited = false;
-    }
+  //   if (!item1.value || item1.value === '«IssuedDate»') {
+  //     item1.value = formatIssueDate();
+  //     item1.is_user_edited = false;
+  //   }
 
-    if (!item2.value || item2.value === '«ProjectNumber»') {
-      item2.value = localStorage.getItem('projectId');
-      item2.is_user_edited = false;
-    }
+  //   if (!item2.value || item2.value === '«ProjectNumber»') {
+  //     item2.value = localStorage.getItem('projectId');
+  //     item2.is_user_edited = false;
+  //   }
 
-    forceUpdate();
-  }, []);
+  //   forceUpdate();
+  // }, []);
 
   return (
     <div className="letter-page">

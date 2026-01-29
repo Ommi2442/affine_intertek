@@ -2093,6 +2093,47 @@ def attach_blob_urls_to_table_text_support(data, blob_urls):
  
 #entry function
 
+
+from datetime import datetime
+
+def update_system_date_and_project_id(data: dict, project_id: str) -> dict:
+    """
+    Updates:
+      - KEY3
+      - «IssuedDate»
+        → system date in DD-MMMM-YYYY format
+      - «ProjectNumber»
+        → provided project_id
+
+    OS-independent (Windows/Linux).
+    """
+
+    # --------------------------------------------------
+    # Get system date (OS independent)
+    # Format: 10-January-2026
+    # --------------------------------------------------
+    system_date = datetime.now().strftime("%d-%B-%Y")
+
+    TARGET_DATE_KEYS = {"KEY3", "«IssuedDate»"}
+    PROJECT_KEY = "«ProjectNumber»"
+
+    for page in data.get("pages", []):
+        for item in page.get("items", []):
+
+            key = item.get("key")
+
+            # Update Issue Date keys
+            if key in TARGET_DATE_KEYS:
+                item["value"] = system_date
+
+            # Update Project Number
+            elif key == PROJECT_KEY:
+                item["value"] = project_id
+
+    return data
+
+ 
+
 def generate_letter_pipeline(
     blob_urls,
     container_name,
@@ -2540,6 +2581,8 @@ def letter_gen(blob_urls,
         data_final=attach_blob_urls_to_text_support_letter(data_final, blob_urls_trf)
 
         data_final = attach_blob_urls_to_table_text_support(data_final,blob_urls_trf)
+
+        data_final= update_system_date_and_project_id(data=data_final,project_id=project_Id)
 
         with open(letter_json_path_output, "w", encoding="utf-8") as f:
             json.dump(data_final, f, indent=2, ensure_ascii=False)
