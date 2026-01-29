@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useEffect, useRef, useState, useCallback  } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   Box,
   Card,
@@ -11,7 +11,7 @@ import {
   IconButton,
   DialogContent,
   DialogActions,
-  DialogContentText
+  DialogContentText,
 } from '@mui/material';
 import { useNavigate, useNavigationType, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -30,7 +30,6 @@ import { loadPdfWithCache } from '../../components/loadPdfWithCache';
 import { triggerGenerateLetterApi } from '../../redux/api/generateLetterApi';
 import { finaliseLetterReportRequest } from '../../redux/features/finaliseLetterReport/finaliseLetterReportSlice';
 import { reGenerateLetterClear } from '../../redux/api/RegenerateApi';
-
 
 const STORAGE_KEY_PREFIX = 'letter_report_';
 
@@ -66,6 +65,9 @@ const LetterReportPage = () => {
 
   const [openConfirm, setOpenConfirm] = useState(false);
   const [regenloading, setRegenLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const finaliseOnceRef = useRef(false);
 
   const location = useLocation();
 
@@ -98,6 +100,45 @@ const LetterReportPage = () => {
     setLiveLetterData(updated);
   }, [confidenceTick, headerJson]);
 
+  const autoFinaliseLetter = async () => {
+    if (!dataTableRef.current) return;
+    if (!headerJson || Object.keys(headerJson).length === 0) return;
+
+    const payload = dataTableRef.current.getUpdatedJson();
+    if (!payload) return;
+
+    const letter_payload = {
+      Letter_header_json: payload,
+      Letter_json_body: headerJson,
+    };
+
+    // Persist first (same as manual finalize)
+    await idb_set(storageKey, letter_payload, STORES.LETTER);
+
+    dispatch(
+      finaliseLetterReportRequest({
+        projectId,
+        data: letter_payload,
+      })
+    );
+
+    setFinalised(true);
+  };
+
+  useEffect(() => {
+    if (
+      loading === false &&
+      letterJson &&
+      headerJson &&
+      dataTableRef.current &&
+      !finaliseOnceRef.current
+    ) {
+      finaliseOnceRef.current = true;
+      if (message === 'Letter Generated Successfully') {
+        autoFinaliseLetter();
+      }
+    }
+  }, [loading, letterJson, headerJson]);
 
   const loadLetter = useCallback(async () => {
     if (!projectId) return;
@@ -125,11 +166,7 @@ const LetterReportPage = () => {
 
     // Case 1: blobs were passed from Upload page
     if (trfBlobUrl || cdrBlobUrl) {
-      res = await triggerGenerateLetterApi(
-        projectId,
-        trfBlobUrl,
-        cdrBlobUrl
-      );
+      res = await triggerGenerateLetterApi(projectId, trfBlobUrl, cdrBlobUrl);
     }
     // Case 2: blobs NOT available
     else {
@@ -137,6 +174,7 @@ const LetterReportPage = () => {
     }
 
     if (res) {
+      setMessage(res?.Message);
       const payload = {
         Letter_header_json: res?.Data?.Letter_header_json,
         Letter_json_body: res?.Data?.Letter_json_body,
@@ -148,21 +186,12 @@ const LetterReportPage = () => {
     }
 
     setLoading(false);
-  }, [
-    projectId,
-    isHardRefresh,
-    trfBlobUrl,
-    cdrBlobUrl,
-    storageKey,
-  ]);
-
-
+  }, [projectId, isHardRefresh, trfBlobUrl, cdrBlobUrl, storageKey]);
 
   /* ---------------- LOAD LOGIC ---------------- */
   useEffect(() => {
     loadLetter();
   }, [loadLetter]);
-
 
   const handleCitationLinkClick = (filename, page, text, blob_url) => {
     // ---- XLSX and DOCX → DOWNLOAD ----
@@ -250,7 +279,6 @@ const LetterReportPage = () => {
     DownloadMissingFieldsExcel(data, projectID, reportClick);
   };
 
-
   const handleConfirmRegenerate = async () => {
     try {
       setRegenLoading(true);
@@ -258,7 +286,6 @@ const LetterReportPage = () => {
       const payload = {
         projectId,
       };
-      
 
       await reGenerateLetterClear(payload);
 
@@ -267,7 +294,7 @@ const LetterReportPage = () => {
       idb_clear_all();
 
       navigate('/create-project-letter');
-        // , {
+      // , {
       // state: {
       //   standard: row?.Standard,
       //   projectId,
@@ -276,8 +303,7 @@ const LetterReportPage = () => {
       //   source: type,
       //   letterPercentage: row?.letter_percentage ?? 0,
       // },
-    // });
-
+      // });
     } finally {
       // setRegenLoading(false);
       // setOpenConfirm(false);
@@ -285,7 +311,6 @@ const LetterReportPage = () => {
       // await loadLetter();
     }
   };
-
 
   const getCitationDialogText = () => {
     if (!selectedCitation) return '';
@@ -683,46 +708,44 @@ const LetterReportPage = () => {
         </Box>
       )}
       <Dialog
-      open={openConfirm}
-      onClose={() => setOpenConfirm(false)}
-      maxWidth="xs"
-      fullWidth
+        open={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        maxWidth="xs"
+        fullWidth
       >
-      <DialogTitle>
-      Confirm Regeneration
-      </DialogTitle>
+        <DialogTitle>Confirm Regeneration</DialogTitle>
 
-      <DialogContent>
-      <DialogContentText>
-      This action will delete the existing letter report files and regenerate the project.
-      Are you sure you want to continue?
-      </DialogContentText>
-      </DialogContent>
+        <DialogContent>
+          <DialogContentText>
+            This action will delete the existing letter report files and
+            regenerate the project. Are you sure you want to continue?
+          </DialogContentText>
+        </DialogContent>
 
-      <DialogActions>
-      <Button
-      onClick={() => setOpenConfirm(false)}
-      color="inherit"
-      disabled={regenloading}
-      >
-      Cancel
-      </Button>
+        <DialogActions>
+          <Button
+            onClick={() => setOpenConfirm(false)}
+            color="inherit"
+            disabled={regenloading}
+          >
+            Cancel
+          </Button>
 
-      <Button
-      onClick={handleConfirmRegenerate}
-      variant="contained"
-      color="primary"
-      sx={{
-        backgroundColor: 'rgb(65, 117, 129)',
-        '&:hover': {
-          backgroundColor: 'rgb(55, 100, 110)',
-        },
-      }}
-      disabled={regenloading}
-      >
-      {regenloading ? 'Processing...' : 'Proceed'}
-      </Button>
-      </DialogActions>
+          <Button
+            onClick={handleConfirmRegenerate}
+            variant="contained"
+            color="primary"
+            sx={{
+              backgroundColor: 'rgb(65, 117, 129)',
+              '&:hover': {
+                backgroundColor: 'rgb(55, 100, 110)',
+              },
+            }}
+            disabled={regenloading}
+          >
+            {regenloading ? 'Processing...' : 'Proceed'}
+          </Button>
+        </DialogActions>
       </Dialog>
     </Box>
   );
