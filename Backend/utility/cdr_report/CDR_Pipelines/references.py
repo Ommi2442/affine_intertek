@@ -40,7 +40,23 @@ ADDR_HINT_RE = re.compile(
 FORM_FILENAME_RE = re.compile(r"(cis|client[_\s-]?information|customer[_\s-]?information|agreement|agent)", re.I)
 FORM_CONTENT_RE  = re.compile(r'("Applicant"|"Bill-To"|"Manufacturer"|Legal Entity Name|Street Address)', re.I)
 ZERO_WIDTH_RE = re.compile(r"[\u200B-\u200D\uFEFF]")  # zero-width chars
+COMPONENT_SUPPLIER_RE = re.compile(
+    r"(constituent|critical)\s+component|"
+    r"component\s+manufacturer|"
+    r"spare\s*part|parts?\s+manufacturer|"
+    r"bill\s+of\s+materials|\bBOM\b|"
+    r"approved\s+components?|"
+    r"sub-?supplier|supplier\s+name|vendor|distributor|"
+    r"part\s*(no\.|number)|item\s*no\.|mpn\b|sku\b",
+    re.I,
+)
 
+OEM_SIGNAL_RE = re.compile(
+    r"prepared\s*for|applicant|bill-?to|ship-?to|sold-?to|"
+    r"factory\s+address|manufacturing\s+location|place\s+of\s+manufacture|"
+    r"oem|original\s+equipment\s+manufacturer|final\s+assembly|assembled\s+in",
+    re.I,
+)
 
 from collections import defaultdict
 
@@ -54,6 +70,7 @@ from pathlib import Path
 from utility.cdr_report.CDR_Pipelines.json_utils import enrich_sheet1_extractions_by_headers
 from utility.cdr_report.CDR_Pipelines.json_utils import sheet1_json_main
 from utility.cdr_report.CDR_Pipelines.json_utils import enrich_sheet1_extractions_by_headers
+from utility.cdr_report.CDR_Pipelines.json_utils import add_text_support_to_result_json
 import utility.cdr_report.CDR_Pipelines.configs as configs
 # OUTPUT_PATH   = Path(r".\utility\cdr_report\CDR_Pipelines\sheet1_3filled_dummy.json")
 OUTPUT_PATH   = Path("sheet1_3filled_dummy.json")
@@ -76,6 +93,13 @@ from utility.cdr_report.CDR_Pipelines.json_utils import top_chunks_as_json
 #     configs.require_runtime()
 #     return switch.get_bom_filenames()
 
+def limit_manufacturers_to_two(data_json: dict) -> dict:
+    key = "ManufacturersSection"
+    manufacturers = data_json.get(key)
+    if isinstance(manufacturers, list) and len(manufacturers) > 2:
+        data_json[key] = manufacturers[:2]
+    return data_json
+
 def get_bom_source_files() -> set[str]:
     configs.require_runtime()
     BOM_SOURCE_FILES = switch.get_bom_filenames()
@@ -94,6 +118,14 @@ def drop_excluded(docs, ex_files):
             kept.append(d)
     return kept
 
+def drop_component_suppliers(docs: List[Document]) -> List[Document]:
+    kept = []
+    for d in docs:
+        t = d.page_content or ""
+        if COMPONENT_SUPPLIER_RE.search(t) and not OEM_SIGNAL_RE.search(t):
+            continue
+        kept.append(d)
+    return kept
 # def exclude_bom_docs(docs: list[Document]) -> list[Document]:
 #     bom_files = get_bom_source_files()
 #     filtered = []
@@ -138,6 +170,25 @@ def is_form_like(doc: Document) -> bool:
     return bool(FORM_CONTENT_RE.search(txt) or FORM_FILENAME_RE.search(sf))
 
 
+# def doc_usefulness_score(doc: Document) -> int:
+#     sf = (doc.metadata.get("source_file") or "").lower()
+#     txt = doc.page_content or ""
+#     emails, phones, has_addr_hint = extract_signals(txt)
+
+#     score = 0
+#     if has_addr_hint:
+#         score += 3
+#     score += min(len(emails), 3) * 2
+#     score += min(len(phones), 2) * 1
+
+#     # mild preference for PDFs/structured artifacts, no penalty for emails
+#     if sf.endswith(".pdf"):
+#         score += 2
+#     if sf.endswith(".xlsx") or sf.endswith(".xls"):
+#         score += 1
+
+#     return score
+
 def doc_usefulness_score(doc: Document) -> int:
     sf = (doc.metadata.get("source_file") or "").lower()
     txt = doc.page_content or ""
@@ -149,14 +200,20 @@ def doc_usefulness_score(doc: Document) -> int:
     score += min(len(emails), 3) * 2
     score += min(len(phones), 2) * 1
 
-    # mild preference for PDFs/structured artifacts, no penalty for emails
+    # prefer structured / likely OEM docs
+    if OEM_SIGNAL_RE.search(txt):
+        score += 6
+
+    # penalize component/BOM-like sections (unless it also has OEM signals)
+    if COMPONENT_SUPPLIER_RE.search(txt) and not OEM_SIGNAL_RE.search(txt):
+        score -= 8
+
     if sf.endswith(".pdf"):
         score += 2
     if sf.endswith(".xlsx") or sf.endswith(".xls"):
         score += 1
 
     return score
-
 
 def fetch_all_chunks_for_source(container, source_file: str):
     query = """
@@ -257,8 +314,8 @@ def build_fallback_query(user_question: str) -> str:
     return (
         user_question
         + " Applicant Bill-To Manufacturer Factory Legal Entity Name Street Address Contacts Email Phone Fax "
-        + " Name and address of factory" 
-        + "Prepared For:"
+        + " Name and address of factory " 
+        + " Prepared For: "
     )
 
 def add_general_fallback(
@@ -327,6 +384,7 @@ def build_context_docs(vs, container, retrieved_docs: List[Document], user_quest
         search_type="vector"
     )
     fallback_candidates = drop_excluded(fallback_candidates, ex_files)
+    fallback_candidates = drop_component_suppliers(fallback_candidates) # changes
 
     # Merge candidates broadly (include expanded so novelty selection sees everything)
     merged_candidates = dedupe_docs(expanded + fallback_candidates)
@@ -338,11 +396,11 @@ def build_context_docs(vs, container, retrieved_docs: List[Document], user_quest
         require_any_email=True
     )
 
-#     final_docs = dedupe_docs(final_docs)
-#     final_docs.sort(key=doc_usefulness_score, reverse=True)
-#     final_docs = cap_per_source(final_docs, max_per_source=4)
-#     final_docs = dedupe_docs(final_docs)
-#     final_docs = exclude_bom_docs(final_docs)
+    final_docs = dedupe_docs(final_docs) #
+    final_docs.sort(key=doc_usefulness_score, reverse=True) #
+    final_docs = cap_per_source(final_docs, max_per_source=4)#
+    final_docs = dedupe_docs(final_docs)#
+    # final_docs = exclude_bom_docs(final_docs)
     
     return final_docs[:max_final]
 
@@ -361,7 +419,8 @@ def references_main(vs, ref):
 
     rag_chain_debug = (
         RunnableParallel(
-            docs=retriever | RunnableLambda(lambda docs: drop_excluded(docs, ex_files)),
+            # docs=retriever | RunnableLambda(lambda docs: drop_excluded(docs, ex_files)),
+            docs=retriever | RunnableLambda(lambda docs: drop_component_suppliers(drop_excluded(docs, ex_files))),
             question=RunnablePassthrough(),
         )
         | RunnableLambda(lambda x: {
@@ -402,7 +461,7 @@ def references_main(vs, ref):
         # print("Score:", doc_usefulness_score(d))
         # print("Content:\n", (d.page_content or "")[:3500])
 
-    top5 = top_chunks_as_json(vs, CURRENT_QUESTION, k_search=300, top_k=5)
+    # top5 = top_chunks_as_json(vs, CURRENT_QUESTION, k_search=300, top_k=5)
     #####
     context = format_docs(out["docs"])                # reuse the exact same docs
     extracted = out["answer"]   
@@ -448,15 +507,16 @@ def references_main(vs, ref):
 #     print("Loaded template type:", type(template))
 #     print("Loaded template keys:", list(template.keys()) if isinstance(template, dict) else "NOT A DICT")
 
-
+    data_json = limit_manufacturers_to_two(data_json)
     template = sheet1_json_main(data_json, template)
     template = enrich_sheet1_extractions_by_headers(template, scores)
     #print('confidence populated')
-    template['Sheets'][0]['Items'][7]['text_support']=top5
+    #template['Sheets'][0]['Items'][7]['text_support']=top5
     #print('text_support populated')
     #print('=================================================')
     #print(template['Sheets'][0]['Items'][7]['text_support'])
     #print('=================================================')
+    template = template = add_text_support_to_result_json(template, out['docs'], top_k=5)
     OUTPUT_PATH.write_text(json.dumps(template, indent=2, ensure_ascii=False), encoding="utf-8")
     #print("Saved:", OUTPUT_PATH)
 

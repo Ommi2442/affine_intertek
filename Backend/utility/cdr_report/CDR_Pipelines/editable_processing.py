@@ -359,7 +359,7 @@ def process_pdfs(
         #print(f"\nChecking {pdf_path.name}...")
 
         if not is_editable_form_pdf(pdf_path):
-            #print(" → Not editable. Skipping.")
+            print(" → Not editable. Skipping.")
             continue
 
         #print(" → Editable PDF detected.")
@@ -367,7 +367,7 @@ def process_pdfs(
         # 1) Flatten PDF
         flat_pdf_path = flattened_dir / f"{pdf_path.stem}_flat.pdf"
         pixmaps = flatten_and_get_images(str(pdf_path), str(flat_pdf_path), dpi=dpi)
-        #print(" ✔ Flattened PDF created.")
+        print(" ✔ Flattened PDF created.")
 
         # 2) Archive original (now outside src_root)
         archive_path = archive_root / pdf_path.name
@@ -424,13 +424,14 @@ def process_pdfs(
 #     return all_cis
 
 def extract_cis():
+    import utility.cdr_report.CDR_Pipelines.configs as configs
+    configs.require_runtime()
     results = process_pdfs(
-        src_root="src_files",
-        flattened_dir="flattened_pdfs",
-        images_root="page_images",
+        src_root=configs.SRC_ROOT,
+        flattened_dir=configs.FLAT_ROOT,
+        images_root=configs.IMG_ROOT,
         dpi=200
     )
- 
     
     all_cis=[]
     for pdf_name, info in results.items():

@@ -2,6 +2,7 @@ import json
 import re
 from copy import deepcopy
 from pathlib import Path
+from utility.cdr_report.CDR_Pipelines.utils import build_embeddings
 
 def shift_cell(cell, row_offset=0, col_offset=0):
     """
@@ -348,6 +349,110 @@ def top_chunks_as_json(vs, question: str, k_search: int = 300, top_k: int = 5, t
             break
 
     return out
+
+##################################################
+# Sheet 1 : Evidence Correction                  #
+##################################################
+import numpy as np
+
+NO_EVIDENCE = {
+    "filename": None,
+    "page": 0,
+    "similarity_score": 0.0,
+    "preview_text": "No evidence found",
+}
+
+def _is_na(val):
+    if val is None:
+        return True
+    s = str(val).strip()
+    return s == "" or s.upper() == "N/A"
+
+def _detect_sections(items):
+    seen, secs = set(), []
+    for it in items:
+        p = it.get("prefix")
+        if p in (None, "", "Report"):
+            continue
+        if p == "Applicant" or str(p).startswith("Manufacturer"):
+            if p not in seen:
+                seen.add(p)
+                secs.append(p)
+    return secs
+
+def _section_indices(items, prefix):
+    """
+    Returns indices of items that belong to a section:
+    from first occurrence of prefix until first prefix==None after it starts,
+    but only include items whose prefix equals the section prefix.
+    """
+    started = False
+    idxs = []
+    for i, it in enumerate(items):
+        p = it.get("prefix")
+        if not started:
+            if p == prefix:
+                started = True
+                idxs.append(i)
+        else:
+            if p is None:
+                break
+            if p == prefix:
+                idxs.append(i)
+    return idxs
+
+def add_text_support_to_result_json(result_json, chunks25, top_k=5):
+    """
+    Mutates result_json by adding `text_support` to each extraction item
+    for Applicant and Manufacturer sections (Manufacturer 1, 2, ...).
+    Returns the updated result_json.
+    """
+    emb = build_embeddings()
+
+    # --- Embed the 25 candidate chunks once ---
+    chunk_texts = [c.page_content for c in chunks25]
+    X = np.array(emb.embed_documents(chunk_texts), dtype=np.float32)
+    X /= (np.linalg.norm(X, axis=1, keepdims=True) + 1e-12)  # normalize
+
+    for sheet in result_json.get("Sheets", []):
+        items = sheet.get("Items", [])
+        for sec in _detect_sections(items):
+            idxs = _section_indices(items, sec)
+
+            for i in idxs:
+                it = items[i]
+                if it.get("task_type") != "extraction":
+                    continue
+
+                val = it.get("value")
+                if _is_na(val):
+                    it["text_support"] = [NO_EVIDENCE]
+                    continue
+
+                q = np.array(emb.embed_query(str(val)), dtype=np.float32)
+                q /= (np.linalg.norm(q) + 1e-12)
+
+                scores = X @ q
+                top_idx = np.argsort(-scores)[:top_k]
+
+                it["text_support"] = [
+                    {
+                        "filename": chunks25[j].metadata.get("source_file")
+                                    or chunks25[j].metadata.get("filename")
+                                    or chunks25[j].metadata.get("source"),
+                        "page": chunks25[j].metadata.get("page", 0),
+                        "similarity_score": float(scores[j]),
+                        "preview_text": chunks25[j].page_content,
+                    }
+                    for j in top_idx
+                ]
+
+    return result_json
+
+#########################################
+##  Sheet 6 : Filling                  ##
+#########################################
+
 
 
 def fill_sheet6_from_final_sections(payload: dict, final_sections: dict) -> dict:
