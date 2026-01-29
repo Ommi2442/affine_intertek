@@ -310,7 +310,7 @@ const CdrReportPage = () => {
               const truncated = truncateWords(cleanedText, 20);
 
               return (
-                <Card key={idx} sx={{ mb: 2 }}>
+                <Card key={idx} sx={{ mb: 2, mr: 3 }}>
                   <CardContent>
                     <Typography sx={{ whiteSpace: 'pre-wrap', fontSize: 14 }}>
                       {truncated}

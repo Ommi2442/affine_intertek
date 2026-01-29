@@ -1,30 +1,42 @@
 /* eslint-disable */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, IconButton, Button, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import { uploadReportImage } from '../../../redux/api/uploadReportImage';
 
 const LetterPhotoSection = ({ item, editMode, onChange }) => {
   if (!item || item.is_photo !== true) return null;
 
+  const [project_id, setProjectId] = useState('');
   const photos = Array.isArray(item.nonConforming_urls)
     ? item.nonConforming_urls
     : [];
 
-  /* -------- ADD PHOTO -------- */
-  const addPhoto = (file) => {
-    const url = URL.createObjectURL(file);
+  useEffect(() => {
+    setProjectId(localStorage.getItem('projectId'));
+  }, []);
 
-    item.nonConforming_urls = [...photos, { id: Date.now(), url }];
+  /* -------- ADD PHOTO -------- */
+  const addPhoto = async (file) => {
+    const res = await uploadReportImage(project_id, 'letter', [file]);
+
+    const uploadedUrl = res?.blob_url;
+    if (!uploadedUrl) return;
+
+    item.nonConforming_urls = [...photos, { id: Date.now(), url: uploadedUrl }];
     onChange?.();
   };
 
   /* -------- REPLACE PHOTO -------- */
-  const replacePhoto = (index, file) => {
-    const url = URL.createObjectURL(file);
+  const replacePhoto = async (index, file) => {
+    const res = await uploadReportImage(project_id, 'letter', [file]);
+    const uploadedUrl = res?.blob_url;
+    if (!uploadedUrl) return;
+
     const next = [...photos];
-    next[index] = { ...next[index], url };
+    next[index] = { ...next[index], url: uploadedUrl };
     item.nonConforming_urls = next;
     onChange?.();
   };
