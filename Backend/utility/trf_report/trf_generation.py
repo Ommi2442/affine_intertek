@@ -1812,7 +1812,8 @@ def update_docx_tables_from_json_arial(docx_path, json_path, output_path):
             task_type = item.get("task_type")
 
             # Only update allowed fields
-            if not ai_fillable and task_type != "verdict_dependency":
+            # if not ai_fillable and task_type != "verdict_dependency":
+            if not ai_fillable and task_type != "verdict_dependency" and not item.get("user_editable", False):
                 continue
 
             row = item.get("answer_row")
