@@ -420,7 +420,7 @@ const LetterReportPage = () => {
             </Box>
 
             {bookmarkData?.textSupportRaw?.map((item, idx) => {
-              const rawText = item?.preview_text || '';
+              const rawText = item?.preview_text || item?.text || '';
               const cleanedText = normalizeNewLines(rawText);
               const isTruncated = cleanedText.split(/\s+/).length > 20;
               const truncatedText = truncateWords(cleanedText, 20);

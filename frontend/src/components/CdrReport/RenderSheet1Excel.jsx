@@ -18,6 +18,7 @@ import HoverActionWrapper from '../Common/HoverActionsWrapper';
 import CommentDialog from '../CommentDialog';
 import { useCommentActions } from '../Common/useCommentActions';
 import { renderConfidenceColor } from '../../utils/renderConfidenceColor';
+import HoverActionWrapperSheet1 from '../Common/HoverActionsWrapperSheet1';
 
 /* ---------------- HELPERS ---------------- */
 const colLetterToIndex = (cell = '') => (cell ? cell.charCodeAt(0) - 65 : 0);
@@ -81,15 +82,7 @@ const RenderSheet1Excel = ({
   };
 
   useEffect(() => {
-    setLocalItems((prev) => {
-      const prevExtra = prev.filter(
-        (p) =>
-          p.prefix?.startsWith('Manufacturer ') &&
-          !sheet.Items.some((s) => s.prefix === p.prefix && s.field === p.field)
-      );
-
-      return [...sheet.Items.map((i) => ({ ...i })), ...prevExtra];
-    });
+    setLocalItems(sheet.Items);
   }, [sheet.Items]);
 
   const toBackendContact = (value) => {
@@ -184,7 +177,7 @@ const RenderSheet1Excel = ({
           />
 
           <Box sx={{ position: 'relative', zIndex: 2 }}>
-            <HoverActionWrapper
+            <HoverActionWrapperSheet1
               show={hovered.i === itemIndex}
               onApprove={
                 canApprove
@@ -288,36 +281,98 @@ const RenderSheet1Excel = ({
   };
 
   /* ---------------- ADD MANUFACTURER ---------------- */
-  const handleAddManufacturer = () => {
-    const base = localItems.filter(isManufacturer1);
-    if (!base.length) return;
+  const handleAddManufacturer = async () => {
+    const MANUFACTURER_FIELDS = [
+      'Manufacturer',
+      'Address',
+      'Country',
+      'Contact',
+      'Phone',
+      'FAX',
+      'Email',
+    ];
 
-    let max = 1;
-    localItems.forEach((it) => {
-      if (it.prefix?.startsWith('Manufacturer ')) {
-        const n = parseInt(it.prefix.replace('Manufacturer ', ''), 10);
-        if (!isNaN(n)) max = Math.max(max, n);
+    // Get next manufacturer index
+    let maxIndex = 1;
+    localItems.forEach((i) => {
+      if (i.prefix?.startsWith('Manufacturer ')) {
+        const n = parseInt(i.prefix.replace('Manufacturer ', ''), 10);
+        if (!isNaN(n)) maxIndex = Math.max(maxIndex, n);
       }
     });
 
-    const nextIndex = max + 1;
-    const nextPrefix = `Manufacturer ${nextIndex}`;
+    const nextIndex = maxIndex + 1;
+    const prefix = `Manufacturer ${nextIndex}`;
 
-    const clones = base.map((it) => ({
-      ...JSON.parse(JSON.stringify(it)),
-      prefix: nextPrefix,
+    //  Find last row
+    const sorted = [...localItems]
+      .filter((i) => i.question_cell)
+      .sort(
+        (a, b) =>
+          rowNumberFromCell(a.question_cell) -
+          rowNumberFromCell(b.question_cell)
+      );
 
-      // IMPORTANT: keep row number SAME so layout stays identical
-      question_cell: it.question_cell,
-      answer_cell: `${it.answer_cell}_m${nextIndex}`, // only make answer_cell unique
+    const lastItem = sorted[sorted.length - 1];
+    if (!lastItem) return;
 
-      value: null,
-      is_user_modified: false,
-      is_user_approved: false,
+    const lastColumn = lastItem.question_cell.charAt(0);
+    const lastRow = rowNumberFromCell(lastItem.question_cell);
+
+    let targetColumn;
+    let startRow;
+
+    if (lastItem.task_type === 'blank') {
+      targetColumn = lastColumn;
+      startRow = lastRow + 1;
+    } else {
+      targetColumn = lastColumn === 'A' ? 'D' : 'A';
+
+      const lastRowInTarget = Math.max(
+        ...localItems
+          .filter((i) => i.question_cell?.startsWith(targetColumn))
+          .map((i) => rowNumberFromCell(i.question_cell)),
+        0
+      );
+
+      startRow = lastRowInTarget + 1;
+    }
+
+    const answerColumn = targetColumn === 'A' ? 'B' : 'E';
+
+    //  Create rows
+    const newRows = MANUFACTURER_FIELDS.map((field, idx) => ({
+      question_cell: `${targetColumn}${startRow + idx}`,
+      prefix,
+      field,
+      answer_cell: `${answerColumn}${startRow + idx}`,
+      value: '',
+      field_merged: false,
+      fm_range: null,
+      value_merged: true,
+      vm_range: null,
+      task_type: 'new_added',
+      user_editable: true,
+      ai_fillable: false,
+      accuracy_level: false,
+      confidence: null,
+      is_user_modified: true,
       is_user_edited: false,
+      text_support: [],
     }));
 
-    setLocalItems((prev) => [...prev, ...clones]);
+    //  Update UI
+    const updatedItems = [...localItems, ...newRows];
+    setLocalItems(updatedItems);
+
+    //  Update actual sheet source (VERY IMPORTANT)
+    sheet.Items = [...sheet.Items, ...newRows];
+
+    //  Persist to IndexedDB
+    await updateField(sheet.sheet_no, null, null, {
+      replaceFullSheet: true,
+      newItems: sheet.Items,
+    });
   };
 
   /* ---------------- MANUFACTURER BLOCK ---------------- */
@@ -351,8 +406,19 @@ const RenderSheet1Excel = ({
       .map(Number)
       .sort((a, b) => a - b);
 
-    const handleDelete = () => {
-      setLocalItems((prev) => prev.filter((i) => i.prefix !== prefix));
+    const handleDelete = async () => {
+      //  Remove from local UI state
+      const updatedItems = localItems.filter((i) => i.prefix !== prefix);
+      setLocalItems(updatedItems);
+
+      //  Remove from sheet.Items
+      sheet.Items = sheet.Items.filter((i) => i.prefix !== prefix);
+
+      //  Persist to IndexedDB
+      await updateField(sheet.sheet_no, null, null, {
+        replaceFullSheet: true,
+        newItems: sheet.Items,
+      });
     };
 
     return (

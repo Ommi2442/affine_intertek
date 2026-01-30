@@ -1,15 +1,29 @@
 .dt-hover-actions-cdr {
   position: absolute;
   right: 6px;
-  top: -77%; /* center vertically inside the textarea */
+  top: 0; /* center vertically inside the textarea */
   display: flex;
   gap: 4px;
   background: rgba(255, 255, 255, 0.95);
   padding: 2px 3px;
   border-radius: 6px;
   align-items: center;
-  z-index: 10;
+  z-index: 999;
 
   /* soft shadow */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.dt-hover-actions-cdr-sheet4 {
+  position: absolute;
+  right: 6px;
+  top: -56px; /* pull it above textarea */
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2px 3px;
+  border-radius: 6px;
+  align-items: center;
+  z-index: 9999; /* increase to be safe */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }

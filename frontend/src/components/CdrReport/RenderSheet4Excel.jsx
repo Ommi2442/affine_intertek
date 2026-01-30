@@ -247,6 +247,7 @@ const RenderSheet4Excel = ({
                     >
                       <HoverActionWrapper
                         show={hoveredRow === idx}
+                        sheetNo={sheet?.sheet_no}
                         onApprove={() => commitRow(idx)}
                         onComment={() => openComment(sheet.sheet_no, idx)}
                         onBookmark={() => onBookmarkClick?.(row)}
