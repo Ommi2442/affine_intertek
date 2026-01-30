@@ -292,7 +292,7 @@ const RenderSheet1Excel = ({
       'Email',
     ];
 
-    // Get next manufacturer index
+    // Find highest manufacturer index
     let maxIndex = 1;
     localItems.forEach((i) => {
       if (i.prefix?.startsWith('Manufacturer ')) {
@@ -304,7 +304,7 @@ const RenderSheet1Excel = ({
     const nextIndex = maxIndex + 1;
     const prefix = `Manufacturer ${nextIndex}`;
 
-    //  Find last row
+    // Find last question_cell row in entire sheet
     const sorted = [...localItems]
       .filter((i) => i.question_cell)
       .sort(
@@ -322,10 +322,12 @@ const RenderSheet1Excel = ({
     let targetColumn;
     let startRow;
 
+    // If last row is blank → continue same column
     if (lastItem.task_type === 'blank') {
       targetColumn = lastColumn;
       startRow = lastRow + 1;
     } else {
+      // Switch column (A ↔ D)
       targetColumn = lastColumn === 'A' ? 'D' : 'A';
 
       const lastRowInTarget = Math.max(
@@ -340,35 +342,54 @@ const RenderSheet1Excel = ({
 
     const answerColumn = targetColumn === 'A' ? 'B' : 'E';
 
-    //  Create rows
-    const newRows = MANUFACTURER_FIELDS.map((field, idx) => ({
-      question_cell: `${targetColumn}${startRow + idx}`,
-      prefix,
-      field,
-      answer_cell: `${answerColumn}${startRow + idx}`,
-      value: '',
-      field_merged: false,
-      fm_range: null,
-      value_merged: true,
-      vm_range: null,
-      task_type: 'new_added',
-      user_editable: true,
-      ai_fillable: false,
-      accuracy_level: false,
-      confidence: null,
-      is_user_modified: true,
-      is_user_edited: false,
-      text_support: [],
-    }));
+    // vm_range mapping
+    const vmColumn =
+      targetColumn === 'A' ? 'C' : targetColumn === 'D' ? 'F' : null;
 
-    //  Update UI
+    // Create new rows
+    const newRows = MANUFACTURER_FIELDS.map((fieldName, idx) => {
+      const rowNo = startRow + idx;
+
+      return {
+        question_cell: `${targetColumn}${rowNo}`,
+        prefix,
+
+        //  ONLY first row gets "Manufacturer X"
+        field:
+          fieldName === 'Manufacturer'
+            ? `Manufacturer ${nextIndex}`
+            : fieldName,
+
+        answer_cell: `${answerColumn}${rowNo}`,
+        value: '',
+
+        field_merged: false,
+        fm_range: null,
+
+        value_merged: true,
+
+        //  vm_range logic
+        vm_range: vmColumn ? `${vmColumn}${rowNo}` : null,
+
+        task_type: 'extraction',
+        user_editable: true,
+        ai_fillable: false,
+        accuracy_level: false,
+        confidence: null,
+        is_user_modified: true,
+        is_user_edited: false,
+        text_support: [],
+      };
+    });
+
+    // Update UI
     const updatedItems = [...localItems, ...newRows];
     setLocalItems(updatedItems);
 
-    //  Update actual sheet source (VERY IMPORTANT)
+    // Update actual sheet source
     sheet.Items = [...sheet.Items, ...newRows];
 
-    //  Persist to IndexedDB
+    // Persist to IndexedDB
     await updateField(sheet.sheet_no, null, null, {
       replaceFullSheet: true,
       newItems: sheet.Items,
