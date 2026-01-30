@@ -1,0 +1,15 @@
+.dt-hover-actions-cdr-sheet1 {
+  position: absolute;
+  right: 6px;
+  top: -50%; /* center vertically inside the textarea */
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2px 3px;
+  border-radius: 6px;
+  align-items: center;
+  z-index: 999;
+
+  /* soft shadow */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}

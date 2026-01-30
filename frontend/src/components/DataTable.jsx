@@ -68,7 +68,6 @@ const DataTable = forwardRef(
     const commentTargetRef = useRef({ t: null, i: null });
     const [commentHistory, setCommentHistory] = useState([]);
 
-
     // Track whether this page load is a browser refresh
     //const isRefreshRef = useRef(false);
 
@@ -105,7 +104,13 @@ const DataTable = forwardRef(
         const table = next[tableIdx];
 
         table.Items = table.Items.map((item) => {
-          if (item.page_no !== 3 || item.is_table !== true) return item;
+          if (
+            item.page_no !== 3 ||
+            item.is_table !== true ||
+            item.single_row === true ||
+            item.user_editable !== true
+          )
+            return item;
 
           const rows = normalizeToArray(item.value);
           return {
@@ -124,17 +129,40 @@ const DataTable = forwardRef(
         const next = prev.map((t) => ({ ...t, Items: [...t.Items] }));
         const table = next[tableIdx];
 
+        //  Collect all page 3 editable table columns
+        const page3Columns = table.Items.filter(
+          (item) =>
+            item.page_no === 3 &&
+            item.is_table === true &&
+            item.single_row !== true &&
+            item.user_editable === true
+        );
+
+        if (page3Columns.length === 0) return prev;
+
+        //  Find the max row length across columns
+        const maxLength = Math.max(
+          ...page3Columns.map((col) => normalizeToArray(col.value).length)
+        );
+
+        // Do not delete if only one row
+        if (maxLength <= 1) return prev;
+
+        //  Remove last row index from ALL columns
         table.Items = table.Items.map((item) => {
-          if (item.page_no !== 3 || item.is_table !== true) return item;
+          if (
+            item.page_no !== 3 ||
+            item.is_table !== true ||
+            item.single_row === true ||
+            item.user_editable !== true
+          )
+            return item;
 
           const rows = normalizeToArray(item.value);
 
-          // 🚫 keep at least one row
-          if (rows.length <= 1) return item;
-
           return {
             ...item,
-            value: rows.slice(0, -1), // ✅ remove last row
+            value: rows.slice(0, maxLength - 1),
             is_user_modified: true,
           };
         });
@@ -142,7 +170,6 @@ const DataTable = forwardRef(
         return next;
       });
 
-      // realtime confidence update
       onConfidenceChange?.();
     };
 
@@ -204,7 +231,33 @@ const DataTable = forwardRef(
 
     // Expose methods to parent via ref
     useImperativeHandle(ref, () => ({
-      getUpdatedJson: () => ({ Tables: tables }),
+      getUpdatedJson: () => ({
+        Tables: tables.map((tbl) => ({
+          ...tbl,
+          Items: tbl.Items.map((item) => {
+            //  remove value from page 3 single_row title
+            if (
+              item.page_no === 3 &&
+              item.is_table === true &&
+              item.single_row === true
+            ) {
+              const { value, ...rest } = item;
+              return rest;
+            }
+
+            //  remove empty value arrays
+            if (
+              Array.isArray(item.value) &&
+              item.value.every((v) => v === '')
+            ) {
+              const { value, ...rest } = item;
+              return rest;
+            }
+
+            return item;
+          }),
+        })),
+      }),
       getFieldValue: (fieldName) => {
         for (const table of tables) {
           for (const item of table.Items) {

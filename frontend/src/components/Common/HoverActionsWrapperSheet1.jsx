@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React from 'react';
 import { IconButton } from '@mui/material';
-import './HoverActionsWrapper.css';
+import './HoverActionsWrapperSheet1.css';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
@@ -9,9 +9,8 @@ import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 /**
  * Common hover action container
  */
-const HoverActionWrapper = ({
+const HoverActionWrapperSheet1 = ({
   show,
-  sheetNo,
   onApprove,
   onComment,
   onBookmark,
@@ -19,11 +18,7 @@ const HoverActionWrapper = ({
   if (!show) return null;
 
   return (
-    <div
-      className={
-        sheetNo === 4 ? 'dt-hover-actions-cdr-sheet4' : 'dt-hover-actions-cdr'
-      }
-    >
+    <div className="dt-hover-actions-cdr-sheet1">
       {/* APPROVE → render ONLY when allowed */}
       {typeof onApprove === 'function' && (
         <IconButton size="small" onClick={onApprove}>
@@ -48,4 +43,4 @@ const HoverActionWrapper = ({
   );
 };
 
-export default HoverActionWrapper;
+export default HoverActionWrapperSheet1;
