@@ -1606,6 +1606,7 @@ def update_letter_progress(
 
 
 
+
 @router.post("/letter-generation")
 async def letter_implementation(payload: LetterGeneration):
     try:
@@ -1757,20 +1758,20 @@ async def letter_implementation(payload: LetterGeneration):
             )
                 
                 with open(letter_json1, "r", encoding="utf-8") as f:
-                    letter_json_data = json.load(f)
-                with open(letter_json2, "r", encoding="utf-8") as f:
                     letter_header_json_data = json.load(f)
+                with open(letter_json2, "r", encoding="utf-8") as f:
+                    letter_body_json_data = json.load(f)
                 
 
-                letter_json_data = sanitize_json(letter_json_data)
                 letter_header_json_data = sanitize_json(letter_header_json_data)
+                letter_body_json_data = sanitize_json(letter_body_json_data)
             
                 return  {
                     "status":"success",
                     "project_Id":project_id,
                     "Message":"Letter Generated Successfully",
                     "Data":{
-                        "Letter_json_body":letter_json_data,
+                        "Letter_json_body":letter_body_json_data,
                         "Letter_header_json":letter_header_json_data
                     }
                 }
