@@ -23,6 +23,8 @@ export const triggerGenerateLetterApi = async (
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      timeout: 15000,          // ✅ frontend safety
+      withCredentials: false, // ✅ avoids CORS confusion
       showLoader: false, // <- HIDE LOADER
     }
   );

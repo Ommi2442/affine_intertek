@@ -36,14 +36,14 @@ BOM_COLUMNS = {
         "description",
         "manufacturer",
         "manufacturer part number",
-        "mfg"
-        "mfr"
-        "mpn"
-        "mfr-pn"
-        "part"
-        "manuf"
-        "manuf #"
-        "quantity"
+        "mfg",
+        "mfr",
+        "mpn",
+        "mfr-pn",
+        "part",
+        "manuf",
+        "manuf #",
+        "quantity",
         "item"
     }
 
