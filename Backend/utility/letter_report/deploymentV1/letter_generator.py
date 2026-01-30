@@ -1595,7 +1595,19 @@ def inject_dataframes_into_letter_json(data, df_critical, df_nonpass,
  
             # Inject Non-Conformance Table
             if item.get("key") == "Non-conformance Table" and item.get("dataframe_table") is True:
-                item["value"] = nonpass_dict
+
+                cleaned_rows = []
+
+                for row in nonpass_dict:
+                    # Remove internal-only columns from JSON
+                    row = {
+                        k: v for k, v in row.items()
+                        if k != "_page_reference"
+                    }
+                    cleaned_rows.append(row)
+
+                item["value"] = cleaned_rows
+ 
  
             # Inject Critical Components Table
             # if item.get("key") == "Critical components table" and item.get("dataframe_table") is True:
@@ -2371,7 +2383,7 @@ def generate_letter_pipeline(
     )
     print('######'*5)
     #print(df_9_nonpass)
-    df_9_nonpass = df_9_nonpass.drop(columns=[c for c in ["_page_reference"] if c in df_9_nonpass.columns])
+    # df_9_nonpass = df_9_nonpass.drop(columns=[c for c in ["_page_reference"] if c in df_9_nonpass.columns])
     # ✅ Clean NaN
     df_9_nonpass = clean_dataframe_for_json(df_9_nonpass, use_null=True)
 
@@ -2388,6 +2400,9 @@ def generate_letter_pipeline(
         df_nonpass=df_9_nonpass,
         source_docx_path=docx_trf
     )
+
+    df_9_nonpass = df_9_nonpass.drop(columns=[c for c in ["_page_reference"] if c in df_9_nonpass.columns])
+
 
     insert_dataframe_below_anchor_non_conformance(
         input_docx=output_letter_docx,
