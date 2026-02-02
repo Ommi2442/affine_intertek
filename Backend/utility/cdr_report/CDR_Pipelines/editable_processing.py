@@ -325,7 +325,12 @@ from pathlib import Path
 import shutil
 import time
 from typing import Dict, Any
+import fitz  # PyMuPDF
 
+def get_pdf_page_count(pdf_path: Path) -> int:
+    """Return total number of pages in the PDF."""
+    with fitz.open(str(pdf_path)) as doc:
+        return doc.page_count
 def process_pdfs(
     src_root: str = configs.SRC_ROOT,
     flattened_dir: str = configs.FLAT_ROOT,
@@ -339,7 +344,7 @@ def process_pdfs(
 
     flattened_dir.mkdir(exist_ok=True)
     images_root.mkdir(exist_ok=True)
-
+    max_pages = 10
     # ✅ NEW: archive folder NEXT TO src_root (same parent)
     if archive_root is None:
         archive_root = src_root.parent / "archived_editable"
@@ -363,6 +368,15 @@ def process_pdfs(
             continue
 
         #print(" → Editable PDF detected.")
+        try:
+            page_count = get_pdf_page_count(pdf_path)
+        except Exception as e:
+            print(f" ❌ Could not read page count. Skipping. Error: {e}")
+            continue
+
+        if page_count > max_pages:
+            print(f" → Skipping: {pdf_path.name} has {page_count} pages (needs < {max_pages}).")
+            continue
 
         # 1) Flatten PDF
         flat_pdf_path = flattened_dir / f"{pdf_path.stem}_flat.pdf"
