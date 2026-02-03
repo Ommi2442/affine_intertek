@@ -15,6 +15,7 @@ const RenderSheet6Excel = ({
   onBookmarkClick,
   handleApprove,
   onConfidenceChange,
+  pdfLoaded,
 }) => {
   if (!sheet || !Array.isArray(sheet.Items)) return null;
 
@@ -45,7 +46,7 @@ const RenderSheet6Excel = ({
       prev.map((it, i) => {
         if (i !== idx) return it;
 
-        // 🔥 Fire confidence ONLY first time this field is edited
+        //  Fire confidence ONLY first time this field is edited
         if (!editedOnceRef.current.has(idx)) {
           editedOnceRef.current.add(idx);
           onConfidenceChange?.();
@@ -166,6 +167,7 @@ const RenderSheet6Excel = ({
                           ? () => onBookmarkClick?.(localItems[idx])
                           : null
                       }
+                      bookmarkDisabled={!pdfLoaded}
                     />
 
                     {item.ai_fillable === true &&

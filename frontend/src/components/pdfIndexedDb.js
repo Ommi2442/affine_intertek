@@ -1,12 +1,12 @@
-import { openDB } from "idb";
+import { openDB } from 'idb';
 
-const DB_NAME = "pdf-cache-db";
-const STORE = "pdfs";
+const DB_NAME = 'pdf-cache-db';
+const STORE = 'pdfs';
 
-export const pdfDbPromise = openDB(DB_NAME, 3, {
+export const pdfDbPromise = openDB(DB_NAME, 1, {
   upgrade(db) {
     if (!db.objectStoreNames.contains(STORE)) {
-      db.createObjectStore(STORE, { keyPath: "key" });
+      db.createObjectStore(STORE, { keyPath: 'key' });
     }
   },
 });
@@ -32,6 +32,5 @@ export const savePdfToDb = async (projectId, filename, buffer) => {
     data: buffer,
     savedAt: Date.now(),
   });
+  console.log('Saved to IDB:', key);
 };
-
-

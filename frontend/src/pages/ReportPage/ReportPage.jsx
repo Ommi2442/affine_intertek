@@ -47,6 +47,9 @@ import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 import { finaliseReportRequest } from '../../redux/features/finaliseReport/finaliseReportSlice';
 import { idb_clear_all, idb_set } from '../../utils/idb';
 import { reGenerateTrfClear } from '../../redux/api/RegenerateApi';
+import { fetchProjectPdfsApi } from '../../redux/api/fetchPdfApi';
+import { savePdfToDb } from '../../components/pdfIndexedDb';
+import { usePreloadProjectPdfs } from '../../hooks/usePreloadProjectPdfs';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -72,7 +75,7 @@ const ReportPage = () => {
   // true only on hard refresh (F5 / reload)
   const isHardRefresh = navigationType === 'POP';
 
-  const projectID = localStorage.getItem('projectId');
+  const projectID = state?.projectId || localStorage.getItem('projectId');
 
   // --------------------------------------------------
   // STATE
@@ -119,6 +122,8 @@ const ReportPage = () => {
   const [partPopupMessage, setPartPopupMessage] = useState('');
   const [cdrJson, setCdrJson] = useState(null);
 
+  //console.log('pdfloaded', pdfLoaded);
+
   const [liveTrfData, setLiveTrfData] = useState(null);
 
   const location = useLocation();
@@ -158,6 +163,8 @@ const ReportPage = () => {
   };
 
   const { standard, projectId, clientName, product } = projectMeta;
+
+  const pdfLoaded = usePreloadProjectPdfs(projectID);
 
   // --------------------------------------------------
   // FIX: loader controlled ONLY by backend progress
@@ -369,16 +376,16 @@ const ReportPage = () => {
   //   lastPathRef.current = currentPath;
   // }, [location.pathname]);
 
-  useEffect(() => {
-    const isReportPage = location.pathname.includes('report-page');
+  // useEffect(() => {
+  //   const isReportPage = location.pathname.includes('report-page');
 
-    //  Clear IndexedDB when user navigates BACK or FORWARD
-    // and is NOT explicitly staying on report-page
-    if (navigationType === 'POP' && !isReportPage) {
-      console.log('Leaving report page → clearing IndexedDB');
-      idb_clear_all(); //  REQUIRED
-    }
-  }, [location.pathname, navigationType]);
+  //   //  Clear IndexedDB when user navigates BACK or FORWARD
+  //   // and is NOT explicitly staying on report-page
+  //   if (navigationType === 'POP' && !isReportPage) {
+  //     console.log('Leaving report page → clearing IndexedDB');
+  //     idb_clear_all(); //  REQUIRED
+  //   }
+  // }, [location.pathname, navigationType]);
 
   useEffect(() => {
     if (!projectID) return;
@@ -796,6 +803,7 @@ const ReportPage = () => {
                 reportType="trf"
                 onConfidenceChange={() => setConfidenceTick((v) => v + 1)}
                 isHardRefresh={isHardRefresh}
+                pdfLoaded={pdfLoaded}
               />
             )}
 

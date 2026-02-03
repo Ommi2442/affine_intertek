@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { IntertekLogo } from './LetterComponents/IntertekLogo';
 import './LetterPage.css';
 import LetterSmartField from './LetterComponents/LetterSmartField';
-import { getLetterItem } from '../../utils/letterResolver';
-import { formatIssueDate } from './LetterComponents/formatIssueDate';
 
 const LetterPage2 = ({
   json,
@@ -12,9 +10,9 @@ const LetterPage2 = ({
   openComment,
   onBookmarkClick,
   onConfidenceChange,
+  pdfLoaded,
 }) => {
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
-  // useEffect(() => {
   //   const item1 = getLetterItem(json, '«IssuedDate»');
   //   const item2 = getLetterItem(json, '«ProjectNumber»');
 
@@ -72,6 +70,7 @@ const LetterPage2 = ({
               onComment={openComment}
               onBookmark={onBookmarkClick}
               onConfidenceChange={onConfidenceChange}
+              pdfLoaded={pdfLoaded}
             />
           </div>
           <br />
@@ -85,6 +84,7 @@ const LetterPage2 = ({
               onComment={openComment}
               onBookmark={onBookmarkClick}
               onConfidenceChange={onConfidenceChange}
+              pdfLoaded={pdfLoaded}
             />
           </div>
           <br />
@@ -98,6 +98,7 @@ const LetterPage2 = ({
               onComment={openComment}
               onBookmark={onBookmarkClick}
               onConfidenceChange={onConfidenceChange}
+              pdfLoaded={pdfLoaded}
             />
           </div>
           <br />
@@ -111,6 +112,7 @@ const LetterPage2 = ({
               onComment={openComment}
               onBookmark={onBookmarkClick}
               onConfidenceChange={onConfidenceChange}
+              pdfLoaded={pdfLoaded}
             />
           </div>
           <br />
@@ -124,6 +126,7 @@ const LetterPage2 = ({
               onComment={openComment}
               onBookmark={onBookmarkClick}
               onConfidenceChange={onConfidenceChange}
+              pdfLoaded={pdfLoaded}
             />
           </div>
         </div>
@@ -141,6 +144,7 @@ const LetterPage2 = ({
                 onComment={openComment}
                 onBookmark={onBookmarkClick}
                 onConfidenceChange={onConfidenceChange}
+                pdfLoaded={pdfLoaded}
               />
             </span>
           </div>
@@ -160,6 +164,7 @@ const LetterPage2 = ({
                 onComment={openComment}
                 onBookmark={onBookmarkClick}
                 onConfidenceChange={onConfidenceChange}
+                pdfLoaded={pdfLoaded}
               />
             </span>
           </div>
@@ -179,6 +184,7 @@ const LetterPage2 = ({
                 onComment={openComment}
                 onBookmark={onBookmarkClick}
                 onConfidenceChange={onConfidenceChange}
+                pdfLoaded={pdfLoaded}
               />
             </span>
           </div>
@@ -198,6 +204,7 @@ const LetterPage2 = ({
                 onComment={openComment}
                 onBookmark={onBookmarkClick}
                 onConfidenceChange={onConfidenceChange}
+                pdfLoaded={pdfLoaded}
               />
             </span>
           </div>
@@ -217,6 +224,7 @@ const LetterPage2 = ({
                 onComment={openComment}
                 onBookmark={onBookmarkClick}
                 onConfidenceChange={onConfidenceChange}
+                pdfLoaded={pdfLoaded}
               />
             </span>
           </div>
@@ -233,6 +241,7 @@ const LetterPage2 = ({
           onComment={openComment}
           onBookmark={onBookmarkClick}
           onConfidenceChange={onConfidenceChange}
+          pdfLoaded={pdfLoaded}
           wide
         />
       </div>
@@ -248,6 +257,7 @@ const LetterPage2 = ({
           onComment={openComment}
           onBookmark={onBookmarkClick}
           onConfidenceChange={onConfidenceChange}
+          pdfLoaded={pdfLoaded}
         />
       </div>
       <p>
@@ -265,6 +275,7 @@ const LetterPage2 = ({
           onComment={openComment}
           onBookmark={onBookmarkClick}
           onConfidenceChange={onConfidenceChange}
+          pdfLoaded={pdfLoaded}
         />
       </div>
       <h3 className="section">
@@ -286,6 +297,7 @@ const LetterPage2 = ({
           onComment={openComment}
           onBookmark={onBookmarkClick}
           onConfidenceChange={onConfidenceChange}
+          pdfLoaded={pdfLoaded}
         />
         , non-conformances or additional information have been identified.{' '}
       </div>
@@ -327,6 +339,7 @@ const LetterPage2 = ({
           onComment={openComment}
           onBookmark={onBookmarkClick}
           onConfidenceChange={onConfidenceChange}
+          pdfLoaded={pdfLoaded}
         />
 
         <span> </span>
@@ -339,6 +352,7 @@ const LetterPage2 = ({
           onComment={openComment}
           onBookmark={onBookmarkClick}
           onConfidenceChange={onConfidenceChange}
+          pdfLoaded={pdfLoaded}
         />
 
         <span>
@@ -356,6 +370,7 @@ const LetterPage2 = ({
           onComment={openComment}
           onBookmark={onBookmarkClick}
           onConfidenceChange={onConfidenceChange}
+          pdfLoaded={pdfLoaded}
         />
 
         <span>

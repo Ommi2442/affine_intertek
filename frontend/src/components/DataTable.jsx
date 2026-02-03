@@ -23,6 +23,7 @@ import {
   IconButton,
   Checkbox,
   Box,
+  Tooltip,
 } from '@mui/material';
 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -47,6 +48,7 @@ const DataTable = forwardRef(
       onConfidenceChange,
       editMode = false,
       isHardRefresh,
+      pdfLoaded,
     },
     ref
   ) => {
@@ -678,12 +680,12 @@ const DataTable = forwardRef(
         return next;
       });
 
-      // 🔥 THIS IS THE CRITICAL PART
+      //  THIS IS THE CRITICAL PART
       if (updatedTables) {
         await idb_set('tables', updatedTables); // <-- update IndexedDB immediately
       }
 
-      // 🔥 Now confidence score recalculates correctly
+      //  Now confidence score recalculates correctly
       onConfidenceChange?.();
     };
 
@@ -753,32 +755,52 @@ const DataTable = forwardRef(
 
       return (
         <div className="dt-hover-actions">
-          {/* ✅ APPROVE — only when AI confidence exists */}
+          {/* APPROVE — only when AI confidence exists */}
           {canApprove && (
             <IconButton size="small" onClick={() => handleApprove(tIdx, iIdx)}>
               <CheckCircleIcon className="dt-icon-approve" />
             </IconButton>
           )}
 
-          {/* ✅ COMMENT — always allowed */}
+          {/* COMMENT — always allowed */}
           <IconButton size="small" onClick={() => openComment(tIdx, iIdx)}>
             <ChatBubbleOutlineOutlinedIcon className="dt-icon-comment" />
           </IconButton>
 
-          {/* 🚫 BOOKMARK hidden only for "TBD-Info not available" */}
+          {/* BOOKMARK hidden only for "TBD-Info not available" */}
           {!isTbdNotAvailable && (
-            <IconButton
-              size="small"
-              onClick={() => {
-                const row = tables?.[tIdx]?.Items?.[iIdx] ?? {
-                  __t: tIdx,
-                  __i: iIdx,
-                };
-                onBookmarkClick?.(row);
-              }}
+            <Tooltip
+              arrow
+              title={
+                !pdfLoaded
+                  ? 'PDF citation loading...'
+                  : 'View supporting citations'
+              }
             >
-              <MenuBookOutlinedIcon className="dt-icon-bookmark" />
-            </IconButton>
+              <span>
+                <IconButton
+                  size="small"
+                  disabled={!pdfLoaded}
+                  onClick={
+                    pdfLoaded
+                      ? () => {
+                          const row = tables?.[tIdx]?.Items?.[iIdx] ?? {
+                            __t: tIdx,
+                            __i: iIdx,
+                          };
+                          onBookmarkClick?.(row);
+                        }
+                      : undefined
+                  }
+                  sx={{
+                    opacity: pdfLoaded ? 1 : 0.4,
+                    cursor: pdfLoaded ? 'pointer' : 'not-allowed',
+                  }}
+                >
+                  <MenuBookOutlinedIcon className="dt-icon-bookmark" />
+                </IconButton>
+              </span>
+            </Tooltip>
           )}
         </div>
       );
