@@ -235,11 +235,11 @@ export async function idb_delete(key, storeName = DEFAULT_STORE) {
 export const idb_clear_all = () =>
   new Promise((resolve, reject) => {
     const req = indexedDB.deleteDatabase('TRF_DB');
-    // const req2 = indexedDB.deleteDatabase('pdf-cache-db');
+    const req2 = indexedDB.deleteDatabase('pdf-cache-db');
     req.onsuccess = () => resolve(true);
     req.onerror = () => reject(req.error);
-    // req2.onsuccess = () => resolve(true);
-    // req2.onerror = () => reject(req2.error);
+    req2.onsuccess = () => resolve(true);
+    req2.onerror = () => reject(req2.error);
   });
 
 export const STORES = {

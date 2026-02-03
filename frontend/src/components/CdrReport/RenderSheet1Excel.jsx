@@ -55,6 +55,7 @@ const RenderSheet1Excel = ({
   updateField,
   handleApprove,
   onBookmarkClick,
+  pdfLoaded,
 }) => {
   const [localItems, setLocalItems] = useState(sheet.Items);
 
@@ -188,6 +189,7 @@ const RenderSheet1Excel = ({
               }
               onComment={() => openComment(sheet.sheet_no, itemIndex)}
               onBookmark={hasValue ? () => onBookmarkClick?.(item) : null}
+              bookmarkDisabled={!pdfLoaded}
             />
           </Box>
 

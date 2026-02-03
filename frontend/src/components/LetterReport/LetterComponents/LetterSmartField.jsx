@@ -16,6 +16,7 @@ const LetterSmartField = ({
   onBookmark,
   onConfidenceChange,
   wide = false,
+  pdfLoaded,
 }) => {
   const item = getLetterItem(json, name);
 
@@ -33,6 +34,7 @@ const LetterSmartField = ({
       onBookmark={() => onBookmark?.(item)}
       onConfidenceChange={onConfidenceChange}
       wide={wide}
+      pdfLoaded={pdfLoaded}
     />
   );
 };
