@@ -1762,7 +1762,7 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
     chunks_uuid = add_ids_to_chunks(chunks)
 
     # Ingest in parallel
-    ingest_to_cosmos_parallel(vectorstore_text, chunks_uuid, batch_size=10, max_workers=10)
+    ingest_to_cosmos_parallel(vectorstore_text, chunks_uuid, batch_size=2, max_workers=2)
 
     print("\n[SUCCESS] Text ingestion completed.\n")
 
@@ -1786,7 +1786,7 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
         image_urls=image_urls_raw,
         conn_str=AZURE_CONN_STRING,
         container=BLOB_CONTAINER,
-        max_workers=8,
+        max_workers=2,
         project_id=project_id   
     )
 
@@ -1829,7 +1829,7 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
     docs_image_uuid = add_ids_to_chunks(docs_image)
 
     # Ingest
-    ingest_to_cosmos_parallel(vectorstore_image, docs_image_uuid, batch_size=10, max_workers=10)
+    ingest_to_cosmos_parallel(vectorstore_image, docs_image_uuid, batch_size=2, max_workers=2)
 
     print("\n[SUCCESS] Image ingestion completed.\n")
 
