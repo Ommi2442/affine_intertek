@@ -634,7 +634,7 @@ def add_ids_to_chunks(chunks):
         )
     return docs
 
-def ingest_to_cosmos_parallel(vs, chunks, batch_size=10, max_workers=10):
+def ingest_to_cosmos_parallel(vs, chunks, batch_size=2, max_workers=2):
 
     def safe_add(doc):
         """Add a single document with retry for CosmosDB 429 throttling."""
@@ -1034,7 +1034,7 @@ def add_batch(batch, idx_start, vs, max_retries=7):
     
     raise RuntimeError(f"Failed batch at {idx_start} after {max_retries} retries. Last error: {last_err}")
 
-def ingest_chunks(vs, chunks, max_workers=5, batch_size=10, fail_threshold=0.3):
+def ingest_chunks(vs, chunks, max_workers=2, batch_size=2, fail_threshold=0.3):
     futures = []
     failed = []
     
