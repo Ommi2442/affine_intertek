@@ -631,7 +631,7 @@ def process_blob_urls_2(blob_urls, conn_str, container,
             except Exception:
                 pass
 
-def ingest_to_cosmos_parallel(vs, chunks, batch_size=2, max_workers=2):
+def ingest_to_cosmos_parallel(vs, chunks, batch_size=10, max_workers=10):
 
     def safe_add(doc):
         """Add a single document with retry for CosmosDB 429 throttling."""
