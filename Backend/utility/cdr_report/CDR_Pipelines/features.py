@@ -274,7 +274,7 @@ def run_one_section(cfg, vs, image_urls, llm):
         json_schema=cfg["json_schema"],
     )
 
-def run_sections_parallel(section_cfgs, vs, image_urls, llm, max_workers=2):
+def run_sections_parallel(section_cfgs, vs, image_urls, llm, max_workers=6):
     results = {}
     errors = {}
 
@@ -451,7 +451,7 @@ def build_all_sections_final_json(
     vs,
     image_urls,
     llm,
-    max_workers=2,
+    max_workers=6,
 ):
     """
     Runs all sections in parallel + applies your per-section post-processing.
@@ -665,7 +665,7 @@ def features_main(vs, image_urls, llm=None):
         vs=vs,
         image_urls=image_urls,
         llm=llm,
-        max_workers=2
+        max_workers=6
     )
     with open(configs.TEMPLATE_PATH, "r", encoding="utf-8") as f:
         payload = json.load(f)

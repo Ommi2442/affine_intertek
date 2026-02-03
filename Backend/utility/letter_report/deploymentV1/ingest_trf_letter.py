@@ -502,7 +502,7 @@ def upload_pdf_images_and_append_urls(
     image_urls,
     conn_str,
     container,
-    max_workers=2
+    max_workers=8
 ):
     """
     Takes CAD/schematic page images extracted above,
@@ -1618,7 +1618,7 @@ def run_full_ingestion(project_id,blob_urls,text_container,image_container):
     chunks_uuid = add_ids_to_chunks(chunks)
 
     # Ingest in parallel
-    ingest_to_cosmos_parallel(vectorstore_text, chunks_uuid, batch_size=2, max_workers=2)
+    ingest_to_cosmos_parallel(vectorstore_text, chunks_uuid, batch_size=10, max_workers=10)
 
     print("\n[SUCCESS] Text ingestion completed.\n")
 
@@ -1680,7 +1680,7 @@ def run_full_ingestion(project_id,blob_urls,text_container,image_container):
     docs_image_uuid = add_ids_to_chunks(docs_image)
 
     # Ingest
-    ingest_to_cosmos_parallel(vectorstore_image, docs_image_uuid, batch_size=2, max_workers=2)
+    ingest_to_cosmos_parallel(vectorstore_image, docs_image_uuid, batch_size=10, max_workers=10)
 
     print("\n[SUCCESS] Image ingestion completed.\n")
 

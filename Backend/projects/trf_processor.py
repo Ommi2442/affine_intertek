@@ -146,7 +146,7 @@ def process_trf_direct(project_id: str):
             batch_size=150,
             final_output_path=OUTPUT_JSON,
             cooldown_sec=15,
-            max_workers=2,
+            max_workers=10,
             on_first_json_generated=on_first_json_ready
         )
 
