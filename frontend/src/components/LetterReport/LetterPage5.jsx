@@ -12,6 +12,7 @@ const LetterPage5 = ({
   openComment,
   onBookmarkClick,
   onConfidenceChange,
+  pdfLoaded,
 }) => {
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
   const item = getLetterItem(json, 'photograph');
@@ -61,6 +62,7 @@ const LetterPage5 = ({
           onComment={openComment}
           onBookmark={onBookmarkClick}
           onConfidenceChange={onConfidenceChange}
+          pdfLoaded={pdfLoaded}
         />
         .
       </p>
@@ -85,6 +87,7 @@ const LetterPage5 = ({
           onComment={openComment}
           onBookmark={onBookmarkClick}
           onConfidenceChange={onConfidenceChange}
+          pdfLoaded={pdfLoaded}
         />
         (follow-up evaluation).
       </p>
@@ -101,6 +104,7 @@ const LetterPage5 = ({
           onComment={openComment}
           onBookmark={onBookmarkClick}
           onConfidenceChange={onConfidenceChange}
+          pdfLoaded={pdfLoaded}
         />
         be required to be submitted to Intertek.
       </p>
@@ -118,6 +122,7 @@ const LetterPage5 = ({
           onComment={openComment}
           onBookmark={onBookmarkClick}
           onConfidenceChange={onConfidenceChange}
+          pdfLoaded={pdfLoaded}
         />
         with your preferred option and returning it to{' '}
         <LetterSmartField
@@ -129,6 +134,7 @@ const LetterPage5 = ({
           onComment={openComment}
           onBookmark={onBookmarkClick}
           onConfidenceChange={onConfidenceChange}
+          pdfLoaded={pdfLoaded}
         />
         , along with your proposed resolutions and ready date for re-submission.
       </p>

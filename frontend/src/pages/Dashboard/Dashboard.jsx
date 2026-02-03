@@ -30,6 +30,7 @@ import { deleteProjectsRequest } from '../../redux/features/deleteProject/delete
 import { archieveProjectsRequest } from '../../redux/features/archieveProject/archieveProjectSlice';
 import { fetchProjectPdfsApi } from '../../redux/api/fetchPdfApi';
 import { savePdfToDb } from '../../components/pdfIndexedDb';
+import { idb_clear_all } from '../../utils/idb';
 
 /* 👇 USE EXISTING API FILE */
 // import {
@@ -101,10 +102,8 @@ const Dashboard = () => {
     }
   };
 
-
   /* FIX: Pass row details to create-project */
   const renderYesNo = (row, type) => {
-
     const cellKey = `${row?.Project_Id}-${type}`;
     const isLoading = loadingCell === cellKey;
 
@@ -115,7 +114,8 @@ const Dashboard = () => {
     //     (type === 'LETTER' && row?.letter_completed !== true)
     //   );
 
-    const isDependentDisabled = (type === 'CDR' || type === 'LETTER') && row?.trf_percentage !== 100;
+    const isDependentDisabled =
+      (type === 'CDR' || type === 'LETTER') && row?.trf_percentage !== 100;
 
     const handleClick = async () => {
       const projectId = row?.Project_Id;
@@ -142,8 +142,7 @@ const Dashboard = () => {
               letterPercentage: row?.letter_percentage ?? 0,
             },
           });
-        } 
-        else if (
+        } else if (
           row?.trf_percentage === 100 &&
           row?.cdr_percentage < 10 &&
           type === 'CDR'
@@ -158,8 +157,7 @@ const Dashboard = () => {
               letterPercentage: row?.letter_percentage ?? 0,
             },
           });
-        } 
-        else if (row?.letter_percentage < 10 && type === 'LETTER') {
+        } else if (row?.letter_percentage < 10 && type === 'LETTER') {
           navigate('/create-project-letter', {
             state: {
               standard: row?.Standard,
@@ -170,9 +168,8 @@ const Dashboard = () => {
               letterPercentage: row?.letter_percentage ?? 0,
             },
           });
-        } 
-        else {
-          await preloadProjectPdfs(projectId);
+        } else {
+          //await preloadProjectPdfs(projectId);
 
           let targetRoute = '/report-page/trf';
           if (type === 'CDR') targetRoute = '/report-page/cdr';
@@ -209,8 +206,8 @@ const Dashboard = () => {
           color: isDependentDisabled
             ? 'grey.400'
             : isCompleted
-            ? 'green'
-            : 'red',
+              ? 'green'
+              : 'red',
           cursor: isDependentDisabled || isLoading ? 'not-allowed' : 'pointer',
           fontWeight: 600,
           justifyContent: 'center',
@@ -225,7 +222,6 @@ const Dashboard = () => {
       </Box>
     );
   };
-
 
   /* ---------------- NEW: DELETE ---------------- */
   const handleDelete = async (row) => {
@@ -436,22 +432,13 @@ const Dashboard = () => {
 
                   {/*  UPDATED CALLS */}
                   <TableCell align="center">
-                    {renderYesNo(
-                      row,
-                      'TRF'
-                    )}
+                    {renderYesNo(row, 'TRF')}
                   </TableCell>
                   <TableCell align="center">
-                    {renderYesNo(
-                      row,
-                      'CDR'
-                    )}
+                    {renderYesNo(row, 'CDR')}
                   </TableCell>
                   <TableCell align="center">
-                    {renderYesNo(
-                      row,
-                      'LETTER'
-                    )}
+                    {renderYesNo(row, 'LETTER')}
                   </TableCell>
 
                   <TableCell align="center">

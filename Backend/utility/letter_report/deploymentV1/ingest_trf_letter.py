@@ -1203,13 +1203,38 @@ def process_pdfs(
         if not pdf_path.is_file():
             continue
 
+        # print(f"\nChecking {pdf_path.name}...")
+
+        # if not is_editable_form_pdf(pdf_path):
+        #     print(" → Not editable. Skipping.")
+        #     continue
+
+        # print(" → Editable PDF detected.")
+
+        MAX_CIS_PAGES = 10
+
         print(f"\nChecking {pdf_path.name}...")
 
-        if not is_editable_form_pdf(pdf_path):
-            print(" → Not editable. Skipping.")
+        # --- Count pages first ---
+        try:
+            with fitz.open(pdf_path) as doc:
+                page_count = doc.page_count
+        except Exception as e:
+            print(f" → Failed to read PDF pages ({e}). Treating as normal PDF.")
             continue
 
-        print(" → Editable PDF detected.")
+        # --- Editable check ---
+        if not is_editable_form_pdf(pdf_path):
+            print(" → Not editable. Treating as normal PDF.")
+            continue
+
+        # --- NEW HARD GATE ---
+        if page_count > MAX_CIS_PAGES:
+            print(f" → Editable but has {page_count} pages (> {MAX_CIS_PAGES}).")
+            print(" → Treating as NORMAL PDF (no extraction).")
+            continue
+
+        print(f" → Editable PDF detected ({page_count} pages). Proceeding with extraction.")
 
         # Extract images directly from original PDF
         pixmaps = []

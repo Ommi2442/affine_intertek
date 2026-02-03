@@ -30,6 +30,9 @@ import { loadPdfWithCache } from '../../components/loadPdfWithCache';
 import { triggerGenerateLetterApi } from '../../redux/api/generateLetterApi';
 import { finaliseLetterReportRequest } from '../../redux/features/finaliseLetterReport/finaliseLetterReportSlice';
 import { reGenerateLetterClear } from '../../redux/api/RegenerateApi';
+import { usePreloadProjectPdfs } from '../../hooks/usePreloadProjectPdfs';
+import { savePdfToDb } from '../../components/pdfIndexedDb';
+import { fetchProjectPdfsApi } from '../../redux/api/fetchPdfApi';
 
 const STORAGE_KEY_PREFIX = 'letter_report_';
 
@@ -38,7 +41,10 @@ const LetterReportPage = () => {
   const navigate = useNavigate();
   const dataTableRef = useRef(null);
 
-  const projectId = localStorage.getItem('projectId');
+  const location = useLocation();
+  const projectId =
+    location.state?.projectId || localStorage.getItem('projectId');
+
   const storageKey = `${STORAGE_KEY_PREFIX}${projectId}`;
 
   /* ---------------- STATE ---------------- */
@@ -66,10 +72,9 @@ const LetterReportPage = () => {
   const [openConfirm, setOpenConfirm] = useState(false);
   const [regenloading, setRegenLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [pdfLoaded, setPdfLoaded] = useState(false);
 
   const finaliseOnceRef = useRef(false);
-
-  const location = useLocation();
 
   const { trfBlobUrl, cdrBlobUrl, standard, clientName, product } =
     location.state || {};
@@ -99,6 +104,9 @@ const LetterReportPage = () => {
     idb_set(storageKey, payload, STORES.LETTER);
     setLiveLetterData(updated);
   }, [confidenceTick, headerJson]);
+
+  //pdf citation hook to save it in indexdb
+  //const pdfLoaded = usePreloadProjectPdfs(projectId);
 
   // const autoFinaliseLetter = async () => {
   //   if (!dataTableRef.current) return;
@@ -140,6 +148,36 @@ const LetterReportPage = () => {
   //   }
   // }, [loading, letterJson, headerJson]);
 
+  const preloadProjectPdfs = async (projectId) => {
+    try {
+      setPdfLoaded(false);
+      const res = await fetchProjectPdfsApi(projectId);
+      const pdfs = res?.pdfs || [];
+
+      for (const pdf of pdfs) {
+        const cleanBase64 = pdf.data.includes(',')
+          ? pdf.data.split(',')[1]
+          : pdf.data;
+
+        const binary = window.atob(cleanBase64);
+        const len = binary.length;
+        const bytes = new Uint8Array(len);
+
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binary.charCodeAt(i);
+        }
+
+        await savePdfToDb(projectId, pdf.filename, bytes.buffer);
+      }
+
+      console.log('PDFs stored successfully');
+      setPdfLoaded(true);
+    } catch (err) {
+      console.error('PDF preload failed:', err);
+      setPdfLoaded(false);
+    }
+  };
+
   const loadLetter = useCallback(async () => {
     if (!projectId) return;
 
@@ -150,16 +188,20 @@ const LetterReportPage = () => {
     if (cached) {
       setLetterJson(cached.Letter_header_json);
       setHeaderJson(cached.Letter_json_body);
+      //await preloadProjectPdfs(projectId);
       setLoading(false);
+      setTimeout(() => {
+        preloadProjectPdfs(projectId);
+      }, 0);
       return;
     }
 
     //  Hard refresh + no cache → do nothing yet
-    if (isHardRefresh) {
-      console.warn('Hard refresh but no LETTER cache found → holding state');
-      setLoading(false);
-      return;
-    }
+    // if (isHardRefresh) {
+    //   console.warn('Hard refresh but no LETTER cache found → holding state');
+    //   setLoading(false);
+    //   return;
+    // }
 
     console.log('Calling backend to generate Letter...');
     let res;
@@ -181,13 +223,16 @@ const LetterReportPage = () => {
       };
 
       await idb_set(storageKey, payload, STORES.LETTER);
+
       setLetterJson(payload.Letter_header_json);
       setHeaderJson(payload.Letter_json_body);
-
-      if(message == 'Letter Generated Successfully') {
-        navigate('/dashboard');
-      }
-      
+      setLoading(false);
+      setTimeout(() => {
+        preloadProjectPdfs(projectId);
+      }, 0);
+      // if (message == 'Letter Generated Successfully') {
+      //   navigate('/dashboard');
+      // }
     }
 
     setLoading(false);
@@ -349,6 +394,7 @@ const LetterReportPage = () => {
                 onBookmarkClick={handleBookmarkFromChild}
                 isHardRefresh={isHardRefresh}
                 onPageChange={(p) => setCurrentPage(p)}
+                pdfLoaded={pdfLoaded}
               />
 
               {/* -------- PAGINATION BAR -------- */}
