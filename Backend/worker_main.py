@@ -7,7 +7,7 @@ from projects.trf_processor import process_trf_direct
 
 app = FastAPI(title="TRF Worker")
 
-EXECUTOR = ThreadPoolExecutor(max_workers=2)
+EXECUTOR = ThreadPoolExecutor(max_workers=4)
 
 class TRFJob(BaseModel):
     projectId: str
