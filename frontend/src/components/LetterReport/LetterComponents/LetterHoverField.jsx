@@ -14,6 +14,7 @@ const LetterHoverField = ({
   onBookmark,
   onConfidenceChange,
   wide = false,
+  pdfLoaded,
 }) => {
   const [hover, setHover] = useState(false);
   if (!item) return null;
@@ -71,6 +72,7 @@ const LetterHoverField = ({
           onApprove={canApprove ? onApprove : null}
           onComment={onComment}
           onBookmark={hasValue ? onBookmark : null}
+          bookmarkDisabled={!pdfLoaded}
         />
       </Box>
     </Box>

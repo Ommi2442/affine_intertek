@@ -27,6 +27,7 @@ const RenderSheet4Excel = ({
   updateField,
   handleApprove,
   onBookmarkClick,
+  pdfLoaded,
 }) => {
   if (!sheet || !Array.isArray(sheet.Rows)) return null;
 
@@ -99,19 +100,19 @@ const RenderSheet4Excel = ({
       typeof row.confidence === 'number' &&
       row.confidence < 100;
 
-    /* 1️⃣ Update local UI immediately */
+    /*  Update local UI immediately */
     if (shouldBoost) {
       setRowsState((prev) =>
         prev.map((r, i) => (i === idx ? { ...r, confidence: 100 } : r))
       );
     }
 
-    /* 2️⃣ Push boosted confidence into parent JSON */
+    /* Push boosted confidence into parent JSON */
     if (shouldBoost) {
       updateField(sheet.sheet_no, `confidence_${idx}`, 100);
     }
 
-    /* 3️⃣ Push all other row values */
+    /* Push all other row values */
     Object.entries(row).forEach(([key, value]) => {
       if (
         !['row_type', 'accuracy_level', 'ai_fillable', 'confidence'].includes(
@@ -122,7 +123,7 @@ const RenderSheet4Excel = ({
       }
     });
 
-    /* 4️⃣ Trigger IndexedDB + ConfidenceScore */
+    /* Trigger IndexedDB + ConfidenceScore */
     handleApprove?.(idx);
   };
 
@@ -251,6 +252,7 @@ const RenderSheet4Excel = ({
                         onApprove={() => commitRow(idx)}
                         onComment={() => openComment(sheet.sheet_no, idx)}
                         onBookmark={() => onBookmarkClick?.(row)}
+                        bookmarkDisabled={!pdfLoaded}
                       />
                     </Box>
                   </TableCell>

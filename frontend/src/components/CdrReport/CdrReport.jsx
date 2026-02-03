@@ -47,6 +47,7 @@ const CdrReport = forwardRef(
       cdrFinalised,
       onConfidenceChange,
       isHardRefresh,
+      pdfLoaded,
     },
     ref
   ) => {
@@ -259,6 +260,7 @@ const CdrReport = forwardRef(
                     handleApprove(sheet.sheet_no, itemIndex)
                   }
                   onBookmarkClick={onBookmarkClick}
+                  pdfLoaded={pdfLoaded}
                 />
               ) : sheet.sheet_no === 3 ? (
                 <RenderSheet3Excel
@@ -278,6 +280,7 @@ const CdrReport = forwardRef(
                     handleApprove(sheet.sheet_no, itemIndex)
                   }
                   onBookmarkClick={onBookmarkClick}
+                  pdfLoaded={pdfLoaded}
                 />
               ) : sheet.sheet_no === 6 ? (
                 <RenderSheet6Excel
@@ -289,6 +292,7 @@ const CdrReport = forwardRef(
                     handleApprove(sheet.sheet_no, itemIndex)
                   }
                   onBookmarkClick={onBookmarkClick}
+                  pdfLoaded={pdfLoaded}
                 />
               ) : (
                 <RenderSheetDefaultExcel
@@ -299,6 +303,7 @@ const CdrReport = forwardRef(
                     handleApprove(sheet.sheet_no, itemIndex)
                   }
                   onBookmarkClick={onBookmarkClick}
+                  pdfLoaded={pdfLoaded}
                 />
               )}
 

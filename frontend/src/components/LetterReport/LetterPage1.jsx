@@ -11,6 +11,7 @@ const LetterPage1 = ({
   openComment,
   onBookmarkClick,
   onConfidenceChange,
+  pdfLoaded,
 }) => {
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
 
@@ -40,6 +41,7 @@ const LetterPage1 = ({
           onComment={openComment}
           onBookmark={onBookmarkClick}
           onConfidenceChange={onConfidenceChange}
+          pdfLoaded={pdfLoaded}
         />
       </h1>
       <h2 className="page1_letter_report">LETTER REPORT</h2>
@@ -54,6 +56,7 @@ const LetterPage1 = ({
         onBookmark={onBookmarkClick}
         onConfidenceChange={onConfidenceChange}
         wide={true}
+        pdfLoaded={pdfLoaded}
       />
 
       <h4>REPORT NUMBER</h4>
@@ -66,6 +69,7 @@ const LetterPage1 = ({
         onComment={openComment}
         onBookmark={onBookmarkClick}
         onConfidenceChange={onConfidenceChange}
+        pdfLoaded={pdfLoaded}
       />
 
       <div style={{ display: 'flex' }}>
@@ -80,6 +84,7 @@ const LetterPage1 = ({
             onComment={openComment}
             onBookmark={onBookmarkClick}
             onConfidenceChange={onConfidenceChange}
+            pdfLoaded={pdfLoaded}
           />
         </div>
 
@@ -94,6 +99,7 @@ const LetterPage1 = ({
             onComment={openComment}
             onBookmark={onBookmarkClick}
             onConfidenceChange={onConfidenceChange}
+            pdfLoaded={pdfLoaded}
           />
         </div>
       </div>
@@ -111,6 +117,7 @@ const LetterPage1 = ({
               onComment={openComment}
               onBookmark={onBookmarkClick}
               onConfidenceChange={onConfidenceChange}
+              pdfLoaded={pdfLoaded}
             />
           </div>
           <div style={{ fontWeight: 700, marginTop: '10%' }}>

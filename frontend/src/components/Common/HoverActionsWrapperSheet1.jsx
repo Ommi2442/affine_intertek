@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React from 'react';
-import { IconButton } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import './HoverActionsWrapperSheet1.css';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
@@ -14,6 +14,7 @@ const HoverActionWrapperSheet1 = ({
   onApprove,
   onComment,
   onBookmark,
+  bookmarkDisabled = false,
 }) => {
   if (!show) return null;
 
@@ -35,9 +36,30 @@ const HoverActionWrapperSheet1 = ({
 
       {/*  BOOKMARK */}
       {typeof onBookmark === 'function' && (
-        <IconButton size="small" onClick={onBookmark}>
-          <MenuBookOutlinedIcon className="dt-icon-bookmark" />
-        </IconButton>
+        <Tooltip
+          arrow
+          title={
+            bookmarkDisabled
+              ? 'PDF citation loading...'
+              : 'View supporting citations'
+          }
+        >
+          <span>
+            <IconButton
+              size="small"
+              disabled={bookmarkDisabled}
+              onClick={!bookmarkDisabled ? onBookmark : undefined}
+              sx={{
+                opacity: bookmarkDisabled ? 0.5 : 1,
+                filter: bookmarkDisabled ? 'blur(1px)' : 'none',
+                cursor: bookmarkDisabled ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <MenuBookOutlinedIcon className="dt-icon-bookmark" />
+            </IconButton>
+          </span>
+        </Tooltip>
       )}
     </div>
   );
