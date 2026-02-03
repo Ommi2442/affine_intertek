@@ -101,6 +101,7 @@ TOTAL_PARTS = 5
 FILE_PREFIX = "pta_final_6_3_1_part"
 
 WORKER_URL = "http://127.0.0.1:9000/run-trf"
+CDR_WORKER_URL = "http://127.0.0.1:9000/run-cdr"
 
 @router.post("/create")
 async def create_project(payload: ProjectCreate):
@@ -839,6 +840,36 @@ def get_project_report_status(id: str):
         "trf_step": progress.get("trf_step"),
         "trf_error": progress.get("trf_error"),
         "trf_completed": progress.get("trf_completed")
+    }
+
+@router.get("/report/status/cdr")
+def get_project_report_status(id: str):
+    query = f"SELECT * FROM c WHERE c.Project_Id = '{id}'"
+    docs = list(COSMOS_DB_project_Container.query_items(
+        query=query,
+        enable_cross_partition_query=True
+    ))
+
+    if not docs:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    cdr_progress = docs[0].get("CDR_Project_Progress")
+
+    if not cdr_progress:
+        return {
+            "trf_status": "Pending",
+            "trf_percentage": 10,
+            "trf_completed": 'No'
+        }
+    
+
+    return {
+        "cdr_status":cdr_progress.get("cdr_stage"),
+        "cdr_percentage": cdr_progress.get("cdr_percentage",0),
+        "cdr_step": cdr_progress.get("cdr_step"),
+        "cdr_error": cdr_progress.get("error"),
+        "cdr_completed": cdr_progress.get("cdr_completed", "No"),
+
     }
 
 
@@ -2423,3 +2454,62 @@ async def upload_images(
         "filename": first_file["filename"],
         "blob_url": first_file["blob_url"]
     }
+
+
+
+
+@router.post("/generate-cdrr", status_code=202)
+def generate_cdr(projectId: str):
+    try:
+        response = requests.post(
+            CDR_WORKER_URL,
+            json={"projectId": projectId},
+            timeout=3
+        )
+        response.raise_for_status()
+
+        return {
+            "projectId": projectId,
+            "status": "dispatched",
+            "worker_port": 9000
+        }
+
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Worker unavailable: {e}"
+        )
+
+
+
+@router.get("/report/status/cdr")
+def get_project_report_status(id: str):
+    query = f"SELECT * FROM c WHERE c.Project_Id = '{id}'"
+    docs = list(COSMOS_DB_project_Container.query_items(
+        query=query,
+        enable_cross_partition_query=True
+    ))
+
+    if not docs:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    cdr_progress = docs[0].get("CDR_Project_Progress")
+
+    if not cdr_progress:
+        return {
+            "cdr_status": "Pending",
+            "cdr_percentage": 10,
+            "cdr_completed": 'No'
+        }
+    
+
+    return {
+        "cdr_status":cdr_progress.get("cdr_stage"),
+        "cdr_percentage": cdr_progress.get("cdr_percentage",0),
+        "cdr_step": cdr_progress.get("cdr_step"),
+        "cdr_error": cdr_progress.get("error"),
+        "cdr_completed": cdr_progress.get("cdr_completed", "No"),
+
+    }
+
+
