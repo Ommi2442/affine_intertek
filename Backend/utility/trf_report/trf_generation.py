@@ -1202,7 +1202,7 @@ def process_tasks_with_batches_parallel_grey(
         run_single_task_tool,
         batch_size=150,
         cooldown_sec=15,
-        max_workers=6,
+        max_workers=2,
         use_llm_inGrey=False,
         stats=False
     ):
@@ -2507,7 +2507,7 @@ def trf_gen_partwise(
     excel_output_path: str,
     batch_size=150,
     cooldown_sec=15,
-    max_workers=6
+    max_workers=2
 ):
     """
     FULL TRF REPORT GENERATION PIPELINE
@@ -2609,7 +2609,7 @@ def run_trf_generation(
     batch_size=150,
     final_output_path: str | None = None,
     cooldown_sec=15,
-    max_workers=6,
+    max_workers=2,
     on_first_json_generated: Optional[Callable[[], None]] = None,  # 🔔 EVENT HOOK
 ):
     iec_paths = []

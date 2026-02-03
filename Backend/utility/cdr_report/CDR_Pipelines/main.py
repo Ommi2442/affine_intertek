@@ -203,7 +203,7 @@ def main3(project_id, user_id, input_json, output_excel_path):
 
     step += 1; progress(step, TOTAL, "Chunking + ingesting documents into vector store")
     chunks = utils.load_and_split_pdfs_text(pdf_paths, extracted_texts=extracted_texts)
-    utils.ingest_chunks(vs, chunks, max_workers=5, batch_size=10)
+    utils.ingest_chunks(vs, chunks, max_workers=2, batch_size=2)
 
     # --------------------------------------------------
     # Reference generation

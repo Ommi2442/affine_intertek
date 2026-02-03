@@ -146,8 +146,8 @@ def main(project_id,blob_urls,text_container,image_container):
     ingest_to_cosmos_parallel(
         vs,
         chunks,
-        batch_size=10,
-        max_workers=10
+        batch_size=2,
+        max_workers=2
     )
 
     print("[SUCCESS] Text ingestion completed.\n")
@@ -225,8 +225,8 @@ def main(project_id,blob_urls,text_container,image_container):
     ingest_to_cosmos_parallel(
         vs2,
         t,
-        batch_size=10,
-        max_workers=10
+        batch_size=2,
+        max_workers=2
     )
 
     print("\n==============================")

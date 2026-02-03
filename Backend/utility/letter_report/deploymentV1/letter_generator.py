@@ -2246,7 +2246,7 @@ def generate_letter_pipeline(
         vs,
         batch_size=150,
         cooldown_sec=15,
-        max_workers=6,
+        max_workers=2,
         use_llm_inGrey=False,
         stats=True
     )
@@ -2258,7 +2258,7 @@ def generate_letter_pipeline(
         vs,
         batch_size=150,
         cooldown_sec=15,
-        max_workers=6,
+        max_workers=2,
         use_llm_inGrey=False,
         stats=True
     )

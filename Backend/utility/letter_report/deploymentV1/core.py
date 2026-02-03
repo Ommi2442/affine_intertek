@@ -378,7 +378,7 @@ def upload_pdf_images_and_append_urls_parallel(
         image_urls,
         conn_str,
         container,
-        max_workers=8
+        max_workers=2
 ):
     """
     Parallel upload of relevant PDF page images to Azure Blob Storage
@@ -1485,7 +1485,7 @@ def process_tasks_with_batches_parallel_grey(
         vs,
         batch_size=150,
         cooldown_sec=15,
-        max_workers=6,
+        max_workers=2,
         use_llm_inGrey=False,
         stats=False
     ):
