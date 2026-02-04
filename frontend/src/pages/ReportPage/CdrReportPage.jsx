@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Box,
   Card,
@@ -21,7 +21,11 @@ import CdrReport from '../../components/CdrReport/CdrReport';
 import CdrLoader from '../../components/CdrReport/CdrLoader';
 import ConfidenceScore from './ConfidenceScore';
 import CloseIcon from '@mui/icons-material/Close';
-import { triggerGenerateCdrApi } from '../../redux/api/generateCdrApi';
+import {
+  triggerGenerateCdrApi,
+  CdrApiDataLoad,
+  CdrStatusCheck,
+} from '../../redux/api/generateCdrApi';
 import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 import PdfViewer from '../../components/PdfViewer';
 import { loadPdfWithCache } from '../../components/loadPdfWithCache';
@@ -73,6 +77,9 @@ const CdrReportPage = () => {
   const [openConfirm, setOpenConfirm] = useState(false);
   const [regenloading, setRegenLoading] = useState(false);
 
+  const statusIntervalRef = useRef(null);
+  const hasTriggeredGenerateRef = useRef(false);
+
   /* ---------------- SAVE EVERY APPROVE ---------------- */
   useEffect(() => {
     if (!dataTableRef.current) return;
@@ -84,14 +91,52 @@ const CdrReportPage = () => {
     setLiveCdrData(updated);
   }, [confidenceTick]);
 
+  const startCdrStatusPolling = useCallback(() => {
+    if (statusIntervalRef.current) return;
+
+    statusIntervalRef.current = setInterval(async () => {
+      try {
+        const statusRes = await CdrStatusCheck(projectId);
+
+        const percentage = statusRes?.cdr_percentage ?? 0;
+        const isReadyForLoad =
+          statusRes?.cdr_completed === true ||
+          statusRes?.cdr_stage === 'Completed' ||
+          percentage === 100;
+
+        console.log('CDR polling status:', {
+          percentage,
+          completed: statusRes?.cdr_completed,
+          stage: statusRes?.cdr_stage,
+        });
+
+        if (isReadyForLoad) {
+          clearInterval(statusIntervalRef.current);
+          statusIntervalRef.current = null;
+
+          const res = await CdrApiDataLoad(projectId);
+
+          if (res?.data) {
+            await idb_set(storageKey, res.data, STORES.CDR);
+
+            setCdrJson(res.data);
+            setLoading(false);
+          }
+        }
+      } catch (err) {
+        console.error('CDR polling failed', err);
+      }
+    }, 15000);
+  }, [projectId, storageKey]);
+
   /* ---------------- LOAD LOGIC ---------------- */
   useEffect(() => {
-    if (!projectId) return;
+    const init = async () => {
+      if (!projectId) return;
 
-    const load = async () => {
       setLoading(true);
 
-      // Always try IndexedDB first
+      // IndexedDB first
       const cached = await idb_get(storageKey, STORES.CDR);
       if (cached) {
         setCdrJson(cached);
@@ -99,27 +144,48 @@ const CdrReportPage = () => {
         return;
       }
 
-      //  HARD REFRESH + no cache → do NOT wipe UI or call backend yet
-      if (isHardRefresh) {
-        console.warn('Hard refresh but no CDR cache found → holding state');
-        setLoading(false);
+      // Check backend status once
+      const statusRes = await CdrStatusCheck(projectId);
+      const percentage = statusRes?.cdr_percentage ?? 0;
+      const stage = statusRes?.cdr_stage;
+
+      const shouldGenerate =
+        percentage <= 0 &&
+        stage !== 'Completed' &&
+        percentage < 100 &&
+        !hasTriggeredGenerateRef.current;
+
+      // Trigger generate only once
+      if (shouldGenerate) {
+        hasTriggeredGenerateRef.current = true;
+        await triggerGenerateCdrApi(projectId);
+      }
+
+      // If already completed → load immediately
+      if (percentage === 100 || stage === 'Completed') {
+        const res = await CdrApiDataLoad(projectId);
+
+        if (res?.data) {
+          await idb_set(storageKey, res.data, STORES.CDR);
+          setCdrJson(res.data);
+          setLoading(false);
+        }
         return;
       }
 
-      // Only call backend if this is NOT a refresh
-      if (!isHardRefresh) {
-        const res = await triggerGenerateCdrApi(projectId);
-        if (res?.data) {
-          await idb_set(storageKey, res.data, STORES.CDR); // overwrite
-          setCdrJson(res.data); // render only backend data
-        }
-      }
-
-      setLoading(false);
+      // Otherwise start polling
+      startCdrStatusPolling();
     };
 
-    load();
-  }, [projectId, isHardRefresh]);
+    init();
+
+    return () => {
+      if (statusIntervalRef.current) {
+        clearInterval(statusIntervalRef.current);
+        statusIntervalRef.current = null;
+      }
+    };
+  }, [projectId, storageKey, startCdrStatusPolling]);
 
   //pdf citation hook to save it in indexdb
   const pdfLoaded = usePreloadProjectPdfs(projectId);
@@ -198,13 +264,33 @@ const CdrReportPage = () => {
   };
 
   const cdrRegenrate = async () => {
-    setLoading(true);
-    const res = await triggerGenerateCdrApi(projectId);
-    if (res?.data) {
-      await idb_set(storageKey, res.data, STORES.CDR); // overwrite
-      setCdrJson(res.data); // render only backend data
+    try {
+      setLoading(true);
+
+      // Stop existing polling if running
+      if (statusIntervalRef.current) {
+        clearInterval(statusIntervalRef.current);
+        statusIntervalRef.current = null;
+      }
+
+      // Clear old cache (important)
+      await idb_set(storageKey, null, STORES.CDR);
+      setCdrJson(null);
+
+      // Reset trigger flag
+      hasTriggeredGenerateRef.current = false;
+
+      // Trigger backend generate
+      await triggerGenerateCdrApi(projectId);
+
+      // Start polling
+      startCdrStatusPolling();
+
+      // Polling will stop loader when 100%
+    } catch (err) {
+      console.error('CDR regenerate failed', err);
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleConfirmRegenerate = async () => {
