@@ -2626,19 +2626,9 @@ def get_project_report_status(id: str):
 
 @router.post("/cdr-result")
 def get_letter_result(payload: CdrResult):
-    projectId = payload.projectId
-    query = "SELECT * FROM c WHERE c.Project_Id = @pid"
-    params = [{"name": "@pid", "value": projectId}]        
-    items = list(
-        COSMOS_DB_project_Container.query_items(
-            query=query,
-            parameters=params,
-            enable_cross_partition_query=True
-        )
-    )
-    cdr_progress = items[0].get("CDR_Project_Progress") or {}
-    cdr_percentage = cdr_progress.get("cdr_percentage", 0)
-    if cdr_percentage==100:
+    try:
+        projectId = payload.projectId
+
         BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
         DATA_DIR = BASE_DIR / "data"
         DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -2653,13 +2643,9 @@ def get_letter_result(payload: CdrResult):
             cdr_output = json.load(f)
         
         return {
-            "message": "CDR Report Already Generated ",
+            "message": "CDR Report Loaded ",
             "projectId": projectId,
             "data": cdr_output
         }
-    else:
-        return {
-            "message": "CDR Report Not Generated",
-            "projectId": projectId
-            
-        }
+    except Exception as e:
+        return e    
