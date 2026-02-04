@@ -3183,8 +3183,11 @@ def load_cdr_components_df(directory: str) -> Optional[pd.DataFrame]:
 
             # print(" [CDR EXCEL] Components table extracted")
             # print(f"    Shape: {data.shape}")
-            data = data.dropna(axis=1, how="all")
+            # data = data.dropna(axis=1, how="all")
+            # data = data.reset_index(drop=True)
+
             data = data.reset_index(drop=True)
+            data = data.fillna("")
 
             # --------------------------------------------------
             # DROP first two columns (Excel-specific cleanup)
