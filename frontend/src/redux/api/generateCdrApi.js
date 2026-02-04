@@ -13,11 +13,53 @@ export const triggerGenerateCdrApi = async (projectId) => {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    showLoader: false, // <- HIDE LOADER
-    timeout: 25000,          // ✅ frontend safety
-    withCredentials: false, // ✅ avoids CORS confusion
-    showLoader: false, // <- HIDE LOADER
+    showLoader: false,
+    timeout: 25000,
+    withCredentials: false,
+    showLoader: false,
   });
+
+  return response.data;
+};
+
+export const CdrApiDataLoad = async (projectId) => {
+  const token = localStorage.getItem('token');
+
+  const response = await axios.post(
+    `${BASE_URL}/projects/cdr-result`,
+    {
+      projectId: projectId,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      timeout: 25000,
+      withCredentials: false,
+      showLoader: false,
+    }
+  );
+
+  return response.data;
+};
+
+export const CdrStatusCheck = async (projectId) => {
+  const token = localStorage.getItem('token');
+
+  const response = await axios.post(
+    `${BASE_URL}/projects/report/status/cdr`,
+    {
+      projectId: projectId,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      timeout: 25000,
+      withCredentials: false,
+      showLoader: false,
+    }
+  );
 
   return response.data;
 };

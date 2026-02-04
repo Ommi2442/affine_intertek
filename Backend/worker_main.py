@@ -7,11 +7,19 @@ from projects.letter_processor import process_letter_direct
 from typing import Optional
 
 
-app = FastAPI(title="Worker Service")
+from projects.cdr_processor import process_cdr_direct
+
+app = FastAPI(title="TRF CDR Letter Workers")
+
+
 
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
+CDR_EXECUTOR = ThreadPoolExecutor(max_workers=6)
 
 class TRFJob(BaseModel):
+    projectId: str
+
+class CDRJob(BaseModel):
     projectId: str
 
 
@@ -33,6 +41,29 @@ async def run_trf(job: TRFJob):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/run-cdr", status_code=202)
+async def run_trf(job: CDRJob):
+    try:
+        print("----- CDR worker-------")
+        loop = asyncio.get_running_loop()
+        loop.run_in_executor(
+            CDR_EXECUTOR,
+            process_cdr_direct,
+            job.projectId)
+        return {
+            "projectId": job.projectId,
+            "status": "started",
+            "worker_port": 9000
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
 
 
 
@@ -68,4 +99,3 @@ async def run_letter(job: LetterJob):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-

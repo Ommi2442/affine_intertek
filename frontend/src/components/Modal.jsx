@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -11,20 +11,20 @@ import {
   Select,
   CircularProgress,
   IconButton,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { useNavigate } from "react-router-dom";
-import { createProjectApi } from "../redux/api/createProjectApi";
-import { checkProjectIdApi } from "../redux/api/checkProjectIdApi";
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { useNavigate } from 'react-router-dom';
+import { createProjectApi } from '../redux/api/createProjectApi';
+import { checkProjectIdApi } from '../redux/api/checkProjectIdApi';
 
 const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
   width: 400,
-  bgcolor: "background.paper",
-  borderRadius: "10px",
+  bgcolor: 'background.paper',
+  borderRadius: '10px',
   boxShadow: 24,
   p: 4,
 };
@@ -33,10 +33,10 @@ export default function BasicModal({ open, handleClose }) {
   const navigate = useNavigate();
 
   const initialState = {
-    Standard: "IEC_61010-1",
-    Client_Name: "",
-    Project_Id: "",
-    Product: "",
+    Standard: 'IEC_61010-1',
+    Client_Name: '',
+    Project_Id: '',
+    Product: '',
   };
 
   const [form, setForm] = useState(initialState);
@@ -57,8 +57,8 @@ export default function BasicModal({ open, handleClose }) {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" });
-    if (e.target.name === "Project_Id") setProjectIdValid(null);
+    setErrors({ ...errors, [e.target.name]: '' });
+    if (e.target.name === 'Project_Id') setProjectIdValid(null);
   };
 
   const handleProjectIdBlur = async () => {
@@ -69,7 +69,7 @@ export default function BasicModal({ open, handleClose }) {
       const res = await checkProjectIdApi(form.Project_Id);
       setProjectIdValid(!res?.exists);
     } catch (error) {
-      console.error("Project ID check failed:", error);
+      console.error('Project ID check failed:', error);
     } finally {
       setCheckingId(false);
     }
@@ -78,12 +78,12 @@ export default function BasicModal({ open, handleClose }) {
   const validate = () => {
     const newErrors = {};
 
-    if (!form.Client_Name.trim()) newErrors.Client_Name = "Required";
-    if (!form.Project_Id.trim()) newErrors.Project_Id = "Required";
-    if (!form.Product.trim()) newErrors.Product = "Required";
+    if (!form.Client_Name.trim()) newErrors.Client_Name = 'Required';
+    if (!form.Project_Id.trim()) newErrors.Project_Id = 'Required';
+    if (!form.Product.trim()) newErrors.Product = 'Required';
 
     if (projectIdValid === false) {
-      newErrors.Project_Id = "Project ID already used";
+      newErrors.Project_Id = 'Project ID already used';
     }
 
     setErrors(newErrors);
@@ -101,13 +101,13 @@ export default function BasicModal({ open, handleClose }) {
     if (!validate()) return;
 
     try {
-      const createdByEmail = localStorage.getItem("email");
-      const userName = localStorage.getItem("name");
+      const createdByEmail = localStorage.getItem('email');
+      const userName = localStorage.getItem('name');
 
       const payload = {
         ...form,
         Proj_Created_By: createdByEmail,
-        User_Name: userName
+        User_Name: userName,
       };
 
       await createProjectApi(payload);
@@ -118,7 +118,7 @@ export default function BasicModal({ open, handleClose }) {
       localStorage.setItem('projectId', form.Project_Id);
 
       /*  PASS REQUIRED STATE */
-      navigate("/create-project", {
+      navigate('/create-project', {
         state: {
           standard: form.Standard,
           projectId: form.Project_Id,
@@ -127,8 +127,8 @@ export default function BasicModal({ open, handleClose }) {
         },
       });
     } catch (error) {
-      console.error("Create Project Failed:", error);
-      alert("Error creating project");
+      console.error('Create Project Failed:', error);
+      alert('Error creating project');
     }
   };
 
@@ -142,7 +142,7 @@ export default function BasicModal({ open, handleClose }) {
       <Box sx={style}>
         {/* CLOSE BUTTON */}
         <IconButton
-          sx={{ position: "absolute", top: 10, right: 10 }}
+          sx={{ position: 'absolute', top: 10, right: 10 }}
           onClick={closeModal}
         >
           <CloseIcon />
@@ -161,7 +161,7 @@ export default function BasicModal({ open, handleClose }) {
             value={form.Standard}
             readOnly
             open={false}
-            sx={{ pointerEvents: "none" }}
+            sx={{ pointerEvents: 'none' }}
           >
             <MenuItem value="IEC_61010-1">IEC_61010-1</MenuItem>
           </Select>
@@ -177,13 +177,20 @@ export default function BasicModal({ open, handleClose }) {
           value={form.Project_Id}
           onChange={handleChange}
           onBlur={handleProjectIdBlur}
+          onKeyDown={(e) => {
+            if (e.key === '.') {
+              e.preventDefault();
+            }
+          }}
           error={projectIdValid === false}
           helperText={
-            projectIdValid === false
-              ? "Project ID already used"
-              : projectIdValid === true
-              ? <span style={{ color: "green" }}>Project ID available</span>
-              : errors.Project_Id
+            projectIdValid === false ? (
+              'Project ID already used'
+            ) : projectIdValid === true ? (
+              <span style={{ color: 'green' }}>Project ID available</span>
+            ) : (
+              errors.Project_Id
+            )
           }
           InputProps={{
             endAdornment: checkingId ? <CircularProgress size={20} /> : null,
@@ -223,8 +230,8 @@ export default function BasicModal({ open, handleClose }) {
           disabled={!isFormValid}
           sx={{
             mt: 2,
-            backgroundColor: isFormValid ? "black" : "gray",
-            "&:hover": { backgroundColor: isFormValid ? "#333" : "gray" },
+            backgroundColor: isFormValid ? 'black' : 'gray',
+            '&:hover': { backgroundColor: isFormValid ? '#333' : 'gray' },
           }}
         >
           Submit

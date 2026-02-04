@@ -1300,8 +1300,8 @@ const DataTable = forwardRef(
 
       if (pageNo === 6) {
         return normalItems.map((item, idx) => {
-          const hasImages =
-            Array.isArray(item.marking_urls) && item.marking_urls.length > 0;
+          //const hasImages =
+          //  Array.isArray(item.marking_urls) && item.marking_urls.length > 0;
           return (
             <Box key={idx} sx={{ mb: 3 }}>
               <Typography
@@ -1316,7 +1316,7 @@ const DataTable = forwardRef(
                 {item.field}
               </Typography>
 
-              {hasImages && (
+              {
                 <RenderPage6Images
                   item={item}
                   tIdx={item.__t}
@@ -1324,7 +1324,7 @@ const DataTable = forwardRef(
                   editMode={editMode && item.user_editable === true}
                   setTables={setTables}
                 />
-              )}
+              }
             </Box>
           );
         });
