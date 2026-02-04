@@ -31,3 +31,51 @@ export const triggerGenerateLetterApi = async (
 
   return response.data;
 };
+
+
+export const LetterApiDataLoad = async (
+  projectId
+) => {
+  const token = localStorage.getItem('token');
+
+  const response = await axios.post(
+    `${BASE_URL}/projects/letter-result`,
+    {
+      projectId: projectId
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      timeout: 25000,          // ✅ frontend safety
+      withCredentials: false, // ✅ avoids CORS confusion
+      showLoader: false, // <- HIDE LOADER
+    }
+  );
+
+  return response.data;
+};
+
+
+export const LetterStatusCheck = async (
+  projectId
+) => {
+  const token = localStorage.getItem('token');
+
+  const response = await axios.post(
+    `${BASE_URL}/projects/letter-status`,
+    {
+      projectId: projectId
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      timeout: 25000,          // ✅ frontend safety
+      withCredentials: false, // ✅ avoids CORS confusion
+      showLoader: false, // <- HIDE LOADER
+    }
+  );
+
+  return response.data;
+};
