@@ -11,7 +11,7 @@ import {
   IconButton,
   DialogContent,
   DialogActions,
-  DialogContentText
+  DialogContentText,
 } from '@mui/material';
 import { useNavigate, useNavigationType } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -32,6 +32,7 @@ import { RenderImageThumbnails } from '../../Helpers/renderImageThumbnails';
 import { useLocation } from 'react-router-dom';
 import { finaliseCdrReportRequest } from '../../redux/features/finaliseCdrReport/finaliseCdrReportSlice';
 import { reGenerateCdrClear } from '../../redux/api/RegenerateApi';
+import { usePreloadProjectPdfs } from '../../hooks/usePreloadProjectPdfs';
 
 const STORAGE_KEY_PREFIX = 'cdr_report_';
 
@@ -120,6 +121,9 @@ const CdrReportPage = () => {
     load();
   }, [projectId, isHardRefresh]);
 
+  //pdf citation hook to save it in indexdb
+  const pdfLoaded = usePreloadProjectPdfs(projectId);
+
   const handleCitationLinkClick = (filename, page, text, blob_url) => {
     // ---- XLSX → DOWNLOAD ----
     if (filename?.toLowerCase().endsWith('.xlsx')) {
@@ -196,13 +200,13 @@ const CdrReportPage = () => {
   const cdrRegenrate = async () => {
     setLoading(true);
     const res = await triggerGenerateCdrApi(projectId);
-      if (res?.data) {
-        await idb_set(storageKey, res.data, STORES.CDR); // overwrite
-        setCdrJson(res.data); // render only backend data
-      }
-    setLoading(false);
+    if (res?.data) {
+      await idb_set(storageKey, res.data, STORES.CDR); // overwrite
+      setCdrJson(res.data); // render only backend data
     }
-  
+    setLoading(false);
+  };
+
   const handleConfirmRegenerate = async () => {
     try {
       setRegenLoading(true);
@@ -212,16 +216,13 @@ const CdrReportPage = () => {
       };
 
       await reGenerateCdrClear(payload);
-
     } finally {
       setRegenLoading(false);
       setOpenConfirm(false);
       cdrRegenrate();
     }
   };
-  
-  
-  
+
   const handleGenerateLetter = () => {
     if (letterPercentage === 100) {
       navigate('/report-page/letter', {
@@ -289,6 +290,7 @@ const CdrReportPage = () => {
               onBookmarkClick={handleBookmarkFromChild}
               onConfidenceChange={() => setConfidenceTick((v) => v + 1)}
               isHardRefresh={isHardRefresh}
+              pdfLoaded={pdfLoaded}
             />
           )}
         </Box>
@@ -304,7 +306,7 @@ const CdrReportPage = () => {
             </Box>
 
             {bookmarkData?.textSupportRaw?.map((item, idx) => {
-              const rawText = item?.preview_text || '';
+              const rawText = item?.preview_text || item?.text || '';
               const cleanedText = normalizeNewLines(rawText);
               const isTruncated = cleanedText.split(/\s+/).length > 20;
               const truncated = truncateWords(cleanedText, 20);
@@ -594,46 +596,44 @@ const CdrReportPage = () => {
         </Box>
       )}
       <Dialog
-      open={openConfirm}
-      onClose={() => setOpenConfirm(false)}
-      maxWidth="xs"
-      fullWidth
+        open={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        maxWidth="xs"
+        fullWidth
       >
-      <DialogTitle>
-        Confirm Regeneration
-      </DialogTitle>
+        <DialogTitle>Confirm Regeneration</DialogTitle>
 
-      <DialogContent>
-        <DialogContentText>
-          This action will delete the existing cdr report files and regenerate the project.
-          Are you sure you want to continue?
-        </DialogContentText>
-      </DialogContent>
+        <DialogContent>
+          <DialogContentText>
+            This action will delete the existing cdr report files and regenerate
+            the project. Are you sure you want to continue?
+          </DialogContentText>
+        </DialogContent>
 
-      <DialogActions>
-        <Button
-          onClick={() => setOpenConfirm(false)}
-          color="inherit"
-          disabled={regenloading}
-        >
-          Cancel
-        </Button>
+        <DialogActions>
+          <Button
+            onClick={() => setOpenConfirm(false)}
+            color="inherit"
+            disabled={regenloading}
+          >
+            Cancel
+          </Button>
 
-        <Button
-          onClick={handleConfirmRegenerate}
-          variant="contained"
-          color="primary"
-          sx={{
-            backgroundColor: 'rgb(65, 117, 129)',
-            '&:hover': {
-              backgroundColor: 'rgb(55, 100, 110)',
-            },
-          }}
-          disabled={regenloading}
-        >
-          {regenloading ? 'Processing...' : 'Proceed'}
-        </Button>
-      </DialogActions>
+          <Button
+            onClick={handleConfirmRegenerate}
+            variant="contained"
+            color="primary"
+            sx={{
+              backgroundColor: 'rgb(65, 117, 129)',
+              '&:hover': {
+                backgroundColor: 'rgb(55, 100, 110)',
+              },
+            }}
+            disabled={regenloading}
+          >
+            {regenloading ? 'Processing...' : 'Proceed'}
+          </Button>
+        </DialogActions>
       </Dialog>
     </Box>
   );

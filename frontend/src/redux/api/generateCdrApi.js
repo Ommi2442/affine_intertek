@@ -14,6 +14,9 @@ export const triggerGenerateCdrApi = async (projectId) => {
       Authorization: `Bearer ${token}`,
     },
     showLoader: false, // <- HIDE LOADER
+    timeout: 25000,          // ✅ frontend safety
+    withCredentials: false, // ✅ avoids CORS confusion
+    showLoader: false, // <- HIDE LOADER
   });
 
   return response.data;

@@ -27,6 +27,7 @@ const LetterReport = forwardRef(
       onPageChange,
       onConfidenceChange,
       onBookmarkClick,
+      pdfLoaded,
     },
     ref
   ) => {
@@ -171,6 +172,7 @@ const LetterReport = forwardRef(
                   openComment={openComment}
                   onBookmarkClick={onBookmarkClick}
                   onConfidenceChange={onConfidenceChange}
+                  pdfLoaded={pdfLoaded}
                 />
               )}
               {p === 2 && (
@@ -181,6 +183,7 @@ const LetterReport = forwardRef(
                   openComment={openComment}
                   onBookmarkClick={onBookmarkClick}
                   onConfidenceChange={onConfidenceChange}
+                  pdfLoaded={pdfLoaded}
                 />
               )}
               {p === 3 && (
@@ -191,6 +194,7 @@ const LetterReport = forwardRef(
                   openComment={openComment}
                   onBookmarkClick={onBookmarkClick}
                   onConfidenceChange={onConfidenceChange}
+                  pdfLoaded={pdfLoaded}
                 />
               )}
               {p === 4 && (
@@ -201,6 +205,7 @@ const LetterReport = forwardRef(
                   openComment={openComment}
                   onBookmarkClick={onBookmarkClick}
                   onConfidenceChange={onConfidenceChange}
+                  pdfLoaded={pdfLoaded}
                 />
               )}
               {p === 5 && (
@@ -211,6 +216,7 @@ const LetterReport = forwardRef(
                   openComment={openComment}
                   onBookmarkClick={onBookmarkClick}
                   onConfidenceChange={onConfidenceChange}
+                  pdfLoaded={pdfLoaded}
                 />
               )}
               {p === 6 && (
@@ -221,6 +227,7 @@ const LetterReport = forwardRef(
                   openComment={openComment}
                   onBookmarkClick={onBookmarkClick}
                   onConfidenceChange={onConfidenceChange}
+                  pdfLoaded={pdfLoaded}
                 />
               )}
             </div>

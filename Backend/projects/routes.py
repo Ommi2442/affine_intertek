@@ -16,7 +16,7 @@ from fastapi import Depends
 from api.auth.jwt_auth.utils import get_current_user
 from db.database import *
 from db.database import COSMOS_DB_project_Container, COSMOS_DB_URI,COSMOS_DB_KEY,COSMOS_DB_DATABASE,COSMOS_DB_project_TRF_Container,COSMOS_DB_project_CDR_Container,COSMOS_DB_project_LETTER_Container
-from projects.models import Project,ProjectCreate,ProjectFilter,FinalizeReportPayload,LetterGeneration,RegenratePayload
+from projects.models import Project,ProjectCreate,ProjectFilter,FinalizeReportPayload,LetterGeneration,RegenratePayload,LetterResult,CdrResult
 from azure.cosmos import exceptions
 from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueClient
@@ -100,8 +100,11 @@ LOCAL_TRF_FOLDER = BASE_DIR / "data"
 TOTAL_PARTS = 5
 FILE_PREFIX = "pta_final_6_3_1_part"
 
-WORKER_URL = "http://127.0.0.1:9000/run-trf"
+
 CDR_WORKER_URL = "http://127.0.0.1:9000/run-cdr"
+TRF_WORKER_URL = "http://127.0.0.1:9000/run-trf"
+
+LETTER_WORKER_URL = "http://127.0.0.1:9000/run-letter"
 
 @router.post("/create")
 async def create_project(payload: ProjectCreate):
@@ -1096,7 +1099,7 @@ def get_project_report_status(id: str):
 def generate_trf(projectId: str):
     try:
         response = requests.post(
-            WORKER_URL,
+            TRF_WORKER_URL,
             json={"projectId": projectId},
             timeout=3
         )
@@ -1167,208 +1170,208 @@ def update_project_progress_CDR(
     print(f" Progress updated → {cdr_percentage}% | {cdr_stage} --- {cdr_completed}")
 
 
-@router.post("/generate-cdr")
-def generate_cdr(projectId: str):
-    try:
-        if not projectId:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="projectId is required"
-            )
+# @router.post("/generate-cdr")
+# def generate_cdr(projectId: str):
+#     try:
+#         if not projectId:
+#             raise HTTPException(
+#                 status_code=status.HTTP_400_BAD_REQUEST,
+#                 detail="projectId is required"
+#             )
         
-        if not projectId:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="projectId is required"
-            )
-        project_id=projectId
-        query = "SELECT * FROM c WHERE c.Project_Id = @pid"
-        params = [{"name": "@pid", "value": project_id}]        
-        items = list(
-            COSMOS_DB_project_Container.query_items(
-                query=query,
-                parameters=params,
-                enable_cross_partition_query=True
-            )
-        )
-        cdr_progress = items[0].get("CDR_Project_Progress") or {}
-        print(cdr_progress,"------ ",type(cdr_progress))
+#         if not projectId:
+#             raise HTTPException(
+#                 status_code=status.HTTP_400_BAD_REQUEST,
+#                 detail="projectId is required"
+#             )
+#         project_id=projectId
+#         query = "SELECT * FROM c WHERE c.Project_Id = @pid"
+#         params = [{"name": "@pid", "value": project_id}]        
+#         items = list(
+#             COSMOS_DB_project_Container.query_items(
+#                 query=query,
+#                 parameters=params,
+#                 enable_cross_partition_query=True
+#             )
+#         )
+#         cdr_progress = items[0].get("CDR_Project_Progress") or {}
+#         print(cdr_progress,"------ ",type(cdr_progress))
 
-        cdr_percentage = cdr_progress.get("cdr_percentage", 0)
-        print(cdr_percentage,"------ ",type(cdr_percentage))
-        if cdr_percentage < 100:
-            query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
-            docs = list(
-                COSMOS_DB_project_Container.query_items(
-                    query=query,
-                    enable_cross_partition_query=True,
-                )
-            )
+#         cdr_percentage = cdr_progress.get("cdr_percentage", 0)
+#         print(cdr_percentage,"------ ",type(cdr_percentage))
+#         if cdr_percentage < 100:
+#             query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
+#             docs = list(
+#                 COSMOS_DB_project_Container.query_items(
+#                     query=query,
+#                     enable_cross_partition_query=True,
+#                 )
+#             )
 
-            print('docs', docs)
-
-
-            project_doc = docs[0]
-            update_project_progress_CDR(
-                project_doc,
-                cdr_stage="steps in Progress",
-                cdr_percentage=10,
-                cdr_step="Starting runnig CDR",
-                cdr_completed=False
-            )
-            ############### QUEUE LOGIC (COMMENTED) ################
-            # queue_client_cdr.send_message(json.dumps({
-            #     "projectId": projectId,
-            #     "action": "CDR_Generation",
-            #     "timestamp": datetime.utcnow().isoformat()
-            # }))
-            #
-            # MAX_WAIT_SECONDS = 6000
-            # POLL_INTERVAL = 2
-            # elapsed = 0
-            #
-            # while elapsed < MAX_WAIT_SECONDS:
-            #     query = "SELECT * FROM c WHERE c.Project_Id = @pid"
-            #     params = [{"name": "@pid", "value": projectId}]
-            #
-            #     docs = list(projects_container.query_items(
-            #         query=query,
-            #         parameters=params,
-            #         enable_cross_partition_query=True,
-            #     ))
-            #
-            #     if docs:
-            #         progress = docs[0].get("CDR_Project_Progress") or {}
-            #         percentage = progress.get("cdr_percentage")
-            #
-            #         if percentage == 100:
-            #             break
-            #
-            #     time.sleep(POLL_INTERVAL)
-            #     elapsed += POLL_INTERVAL
-            #
-            # if elapsed >= MAX_WAIT_SECONDS:
-            #     raise HTTPException(status_code=408, detail="CDR generation timed out")
-            ############### QUEUE LOGIC END #######################
+#             print('docs', docs)
 
 
-            # ------------------ COSMOS QUERY ------------------
-            query = "SELECT c.blob_url FROM c WHERE c.project_id = @pid"
-            params = [{"name": "@pid", "value": projectId}]
+#             project_doc = docs[0]
+#             update_project_progress_CDR(
+#                 project_doc,
+#                 cdr_stage="steps in Progress",
+#                 cdr_percentage=10,
+#                 cdr_step="Starting runnig CDR",
+#                 cdr_completed=False
+#             )
+#             ############### QUEUE LOGIC (COMMENTED) ################
+#             # queue_client_cdr.send_message(json.dumps({
+#             #     "projectId": projectId,
+#             #     "action": "CDR_Generation",
+#             #     "timestamp": datetime.utcnow().isoformat()
+#             # }))
+#             #
+#             # MAX_WAIT_SECONDS = 6000
+#             # POLL_INTERVAL = 2
+#             # elapsed = 0
+#             #
+#             # while elapsed < MAX_WAIT_SECONDS:
+#             #     query = "SELECT * FROM c WHERE c.Project_Id = @pid"
+#             #     params = [{"name": "@pid", "value": projectId}]
+#             #
+#             #     docs = list(projects_container.query_items(
+#             #         query=query,
+#             #         parameters=params,
+#             #         enable_cross_partition_query=True,
+#             #     ))
+#             #
+#             #     if docs:
+#             #         progress = docs[0].get("CDR_Project_Progress") or {}
+#             #         percentage = progress.get("cdr_percentage")
+#             #
+#             #         if percentage == 100:
+#             #             break
+#             #
+#             #     time.sleep(POLL_INTERVAL)
+#             #     elapsed += POLL_INTERVAL
+#             #
+#             # if elapsed >= MAX_WAIT_SECONDS:
+#             #     raise HTTPException(status_code=408, detail="CDR generation timed out")
+#             ############### QUEUE LOGIC END #######################
 
-            try:
-                items = list(trf_container.query_items(
-                    query=query,
-                    parameters=params,
-                    enable_cross_partition_query=True,
-                ))
-            except Exception:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="Failed to query project data from database"
-                )
 
-            if not items:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"Project '{projectId}' not found"
-                )
+#             # ------------------ COSMOS QUERY ------------------
+#             query = "SELECT c.blob_url FROM c WHERE c.project_id = @pid"
+#             params = [{"name": "@pid", "value": projectId}]
 
-            blob_url = items[0].get("blob_url")
-            if not blob_url or not isinstance(blob_url, str):
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="CDR Blob URL not found or invalid"
-                )
+#             try:
+#                 items = list(trf_container.query_items(
+#                     query=query,
+#                     parameters=params,
+#                     enable_cross_partition_query=True,
+#                 ))
+#             except Exception:
+#                 raise HTTPException(
+#                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#                     detail="Failed to query project data from database"
+#                 )
 
-            response = requests.get(blob_url)
-            response.raise_for_status()
-            trf_filled = response.json()
+#             if not items:
+#                 raise HTTPException(
+#                     status_code=status.HTTP_404_NOT_FOUND,
+#                     detail=f"Project '{projectId}' not found"
+#                 )
 
-            BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
-            DATA_DIR = BASE_DIR / "data"
-            DATA_DIR.mkdir(parents=True, exist_ok=True)
+#             blob_url = items[0].get("blob_url")
+#             if not blob_url or not isinstance(blob_url, str):
+#                 raise HTTPException(
+#                     status_code=status.HTTP_404_NOT_FOUND,
+#                     detail="CDR Blob URL not found or invalid"
+#                 )
 
-            project_dir = DATA_DIR / projectId
-            project_dir.mkdir(parents=True, exist_ok=True)
+#             response = requests.get(blob_url)
+#             response.raise_for_status()
+#             trf_filled = response.json()
 
-            output_json_path = project_dir / f"iec_output_cdr_{projectId}.json"
-            output_excel_path = project_dir / f"iec_output_sheet_{projectId}.xlsx"
+#             BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
+#             DATA_DIR = BASE_DIR / "data"
+#             DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-            user_name = project_doc.get("User_Name") or []
-            user_id = user_name.split()[0]
+#             project_dir = DATA_DIR / projectId
+#             project_dir.mkdir(parents=True, exist_ok=True)
 
-            # ------------------ PIPELINE ------------------
-            result = main2(project_id,
-                user_id,
-                trf_filled,
-                output_excel_path=output_excel_path
-            )
+#             output_json_path = project_dir / f"iec_output_cdr_{projectId}.json"
+#             output_excel_path = project_dir / f"iec_output_sheet_{projectId}.xlsx"
 
-            # ------------------ SAVE JSON ------------------
-            with open(output_json_path, "w", encoding="utf-8") as f:
-                json.dump(result, f, indent=2, ensure_ascii=False)
+#             user_name = project_doc.get("User_Name") or []
+#             user_id = user_name.split()[0]
 
-            save_cdr_local_json_to_blob_and_cosmos_cdr(
-                output_json_path,
-                projectId
-            )
-            print("----- JSON CDR uploaded -----")
+#             # ------------------ PIPELINE ------------------
+#             result = main2(project_id,
+#                 user_id,
+#                 trf_filled,
+#                 output_excel_path=output_excel_path
+#             )
+
+#             # ------------------ SAVE JSON ------------------
+#             with open(output_json_path, "w", encoding="utf-8") as f:
+#                 json.dump(result, f, indent=2, ensure_ascii=False)
+
+#             save_cdr_local_json_to_blob_and_cosmos_cdr(
+#                 output_json_path,
+#                 projectId
+#             )
+#             print("----- JSON CDR uploaded -----")
             
-            # ------------------ UPLOAD EXCEL ------------------
-            save_local_xlsx_to_blob_and_cosmos_cdr(
-                str(output_excel_path),
-                projectId
-            )
-            print("----- Excel CDR uploaded -----")
+#             # ------------------ UPLOAD EXCEL ------------------
+#             save_local_xlsx_to_blob_and_cosmos_cdr(
+#                 str(output_excel_path),
+#                 projectId
+#             )
+#             print("----- Excel CDR uploaded -----")
 
-            update_project_progress_CDR(
-                project_doc,
-                cdr_stage="Completed",
-                cdr_percentage=100,
-                cdr_step="CDR generated and stored",
-                cdr_completed=True
-            )
-            print("#################")
-            return {
-                "message": "CDR Report generated successfully",
-                "projectId": projectId,
-                "data": result
-            }
-        if cdr_percentage==100:
-            print("----CDR is already generated-----")
-            BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
-            DATA_DIR = BASE_DIR / "data"
-            DATA_DIR.mkdir(parents=True, exist_ok=True)
+#             update_project_progress_CDR(
+#                 project_doc,
+#                 cdr_stage="Completed",
+#                 cdr_percentage=100,
+#                 cdr_step="CDR generated and stored",
+#                 cdr_completed=True
+#             )
+#             print("#################")
+#             return {
+#                 "message": "CDR Report generated successfully",
+#                 "projectId": projectId,
+#                 "data": result
+#             }
+#         if cdr_percentage==100:
+#             print("----CDR is already generated-----")
+#             BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
+#             DATA_DIR = BASE_DIR / "data"
+#             DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-            project_dir = DATA_DIR / projectId
-            project_dir.mkdir(parents=True, exist_ok=True)
+#             project_dir = DATA_DIR / projectId
+#             project_dir.mkdir(parents=True, exist_ok=True)
 
-            output_json_path = project_dir / f"iec_output_cdr_{projectId}.json"
-            output_excel_path = project_dir / f"iec_output_sheet_{projectId}.xlsx"
+#             output_json_path = project_dir / f"iec_output_cdr_{projectId}.json"
+#             output_excel_path = project_dir / f"iec_output_sheet_{projectId}.xlsx"
 
 
-            output_json_path = project_dir / f"iec_output_cdr_{projectId}.json"
-            with open(output_json_path, "r", encoding="utf-8") as f:
-                cdr_output = json.load(f)
+#             output_json_path = project_dir / f"iec_output_cdr_{projectId}.json"
+#             with open(output_json_path, "r", encoding="utf-8") as f:
+#                 cdr_output = json.load(f)
             
-            return {
-                "message": "CDR Report Already Generated ",
-                "projectId": projectId,
-                "data": cdr_output
-            }
+#             return {
+#                 "message": "CDR Report Already Generated ",
+#                 "projectId": projectId,
+#                 "data": cdr_output
+#             }
 
-    except HTTPException:
-        raise
+#     except HTTPException:
+#         raise
 
-    except Exception as e:
-        h=traceback.format_exc()
-        print(h)
-        logger.exception("Unhandled error in generate_cdr API")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
-        )
+#     except Exception as e:
+#         h=traceback.format_exc()
+#         print(h)
+#         logger.exception("Unhandled error in generate_cdr API")
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=str(e)
+#         )
 
 
 @router.get("/download-file")
@@ -1638,208 +1641,316 @@ def update_letter_progress(
 
 
 
-@router.post("/letter-generation")
-async def letter_implementation(payload: LetterGeneration):
-    try:
-        projectId = payload.projectId
-        trf_urls = payload.trf_urls
-        cdr_urls = payload.cdr_urls
-        # other_urls = payload.other_urls
+# @router.post("/letter-generation")
+# async def letter_implementation(payload: LetterGeneration):
+#     try:
+#         projectId = payload.projectId
+#         trf_urls = payload.trf_urls
+#         cdr_urls = payload.cdr_urls
+#         # other_urls = payload.other_urls
 
         
-        blob_urls = [
-            trf_urls,
-            cdr_urls,
-            # other_urls
-        ]
+#         blob_urls = [
+#             trf_urls,
+#             cdr_urls,
+#             # other_urls
+#         ]
 
-        print("Project ID for Letter Generation:", projectId,type(projectId))
-        print("All URLs for Letter Generation:", blob_urls)
+#         print("Project ID for Letter Generation:", projectId,type(projectId))
+#         print("All URLs for Letter Generation:", blob_urls)
 
-        if not projectId:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="projectId is required"
-            )
+#         if not projectId:
+#             raise HTTPException(
+#                 status_code=status.HTTP_400_BAD_REQUEST,
+#                 detail="projectId is required"
+#             )
 
-        # ----------------------------------
-        # Cosmos DB query
-        # ----------------------------------
-        project_id = projectId
-        query = "SELECT * FROM c WHERE c.Project_Id = @pid"
-        params = [{"name": "@pid", "value": project_id}]
+#         # ----------------------------------
+#         # Cosmos DB query
+#         # ----------------------------------
+#         project_id = projectId
+#         query = "SELECT * FROM c WHERE c.Project_Id = @pid"
+#         params = [{"name": "@pid", "value": project_id}]
 
-        items = list(
-            COSMOS_DB_project_Container.query_items(
-                query=query,
-                parameters=params,
-                enable_cross_partition_query=True
-            )
+#         items = list(
+#             COSMOS_DB_project_Container.query_items(
+#                 query=query,
+#                 parameters=params,
+#                 enable_cross_partition_query=True
+#             )
+#         )
+
+#         if not items:
+#             raise HTTPException(
+#                 status_code=404,
+#                 detail="Project not found"
+#             )
+
+#         letter_progress = items[0].get("Letter_Project_Progress") or {}
+#         letter_percentage = letter_progress.get("letter_percentage", 0)
+
+#         if letter_percentage < 100:
+#             query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
+#             docs = list(
+#                 projects_container.query_items(
+#                     query=query,
+#                     enable_cross_partition_query=True,
+#                 )
+#             )
+
+#             if not docs:
+#                 raise HTTPException(
+#                     status_code=404,
+#                     detail="Project document not found"
+#                 )
+
+#             project_doc = docs[0]
+
+#             update_letter_progress(
+#                 project_doc,
+#                 letter_stage="steps in Progress",
+#                 letter_percentage=10,
+#                 letter_step="Starting running Letter",
+#                 letter_completed=False
+#             )
+
+#             Source_Doc_urls = [
+#                 item["url"]
+#                 for item in project_doc.get("Source_Doc", [])
+#                 if "url" in item
+#             ]
+#             if not Source_Doc_urls:
+#                 raise HTTPException(
+#                     status_code=400,
+#                     detail="No Source_Doc URLs found for this project"
+#                 )
+#             print("Source Document URLs for Letter Generation:\n\n\n", Source_Doc_urls)
+#             import time;time.sleep(10)
+#             print("Starting full ingestion for Letter Generation...")
+#             user_name = project_doc.get("User_Name") or ""
+#             first_name = user_name.split()[0]
+
+#             text_container = f"vectorstorecontainer_new_itk_text_{first_name}_{project_id}"
+#             image_container = f"vectorstorecontainer_new_itk_image_{first_name}_{project_id}"
+#             import time;time.sleep(10)
+#             print("Starting full ingestion for Letter Generation...")
+#             run_full_ingestion(project_id,Source_Doc_urls,text_container,image_container)
+#             blob_urls_trf=blob_urls+ Source_Doc_urls
+#             print("Blob URLs for Letter Generation after ingestion:", blob_urls_trf)
+#             f=main(projectId,blob_urls,text_container,image_container)
+            
+#             if f:
+#                 BASE_DIR = Path(__file__).resolve().parents[1]
+#                 DATA_DIR = BASE_DIR / "data"
+#                 project_dir = DATA_DIR / projectId
+#                 project_dir.mkdir(parents=True, exist_ok=True)
+#                 letter_json1 = project_dir / f"letter_body_iec_output_{projectId}.json"
+#                 letter_json2 = project_dir / f"letter_header_iec_output_{projectId}.json"
+#                 letter_docx_file = project_dir / f"letter_iec_output_{projectId}.docx"
+                
+#                 letter_json_path = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "letter.json"
+#                 letter_header_json_path = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "letter_header.json"
+#                 letter_template_docx = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "Letter_Template.docx"
+
+#                 letter_src_files = BASE_DIR / "data" / projectId / "letter_src_files"
+
+#                 trf_src_files = BASE_DIR / "data" / projectId / "trf_src_files"
+                
+#                 g=letter_gen(
+#                 blob_urls=blob_urls,
+#                 container_name=BLOB_CONTAINER_NAME,
+#                 src_files_dir=letter_src_files,
+#                 src_files_trf=trf_src_files,  
+                
+#                 letter_json_path=letter_json_path,
+#                 letter_header_json_path=letter_header_json_path,
+#                 letter_template_docx=letter_template_docx,
+
+#                 output_letter_docx=letter_docx_file,
+#                 letter_json_path_output=letter_json1,
+#                 letter_header_json_path_output=letter_json2,
+#                 project_Id=projectId,
+#                 blob_urls_trf=blob_urls_trf,
+#                 text_container=text_container,
+#                 image_container=image_container)
+
+#                 print("----- Saving Letter JSON and DOCX to Blob and CosmosDB -----")
+                
+#                 save_local_jsons_and_docx_to_blob_and_cosmos_for_letter(
+#                                     str(letter_json1),
+#                                     str(letter_json2),
+#                                     str(letter_docx_file),
+#                                     project_id=project_id
+#                                     )
+                
+#                 update_letter_progress(
+#                 project_doc,
+#                 letter_stage="Completed",
+#                 letter_percentage=100,
+#                 letter_step="All steps completed",
+#                 letter_completed=False
+#             )
+                
+#                 with open(letter_json1, "r", encoding="utf-8") as f:
+#                     letter_header_json_data = json.load(f)
+#                 with open(letter_json2, "r", encoding="utf-8") as f:
+#                     letter_body_json_data = json.load(f)
+                
+
+#                 letter_header_json_data = sanitize_json(letter_header_json_data)
+#                 letter_body_json_data = sanitize_json(letter_body_json_data)
+            
+#                 return  {
+#                     "status":"success",
+#                     "project_Id":project_id,
+#                     "Message":"Letter Generated Successfully",
+#                     "Data":{
+#                         "Letter_json_body":letter_body_json_data,
+#                         "Letter_header_json":letter_header_json_data
+#                     }
+#                 }
+
+#         if letter_percentage == 100:
+#             BASE_DIR = Path(__file__).resolve().parents[1]
+#             DATA_DIR = BASE_DIR / "data"
+#             project_dir = DATA_DIR / projectId
+#             project_dir.mkdir(parents=True, exist_ok=True)
+#             letter_json1 = project_dir / f"letter_body_iec_output_{projectId}.json"
+#             letter_json2 = project_dir / f"letter_header_iec_output_{projectId}.json"
+#             letter_docx_file = project_dir / f"letter_iec_output_{projectId}.docx"
+            
+#             with open(letter_json2, "r", encoding="utf-8") as f:
+#                 letter_json_data = json.load(f)
+            
+#             with open(letter_json1, "r", encoding="utf-8") as f:
+#                 letter_header_json_data = json.load(f)
+            
+#             letter_json_data = sanitize_json(letter_json_data)
+#             letter_header_json_data = sanitize_json(letter_header_json_data)
+#             return {
+#                 "status":"success",
+#                 "project_Id":project_id,
+#                 "Message":"Letter Already Generated",
+#                 "Data":{
+#                         "Letter_json_body":letter_json_data,
+#                         "Letter_header_json":letter_header_json_data
+#                     }
+#             }   
+            
+#     except Exception as e:
+#         print(traceback.format_exc())
+#         return {
+#             "status":"Failed",
+#             "Message":"Letter Generation Code Failed"
+#         }
+
+
+
+@router.post("/letter-result")
+def get_letter_result(payload: LetterResult):
+    projectId = payload.projectId
+    BASE_DIR = Path(__file__).resolve().parents[1]
+    DATA_DIR = BASE_DIR / "data"
+    project_dir = DATA_DIR / projectId
+
+    query = "SELECT c.Letter_Project_Progress FROM c WHERE c.Project_Id = @pid"
+    params = [{"name": "@pid", "value": projectId}]
+
+    items = list(
+        projects_container.query_items(
+            query=query,
+            parameters=params,
+            enable_cross_partition_query=True
+        )
+    )
+
+    letter_status_data = items[0].get("Letter_Project_Progress", {})
+
+    letter_percentage = letter_status_data['letter_percentage']
+
+    if letter_percentage == 100:
+        BASE_DIR = Path(__file__).resolve().parents[1]
+        DATA_DIR = BASE_DIR / "data"
+        project_dir = DATA_DIR / projectId
+        # project_dir.mkdir(parents=True, exist_ok=True)
+        print('project_dir',project_dir)
+        letter_json1 = project_dir / f"letter_body_iec_output_{projectId}.json"
+        letter_json2 = project_dir / f"letter_header_iec_output_{projectId}.json"
+        letter_docx_file = project_dir / f"letter_iec_output_{projectId}.docx"
+        
+        with open(letter_json2, "r", encoding="utf-8") as f:
+            letter_json_data = json.load(f)
+        
+        with open(letter_json1, "r", encoding="utf-8") as f:
+            letter_header_json_data = json.load(f)
+        
+        letter_json_data = sanitize_json(letter_json_data)
+        letter_header_json_data = sanitize_json(letter_header_json_data)
+        
+        return {
+            "status":"success",
+            "project_Id":projectId,
+            "Message":"Letter Report Loaded",
+            "Data":{
+                    "Letter_json_body":letter_json_data,
+                    "Letter_header_json":letter_header_json_data
+                }
+        }  
+
+
+
+@router.post("/letter-generation", status_code=202)
+def letter_implementation(payload: LetterGeneration):
+    try:
+        print('**** letter-generation *****', payload.trf_urls)
+        response = requests.post(
+            LETTER_WORKER_URL,  
+            json={
+                "projectId": payload.projectId,
+                "trf_urls": payload.trf_urls,
+                "cdr_urls": payload.cdr_urls,
+            },
+            timeout=3
+        )
+        response.raise_for_status()
+
+        return {
+            "projectId": payload.projectId,
+            "status": "dispatched",
+            "worker_port": 9000
+        }
+
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Worker unavailable: {e}"
         )
 
-        if not items:
-            raise HTTPException(
-                status_code=404,
-                detail="Project not found"
-            )
 
-        letter_progress = items[0].get("Letter_Project_Progress") or {}
-        letter_percentage = letter_progress.get("letter_percentage", 0)
 
-        if letter_percentage < 100:
-            query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
-            docs = list(
-                projects_container.query_items(
-                    query=query,
-                    enable_cross_partition_query=True,
-                )
-            )
 
-            if not docs:
-                raise HTTPException(
-                    status_code=404,
-                    detail="Project document not found"
-                )
+@router.post("/letter-status")
+def get_letter_status(payload: LetterResult):
+    projectId = payload.projectId
+    query = "SELECT c.Letter_Project_Progress FROM c WHERE c.Project_Id = @pid"
+    params = [{"name": "@pid", "value": projectId}]
 
-            project_doc = docs[0]
+    items = list(
+        projects_container.query_items(
+            query=query,
+            parameters=params,
+            enable_cross_partition_query=True
+        )
+    )
 
-            update_letter_progress(
-                project_doc,
-                letter_stage="steps in Progress",
-                letter_percentage=10,
-                letter_step="Starting running Letter",
-                letter_completed=False
-            )
+    if not items:
+        raise HTTPException(status_code=404, detail="Project not found")
 
-            Source_Doc_urls = [
-                item["url"]
-                for item in project_doc.get("Source_Doc", [])
-                if "url" in item
-            ]
-            if not Source_Doc_urls:
-                raise HTTPException(
-                    status_code=400,
-                    detail="No Source_Doc URLs found for this project"
-                )
-            print("Source Document URLs for Letter Generation:\n\n\n", Source_Doc_urls)
-            import time;time.sleep(10)
-            print("Starting full ingestion for Letter Generation...")
-            user_name = project_doc.get("User_Name") or ""
-            first_name = user_name.split()[0]
+    return items[0].get("Letter_Project_Progress", {})
 
-            text_container = f"vectorstorecontainer_new_itk_text_{first_name}_{project_id}"
-            image_container = f"vectorstorecontainer_new_itk_image_{first_name}_{project_id}"
-            import time;time.sleep(10)
-            print("Starting full ingestion for Letter Generation...")
-            run_full_ingestion(project_id,Source_Doc_urls,text_container,image_container)
-            blob_urls_trf=blob_urls+ Source_Doc_urls
-            print("Blob URLs for Letter Generation after ingestion:", blob_urls_trf)
-            f=main(projectId,blob_urls,text_container,image_container)
-            
-            if f:
-                BASE_DIR = Path(__file__).resolve().parents[1]
-                DATA_DIR = BASE_DIR / "data"
-                project_dir = DATA_DIR / projectId
-                project_dir.mkdir(parents=True, exist_ok=True)
-                letter_json1 = project_dir / f"letter_body_iec_output_{projectId}.json"
-                letter_json2 = project_dir / f"letter_header_iec_output_{projectId}.json"
-                letter_docx_file = project_dir / f"letter_iec_output_{projectId}.docx"
-                
-                letter_json_path = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "letter.json"
-                letter_header_json_path = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "letter_header.json"
-                letter_template_docx = BASE_DIR / "utility" / "letter_report" / "deploymentV1" / "Letter_Template.docx"
 
-                letter_src_files = BASE_DIR / "data" / projectId / "letter_src_files"
 
-                trf_src_files = BASE_DIR / "data" / projectId / "trf_src_files"
-                
-                g=letter_gen(
-                blob_urls=blob_urls,
-                container_name=BLOB_CONTAINER_NAME,
-                src_files_dir=letter_src_files,
-                src_files_trf=trf_src_files,  
-                
-                letter_json_path=letter_json_path,
-                letter_header_json_path=letter_header_json_path,
-                letter_template_docx=letter_template_docx,
 
-                output_letter_docx=letter_docx_file,
-                letter_json_path_output=letter_json1,
-                letter_header_json_path_output=letter_json2,
-                project_Id=projectId,
-                blob_urls_trf=blob_urls_trf,
-                text_container=text_container,
-                image_container=image_container)
-
-                print("----- Saving Letter JSON and DOCX to Blob and CosmosDB -----")
-                
-                save_local_jsons_and_docx_to_blob_and_cosmos_for_letter(
-                                    str(letter_json1),
-                                    str(letter_json2),
-                                    str(letter_docx_file),
-                                    project_id=project_id
-                                    )
-                
-                update_letter_progress(
-                project_doc,
-                letter_stage="Completed",
-                letter_percentage=100,
-                letter_step="All steps completed",
-                letter_completed=False
-            )
-                
-                with open(letter_json1, "r", encoding="utf-8") as f:
-                    letter_header_json_data = json.load(f)
-                with open(letter_json2, "r", encoding="utf-8") as f:
-                    letter_body_json_data = json.load(f)
-                
-
-                letter_header_json_data = sanitize_json(letter_header_json_data)
-                letter_body_json_data = sanitize_json(letter_body_json_data)
-            
-                return  {
-                    "status":"success",
-                    "project_Id":project_id,
-                    "Message":"Letter Generated Successfully",
-                    "Data":{
-                        "Letter_json_body":letter_body_json_data,
-                        "Letter_header_json":letter_header_json_data
-                    }
-                }
-
-        if letter_percentage == 100:
-            BASE_DIR = Path(__file__).resolve().parents[1]
-            DATA_DIR = BASE_DIR / "data"
-            project_dir = DATA_DIR / projectId
-            project_dir.mkdir(parents=True, exist_ok=True)
-            letter_json1 = project_dir / f"letter_body_iec_output_{projectId}.json"
-            letter_json2 = project_dir / f"letter_header_iec_output_{projectId}.json"
-            letter_docx_file = project_dir / f"letter_iec_output_{projectId}.docx"
-            
-            with open(letter_json2, "r", encoding="utf-8") as f:
-                letter_json_data = json.load(f)
-            
-            with open(letter_json1, "r", encoding="utf-8") as f:
-                letter_header_json_data = json.load(f)
-            
-            letter_json_data = sanitize_json(letter_json_data)
-            letter_header_json_data = sanitize_json(letter_header_json_data)
-            return {
-                "status":"success",
-                "project_Id":project_id,
-                "Message":"Letter Already Generated",
-                "Data":{
-                        "Letter_json_body":letter_json_data,
-                        "Letter_header_json":letter_header_json_data
-                    }
-            }   
-            
-    except Exception as e:
-        print(traceback.format_exc())
-        return {
-            "status":"Failed",
-            "Message":"Letter Generation Code Failed"
-        }
 
 
 def delete_by_project_id(container, project_id):
@@ -2458,7 +2569,7 @@ async def upload_images(
 
 
 
-@router.post("/generate-cdrr", status_code=202)
+@router.post("/generate-cdr", status_code=202)
 def generate_cdr(projectId: str):
     try:
         response = requests.post(
@@ -2513,3 +2624,42 @@ def get_project_report_status(id: str):
     }
 
 
+@router.post("/cdr-result")
+def get_letter_result(payload: CdrResult):
+    projectId = payload.projectId
+    query = "SELECT * FROM c WHERE c.Project_Id = @pid"
+    params = [{"name": "@pid", "value": projectId}]        
+    items = list(
+        COSMOS_DB_project_Container.query_items(
+            query=query,
+            parameters=params,
+            enable_cross_partition_query=True
+        )
+    )
+    cdr_progress = items[0].get("CDR_Project_Progress") or {}
+    cdr_percentage = cdr_progress.get("cdr_percentage", 0)
+    if cdr_percentage==100:
+        BASE_DIR = Path(__file__).resolve().parents[1]  # Backend/
+        DATA_DIR = BASE_DIR / "data"
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+        project_dir = DATA_DIR / projectId
+        project_dir.mkdir(parents=True, exist_ok=True)
+
+        output_json_path = project_dir / f"iec_output_cdr_{projectId}.json"
+
+        output_json_path = project_dir / f"iec_output_cdr_{projectId}.json"
+        with open(output_json_path, "r", encoding="utf-8") as f:
+            cdr_output = json.load(f)
+        
+        return {
+            "message": "CDR Report Already Generated ",
+            "projectId": projectId,
+            "data": cdr_output
+        }
+    else:
+        return {
+            "message": "CDR Report Not Generated",
+            "projectId": projectId
+            
+        }

@@ -13,6 +13,7 @@ const RenderSheetDefaultExcel = ({
   updateField,
   handleApprove,
   onBookmarkClick,
+  pdfLoaded,
 }) => {
   if (!sheet || !Array.isArray(sheet.Items)) return null;
 
@@ -125,6 +126,7 @@ const RenderSheetDefaultExcel = ({
                     onBookmark={
                       hasValue ? () => onBookmarkClick?.(localItems[idx]) : null
                     }
+                    bookmarkDisabled={!pdfLoaded}
                   />
 
                   {item.ai_fillable === true &&

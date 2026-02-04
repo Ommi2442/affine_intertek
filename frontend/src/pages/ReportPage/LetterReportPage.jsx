@@ -27,9 +27,12 @@ import { normalizeNewLines } from '../../Helpers/normalizeNewLines';
 import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 import PdfViewer from '../../components/PdfViewer';
 import { loadPdfWithCache } from '../../components/loadPdfWithCache';
-import { triggerGenerateLetterApi } from '../../redux/api/generateLetterApi';
+import { triggerGenerateLetterApi, LetterApiDataLoad, LetterStatusCheck } from '../../redux/api/generateLetterApi';
 import { finaliseLetterReportRequest } from '../../redux/features/finaliseLetterReport/finaliseLetterReportSlice';
 import { reGenerateLetterClear } from '../../redux/api/RegenerateApi';
+import { usePreloadProjectPdfs } from '../../hooks/usePreloadProjectPdfs';
+import { savePdfToDb } from '../../components/pdfIndexedDb';
+import { fetchProjectPdfsApi } from '../../redux/api/fetchPdfApi';
 
 const STORAGE_KEY_PREFIX = 'letter_report_';
 
@@ -38,7 +41,14 @@ const LetterReportPage = () => {
   const navigate = useNavigate();
   const dataTableRef = useRef(null);
 
-  const projectId = localStorage.getItem('projectId');
+  const statusIntervalRef = useRef(null);
+  const hasTriggeredGenerateRef = useRef(false);
+
+
+  const location = useLocation();
+  const projectId =
+    location.state?.projectId || localStorage.getItem('projectId');
+
   const storageKey = `${STORAGE_KEY_PREFIX}${projectId}`;
 
   /* ---------------- STATE ---------------- */
@@ -66,10 +76,9 @@ const LetterReportPage = () => {
   const [openConfirm, setOpenConfirm] = useState(false);
   const [regenloading, setRegenLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [pdfLoaded, setPdfLoaded] = useState(false);
 
   const finaliseOnceRef = useRef(false);
-
-  const location = useLocation();
 
   const { trfBlobUrl, cdrBlobUrl, standard, clientName, product } =
     location.state || {};
@@ -99,6 +108,9 @@ const LetterReportPage = () => {
     idb_set(storageKey, payload, STORES.LETTER);
     setLiveLetterData(updated);
   }, [confidenceTick, headerJson]);
+
+  //pdf citation hook to save it in indexdb
+  //const pdfLoaded = usePreloadProjectPdfs(projectId);
 
   // const autoFinaliseLetter = async () => {
   //   if (!dataTableRef.current) return;
@@ -140,6 +152,87 @@ const LetterReportPage = () => {
   //   }
   // }, [loading, letterJson, headerJson]);
 
+  const preloadProjectPdfs = async (projectId) => {
+    try {
+      setPdfLoaded(false);
+      const res = await fetchProjectPdfsApi(projectId);
+      const pdfs = res?.pdfs || [];
+
+      for (const pdf of pdfs) {
+        const cleanBase64 = pdf.data.includes(',')
+          ? pdf.data.split(',')[1]
+          : pdf.data;
+
+        const binary = window.atob(cleanBase64);
+        const len = binary.length;
+        const bytes = new Uint8Array(len);
+
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binary.charCodeAt(i);
+        }
+
+        await savePdfToDb(projectId, pdf.filename, bytes.buffer);
+      }
+
+      console.log('PDFs stored successfully');
+      setPdfLoaded(true);
+    } catch (err) {
+      console.error('PDF preload failed:', err);
+      setPdfLoaded(false);
+    }
+  };
+
+
+  const startLetterStatusPolling = useCallback(() => {
+    if (statusIntervalRef.current) return;
+
+    statusIntervalRef.current = setInterval(async () => {
+      try {
+        const statusRes = await LetterStatusCheck(projectId);
+
+        const percentage = statusRes?.letter_percentage ?? 0;
+        const isReadyForLoad =
+          statusRes?.letter_completed === true ||
+          statusRes?.letter_stage === 'Completed' ||
+          percentage === 100;
+
+        console.log('Letter polling status:', {
+          percentage,
+          completed: statusRes?.letter_completed,
+          stage: statusRes?.letter_stage,
+        });
+
+        if (isReadyForLoad) {
+          clearInterval(statusIntervalRef.current);
+          statusIntervalRef.current = null;
+
+          const res = await LetterApiDataLoad(projectId);
+
+          if (res) {
+            const payload = {
+              Letter_header_json: res?.Data?.Letter_header_json,
+              Letter_json_body: res?.Data?.Letter_json_body,
+            };
+
+            await idb_set(storageKey, payload, STORES.LETTER);
+
+            setLetterJson(payload.Letter_header_json);
+            setHeaderJson(payload.Letter_json_body);
+            setLoading(false);
+
+            setTimeout(() => preloadProjectPdfs(projectId), 0);
+          }
+        }
+      } catch (err) {
+        console.error('Letter polling failed', err);
+      }
+    }, 15000);
+  }, [projectId, storageKey]);
+
+
+
+
+
   const loadLetter = useCallback(async () => {
     if (!projectId) return;
 
@@ -150,28 +243,33 @@ const LetterReportPage = () => {
     if (cached) {
       setLetterJson(cached.Letter_header_json);
       setHeaderJson(cached.Letter_json_body);
+      //await preloadProjectPdfs(projectId);
       setLoading(false);
+      setTimeout(() => {
+        preloadProjectPdfs(projectId);
+      }, 0);
       return;
     }
 
     //  Hard refresh + no cache → do nothing yet
-    if (isHardRefresh) {
-      console.warn('Hard refresh but no LETTER cache found → holding state');
-      setLoading(false);
-      return;
-    }
+    // if (isHardRefresh) {
+    //   console.warn('Hard refresh but no LETTER cache found → holding state');
+    //   setLoading(false);
+    //   return;
+    // }
 
     console.log('Calling backend to generate Letter...');
     let res;
 
     // Case 1: blobs were passed from Upload page
-    if (trfBlobUrl || cdrBlobUrl) {
-      res = await triggerGenerateLetterApi(projectId, trfBlobUrl, cdrBlobUrl);
-    }
+    // if (trfBlobUrl || cdrBlobUrl) {
+    //   res = await triggerGenerateLetterApi(projectId, trfBlobUrl, cdrBlobUrl);
+    // }
     // Case 2: blobs NOT available
-    else {
-      res = await triggerGenerateLetterApi(projectId);
-    }
+    // else {
+      // res = await triggerGenerateLetterApi(projectId);
+      res = await LetterApiDataLoad(projectId);
+    // }
 
     if (res) {
       setMessage(res?.Message);
@@ -181,22 +279,95 @@ const LetterReportPage = () => {
       };
 
       await idb_set(storageKey, payload, STORES.LETTER);
+
       setLetterJson(payload.Letter_header_json);
       setHeaderJson(payload.Letter_json_body);
-
-      if(message == 'Letter Generated Successfully') {
-        navigate('/dashboard');
-      }
-      
+      setLoading(false);
+      setTimeout(() => {
+        preloadProjectPdfs(projectId);
+      }, 0);
+      // if (message == 'Letter Generated Successfully') {
+      //   navigate('/dashboard');
+      // }
     }
 
     setLoading(false);
   }, [projectId, isHardRefresh, trfBlobUrl, cdrBlobUrl, storageKey]);
 
   /* ---------------- LOAD LOGIC ---------------- */
+  // useEffect(() => {
+  //   loadLetter();
+  // }, [loadLetter]);
+
   useEffect(() => {
-    loadLetter();
-  }, [loadLetter]);
+    const init = async () => {
+      if (!projectId) return;
+
+      setLoading(true);
+
+      // 1️⃣ IndexedDB first (unchanged)
+      const cached = await idb_get(storageKey, STORES.LETTER);
+      if (cached) {
+        setLetterJson(cached.Letter_header_json);
+        setHeaderJson(cached.Letter_json_body);
+        setLoading(false);
+        setTimeout(() => preloadProjectPdfs(projectId), 0);
+        return;
+      }
+
+      // 2️⃣ Check backend status ONCE
+      const statusRes = await LetterStatusCheck(projectId);
+      const percentage = statusRes?.letter_percentage ?? 0;
+      const stage = statusRes?.letter_stage;
+
+      // 3️⃣ Trigger generation ONLY if not started
+      const shouldGenerate =
+        percentage <= 0 &&
+        stage !== 'Completed' &&
+        percentage < 100 &&
+        !hasTriggeredGenerateRef.current;
+
+      if (shouldGenerate) {
+        hasTriggeredGenerateRef.current = true;
+        await triggerGenerateLetterApi(projectId, trfBlobUrl, cdrBlobUrl);
+      }
+
+      // 4️⃣ 🔥 IMMEDIATE LOAD if already complete
+      if (percentage === 100 || stage === 'Completed') {
+        const res = await LetterApiDataLoad(projectId);
+
+        if (res) {
+          const payload = {
+            Letter_header_json: res?.Data?.Letter_header_json,
+            Letter_json_body: res?.Data?.Letter_json_body,
+          };
+
+          await idb_set(storageKey, payload, STORES.LETTER);
+
+          setLetterJson(payload.Letter_header_json);
+          setHeaderJson(payload.Letter_json_body);
+          setLoading(false);
+          setTimeout(() => preloadProjectPdfs(projectId), 0);
+        }
+        return; // 🚫 DO NOT start polling
+      }
+
+      // 5️⃣ Start polling ONLY if < 100
+      startLetterStatusPolling();
+    };
+
+    init();
+
+    return () => {
+      if (statusIntervalRef.current) {
+        clearInterval(statusIntervalRef.current);
+        statusIntervalRef.current = null;
+      }
+    };
+  }, [projectId, storageKey, startLetterStatusPolling]);
+
+
+
 
   const handleCitationLinkClick = (filename, page, text, blob_url) => {
     // ---- XLSX and DOCX → DOWNLOAD ----
@@ -349,6 +520,7 @@ const LetterReportPage = () => {
                 onBookmarkClick={handleBookmarkFromChild}
                 isHardRefresh={isHardRefresh}
                 onPageChange={(p) => setCurrentPage(p)}
+                pdfLoaded={pdfLoaded}
               />
 
               {/* -------- PAGINATION BAR -------- */}

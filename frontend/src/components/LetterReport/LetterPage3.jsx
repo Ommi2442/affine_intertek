@@ -16,6 +16,7 @@ const LetterPage3 = ({
   openComment,
   onBookmarkClick,
   onConfidenceChange,
+  pdfLoaded,
 }) => {
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
   //  Hover actions for Letter tables (Approve / Comment / Bookmark)
@@ -97,6 +98,7 @@ const LetterPage3 = ({
           onComment={openComment}
           onBookmark={onBookmarkClick}
           onConfidenceChange={onConfidenceChange}
+          pdfLoaded={pdfLoaded}
         />
         samples or technical documentation are required to support the testing
         of your product, these will be detailed along with any non-conformity
