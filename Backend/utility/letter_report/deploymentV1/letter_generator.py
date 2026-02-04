@@ -2144,6 +2144,22 @@ def update_system_date_and_project_id(data: dict, project_id: str) -> dict:
 
     return data
 
+def is_effectively_empty_critical_df(df: pd.DataFrame) -> bool:
+    """
+    Returns True if dataframe has no meaningful data
+    (all values empty / whitespace).
+    """
+    if df is None or df.empty:
+        return True
+
+    # Drop Item column if present (row numbers don't count as data)
+    df_check = df.drop(columns=["Item"], errors="ignore")
+
+    # If all remaining cells are empty or whitespace → empty
+    return df_check.map(
+        lambda x: isinstance(x, str) and not x.strip()
+    ).all().all()
+
  
 
 def generate_letter_pipeline(
@@ -2309,9 +2325,13 @@ def generate_letter_pipeline(
                 df_1a = extract_table1a(docx_trf)
                 if df_1a is not None:
                     df_1a = format_critical_components_df(df_1a)
-                    critical_components_source = "docx"
-                    critical_components_filename = os.path.basename(docx_trf)
-                    critical_components_page = "TABLE 1.A"
+                    if is_effectively_empty_critical_df(df_1a):
+                        print("⚠️ Table 1.A found in DOCX but contains no data. Falling back to CDR.")
+                        df_1a = None
+                    else:
+                        critical_components_source = "docx"
+                        critical_components_filename = os.path.basename(docx_trf)
+                        critical_components_page = "TABLE 1.A"
             except IndexError:
                 df_1a = None  # Table not found → fallback
 
