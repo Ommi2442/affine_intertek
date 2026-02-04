@@ -49,6 +49,7 @@ class LetterJob(BaseModel):
 
 @app.post("/run-letter", status_code=202)
 async def run_letter(job: LetterJob):
+    print('**** run_letter *****', job.trf_urls)
     try:
         loop = asyncio.get_running_loop()
         loop.run_in_executor(

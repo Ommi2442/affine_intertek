@@ -29,6 +29,9 @@ cosmos_client = CosmosClient(COSMOS_DB_URI, credential=COSMOS_DB_KEY)
 db = cosmos_client.get_database_client(COSMOS_DB_DATABASE)
 projects_container = db.get_container_client(COSMOS_PROJECT_CONTAINER)
 
+BLOB_CONTAINER_NAME = os.getenv("blob-container")
+
+
 
 def update_letter_progress(
     project_doc: dict,
@@ -71,7 +74,18 @@ def sanitize_json(obj):
 # ==========================================================
 def process_letter_direct(projectId: str, trf_urls, cdr_urls):
     try:
-        blob_urls = [trf_urls, cdr_urls]
+        blob_urls = []
+
+        if trf_urls:
+            blob_urls.extend(trf_urls if isinstance(trf_urls, list) else [trf_urls])
+
+        if cdr_urls:
+            blob_urls.extend(cdr_urls if isinstance(cdr_urls, list) else [cdr_urls])
+
+        print('########################### trf_urls ############################', trf_urls)
+
+        print('cdr_urls', cdr_urls)
+
 
         print("Letter worker started for:", projectId)
 

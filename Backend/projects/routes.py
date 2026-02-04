@@ -16,7 +16,7 @@ from fastapi import Depends
 from api.auth.jwt_auth.utils import get_current_user
 from db.database import *
 from db.database import COSMOS_DB_project_Container, COSMOS_DB_URI,COSMOS_DB_KEY,COSMOS_DB_DATABASE,COSMOS_DB_project_TRF_Container,COSMOS_DB_project_CDR_Container,COSMOS_DB_project_LETTER_Container
-from projects.models import Project,ProjectCreate,ProjectFilter,FinalizeReportPayload,LetterGeneration,RegenratePayload
+from projects.models import Project,ProjectCreate,ProjectFilter,FinalizeReportPayload,LetterGeneration,RegenratePayload,LetterResult
 from azure.cosmos import exceptions
 from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueClient
@@ -1814,8 +1814,9 @@ def update_letter_progress(
 
 
 
-@router.get("/letter-result/{projectId}")
-def get_letter_result(projectId: str):
+@router.post("/letter-result")
+def get_letter_result(payload: LetterResult):
+    projectId = payload.projectId
     BASE_DIR = Path(__file__).resolve().parents[1]
     DATA_DIR = BASE_DIR / "data"
     project_dir = DATA_DIR / projectId
@@ -1832,10 +1833,8 @@ def get_letter_result(projectId: str):
     )
 
     letter_status_data = items[0].get("Letter_Project_Progress", {})
-    print('letter_status_data', letter_status_data)
-    letter_percentage = letter_status_data['letter_percentage']
 
-    print('letter_percentage', letter_percentage)
+    letter_percentage = letter_status_data['letter_percentage']
 
     if letter_percentage == 100:
         BASE_DIR = Path(__file__).resolve().parents[1]
@@ -1859,7 +1858,7 @@ def get_letter_result(projectId: str):
         return {
             "status":"success",
             "project_Id":projectId,
-            "Message":"Letter Report Generated",
+            "Message":"Letter Report Loaded",
             "Data":{
                     "Letter_json_body":letter_json_data,
                     "Letter_header_json":letter_header_json_data
@@ -1871,6 +1870,7 @@ def get_letter_result(projectId: str):
 @router.post("/letter-generation", status_code=202)
 def letter_implementation(payload: LetterGeneration):
     try:
+        print('**** letter-generation *****', payload.trf_urls)
         response = requests.post(
             LETTER_WORKER_URL,  
             json={
@@ -1897,8 +1897,9 @@ def letter_implementation(payload: LetterGeneration):
 
 
 
-@router.get("/letter-status/{projectId}")
-def get_letter_status(projectId: str):
+@router.post("/letter-status")
+def get_letter_status(payload: LetterResult):
+    projectId = payload.projectId
     query = "SELECT c.Letter_Project_Progress FROM c WHERE c.Project_Id = @pid"
     params = [{"name": "@pid", "value": projectId}]
 
