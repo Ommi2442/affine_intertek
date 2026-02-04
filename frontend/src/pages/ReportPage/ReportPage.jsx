@@ -121,8 +121,9 @@ const ReportPage = () => {
   const [partPopupOpen, setPartPopupOpen] = useState(false);
   const [partPopupMessage, setPartPopupMessage] = useState('');
   const [cdrJson, setCdrJson] = useState(null);
+  const [percentageState, setPercentage] = useState(0);
 
-  //console.log('pdfloaded', pdfLoaded);
+  //console.log('percentageState', percentageState);
 
   const [liveTrfData, setLiveTrfData] = useState(null);
 
@@ -295,7 +296,7 @@ const ReportPage = () => {
       setRefreshing(true);
 
       const res = await getProjectReportStatusApi(projectID);
-
+      setPercentage(res?.trf_percentage);
       setStatus(res?.trf_status || 'Pending');
       setProgress(
         typeof res?.trf_percentage === 'number' ? res.trf_percentage : 0
@@ -1044,13 +1045,13 @@ const ReportPage = () => {
                     className="action-button"
                     onClick={btn.action}
                     style={{
-                      background: !isFinalJsonLoaded ? '#A9A9A9' : btn.bg, // grey out
-                      cursor: !isFinalJsonLoaded ? 'not-allowed' : 'pointer',
-                      opacity: !isFinalJsonLoaded ? 0.7 : 1,
+                      background: !percentageState ? '#A9A9A9' : btn.bg, // grey out
+                      cursor: !percentageState ? 'not-allowed' : 'pointer',
+                      opacity: !percentageState ? 0.7 : 1,
                     }}
                   >
                     {/* STATUS DOT (only for Finalize) */}
-                    {btn.text === 'Finalize' && isFinalJsonLoaded && (
+                    {btn.text === 'Finalize' && percentageState && (
                       <span
                         className={`finalize-status-dot ${
                           trfEditMode && !trfFinalised ? 'red' : 'green'
@@ -1084,20 +1085,17 @@ const ReportPage = () => {
                         variant="contained"
                         className="generate-btn"
                         style={{
-                          background: !isFinalJsonLoaded
+                          background: !percentageState
                             ? '#A9A9A9'
                             : trfEditMode
                               ? '#A9A9A9'
                               : '#417581', // grey out
-                          cursor: !isFinalJsonLoaded
-                            ? 'not-allowed'
-                            : 'pointer',
-                          opacity: !isFinalJsonLoaded ? 0.7 : 1,
+                          cursor: !percentageState ? 'not-allowed' : 'pointer',
+                          opacity: !percentageState ? 0.7 : 1,
                         }}
                         onClick={() => {
                           //if (!isFinalise) return;
-                          if (reportClick === 'trf' && !isFinalJsonLoaded)
-                            return;
+                          if (reportClick === 'trf' && !percentageState) return;
                           //if (label === 'Letter') return;
                           // still prevent action
                           if (label === 'CDR') {
