@@ -9,7 +9,7 @@ trigger:
 variables:
 - group: intertek-backend-dev-internal
 - name: IMAGE_TAG
-  value: v9
+  value: v10
 stages:
 - stage: BuildAndPush
   displayName: 'Build and Push Backend Docker Image'
