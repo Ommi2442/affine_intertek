@@ -2593,9 +2593,10 @@ def generate_cdr(projectId: str):
 
 
 
-@router.get("/report/status/cdr")
-def get_project_report_status(id: str):
-    query = f"SELECT * FROM c WHERE c.Project_Id = '{id}'"
+@router.post("/report/status/cdr")
+def get_project_report_status(payload: CdrResult):
+    projectId = payload.projectId
+    query = f"SELECT * FROM c WHERE c.Project_Id = '{projectId}'"
     docs = list(COSMOS_DB_project_Container.query_items(
         query=query,
         enable_cross_partition_query=True
