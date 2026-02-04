@@ -87,3 +87,6 @@ class RegenratePayload(BaseModel):
 
 class LetterResult(BaseModel):
     projectId: str
+
+class CdrResult(BaseModel):
+    projectId: str

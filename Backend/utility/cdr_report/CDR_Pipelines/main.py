@@ -274,5 +274,5 @@ def main3(project_id, user_id, input_json, output_excel_path):
 
     if paths["SRC"].parent.exists():
         shutil.rmtree(paths["SRC"].parent)
-
+    print("----- ALLLL steps completed-----")
     return cdr
