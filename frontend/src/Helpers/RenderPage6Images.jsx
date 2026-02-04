@@ -81,10 +81,10 @@ export const RenderPage6Images = ({
   };
 
   const canAddImage = editMode && images.length < MAX_IMAGES;
-
+  //console.log('images', images);
   return (
     <Box sx={{ mt: 2 }}>
-      {/* EXISTING IMAGES */}
+      {/* SHOW IMAGES */}
       {images.map((img, imgIdx) => (
         <Box key={img.id ?? imgIdx} sx={{ mb: 3 }}>
           <Box
@@ -126,15 +126,10 @@ export const RenderPage6Images = ({
         </Box>
       ))}
 
-      {/* ADD IMAGE */}
-      {editMode && (
+      {/* ALWAYS SHOW ADD BUTTON IF CAN ADD */}
+      {canAddImage && images.length < MAX_IMAGES && (
         <Box sx={{ mt: 1 }}>
-          <Button
-            variant="contained"
-            component="label"
-            size="small"
-            disabled={!canAddImage}
-          >
+          <Button variant="contained" component="label" size="small">
             Add Image
             <input
               type="file"
@@ -145,13 +140,14 @@ export const RenderPage6Images = ({
               }
             />
           </Button>
-
-          {images.length >= MAX_IMAGES && (
-            <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
-              Maximum 2 images allowed
-            </Typography>
-          )}
         </Box>
+      )}
+
+      {/* MAX LIMIT MESSAGE */}
+      {editMode && images.length >= MAX_IMAGES && (
+        <Typography variant="caption" color="text.secondary">
+          Maximum {MAX_IMAGES} images allowed
+        </Typography>
       )}
     </Box>
   );

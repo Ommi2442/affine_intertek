@@ -27,7 +27,11 @@ import { normalizeNewLines } from '../../Helpers/normalizeNewLines';
 import { DownloadMissingFieldsExcel } from './DownloadMissingFieldsExcel';
 import PdfViewer from '../../components/PdfViewer';
 import { loadPdfWithCache } from '../../components/loadPdfWithCache';
-import { triggerGenerateLetterApi, LetterApiDataLoad, LetterStatusCheck } from '../../redux/api/generateLetterApi';
+import {
+  triggerGenerateLetterApi,
+  LetterApiDataLoad,
+  LetterStatusCheck,
+} from '../../redux/api/generateLetterApi';
 import { finaliseLetterReportRequest } from '../../redux/features/finaliseLetterReport/finaliseLetterReportSlice';
 import { reGenerateLetterClear } from '../../redux/api/RegenerateApi';
 import { usePreloadProjectPdfs } from '../../hooks/usePreloadProjectPdfs';
@@ -43,7 +47,6 @@ const LetterReportPage = () => {
 
   const statusIntervalRef = useRef(null);
   const hasTriggeredGenerateRef = useRef(false);
-
 
   const location = useLocation();
   const projectId =
@@ -182,7 +185,6 @@ const LetterReportPage = () => {
     }
   };
 
-
   const startLetterStatusPolling = useCallback(() => {
     if (statusIntervalRef.current) return;
 
@@ -229,10 +231,6 @@ const LetterReportPage = () => {
     }, 15000);
   }, [projectId, storageKey]);
 
-
-
-
-
   const loadLetter = useCallback(async () => {
     if (!projectId) return;
 
@@ -267,8 +265,8 @@ const LetterReportPage = () => {
     // }
     // Case 2: blobs NOT available
     // else {
-      // res = await triggerGenerateLetterApi(projectId);
-      res = await LetterApiDataLoad(projectId);
+    // res = await triggerGenerateLetterApi(projectId);
+    res = await LetterApiDataLoad(projectId);
     // }
 
     if (res) {
@@ -305,7 +303,7 @@ const LetterReportPage = () => {
 
       setLoading(true);
 
-      // 1️⃣ IndexedDB first (unchanged)
+      // IndexedDB first (unchanged)
       const cached = await idb_get(storageKey, STORES.LETTER);
       if (cached) {
         setLetterJson(cached.Letter_header_json);
@@ -315,12 +313,12 @@ const LetterReportPage = () => {
         return;
       }
 
-      // 2️⃣ Check backend status ONCE
+      // Check backend status ONCE
       const statusRes = await LetterStatusCheck(projectId);
       const percentage = statusRes?.letter_percentage ?? 0;
       const stage = statusRes?.letter_stage;
 
-      // 3️⃣ Trigger generation ONLY if not started
+      // Trigger generation ONLY if not started
       const shouldGenerate =
         percentage <= 0 &&
         stage !== 'Completed' &&
@@ -332,7 +330,7 @@ const LetterReportPage = () => {
         await triggerGenerateLetterApi(projectId, trfBlobUrl, cdrBlobUrl);
       }
 
-      // 4️⃣ 🔥 IMMEDIATE LOAD if already complete
+      // IMMEDIATE LOAD if already complete
       if (percentage === 100 || stage === 'Completed') {
         const res = await LetterApiDataLoad(projectId);
 
@@ -349,10 +347,10 @@ const LetterReportPage = () => {
           setLoading(false);
           setTimeout(() => preloadProjectPdfs(projectId), 0);
         }
-        return; // 🚫 DO NOT start polling
+        return; //  DO NOT start polling
       }
 
-      // 5️⃣ Start polling ONLY if < 100
+      // Start polling ONLY if < 100
       startLetterStatusPolling();
     };
 
@@ -365,9 +363,6 @@ const LetterReportPage = () => {
       }
     };
   }, [projectId, storageKey, startLetterStatusPolling]);
-
-
-
 
   const handleCitationLinkClick = (filename, page, text, blob_url) => {
     // ---- XLSX and DOCX → DOWNLOAD ----
