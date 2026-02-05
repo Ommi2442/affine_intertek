@@ -148,13 +148,13 @@ const CdrReportPage = () => {
       const statusRes = await CdrStatusCheck(projectId);
       const percentage = statusRes?.cdr_percentage ?? 0;
       const stage = statusRes?.cdr_stage;
+      //console.log('statusRes', statusRes);
 
       const shouldGenerate =
-        percentage <= 0 &&
         stage !== 'Completed' &&
         percentage < 100 &&
         !hasTriggeredGenerateRef.current;
-
+      //console.log('shouldGenerate', shouldGenerate);
       // Trigger generate only once
       if (shouldGenerate) {
         hasTriggeredGenerateRef.current = true;
