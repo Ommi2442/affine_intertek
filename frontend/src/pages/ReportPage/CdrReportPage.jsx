@@ -151,6 +151,7 @@ const CdrReportPage = () => {
       //console.log('statusRes', statusRes);
 
       const shouldGenerate =
+        percentage < 10 &&
         stage !== 'Completed' &&
         percentage < 100 &&
         !hasTriggeredGenerateRef.current;
