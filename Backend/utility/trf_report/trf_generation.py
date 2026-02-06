@@ -570,6 +570,22 @@ def build_vision_message_grey(inputs, grey=False):
 # =============================================================================
 #   ATTACH SUPPORTING REFERENCES (v5 FINAL)
 # =============================================================================
+def normalize_image_file_fix(img):
+    if img.get("image_file"):
+        return img["image_file"]
+
+    url = img.get("url")
+    if not url:
+        return None
+
+    clean = url.split("?")[0]
+    parts = clean.strip("/").split("/")
+
+    filename = parts[-1]          # page_44.png
+    if len(parts) >= 2 and parts[-2].lower().endswith(".pdf"):
+        return f"{parts[-2]}_{filename}"
+
+    return filename
 
 
 def attach_supporting_refs_grey(
@@ -643,7 +659,8 @@ def attach_supporting_refs_grey(
 
         for img in image_urls or []:
             if isinstance(img, dict) and "url" in img:
-                image_file = img.get("image_file") or img["url"].split("?")[0].split("/")[-1]
+                # image_file = img.get("image_file") or img["url"].split("?")[0].split("/")[-1]
+                image_file = normalize_image_file_fix(img)
                 image_lookup[image_file] = {
                     "url": img.get("url"),
                     "image_file": image_file,
