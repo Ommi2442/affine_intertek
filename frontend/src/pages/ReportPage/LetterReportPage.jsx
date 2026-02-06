@@ -37,6 +37,7 @@ import { reGenerateLetterClear } from '../../redux/api/RegenerateApi';
 import { usePreloadProjectPdfs } from '../../hooks/usePreloadProjectPdfs';
 import { savePdfToDb } from '../../components/pdfIndexedDb';
 import { fetchProjectPdfsApi } from '../../redux/api/fetchPdfApi';
+import ConfidenceScoreLetter from './ConfidenceScore/ConfidenceScoreLetter';
 
 const STORAGE_KEY_PREFIX = 'letter_report_';
 
@@ -731,7 +732,7 @@ const LetterReportPage = () => {
             </Card>
 
             {(liveLetterData?.Letter_header_json || letterJson) && (
-              <ConfidenceScore
+              <ConfidenceScoreLetter
                 data={liveLetterData?.Letter_header_json || letterJson}
                 reportType="letter"
                 confidenceTick={confidenceTick}

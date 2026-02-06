@@ -30,6 +30,7 @@ const HIDDEN_COLUMNS = new Set([
   'text_support',
   'confidence',
   'is_user_edited',
+  'user_comments',
 ]);
 
 const LetterCriticalDataFrameTable = ({

@@ -16,7 +16,7 @@ const ConfidenceScore = ({ data, confidenceTick, projectId, reportType }) => {
     let isMounted = true;
 
     const loadAndCalculate = async () => {
-      // 🔒 ONLY run when final data exists
+      // ONLY run when final data exists
       if (!data) return;
       console.log(
         'live edited clauses',
