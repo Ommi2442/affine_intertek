@@ -320,6 +320,7 @@ const LetterReportPage = () => {
 
       // Trigger generation ONLY if not started
       const shouldGenerate =
+        percentage < 10 &&
         stage !== 'Completed' &&
         percentage < 100 &&
         !hasTriggeredGenerateRef.current;
