@@ -100,9 +100,9 @@ def limit_manufacturers_to_two(data_json: dict) -> dict:
         data_json[key] = manufacturers[:2]
     return data_json
 
-def get_bom_source_files() -> set[str]:
+def get_bom_source_files(vs) -> set[str]:
     configs.require_runtime()
-    BOM_SOURCE_FILES = switch.get_bom_filenames()
+    BOM_SOURCE_FILES = switch.get_bom_filenames(vs=vs)
     ex_files = {x.lower() for x in BOM_SOURCE_FILES}
     return ex_files
 
@@ -409,7 +409,7 @@ def references_main(vs, ref):
     configs.require_runtime()
 
     cosmos_container = configs.get_cosmos_container_client()  # ✅ per request
-    ex_files=get_bom_source_files()
+    ex_files=get_bom_source_files(vs)
     # print('inside reference_main')
     retriever = vs.as_retriever(
         search_type="vector",

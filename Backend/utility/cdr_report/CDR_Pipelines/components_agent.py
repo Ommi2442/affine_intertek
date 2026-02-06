@@ -7,7 +7,7 @@ def run_sheet_3_and_4_main(*, vs):
     Authoritative decision + execution wrapper.
     Exactly one pipeline runs.
     """
-    bom_files = find_bom_blob_url()
+    bom_files = find_bom_blob_url(vs=vs)
 
     if bom_files:
         c1_main.run_case1_pipeline(vs=vs)

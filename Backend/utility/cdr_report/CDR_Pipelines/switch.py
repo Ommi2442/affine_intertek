@@ -1,9 +1,14 @@
+# ===================== IMPORTS =====================
+
 from azure.storage.blob import BlobServiceClient
 from azure.core.exceptions import ResourceNotFoundError
 import utility.cdr_report.CDR_Pipelines.configs as configs
 from urllib.parse import quote
+
 import pandas as pd
 from io import BytesIO
+from collections import defaultdict
+
 
 # ===================== CONFIG =====================
 
@@ -11,66 +16,35 @@ AZURE_CONNECTION_STRING = configs.AZURE_BLOB_CONNECTION_STRING
 CONTAINER_NAME = configs.BLOB_CONTAINER_NAME
 CONTAINER_SAS_URL = configs.AZURE_BLOB_CONTAINER_SAS_URL
 
-
 MAX_HEADER_SCAN_ROWS = 15
 
-# BOM_COLUMNS = {
-#     "line",
-#     "qty",
-#     "u/m",
-#     "name",
-#     "description",
-#     "manufacturer",
-#     "manufacturer part number",
-#     "mfg"
-#     "mfr"
-#     "mpn"
-#     "mfr-pn"
-# }
+
+# ===================== EXCEL BOM DETECTION =====================
 
 BOM_COLUMNS = {
-        "line",
-        "qty",
-        "u/m",
-        "name",
-        "description",
-        "manufacturer",
-        "manufacturer part number",
-        "mfg",
-        "mfr",
-        "mpn",
-        "mfr-pn",
-        "part",
-        "manuf",
-        "manuf #",
-        "quantity",
-        "item"
-    }
+    "line",
+    "qty",
+    "u/m",
+    "name",
+    "description",
+    "manufacturer",
+    "manufacturer part number",
+    "mfg",
+    "mfr",
+    "mpn",
+    "mfr-pn",
+    "part",
+    "manuf",
+    "manuf #",
+    "quantity",
+    "item"
 
-# ===================== HELPERS =====================
-
-# switch.py
-
-def get_bom_filenames() -> set[str]:
-    """
-    Returns lowercase filenames of detected BOM blobs.
-    Intended for retrieval-time filtering.
-    """
-    bom_items = find_bom_blob_url()
-    return {
-        item["name"].lower()
-        for item in bom_items
-        if item.get("name")
-    }
+}
 
 
 def normalize(text: str) -> str:
-    return (
-        str(text)
-        .strip()
-        .lower()
-        .replace("_", " ")
-    )
+    return str(text).strip().lower().replace("_", " ")
+
 
 def is_bom_excel(excel_bytes: bytes) -> bool:
     try:
@@ -92,7 +66,7 @@ def is_bom_excel(excel_bytes: bytes) -> bool:
                 if cell and str(cell).strip()
             }
 
-            if len(BOM_COLUMNS & found) >= int(0.1875 * len(BOM_COLUMNS)):
+            if len(BOM_COLUMNS & found) >= int(0.16 * len(BOM_COLUMNS)):
                 return True
 
     except Exception:
@@ -100,76 +74,79 @@ def is_bom_excel(excel_bytes: bytes) -> bool:
 
     return False
 
-import requests
-import pdfplumber
-from io import BytesIO
 
-def is_bom_pdf(pdf_url: str) -> bool:
+# ===================== PDF HYBRID DETECTION (NEW) =====================
+
+PDF_KEYWORDS = [
+    "line",
+    "qty",
+    "quantity",
+    "description",
+    "manufacturer",
+    "part number",
+    "mpn",
+    "mfr",
+    "u/m",
+    "bill of materials",
+    "parts list"
+]
+
+
+def is_bom_pdf_by_similarity(
+    vs,
+    filename: str,
+    k: int = 25,
+    score_threshold: float = 0.5,
+    min_hits: int = 4
+) -> bool:
     """
-    Decide if a PDF is a BOM using ONLY first-page content.
+    Lightweight file-level detection.
+
+    If ANY page in the PDF matches:
+      similarity + keyword hits
+    → treat file as BOM
     """
-    try:
-        response = requests.get(pdf_url, timeout=15)
-        response.raise_for_status()
 
-        with pdfplumber.open(BytesIO(response.content)) as pdf:
-            if not pdf.pages:
-                return False
-
-            text = (pdf.pages[0].extract_text() or "").lower()
-
-            required_keywords = [
-                "bill of materials",
-                "assembly description",
-                "part number",
-                "qty",
-            ]
-
-            hits = sum(k in text for k in required_keywords)
-            return hits >= 2
-
-    except Exception:
-        return False
-
-from concurrent.futures import ThreadPoolExecutor, as_completed
-
-def filter_bom_pdfs(pdf_items: list[dict]) -> list[dict]:
+    query = """
+    bill of materials table with columns
+    qty quantity description manufacturer
+    part number mpn mfr u/m line item
     """
-    Concurrently validate PDFs using first-page content.
-    Uses MAX_WORKERS from configs.py
+
+    where = f"c.metadata.source_file = '{filename}'"
+
+    docs_scores = vs.similarity_search_with_score(
+        query=query,
+        k=k,
+        where=where
+    )
+
+    for doc, score in docs_scores:
+
+        if score < score_threshold:
+            continue
+
+        text = doc.page_content.lower()
+        hits = sum(kw in text for kw in PDF_KEYWORDS)
+
+        if hits >= min_hits:
+            return True
+
+    return False
+
+
+# ===================== CORE DISCOVERY =====================
+
+def find_bom_blob_url(*, vs) -> list[dict]:
     """
-    results = []
+    Detect ONLY real BOM files.
 
-    with ThreadPoolExecutor(max_workers=configs.MAX_WORKERS) as executor:
-        future_map = {
-            executor.submit(is_bom_pdf, item["url"]): item
-            for item in pdf_items
-        }
+    Excel → header scan
+    PDF   → vector similarity check
 
-        for future in as_completed(future_map):
-            item = future_map[future]
-            try:
-                if future.result():
-                    results.append(item)
-            except Exception:
-                # defensive; is_bom_pdf already swallows errors
-                continue
-
-    return results
-
-# ===================== CORE FUNCTION =====================
-
-from urllib.parse import quote
-from azure.storage.blob import BlobServiceClient
-from azure.core.exceptions import ResourceNotFoundError
-
-def find_bom_blob_url() -> list[dict]:
-
+    Returns same format as before.
     """
-    Locate BOM files (Excel + BOM PDFs only).
-    Uses multithreading for PDF validation.
-    """
-    
+
     configs.require_runtime()
     project_id = configs._runtime.project_id
 
@@ -183,28 +160,28 @@ def find_bom_blob_url() -> list[dict]:
 
     base_url, sas = CONTAINER_SAS_URL.split("?", 1)
 
-    excel_results: list[dict] = []
-    pdf_candidates: list[dict] = []
+    results: list[dict] = []
 
-    # ------------------ DISCOVERY (single-threaded) ------------------
     prefix = f"Documents/{project_id}/source_documents/"
 
     for blob in container_client.list_blobs(name_starts_with=prefix):
 
         name = blob.name
-        lname = name.lower()
+        filename = name.split("/")[-1]
+        lname = filename.lower()
 
-        # ---------- EXCEL ----------
+        # ---------------- EXCEL ----------------
         if lname.endswith((".xlsx", ".xls")):
-            blob_client = container_client.get_blob_client(blob.name)
+
+            blob_client = container_client.get_blob_client(name)
 
             try:
                 excel_bytes = blob_client.download_blob().readall()
 
                 if is_bom_excel(excel_bytes):
-                    excel_results.append({
+                    results.append({
                         "url": f"{base_url}/{quote(name)}?{sas}",
-                        "name": name.split("/")[-1],
+                        "name": filename,
                         "path": name,
                         "type": "xlsx",
                     })
@@ -212,21 +189,24 @@ def find_bom_blob_url() -> list[dict]:
             except ResourceNotFoundError:
                 continue
 
-        # ---------- PDF (candidate only) ----------
+        # ---------------- PDF (NEW similarity detection) ----------------
         elif lname.endswith(".pdf"):
-            pdf_candidates.append({
-                "url": f"{base_url}/{quote(name)}?{sas}",
-                "name": name.split("/")[-1],
-                "path": name,
-                "type": "pdf",
-            })
 
-    # ------------------ PDF VALIDATION (multi-threaded) ------------------
-    bom_pdfs: list[dict] = []
+            if is_bom_pdf_by_similarity(vs, filename):
+                results.append({
+                    "url": f"{base_url}/{quote(name)}?{sas}",
+                    "name": filename,
+                    "path": name,
+                    "type": "pdf",
+                })
 
-    if pdf_candidates:
-        bom_pdfs = filter_bom_pdfs(pdf_candidates)
+    return results
 
-    return excel_results + bom_pdfs
 
- 
+# ===================== PIPELINE HELPER =====================
+
+def get_bom_filenames(*, vs) -> set[str]:
+    return {
+        item["name"].lower()
+        for item in find_bom_blob_url(vs=vs)
+    }
