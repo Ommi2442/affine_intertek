@@ -272,7 +272,7 @@ def main3(project_id, user_id, input_json, output_excel_path):
 
     utils.delete_cosmos_container(configs.COSMOS_URL,configs.COSMOS_KEY,configs.DB_NAME,Container_name)
 
-    if paths["SRC"].parent.exists():
-        shutil.rmtree(paths["SRC"].parent)
+    # if paths["SRC"].parent.exists():
+    #     shutil.rmtree(paths["SRC"].parent)
     print("----- ALLLL steps completed-----")
     return cdr

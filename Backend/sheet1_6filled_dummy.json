@@ -761,7 +761,7 @@
           "prefix": "Spacing",
           "field": "1.",
           "answer_cell": "B19",
-          "value": "Spacing - In primary circuits, 1.5 mm minimum spacing are maintained through air and over surfaces of insulating material between current-carrying parts of opposite polarity and 1.5 mm minimum between such current-carrying parts and dead-metal parts or low voltage isolated circuits. Refer to Illustration __ for areas to verify.",
+          "value": "Spacing - In primary circuits, __ mm minimum spacing are maintained through air and over surfaces of insulating material between current-carrying parts of opposite polarity and __ mm minimum between such current-carrying parts and dead-metal parts or low voltage isolated circuits. Refer to Illustration __ for areas to verify.",
           "val1": null,
           "val2": null,
           "val3": null,
@@ -780,47 +780,45 @@
           "accuracy_level": true,
           "text_support": [
             {
-              "filename": "CFE-4LB011-E (1) (1).pdf",
+              "filename": "PKP223D15A2-R2EL-1.10in._28mm_2-PhaseBipolarStepperMotorwithEncoder.pdf",
+              "page": 3,
+              "preview_text": "Speed-Torque\n12/15/2022 | Page 4 of 7",
+              "similarity_score": 0.769452349313731
+            },
+            {
+              "filename": "final_output_G9941.pdf",
+              "page": 62,
+              "preview_text": "Page 63 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement — Test Result — Remark Verdict\n7. TABLE: Protection against mechanical HAZARDS Form A.20\n7.3.4 Limitation of force and pressure —\n7.3.5 Gap limitations between moving parts —\nPart / Location Clause 7.3.4 Clause 7.3.5.1 Clause 7.3.5.2 Verdict Comments\nContinuous Temporary Minimum gaps [mm] Maximum gaps [mm]\nContact pressure\nmax. 50 N /cm²\n@ max. 150 N\nmax. 250 N / \n3 cm² @\nmax. 0,75 s\nTorso\n500\nHead\n300\nLeg\n180\nFoot\n120\nToes\n50\nArm\n120\nHand\n100\nFinger\n25\nHead\n120\nFoot\n35\nFinger\n4\nSupplementary information:",
+              "similarity_score": 0.7692335361248925
+            },
+            {
+              "filename": "PKP223D15A2-R2EL-1.10in._28mm_2-PhaseBipolarStepperMotorwithEncoder.pdf",
+              "page": 5,
+              "preview_text": "12/15/2022 | Page 6 of 7",
+              "similarity_score": 0.7684415189678185
+            },
+            {
+              "filename": "Mornsun_5V_2A_regulator_K78xx-2000R3.pdf",
+              "page": 3,
+              "preview_text": "6.Productsarerelatedtolawsandregulations:see\"Features\"and\"EMC\";\n7.OurproductsshallbeclassifiedaccordingtoISO14001andrelatedenvironmentallawsandregulations,andshallbehandledbyqualified\nunits.\nMORNSUNGuangzhouScience&TechnologyCo.,Ltd.\nAddress:No.5,KehuiSt.1,KehuiDevelopmentCenter,ScienceAve.,GuangzhouScienceCity,HuangpuDistrict,Guangzhou,P.R.China\nTel:86-20-38601850 Fax:86-20-38601272 E-mail:info@mornsun.cn www.mornsun-power.com\nDimensionsandRecommendedLayout",
+              "similarity_score": 0.7680232102281186
+            },
+            {
+              "filename": "TMC2130_datasheet.pdf",
               "page": 0,
-              "text": "REPRODUCTION IN PART OR AS A \nWHOLE WITHOUT THE WRITTEN \nPERMISSION OF GENER8 IS \nPROHIBITED.\nPROPRIETARY AND \nCONFIDENTIAL\nMATERIAL\nSURFACE TREATMENT\nTITLE:\nSIZE\nB\nDRAWING NUMBER REV\nEXPANDED TOLERANCES\nSCALE: 2:1\nUNLESS OTHERWISE SPECIFIED:\nDIMENSIONS ARE IN MILLIMETERS, INTERPRET \nDIMS AND TOLS PER ANSI/ASME Y14.5M-1994\nREGULATORY LABEL\nSHEET 1 OF 1DO NOT SCALE \nDRAWING\nSEE NOTES\nSEE NOTES\nDECIMALS\nX       1.00\nX.X     0.50\nX.XX    0.15\nASME Y14.5M-1994 THIRD \nANGLE PROJECTION\nANGULAR:\nX     1\n2560 JUNCTION AVE, SAN JOSE, CA 95134\n8\nCFE-4LB011 E\nInfinity MTx™ Instrument\nPart number: CFE-1TLA11\nInput pressure: 90-120 PSIG\n              CellFE, Inc.\n             1000 Atlantic Ave, Ste 104\n              Alameda, CA 94501, USA\n              support@cellfebiotech.com\nS/N\n110 - 240VAC\n5.9 - 2.7A\n50/60 Hz\n6A\n250VAC\nSLOW BLOW",
-              "similarity_score": 0.7674930258219974
-            },
-            {
-              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
-              "page": 1,
-              "text": "________________________________\r\n\r\nThis email has been scanned for spam and viruses by Proofpoint Essentials. Click here [us5.proofpointessentials.com]<https://urldefense.proofpoint.com/v2/url?u=https-3A__urldefense.com_v3_-5F-5Fhttps-3A__us5.proofpointessentials.com_index01.php-3Fmod-5Fid-3D11-26mod-5Foption-3Dlogitem-26report-3D1-26type-3Deasyspam-26k-3Dk1-26payload-3D53616c7465645f5f54951dbf937b2b1471f49948dfe4d9201efceba4c9bdd41f6476ef63b54344f8063d1a3d9a32e822d639def54a7f5b3b25c4a83e2a75b6a15e7a83ea660bcd813450d4f46a113c988967a2aeacd40b7fdecc16b1ddb516c40d79f3d88c4334e0f6a48be9cdee270c02f1f00ec578778a888355c6effc2e4319ba6d8f8d2d7db3b743c3eb4219fefe32f9db3cd1df92790fff9b56805afdb7-26mail-5Fid-3D1696878482-2DAohzBhzyEVgo-26r-5Faddress-3Dgsandwina-2A40gener8.net-5F-5F-3BJQ-21-21Ie6nUkZk-21o7ExajwC-5F26az2QtTtp3eJD5Ujro-5FYcFkrDe5Gt93o4r1PBgUncW0YJk1FdElPLfLrxTX1wsvFOjbSodVsRAlXv0Ky6K5A-24&d=DwMGaQ&c=euGZstcaTDllvimEN8b7jXrwqOf-v5A_CdpgnVfiiMM&r=OLiuGIKEEbKMBSI179N7svn-JW6KKCWgByAWmX_1YoM&m=8mtZbxqlxup8gapnP_GAszDHu2Ty3pjZXyqOBv7_mOPOtll-faS_08gnyFJU70b5&s=yhnBOZpejXU3ZxgaddvokFB5YfitV2kbzGFGtSEy0wI&e=> to report this email as spam.",
-              "similarity_score": 0.7598746985254428
-            },
-            {
-              "filename": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf",
-              "page": 1,
-              "text": "3:51:35 PM8/23/2023",
-              "similarity_score": 0.7588920021938085
-            },
-            {
-              "filename": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf",
-              "page": 2,
-              "text": "3:51:35 PM8/23/2023",
-              "similarity_score": 0.7588920021938085
-            },
-            {
-              "filename": "Risk Assessment CFE_28nov.xlsx",
-              "page": 1,
-              "text": "Svc-4 Drawer Bio Hazard  Contamination from operator error inputting biological substance into instrument Moderate Unlikely 2 Consumable has filters installed.  Drawer is designed to contain leaked biological substance to prevent contamination of rest of instrument. Unlikely 2 test report ?\nSrvc-5 Pneumatic System Release of pressure Release of high pressure causing destruction or damage during service  Moderate Unlikely 2 Service manual warnings, service personnel are trained to de presurise before service  Unlikely 2 add 61010 report #\nSvc-6 System Bio Hazard  System not decontaminated prior to service Moderate Unlikely 2 Decontamination protocol in place prior to service or return Unlikely 2 user manual/",
-              "similarity_score": 0.7681964064339559
+              "preview_text": "spreadCycle\nstealthChop\n DRIVER\nTMC2130 \nProgrammable\n256 µStep\nSequencer\nProtection\n& Diagnostics\nSPI\nstallGuard2 coolStep dcStep\nPower \nSupply\nMotor\nStep/Dir\nStep Multiplyer\nspreadCycle\nstealthChop\nDAC Reference\nIREF optional current scaling\nSPI Control,\nConfig & Diags\nCLK\nControl\nRegister\nSet\nStandstill Current \nReduction\nCLK Oscillator / \nSelector\nInterruptINT\nCharge \nPump+5V Regulator",
+              "similarity_score": 0.7652656650587246
             }
           ],
-          "image_support": [
-            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/source_documents/PastedGraphic-1.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-02-28T15%3A36%3A06Z&st=2026-01-02T07%3A21%3A06Z&spr=https&sig=LRuMhEOLeB%2FcoBRctPsJbYNwgSnIlQyPBhIvWTdBnKI%3D"
-          ],
-          "confidence": 95.0
+          "image_support": [],
+          "confidence": 35.0
         },
         {
           "question_cell": "A21",
           "prefix": "Mechanical Assembly",
           "field": "2.",
           "answer_cell": "B21",
-          "value": "Mechanical Assembly - Components such as switches, fuseholders, connectors, wiring terminals and display lamps are mounted and prevented from shifting or rotating by the use of lockwashers, starwashers, or other mounting format that prevents turning of the component.",
+          "value": "Mechanical Assembly - N/A",
           "st1": "Mechanical Assembly - Components such as switches, fuseholders, connectors, wiring terminals and display lamps are mounted and prevented from shifting or rotating by the use of lockwashers, starwashers, or other mounting format that prevents turning of the component.",
           "resp1": null,
           "st2": null,
@@ -836,45 +834,45 @@
           "accuracy_level": true,
           "text_support": [
             {
-              "filename": "CFE-4LB011-E (1) (1).pdf",
-              "page": 0,
-              "text": "REPRODUCTION IN PART OR AS A \nWHOLE WITHOUT THE WRITTEN \nPERMISSION OF GENER8 IS \nPROHIBITED.\nPROPRIETARY AND \nCONFIDENTIAL\nMATERIAL\nSURFACE TREATMENT\nTITLE:\nSIZE\nB\nDRAWING NUMBER REV\nEXPANDED TOLERANCES\nSCALE: 2:1\nUNLESS OTHERWISE SPECIFIED:\nDIMENSIONS ARE IN MILLIMETERS, INTERPRET \nDIMS AND TOLS PER ANSI/ASME Y14.5M-1994\nREGULATORY LABEL\nSHEET 1 OF 1DO NOT SCALE \nDRAWING\nSEE NOTES\nSEE NOTES\nDECIMALS\nX       1.00\nX.X     0.50\nX.XX    0.15\nASME Y14.5M-1994 THIRD \nANGLE PROJECTION\nANGULAR:\nX     1\n2560 JUNCTION AVE, SAN JOSE, CA 95134\n8\nCFE-4LB011 E\nInfinity MTx™ Instrument\nPart number: CFE-1TLA11\nInput pressure: 90-120 PSIG\n              CellFE, Inc.\n             1000 Atlantic Ave, Ste 104\n              Alameda, CA 94501, USA\n              support@cellfebiotech.com\nS/N\n110 - 240VAC\n5.9 - 2.7A\n50/60 Hz\n6A\n250VAC\nSLOW BLOW",
-              "similarity_score": 0.7763080464436626
+              "filename": "final_output_G9941.pdf",
+              "page": 29,
+              "preview_text": "guards not evidenced.\nN/A\nb) If OPERATOR access is unavoidable outside \nNORMAL USE following precautions have been \ntaken:\n—\n1) access requires TOOL No such parts N/A\n2) statement about training in the instructions No such parts N/A\n3) warning markings on covers prohibiting access \nby untrained OPERATORS\nNo such parts; no hazardous \nmoving part found.\nN/A\nor symbol 14 with full details in documentation No such parts N/A\n7.3.3 RISK assessment for mechanical HAZARDS to body \nparts\nRISK is reduced to a tolerable level by protective \nmeasures as specified in Table 12\nMechanical hazard information \nnot available in \ndocumentation.\nN/A\nMinimum protective measures: —\nA. Low level measures Mechanical hazard information \nnot available in \ndocumentation.\n \nB. Moderate measures Mechanical hazard information \nnot available in \ndocumentation.\nN/A\nC. Stringent measures Mechanical hazard information \nnot available in \ndocumentation.\nN/A",
+              "similarity_score": 0.7983057594714736
             },
             {
-              "filename": "Risk Assessment CFE_28nov.xlsx",
-              "page": 1,
-              "text": "Svc-4 Drawer Bio Hazard  Contamination from operator error inputting biological substance into instrument Moderate Unlikely 2 Consumable has filters installed.  Drawer is designed to contain leaked biological substance to prevent contamination of rest of instrument. Unlikely 2 test report ?\nSrvc-5 Pneumatic System Release of pressure Release of high pressure causing destruction or damage during service  Moderate Unlikely 2 Service manual warnings, service personnel are trained to de presurise before service  Unlikely 2 add 61010 report #\nSvc-6 System Bio Hazard  System not decontaminated prior to service Moderate Unlikely 2 Decontamination protocol in place prior to service or return Unlikely 2 user manual/",
-              "similarity_score": 0.7694378471686548
+              "filename": "TMC2130_datasheet.pdf",
+              "page": 100,
+              "preview_text": "use adequate grounding of personnel and machines in man ual handling. After soldering the devices \nto the board, ESD requirements are more relaxed. Failure to do so can result in defect or decreased \nreliability.",
+              "similarity_score": 0.7875092163698519
             },
             {
-              "filename": "Qu-01390131-0.pdf",
-              "page": 7,
-              "text": "•One complete and fully operational sample of each product to be evaluated.  Please consult \nwith your Intertek project manager for approval of representative or “worst-case” \nconfigurations.  Additional samples may be required as the evaluation progresses.\n•Operations manual and/or operating instructions.\n•Completed “Product Information Packet” which will include bill of materials, electrical ratings, \nschematics, and component data.  Please contact your sales representative for detail.\nSample Disposition:\nIf testing is to take place at an Intertek location, please indicate how you would like any test samples not\nconsumed during testing to be handled:\n[ ] Dispose of Sample(s):  If required, sample disposal fees will be invoiced in addition to quoted fees.",
-              "similarity_score": 0.7622036692192958
+              "filename": "final_output_G9941.pdf",
+              "page": 31,
+              "preview_text": "Page 32 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nTested with four times maximum static load TBD-Info not available\n7.6 Wall mounting\nMounting brackets withstand four times weight (see Form A.20B)\nOne fastener removed and test repeated with two \ntimes weight\n(see Form A.20B)\n7.7 Expelled parts N/A\nEquipment contains or limits the energy No expelled parts. N/A\nProtection not removable without the aid of a tool No expelled parts. N/A\n8 RESISTANCE TO MECHANICAL STRESSES\n8.1 General\nEquipment does not cause a HAZARD when subjected \nto mechanical stresses in NORMAL USE\nTBD-Info available\nNormal protection level is 5 J TBD-Info available\nLevels below 5 J but not less than 1 J are acceptable \nif all of the following criteria are met:\n—\na) Lower level justified by RISK assessment of \nmanufacturer\nNot Applicable; no evidence of \nlower protection level.\nN/A\nb) Equipment installed in its intended application is \nnot easily touched\nInformation on 1-5J impact \nprotection not available.\nN/A\nc) Only occasional access during NORMAL USE Mechanical stress protection \nlevel not specified; not \napplicable.",
+              "similarity_score": 0.7833203485354816
             },
             {
-              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
-              "page": 1,
-              "text": "Subject: Re: [External] Re: Intertek Order Qu-01390131-0 processed - Gener8 LLC Project G105581614\r\n\r\n\r\n\r\nHi Kenneth,\r\n\r\n\r\n\r\nThe air tank is a pretty passive component in the system. The function of this component is to provide the consumable (the plastic transparent brick in the drawer) with pressurized air. It is pressurized by the valves and regulators in the instrument, and then releases that air to the front manifold that will direct the air into the proper port. We are finding we might want to reduce the volume of this tank (but keeping the same high pressures). We do not anticipate any changes in function, safety requirements/precautions, material, or placement. We might need to tweak the location of the mounting loop used to secure the tank but no changes to any important component.\r\n\r\n\r\n\r\nLet me know if you have any questions.\r\n\r\n\r\nRegards,\r\n\r\nRoberto\r\n\r\n\r\n\r\n\r\n\r\nOn Mon, Oct 9, 2023 at 4:17 PM Alvenn Kenneth Tutor Intertek <alvennkenneth.tutor@intertek.com<mailto:alvennkenneth.tutor@intertek.com>> wrote:\r\n\r\nHi Grant,\r\n\r\n\r\n\r\nCan you also provide the function/use of the cylinder to the unit?\r\n\r\n\r\n\r\nBest regards,\r\n\r\nKenneth Tutor\r\n\r\nSAFETY ENGINEER",
-              "similarity_score": 0.7596742113240712
-            },
-            {
-              "filename": "Qu-01390131-0.pdf",
+              "filename": "PKP223D15A2-R2EL-1.10in._28mm_2-PhaseBipolarStepperMotorwithEncoder.pdf",
               "page": 2,
-              "text": "perform actions such as shutdown upstream or downstream processes, etc.)\n•Assumes all critical components including off the shelf power supplies are approved for their \nintended markets and used within their intended ratings. Components to be provided with their \nrespective datasheets, approval information/DoC/CoC/CoA/CoI. Additional limited evaluations \nof components are not covered by the scope of this quote\n•Alternate components might be subjected to additional charges for evaluation for conformity \ndependent on quantity and complexity of components\n•Assumes device can be operated continuously without operator intervention\n•Assumes no lasers or UV testing.\n•Assumes indoor use product – no enclosure/environmental testing.\n•Includes all applicable country deviations. Assumes single unit can be used in all applicable \ncountries with no modifications.\n•All testing will be performed at an Intertek facility, and if that scope changes, a separate \nproposal will be required to include travel time & expense.\n \nDeliverables:\n•CB Report / Certificate \n•cETLus",
-              "similarity_score": 0.7533489179626816
+              "preview_text": "Axial Load 1.1 lb\nRadial Play 0.025 mm (0.001 in.) maximum of 5 N (1.12 lb.)\nAxial Play 0.075 mm (0.003 in.) maximum of 2.5 N (0.563 lb.)\nConcentricity 0.075 mm (0.003 in.) T.I.R.\nPerpendicularity 0.075 mm (0.003 in.) T.I.R.\nEncoder Type Incremental\nEncoder Resolution (P/R) 200\nOutput 3-Channel A, B, Z\nInput Current (mA) 30 mA max.\nInput Voltage (V) 5 ±10%\nOutput Type Line Driver\nOutput Voltage (Low) 0.5 V or less\nOutput Voltage (High) 2.5 V or more\nResponse Frequency (kHz)200\nEncoder Specifications\nDimensions\n12/15/2022 | Page 3 of 7",
+              "similarity_score": 0.7826278509657316
+            },
+            {
+              "filename": "Mornsun_5V_2A_regulator_K78xx-2000R3.pdf",
+              "page": 3,
+              "preview_text": "6.Productsarerelatedtolawsandregulations:see\"Features\"and\"EMC\";\n7.OurproductsshallbeclassifiedaccordingtoISO14001andrelatedenvironmentallawsandregulations,andshallbehandledbyqualified\nunits.\nMORNSUNGuangzhouScience&TechnologyCo.,Ltd.\nAddress:No.5,KehuiSt.1,KehuiDevelopmentCenter,ScienceAve.,GuangzhouScienceCity,HuangpuDistrict,Guangzhou,P.R.China\nTel:86-20-38601850 Fax:86-20-38601272 E-mail:info@mornsun.cn www.mornsun-power.com\nDimensionsandRecommendedLayout",
+              "similarity_score": 0.7824618604067597
             }
           ],
           "image_support": [],
-          "confidence": 85.0
+          "confidence": 95.0
         },
         {
           "question_cell": "A22",
           "prefix": "Corrosion Protection",
           "field": "3.",
           "answer_cell": "B22",
-          "value": "Corrosion Protection - All ferrous metal parts are protected against corrosion by painting, plating or the equivalent.",
+          "value": "Corrosion Protection - N/A",
           "st1": "Corrosion Protection - All ferrous metal parts are protected against corrosion by painting, plating or the equivalent.",
           "resp1": null,
           "st2": null,
@@ -890,47 +888,45 @@
           "accuracy_level": true,
           "text_support": [
             {
-              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
-              "page": 1,
-              "text": "http://www.intertek.com<https://urldefense.proofpoint.com/v2/url?u=http-3A__www.intertek.com&d=DwQGaQ&c=euGZstcaTDllvimEN8b7jXrwqOf-v5A_CdpgnVfiiMM&r=9C7PSk_IsFDu4Gbc5VWQsKi5DnaqqJ3NaVpNN3BIbwY&m=ff1D8welbBc7eeMqsDrnNG7J44euu3meSHnM49oStTltzYs3JNWT4eBpmW29gmjQ&s=jm5P9T62kh2j1zbftroRvS9h317Ifcj0x3tNPbZuqoE&e=>\r\n\r\n________________________________\r\n\r\nThis message is from an EXTERNAL SENDER - please be CAUTIOUS, particularly with links and attachments.\r\n\r\n\r\n\r\n________________________________",
-              "similarity_score": 0.7626171849814056
+              "filename": "final_output_G9941.pdf",
+              "page": 36,
+              "preview_text": "Page 37 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\n10.5.1 Integrity of CLEARANCE and CREEPAGE DISTANCES (see Form A.16)\n10.5.2 Non-metallic ENCLOSURES (see Form A.27)\nWithin 10 min after treatment: —\nEquipment subjected to suitable stresses of 8.2 and \n8.3 complying with criteria of 8.1\nTBD-Info available\n10.5.3 Insulating material\na) Parts supporting parts connected to MAINS \nsupply\nTBD-Info available\nb) TERMINALS carrying a current more than 0,5 A\nExamination of material data; or TBD-Info available\nin case of doubt:\n1) Ball pressure test; or (see Form A.28)\n2) Vicat softening test of ISO 306 (see Form A.29)\n11 PROTECTION AGAINST HAZARDS FROM FLUIDS AND SOLID FOREIGN \nOBJECTS\n11.1 General\nProtection to OPERATORS and surrounding area \nprovided by EQUIPMENT\nTBD-Info available\nAll fluids specified by manufacturer considered No fluid considered N/A\n11.2 Cleaning (see Form A.30)\n11.3 Spillage (see Form A.30)\n11.4 Overflow (see Form A.30)\n11.5 Battery electrolyte\nBattery electrolyte leakage presents no HAZARD TBD-Info not available\n11.6 Equipment RATED with a degree of ingress \nprotection (IP code)\n(see Form A.30)",
+              "similarity_score": 0.8002299881537985
             },
             {
-              "filename": "Risk Assessment CFE_28nov.xlsx",
-              "page": 1,
-              "text": "3 Intolerable This contains RISKS that are not TOLERABLE RISKS. Moderate Medical treatment or restricted work activity Minor subsystem loss or facility damage Chemical release triggering external reporting requirements Possible More than once in five years, but not more than one a year\nMinor First aid only Non-serious equipment or facility damage Chemical release requiring only routine cleanup without reporting Rare More than once in ten years, but not more than one in five years\nUnlikely No more than once in ten years",
-              "similarity_score": 0.7586936947782137
+              "filename": "final_output_G9941.pdf",
+              "page": 83,
+              "preview_text": "Page 84 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement – Test Result — Remark Verdict\nAnnex H TABLE: Qualification of conformal coating \nfor protection against pollution\nForm A.42 \nTechnical properties\nManufacturer.................................................. —\nType................................................................ —\nMeet requirements of ANSI / UL 746E [yes / no]\nManufacturer declaration of coating material [yes / no]\nOperating temperature of coating [   ] °C\nComparative tracking index (CTI) [   ]\nInsulation resistance [   ] MΩ\nDielectric strength [   ] V\nUV resistance (if required) [yes / no]\nFlammability rating\nPreparation of the test specimens conducted [yes / no]\nItem Test conditioning Parameter Td Samples Verdict Comments\nh 1 2 3 4 5 6\n1 Cold 24\n2 Dry heat 48\n3 Rapid temp. \nchange\n4 Damp heat 24\n5 Adhesion of coating 5 N\nVisual inspection\n6 Humidity 48\n7 Insulation \nresistance\n≥ 100 MΩ\nVisual inspection\nNOTE Td = Test duration time\nSupplementary information:",
+              "similarity_score": 0.7932937265674544
             },
             {
-              "filename": "Qu-01390131-0.pdf",
-              "page": 11,
-              "text": "acknowledges that any samples provided may become damaged or be destroyed in the course of testing as part of the necessary testing process and undertakes to \nhold Intertek harmless from any and all responsibility for such alteration, damage or destruction;\n(c) that it is responsible for providing the samples/equipment to be tested together, where appropriate, with any specified additional items, including but not \nlimited to connecting pieces, fuse-links, etc.;\n(d) to provide instructions and feedback to Intertek in a timely manner;\n(e) to provide Intertek (including its agents, sub-contractors and employees) with access to its premises as may be reasonably required for the provision of the \nServices and to any other relevant premises at which the Services are to be provided;\n(f) prior to Intertek attending any premises for the performance of the Services, to inform Intertek of all applicable health and safety rules and regulations and other \nreasonable security requirements that may apply at any relevant premises at which the Services are to be provided;",
-              "similarity_score": 0.7570894898013296
+              "filename": "final_output_G9941.pdf",
+              "page": 23,
+              "preview_text": "Page 24 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nCoatings to achieve reduction to POLLUTION DEGREE \n1 comply with requirements of Annex H\n6.7.2.2 Solid insulation\n6.7.2.2.1 General\nWithstands electrical and mechanical stresses in \nnormal use and all RATED environmental conditions \nof 1.4\nEquipment passed voltage tests of 6.8.3 with values \nof Table 5 \n(see Form A.18)\nComplies as applicable: —\na) ENCLOSURE or PROTECTIVE BARRIER of Clause 8 TBD-Info available\nb) moulded and potted parts requirements of \n6.7.2.2.2\nc) inner layers of printed wiring boards \nrequirements of 6.7.2.2.3\nd) thin-film insulation requirements of 6.7.2.2.4\n6.7.2.2.2 Moulded and potted parts —\nConductors between same two layers are separated \nby at least 0,4 mm after moulding is completed\nTBD-Info available\n6.7.2.2.3 Inner insulating layers of printed wiring boards —\nSeparated by at least 0,4 mm between same two \nlayers\nTBD-Info available\nREINFORCED INSULATION has adequate electric \nstrength; one of following methods used:\n—\na) thickness of insulation is at least 0,4 mm TBD-Info available\nb) insulation is assembled of minimum two separate",
+              "similarity_score": 0.7929561318648755
             },
             {
-              "filename": "Accepted_-_Gener8_LLC_-_Qu-01390131-0.msg",
-              "page": 1,
-              "text": "<https://nam02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.intertek.com%2Famazed%3Futm_source%3Dsignature%26utm_medium%3DOutlook%26utm_content%3Dyba%26utm_campaign%3Dyoullbeamazed&data=05%7C01%7Ccharlotte.johnson%40intertek.com%7Cb6b5b1bd99bf4a73f17908dbb2e7d4e5%7Ccec3b02aea8c40eda66fa89023ac3286%7C0%7C0%7C638300481000894582%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=A2CFwj5JiPv1Yk0S2elc73yKpfQsYO%2BKqD14vN%2F4DCA%3D&reserved=0>",
-              "similarity_score": 0.7546140638545744
+              "filename": "final_output_G9941.pdf",
+              "page": 18,
+              "preview_text": "Page 19 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nAlternatively one of the single means of protection is \nused:\n—\ne) REINFORCED INSULATION (see 6.5.3)\nf) PROTECTIVE IMPEDANCE (see 6.5.4)\n6.5.2 PROTECTIVE BONDING (see Forms A.7, A.8, A.9, A.10 \nor A.11)\n6.5.2.1 General\nACCESSIBLE conductive parts, may become \nHAZARDOUS LIVE in SINGLE FAULT CONDITION:\n—\nBonded to the PROTECTIVE CONDUCTOR TERMINAL; or TBD-Info available\nSeparated by conductive screen or barrier bonded to \nPROTECTIVE CONDUCTOR TERMINAL\nTBD-Info available\n6.5.2.2 Integrity of PROTECTIVE BONDING —\na) PROTECTIVE BONDING consists of directly \nconnected structural parts or discrete conductors \nor both; and withstands thermal and dynamic \nstresses\nTBD-Info available\nb) Soldered connections: —\nIndependently secured against loosening TBD-Info available\nNot used for other purposes TBD-Info not available\nc) Screw connections are secured TBD-Info not available\nd) PROTECTIVE BONDING not interrupted; or No Protective Bonding N/A\nexcept as removable part that carries MAINS \nSUPPLY input connection to the whole equipment\nNo removable part that carries \nMAINS supply found.",
+              "similarity_score": 0.7927642341031527
             },
             {
-              "filename": "Qu-01390131-0.pdf",
-              "page": 6,
-              "text": "documents can then be presented to any National Certification Body (NCB) as an application to apply \ntheir respective Certification Mark. If non-compliances are found, a formal report of our findings will be \nissued to assist you in making corrective actions. Please note that NCB Application Procedures can vary \nand the issuance of their \"license to mark\" is contingent on compliance with their rules. Unless \notherwise stated, this proposal assumes that all critical components are properly approved. \nNOTE: By signing this quotation, the manufacturer declares that when the products are produced at \nmultiple factories, sample(s) submitted to Intertek for evaluation are representative of products from \neach factory.\nCENELEC EN Test Reports for the European Union  \nYour product will be evaluated to determine compliance with the applicable requirements of the safety \nstandards referenced in this proposal. Should the product be found in compliance, a European Test \nReport will be issued which can be incorporated into your Technical File in order to support your CE \nMarking effort. If non-compliances are found, additional fees may apply, and a formal report will be",
-              "similarity_score": 0.7492383519652751
+              "filename": "final_output_G9941.pdf",
+              "page": 37,
+              "preview_text": "Page 38 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nThe equipment is operating (energized) during the \ntreatment except:\n—\na) If manufacturer specifies degrees of protection \nfor non-operating (de-energized) equipment, or\nTBD-Info available\nb) Equipment is operating or non-operating during \nthe treatment with does not affect the test \nresults \nTBD-Info not available\n11.6.3 Protection against solid foreign objects (including \ndust)\nApplicable test of IEC 60529 for protection against \nsolid foreign objects conducted\nAdditionally inspection of equipment resulted: —\na) No deposit on insulation parts that could lead to \na HAZARD\nb) No created accumulations that have the \npotential to cause spread of fire\n11.6.4 Protection against water\nApplicable test of IEC 60529 for protection against \nwater conducted\nIf any water has entered, safety is not impaired, \ninspection of equipment resulted:\n—\na) No deposit on insulation parts that could lead to \na HAZARD\nTBD-Info available\nb) Water has not reached hazardous live parts or \nwindings which are not designed to operate \nwhen wet\nc) No accumulations near the end of cable nor",
+              "similarity_score": 0.7924398434268712
             }
           ],
-          "image_support": [
-            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/source_documents/PastedGraphic-1.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-02-28T15%3A36%3A06Z&st=2026-01-02T07%3A21%3A06Z&spr=https&sig=LRuMhEOLeB%2FcoBRctPsJbYNwgSnIlQyPBhIvWTdBnKI%3D"
-          ],
-          "confidence": 80
+          "image_support": [],
+          "confidence": 95
         },
         {
           "question_cell": "A23",
           "prefix": "Accessibility of Live Parts",
           "field": "4.",
           "answer_cell": "B23",
-          "value": "Accessibility of Live Parts - All uninsulated live parts in primary circuitry are housed within a metal enclosure constructed with no openings other than those specifically described in Sections 4 and 5.",
+          "value": "Accessibility of Live Parts - All uninsulated live parts in primary circuitry are housed within a non-metallic enclosure constructed with no openings other than those specifically described in Sections 4 and 5.",
           "st1": "Accessibility of Live Parts - All uninsulated live parts in primary circuitry are housed within a <metal or non-metallic> enclosure constructed with no openings other than those specifically described in Sections 4 and 5.",
           "resp1": null,
           "st2": null,
@@ -946,47 +942,47 @@
           "accuracy_level": true,
           "text_support": [
             {
-              "filename": "Risk Assessment CFE_28nov.xlsx",
-              "page": 1,
-              "text": "Risk # Sub-System Risk Description Severity Probablility Pre-Mitigation PRN Mitigation Post-Mitigation Probabliity Post-Mitigation PRN Verfication Reference Risk Acceptable ? Y/N\nSvc-1 System Shock Shock from touching live part of system with covers removed Catastrophic Likely 3 Service manual warnings, service personnel are trained, and connections are covered. Rare 2 training documentation/ 61010 report\nSvc-2 System Pinch hazard while performing maintenance While servicing the internal system, unit activates Severe Possible 2 Service manual warnings, service personnel are trained, interlocks must be over-ridden (personnel are trained to use EMO stop for panel interlock override) and use temporary covers while moving gantry.  Firmware has a position error timeout that will remove power to gantry in the event of a blockage.(under force limit for 61010). Rare 2 training documentation \nSvc-3 System Crush Service operator pulls unit over while installing  Severe Unlikely 2 instructions to tie down system and secure in field service manual Unlikely 2 user manual/",
-              "similarity_score": 0.7599825455447123
+              "filename": "final_output_G9941.pdf",
+              "page": 15,
+              "preview_text": "6.1.1 Requirements\nProtection against electric shock maintained in \nNORMAL CONDITION and SINGLE FAULT CONDITION\nTBD-Info available\nACCESSIBLE parts not HAZARDOUS LIVE TBD-Info available\nVoltage, current, charge or energy below the limits in \nNORMAL CONDITION and in SINGLE FAULT CONDITION \nbetween:\n—\nACCESSIBLE parts and earth TBD-Info available\ntwo ACCESSIBLE parts on same piece of the \nequipment within a distance of 1,8 m\nTBD-Info available\nConformity is checked by the determination of 6.2 \nand 6.3 followed by the tests of 6.4 to 6.11\n6.1.2 Exceptions\nFollowing HAZARDOUS LIVE parts may be ACCESSIBLE \nto an OPERATOR:\n—\na) parts of lamps and lamp sockets after lamp \nremoval\nTBD-Info not available\nb) parts to be replaced by OPERATOR only by the \nuse of tool and warning marking\nTBD-Info available\nThose parts not HAZARDOUS LIVE 10 s after \ninterruption of supply\n(see Form A.5 )\nCapacitance test if charge is received from internal \ncapacitor\n(see Forms A.4 and A.5)\n6.2 Determination of ACCESSIBLE parts (see Form A.4)\n6.2.1 General",
+              "similarity_score": 0.8014898833734038
             },
             {
-              "filename": "Qu-01390131-0.pdf",
-              "page": 11,
-              "text": "acknowledges that any samples provided may become damaged or be destroyed in the course of testing as part of the necessary testing process and undertakes to \nhold Intertek harmless from any and all responsibility for such alteration, damage or destruction;\n(c) that it is responsible for providing the samples/equipment to be tested together, where appropriate, with any specified additional items, including but not \nlimited to connecting pieces, fuse-links, etc.;\n(d) to provide instructions and feedback to Intertek in a timely manner;\n(e) to provide Intertek (including its agents, sub-contractors and employees) with access to its premises as may be reasonably required for the provision of the \nServices and to any other relevant premises at which the Services are to be provided;\n(f) prior to Intertek attending any premises for the performance of the Services, to inform Intertek of all applicable health and safety rules and regulations and other \nreasonable security requirements that may apply at any relevant premises at which the Services are to be provided;",
-              "similarity_score": 0.7494349249237581
+              "filename": "final_output_G9941.pdf",
+              "page": 48,
+              "preview_text": "Page 49 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement — Test Result — Remark Verdict\n6.2 TABLE: List of ACCESSIBLE parts Form A.4\n6.1.2 Exceptions —\n6.2 Determination of ACCESSIBLE parts —\nItem Description Determination method\n(NOTE 5)\nException under 6.1.2\n(NOTE 4)\nNOTE 1  – Test fingers and pins are to be applied without force unless a force is specified (see 6.2.2)\nNOTE 2  – Special consideration should be given to inadequate insulation and high voltage parts (see 6.2)\nNOTE 3  – Parts are considered to be ACCESSIBLE if they could be touched in the absence of any covering which is not considered \nto provide suitable insulation (see 6.4).\nNOTE 4  – Capacitance test may be required (see Form A.5).\nNOTE 5  – The determination methods are: \nV = visual; R = rigid test finger; J = jointed test finger; P3 = pin 3 mm diameter; P4 = pin 4 mm diameter.\nSupplementary information:",
+              "similarity_score": 0.77187507003886
             },
             {
-              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
-              "page": 1,
-              "text": "Total Quality. Assured.\r\n\r\n________________________________\r\n\r\nCONFIDENTIALITY NOTICE\r\n\r\nThis email may contain confidential or privileged information, if you are not the intended recipient, or the person responsible for delivering the message to the intended recipient then please notify us by return email immediately. Should you have received this email in error then you should not copy this for any purpose nor disclose its contents to any other person.\r\n\r\nEXPORT NOTIFICATION\r\n\r\nThis email may contain or attach controlled technology/technical data which may be subject to US Export Control regulations including, but not limited to, the US International Traffic in Arms Regulations (ITAR) 22 CFR Part 120-13, the Export Administration Act, 50 U.S.C. app. 2401-2420, and the Export Administration Regulations (EAR), 15 CFR 730-774. Any export, re-export, re-transfer, or disclosure to unauthorized parties, including non-US Persons inside or outside of the United States without first obtaining an export license is prohibited.",
-              "similarity_score": 0.7487043955359994
+              "filename": "final_output_G9941.pdf",
+              "page": 21,
+              "preview_text": "TERMINALS which receive a charge from an internal \ncapacitor are not HAZARDOUS LIVE after 10 s of \ninterrupting supply connection\n(see Form A.5)\n6.6.3 Circuits with terminals which are HAZARDOUS LIVE\nThese circuits are: —\nNot connected to ACCESSIBLE conductive parts; or TBD-Info available\nConnected to ACCESSIBLE conductive parts, but are \nnot MAINS CIRCUITS and have one TERMINAL contact at \nearth potential\nTBD-Info available\nNo ACCESSIBLE conductive parts are HAZARDOUS LIVE TBD-Info available\n6.6.4 Terminals for stranded conductors\nNo RISK of accidental contact because: —\n– Located or shielded TBD-Info available\n– Self-evident or marked whether or not \nconnected to ACCESSIBLE conductive parts\nTBD-Info available\nComplies as applicable: —\na) Manufacturer’s specified maximum length of \nremoved insulation, or\nTBD-Info available\nb) 8 mm length of insulation removed TBD-Info available\n6.7 Insulation requirements (see Form A.14)\n6.7.1 The nature of insulation\n6.7.1.1 General",
+              "similarity_score": 0.7704032325792591
             },
             {
-              "filename": "Accepted_-_Gener8_LLC_-_Qu-01390131-0.msg",
-              "page": 1,
-              "text": "<https://nam02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.intertek.com%2Famazed%3Futm_source%3Dsignature%26utm_medium%3DOutlook%26utm_content%3Dyba%26utm_campaign%3Dyoullbeamazed&data=05%7C01%7Ccharlotte.johnson%40intertek.com%7Cb6b5b1bd99bf4a73f17908dbb2e7d4e5%7Ccec3b02aea8c40eda66fa89023ac3286%7C0%7C0%7C638300481000894582%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=A2CFwj5JiPv1Yk0S2elc73yKpfQsYO%2BKqD14vN%2F4DCA%3D&reserved=0>",
-              "similarity_score": 0.7401594010100865
+              "filename": "final_output_G9941.pdf",
+              "page": 16,
+              "preview_text": "Page 17 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nUnless obviously determination of ACCESSIBLE parts \nas specified in 6.2.2 to 6.2.4\n6.2.2 Examination\n– with jointed test finger (as specified B.2) TBD-Info not available\n– with rigid test finger (as specified B.1) and a force \nof\n10 N\nTBD-Info not available\n6.2.3 Openings above parts that are HAZARDOUS LIVE\n– test pin with length of 100 mm and 4 mm in \ndiameter applied\nTBD-Info available\n6.2.4 Openings for pre-set controls\n– test pin with length of 100 mm and 3 mm in \ndiameter applied\nTBD-Info available\n6.3 Limit values for ACCESSIBLE parts\n6.3.1 Levels in NORMAL CONDITION (see Form A.5)\na) Voltage limits less than 30 V r.m.s. and 42,4 V\npeak or 60 V d.c.\nTBD-Info available\nfor WET LOCATIONS voltage limits less than\n16 V r.m.s. and 22,6 V peak or 35 V d.c.\nTBD-Info available\nVoltages are not HAZARDOUS LIVE the levels of: —\nb) Current less than 0,5 mA r.m.s. for sinusoidal,\n0,7 mA peak non-sinusoidal or mixed \nfrequencies or 2 mA d.c. when measured with \nmeasuring circuit A.1 or A.2 if less than 100 \nHz\nTBD-Info available\nfor WET LOCATIONS measuring circuit A.4 used",
+              "similarity_score": 0.7657464960033175
             },
             {
-              "filename": "Qu-01390131-0.pdf",
-              "page": 12,
-              "text": "by the testing and certification rules  of  the relevant  accreditation body,  all  materials  necessary to document the Services provided.\n8. AMENDMENT\n8.1 No amendment to this Agreement shall be effective unless it is in writing, expressly stated to amend this Agreement and signed by an authorized signatory of \neach party.\n9. FORCE MAJEURE\n9.1 Neither party shall be liable to the other for any delay in performing or failure to perform any obligation under this Agreement to the extent that such delay or \nfailure to perform is a result of:\n(a) war (whether declared or not), civil war, riots, revolution, acts of terrorism, military action, sabotage and/or piracy;\n(b) natural disasters such as violent storms, earthquakes, tidal waves, floods and/or lighting; explosions and fires;\n(c) strikes and labor disputes, other than by any one or more employees of the affected party or of any supplier or agent of the affected party; or\n(d) failures of utilities companies such as providers of telecommunication, internet, gas or electricity services.",
-              "similarity_score": 0.735666619885758
+              "filename": "final_output_G9941.pdf",
+              "page": 29,
+              "preview_text": "guards not evidenced.\nN/A\nb) If OPERATOR access is unavoidable outside \nNORMAL USE following precautions have been \ntaken:\n—\n1) access requires TOOL No such parts N/A\n2) statement about training in the instructions No such parts N/A\n3) warning markings on covers prohibiting access \nby untrained OPERATORS\nNo such parts; no hazardous \nmoving part found.\nN/A\nor symbol 14 with full details in documentation No such parts N/A\n7.3.3 RISK assessment for mechanical HAZARDS to body \nparts\nRISK is reduced to a tolerable level by protective \nmeasures as specified in Table 12\nMechanical hazard information \nnot available in \ndocumentation.\nN/A\nMinimum protective measures: —\nA. Low level measures Mechanical hazard information \nnot available in \ndocumentation.\n \nB. Moderate measures Mechanical hazard information \nnot available in \ndocumentation.\nN/A\nC. Stringent measures Mechanical hazard information \nnot available in \ndocumentation.\nN/A",
+              "similarity_score": 0.762613515093538
             }
           ],
           "image_support": [
-            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/source_documents/PastedGraphic-1.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-02-28T15%3A36%3A06Z&st=2026-01-02T07%3A21%3A06Z&spr=https&sig=LRuMhEOLeB%2FcoBRctPsJbYNwgSnIlQyPBhIvWTdBnKI%3D"
+            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G9941/source_documents/TKDY_TP06-240250W_UL_E469869.jpg?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
           ],
-          "confidence": 95.0
+          "confidence": 90.0
         },
         {
           "question_cell": "A24",
           "prefix": "Grounding",
           "field": "5.",
           "answer_cell": "B24",
-          "value": "Grounding – All exposed dead-metal parts and all dead-metal parts within the enclosure that are exposed are connected to the grounding lead of the power supply cord via chassis ground connection",
+          "value": "Grounding – This product is not provided with a means of grounding as it is not required to be grounded since it is classified as Class II (Isolated) equipment and relies on double or reinforced insulation for protection against electric shock.",
           "val1": null,
           "st1": "This product is not provided with a means of grounding as it is <double insulated or not required to be grounded since _____>",
           "resp1": null,
@@ -1003,39 +999,37 @@
           "accuracy_level": true,
           "text_support": [
             {
-              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
-              "page": 1,
-              "text": "Hi Grant,\r\n\r\n\r\n\r\nHope all is well. Below is the list of tests that will be performed on your equipment. As we progress through the project I'll provide updates on the outcome of the tests conducted. If you have any questions or concerns, please let me know. Thank you.\r\n\r\n\r\n\r\nClause no.\r\n\r\nTest Description\r\n\r\n4.4\r\n\r\nTesting in Single Fault Conditions\r\n\r\n5.1.3\r\n\r\nInput Test\r\n\r\n5.3\r\n\r\nDurability of markings\r\n\r\n6.2\r\n\r\nDetermination of accessible parts\r\n\r\n6.3.1\r\n\r\nElectric Shock Test \"Normal Conditions\"\r\n\r\n6.3.2\r\n\r\nElectric Shock Test \"Single Fault Conditions\"\r\n\r\n6.5.2.3<https://urldefense.proofpoint.com/v2/url?u=http-3A__6.5.2.3&d=DwQGaQ&c=euGZstcaTDllvimEN8b7jXrwqOf-v5A_CdpgnVfiiMM&r=9C7PSk_IsFDu4Gbc5VWQsKi5DnaqqJ3NaVpNN3BIbwY&m=ff1D8welbBc7eeMqsDrnNG7J44euu3meSHnM49oStTltzYs3JNWT4eBpmW29gmjQ&s=CFSCM_q9aEIgaCRvbKoGl9s9DPZRy4Kry-0l9XgqpKA&e=>\r\n\r\nBonding Imepedance Test \"Plug-connected equipment\" (Ground bond test)\r\n\r\n6.7\r\n\r\nInsulation requirements\r\n\r\n6.8.2\r\n\r\nHumidity pre-conditioning\r\n\r\n6.8.3\r\n\r\nDielectric Voltage Withstand Test (Hi-pot)\r\n\r\n6.10.3\r\n\r\nCap Discharge Test\r\n\r\n7.4\r\n\r\nStability Test\r\n\r\n8.2\r\n\r\nRigidity Test (Static)\r\n\r\n8.2.2\r\n\r\nRigidity Test (Dynamic)\r\n\r\n8.3.1",
-              "similarity_score": 0.7955721056976294
+              "filename": "TMC2130_datasheet.pdf",
+              "page": 100,
+              "preview_text": "use adequate grounding of personnel and machines in man ual handling. After soldering the devices \nto the board, ESD requirements are more relaxed. Failure to do so can result in defect or decreased \nreliability.",
+              "similarity_score": 0.8227626764254187
             },
             {
-              "filename": "Risk Assessment CFE_28nov.xlsx",
-              "page": 1,
-              "text": "Risk # Sub-System Risk Description Severity Probablility Pre-Mitigation PRN Mitigation Post-Mitigation Probabliity Post-Mitigation PRN Verfication Reference Risk Acceptable ? Y/N\nSvc-1 System Shock Shock from touching live part of system with covers removed Catastrophic Likely 3 Service manual warnings, service personnel are trained, and connections are covered. Rare 2 training documentation/ 61010 report\nSvc-2 System Pinch hazard while performing maintenance While servicing the internal system, unit activates Severe Possible 2 Service manual warnings, service personnel are trained, interlocks must be over-ridden (personnel are trained to use EMO stop for panel interlock override) and use temporary covers while moving gantry.  Firmware has a position error timeout that will remove power to gantry in the event of a blockage.(under force limit for 61010). Rare 2 training documentation \nSvc-3 System Crush Service operator pulls unit over while installing  Severe Unlikely 2 instructions to tie down system and secure in field service manual Unlikely 2 user manual/",
-              "similarity_score": 0.7682601584539972
+              "filename": "final_output_G9941.pdf",
+              "page": 28,
+              "preview_text": "earth.\n \n6.11.4.3 Appliance couplers and plugs\nWhere an appliance coupler or separable plug is \nused as the disconnecting device (see 6.11.3.2):\n—\nReadily identifiable and easily reached by the \noperator\nAppliance coupler is present \nand easily identifiable.\nP\nSingle-phase portable equipment cord length not \nmore than 3 m\nTBD-Info available\nPROTECTIVE EARTH CONDUCTOR connected first and \ndisconnected last\nTBD-Info available",
+              "similarity_score": 0.7889982119378981
             },
             {
-              "filename": "Qu-01390131-0.pdf",
-              "page": 11,
-              "text": "acknowledges that any samples provided may become damaged or be destroyed in the course of testing as part of the necessary testing process and undertakes to \nhold Intertek harmless from any and all responsibility for such alteration, damage or destruction;\n(c) that it is responsible for providing the samples/equipment to be tested together, where appropriate, with any specified additional items, including but not \nlimited to connecting pieces, fuse-links, etc.;\n(d) to provide instructions and feedback to Intertek in a timely manner;\n(e) to provide Intertek (including its agents, sub-contractors and employees) with access to its premises as may be reasonably required for the provision of the \nServices and to any other relevant premises at which the Services are to be provided;\n(f) prior to Intertek attending any premises for the performance of the Services, to inform Intertek of all applicable health and safety rules and regulations and other \nreasonable security requirements that may apply at any relevant premises at which the Services are to be provided;",
-              "similarity_score": 0.7565641984049221
+              "filename": "TMC2130_datasheet.pdf",
+              "page": 93,
+              "preview_text": "TMC2130 DATASHEET (Rev. 1.10 / 2018-MAY-09)       94 \n \n \n \nwww.trinamic.com \n29 Layout Considerations \n29.1 Exposed Die Pad \nThe TMC2130 uses its die attach pad to dissipate heat from the drivers and the linear regulator to the \nboard. For best electrical and thermal performance, use a reasonable amount of solid, thermally \nconducting vias between the die attach pad and the ground plane . The printe d circuit board should \nhave a solid ground plane spreading heat into the board and providing for a stable GND reference.  \n29.2 Wiring GND \nAll signals of the TMC2130 are referenced to their respective GND. Directly connect all GND pins under \nthe device to a comm on ground area (GND, GNDP, GNDA and die attach pad). The GND plane right \nbelow the die attach pad should be treated as a virtual star point. For thermal reasons, the PCB top \nlayer shall be connected to a large PCB GND plane spreading heat within the PCB.  \n \nAttention \nEspecially the sense resistors are susceptible to GND differences and GND ripple voltage, as the \nmicrostep current steps make up for voltages down to 0.5  mV. No current other than the sense",
+              "similarity_score": 0.787101913122724
             },
             {
-              "filename": "Qu-01390131-0.pdf",
-              "page": 12,
-              "text": "by the testing and certification rules  of  the relevant  accreditation body,  all  materials  necessary to document the Services provided.\n8. AMENDMENT\n8.1 No amendment to this Agreement shall be effective unless it is in writing, expressly stated to amend this Agreement and signed by an authorized signatory of \neach party.\n9. FORCE MAJEURE\n9.1 Neither party shall be liable to the other for any delay in performing or failure to perform any obligation under this Agreement to the extent that such delay or \nfailure to perform is a result of:\n(a) war (whether declared or not), civil war, riots, revolution, acts of terrorism, military action, sabotage and/or piracy;\n(b) natural disasters such as violent storms, earthquakes, tidal waves, floods and/or lighting; explosions and fires;\n(c) strikes and labor disputes, other than by any one or more employees of the affected party or of any supplier or agent of the affected party; or\n(d) failures of utilities companies such as providers of telecommunication, internet, gas or electricity services.",
-              "similarity_score": 0.7532998330919987
+              "filename": "final_output_G9941.pdf",
+              "page": 19,
+              "preview_text": "Secured independently; TBD-Info available\nUnlikely to be removed by servicing TBD-Info available\nh) PROTECTIVE CONDUCTOR of measuring circuit: —\n1) Current RATING equivalent to measuring \ncircuit TERMINAL;\nProtective conductor matches \nterminal current rating; \ncompliant.\nP\n2) PROTECTIVE BONDING: not interrupted by any\nswitch or interrupting device\nNo evidence of switch \ninterrupting protective \nbonding.\nN/A\ni) FUNCTIONAL EARTH TERMINALS allow independent \nconnection\nNo functional earth terminals \nin the equipment\nN/A\nj) If a binding screw used for PROTECTIVE \nCONDUCTOR TERMINAL:\n—\nSuitable size for bond wire TBD-Info available\nNot smaller than M 4 TBD-Info available\nAt least 3 turns of screw engaged TBD-Info available\nPasses tightening torque test (see Form A.8)\nk) Contact pressure not capable being reduced by \ndeformation of materials\nTBD-Info available\n6.5.2.4 Impedance of PROTECTIVE BONDING of plug-\nconnected equipment\n(see Form A.9)\nImpedance between PROTECTIVE CONDUCTOR \nTERMINAL and each ACCESSIBLE part where \nPROTECTIVE BONDING is specified, is:\n—\n– less than 0,1 Ohm; or TBD-Info available",
+              "similarity_score": 0.7846129958162357
             },
             {
-              "filename": "Qu-01390131-0.pdf",
-              "page": 5,
-              "text": "Quote No:  Qu-01390131-0\n6 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nItem # Evaluation Standard/Description Net Price\n6 CSA C22.2#61010-1:2004Ed.2+G1\nSafety Requirements For Electrical Equipment For Measurement, \nControl, And Laboratory Use Part 1: General Requirements (R2009)\n$0.00\n7 CB Certificate Fee $650.00\nTOTAL (USD) $21,350.00",
-              "similarity_score": 0.7848976166326961
+              "filename": "final_output_G9941.pdf",
+              "page": 26,
+              "preview_text": "Page 27 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\n6.9.1 General\nIf a failure could cause a HAZARD: —\na) security of wiring connections TBD-Info available\nb) screws securing removable covers TBD-Info available\nc) accidental loosening TBD-Info available\nd) CLEARANCES and CREEPAGE DISTANCES not \nreduced below the values of basic insulation by \nloosening of parts or wires\nTBD-Info available\n6.9.2 Insulating materials\nMaterial not to be used for safety relevant insulation: —\na) easily damaged materials not used TBD-Info available\nb) non-impregnated hygroscopic materials not used TBD-Info available\n6.9.3 Colour coding\nGreen-and-yellow insulation shall not be used \nexcept:\n—\na) protective earth conductors; Green-yellow insulation \navailable for protective earth \nconductors.\nP\nb) PROTECTIVE BONDING conductors; Green and yellow insulation \navailable for bonding \nconductors.\nP\nc) potential equalization conductors; Green-yellow insulation \navailable for equipotential \nconductors.\nP\nd) functional earth conductors No functional earth \nconductors.\nP\n6.10 Connection to MAINS supply source and \nconnections between parts of equipment",
+              "similarity_score": 0.7838768834153184
             }
           ],
-          "image_support": [
-            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/source_documents/PastedGraphic-1.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-02-28T15%3A36%3A06Z&st=2026-01-02T07%3A21%3A06Z&spr=https&sig=LRuMhEOLeB%2FcoBRctPsJbYNwgSnIlQyPBhIvWTdBnKI%3D"
-          ],
+          "image_support": [],
           "confidence": 95
         },
         {
@@ -1043,7 +1037,7 @@
           "prefix": "Polarized Connection",
           "field": "6.",
           "answer_cell": "B25",
-          "value": "Polarized Connection - This product is provided with a polarized power supply connection. All single pole switches and fuses are connected only to the ungrounded supply circuit conductor. The block diagram shows the AC inlet with distinct line (L) and neutral (N) connections, and the fuse is placed in the line conductor, maintaining polarity.",
+          "value": "Polarized Connection - This product is provided with a polarized power supply connection. All single pole switches and fuses are connected only to the ungrounded supply circuit conductor. The construction uses a 2-prong AC plug, which is inherently polarized for safety and compliance.",
           "st1": "Polarized Connection - This product is provided with a polarized power supply connection. All single pole switches and fuses are connected only to the ungrounded supply circuit conductor.",
           "resp1": null,
           "st2": null,
@@ -1059,38 +1053,38 @@
           "accuracy_level": true,
           "text_support": [
             {
-              "filename": "CFE-4LB011-E (1) (1).pdf",
-              "page": 0,
-              "text": "REPRODUCTION IN PART OR AS A \nWHOLE WITHOUT THE WRITTEN \nPERMISSION OF GENER8 IS \nPROHIBITED.\nPROPRIETARY AND \nCONFIDENTIAL\nMATERIAL\nSURFACE TREATMENT\nTITLE:\nSIZE\nB\nDRAWING NUMBER REV\nEXPANDED TOLERANCES\nSCALE: 2:1\nUNLESS OTHERWISE SPECIFIED:\nDIMENSIONS ARE IN MILLIMETERS, INTERPRET \nDIMS AND TOLS PER ANSI/ASME Y14.5M-1994\nREGULATORY LABEL\nSHEET 1 OF 1DO NOT SCALE \nDRAWING\nSEE NOTES\nSEE NOTES\nDECIMALS\nX       1.00\nX.X     0.50\nX.XX    0.15\nASME Y14.5M-1994 THIRD \nANGLE PROJECTION\nANGULAR:\nX     1\n2560 JUNCTION AVE, SAN JOSE, CA 95134\n8\nCFE-4LB011 E\nInfinity MTx™ Instrument\nPart number: CFE-1TLA11\nInput pressure: 90-120 PSIG\n              CellFE, Inc.\n             1000 Atlantic Ave, Ste 104\n              Alameda, CA 94501, USA\n              support@cellfebiotech.com\nS/N\n110 - 240VAC\n5.9 - 2.7A\n50/60 Hz\n6A\n250VAC\nSLOW BLOW",
-              "similarity_score": 0.7500202238703652
+              "filename": "CONN_PLUG_HSG_MINI_FIT_JR_MOLEX_39013029.pdf",
+              "page": 2,
+              "preview_text": "Solder Process Data \n \n \n \nMates With / Use With \nMates with Part(s) \n \n \nUse with Part(s) \n \nColor - Resin Natural\nFlammability 94V-0\nGender Plug\nGlow-Wire Capable No\nKeying to Mating Part None\nLock to Mating Part Yes\nMaterial - Resin Nylon\nNet Weight 0.900/g\nNumber of Rows 2\nPackaging Type Bag\nPanel Mount No\nPitch - Mating Interface 4.20mm\nPitch - Termination Interface 4.20mm\nPolarized to Mating Part Yes\nStackable No\nTemperature Range - Operating -40° to +105°C\nLead-Free Process Capability N/A\nDescription Part Number\nMini-Fit Jr. Receptacle Housing,\nDual Row, 2 Circuits, UL 94V-0,\nNatural\n0039012025\nMini-Fit Jr. Receptacle Housing,\nDual Row, 2 Circuits, UL 94V-0,\nNatural\n0039013028\nMini-Fit TPA2-to-Mini-Fit TPA2 Off-\nthe-Shelf (OTS) Cable Assemblies\n45135\nMini-Fit Jr.-to-Mini-Fit Jr. Off-the-\nShelf (OTS) Overmolded Cable\nAssemblies\n245135\nDescription Part Number",
+              "similarity_score": 0.7797945911187628
             },
             {
-              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
+              "filename": "CONN_RCPT_HSG_SOCKET_26-28_AWG_1.25MM_MOLEX_PS-51021-009.pdf",
               "page": 1,
-              "text": "Hi Grant,\r\n\r\n\r\n\r\nHope all is well. Below is the list of tests that will be performed on your equipment. As we progress through the project I'll provide updates on the outcome of the tests conducted. If you have any questions or concerns, please let me know. Thank you.\r\n\r\n\r\n\r\nClause no.\r\n\r\nTest Description\r\n\r\n4.4\r\n\r\nTesting in Single Fault Conditions\r\n\r\n5.1.3\r\n\r\nInput Test\r\n\r\n5.3\r\n\r\nDurability of markings\r\n\r\n6.2\r\n\r\nDetermination of accessible parts\r\n\r\n6.3.1\r\n\r\nElectric Shock Test \"Normal Conditions\"\r\n\r\n6.3.2\r\n\r\nElectric Shock Test \"Single Fault Conditions\"\r\n\r\n6.5.2.3<https://urldefense.proofpoint.com/v2/url?u=http-3A__6.5.2.3&d=DwQGaQ&c=euGZstcaTDllvimEN8b7jXrwqOf-v5A_CdpgnVfiiMM&r=9C7PSk_IsFDu4Gbc5VWQsKi5DnaqqJ3NaVpNN3BIbwY&m=ff1D8welbBc7eeMqsDrnNG7J44euu3meSHnM49oStTltzYs3JNWT4eBpmW29gmjQ&s=CFSCM_q9aEIgaCRvbKoGl9s9DPZRy4Kry-0l9XgqpKA&e=>\r\n\r\nBonding Imepedance Test \"Plug-connected equipment\" (Ground bond test)\r\n\r\n6.7\r\n\r\nInsulation requirements\r\n\r\n6.8.2\r\n\r\nHumidity pre-conditioning\r\n\r\n6.8.3\r\n\r\nDielectric Voltage Withstand Test (Hi-pot)\r\n\r\n6.10.3\r\n\r\nCap Discharge Test\r\n\r\n7.4\r\n\r\nStability Test\r\n\r\n8.2\r\n\r\nRigidity Test (Static)\r\n\r\n8.2.2\r\n\r\nRigidity Test (Dynamic)\r\n\r\n8.3.1",
-              "similarity_score": 0.7430728258635635
+              "preview_text": "LANGUAGE  \nJAPANESE \nENGLISH  \n \n REVISE ON PC ONLY  TITLE:  \n1.25mm PITCH WIRE TO WIRE CONNECTOR \n \n               -LEAD FREE-           製品仕様書製品仕様書製品仕様書製品仕様書 \n \nB SEE SHEET 1 OF 12 \nTHIS DOCUMENT CONTAINS INFORMATION THAT IS  PROPRIETARY TO  \nMOLEX INC. AND SHOULD NOT BE USED WITHOUT WRITTEN P ERMISSION  REV.  DESCRIPTION  \nDOCUMENT NUMBER  \nPS-51021-009  \n FILE NAME \n \nPS51021009.doc  \nSHEET \n \n2 OF 12  \n                                                                                       EN-37-1(019)                                                                        \nPRODUCT SPECIFICATION  \n【４．性能 PERFORMANCE 】 \n4-1. 電気的性能 Electrical Performance  \n項    目 \nItem \n条            件 \nTest Condition \n規      格 \nRequirement \n4-1-1 \n接触抵抗 \nContact \nResistance \nコネクタを嵌合させ、開放電圧20mV 以下、 \n短絡電流 10mA にて測定する。 \n(JIS C5402 5.4) \nMate connectors, measure by dry circuit, \n20mV MAX., 10mA. \n(JIS C5402 5.4) \n20 milliohm MAX. \n4-1-2 \n絶縁抵抗 \nInsulation \nResistance \nコネクタを嵌合させ、隣接するタ－ミナル間及びタ－\nミナル、ア－ス間に、DC 500V を印加し測定する。 \n(JIS C5402 5.2/MIL-STD-202 試験法 302) \nMate connectors, apply 500V DC between adjacent \nterminal or ground. \n(JIS C5402 5.2/MIL-STD-202 Method 302) \n100 Megohm MIN. \n4-1-3 \n耐電圧 \nDielectric",
+              "similarity_score": 0.7770298223448286
             },
             {
-              "filename": "Accepted_-_Gener8_LLC_-_Qu-01390131-0.msg",
-              "page": 1,
-              "text": "<https://nam02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.intertek.com%2Famazed%3Futm_source%3Dsignature%26utm_medium%3DOutlook%26utm_content%3Dyba%26utm_campaign%3Dyoullbeamazed&data=05%7C01%7Ccharlotte.johnson%40intertek.com%7Cb6b5b1bd99bf4a73f17908dbb2e7d4e5%7Ccec3b02aea8c40eda66fa89023ac3286%7C0%7C0%7C638300481000894582%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=A2CFwj5JiPv1Yk0S2elc73yKpfQsYO%2BKqD14vN%2F4DCA%3D&reserved=0>",
-              "similarity_score": 0.7352676844901717
+              "filename": "CONN_RCPT_HSG_SOCKET_26-28_AWG_1.25MM_MOLEX_PS-51021-009.pdf",
+              "page": 7,
+              "preview_text": "LANGUAGE  \nJAPANESE \nENGLISH  \n \n REVISE ON PC ONLY  TITLE:  \n1.25mm PITCH WIRE TO WIRE CONNECTOR \n \n               -LEAD FREE-           製品仕様書製品仕様書製品仕様書製品仕様書 \n \nB SEE SHEET 1 OF 12 \nTHIS DOCUMENT CONTAINS INFORMATION THAT IS  PROPRIETARY TO  \nMOLEX INC. AND SHOULD NOT BE USED WITHOUT WRITTEN P ERMISSION  REV.  DESCRIPTION  \nDOCUMENT NUMBER  \nPS-51021-009  \n FILE NAME \n \nPS51021009.doc  \nSHEET \n \n8 OF 12  \n                                                                                       EN-37-1(019)                                                                        \nPRODUCT SPECIFICATION  \n【7．圧着端子取り扱い上の注意事項 INSTRUCTION UPON USAGE OF CRIMP TERMINAL 】 \n \n１．保管する場合には、外装カートン表示に従って保管願ます。縦置き又は、天地逆にて保管すると \n巻き緩みの原因になります。 \nWhen storing crimp terminal, please follow the view of outer carton. Do not store in an upright position \nor upside down. It could loosen the terminal. \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n図１ 端子梱包に関する各部名称  \n            FIG.1.  NOMENCLATURE FOR THE TERMINAL PACKAGING \n \n \n \n ２．保管環境に著しい高温・湿度がある場合、端子表面層に錆等の影響を及ぼす事がありますので  \n   ご注意願います。  \n      When storing the terminal in the significant temperature or, humidity, may be affected at the terminal surface.",
+              "similarity_score": 0.776649746987986
             },
             {
-              "filename": "Qu-01390131-0.pdf",
-              "page": 1,
-              "text": "customers to power ahead safely.\nPlease let me know if you have any questions regarding this proposal or the testing and certification \nprocess. We thank you for the opportunity to be of service and hope to work with you soon.\nYours sincerely,\nCharlotte Johnson\nSales Representative",
-              "similarity_score": 0.7345625282859518
+              "filename": "CONN_RCPT_HSG_SOCKET_26-28_AWG_1.25MM_MOLEX_PS-51021-009.pdf",
+              "page": 4,
+              "preview_text": "LANGUAGE  \nJAPANESE \nENGLISH  \n \n REVISE ON PC ONLY  TITLE:  \n1.25mm PITCH WIRE TO WIRE CONNECTOR \n \n               -LEAD FREE-           製品仕様書製品仕様書製品仕様書製品仕様書 \n \nB SEE SHEET 1 OF 12 \nTHIS DOCUMENT CONTAINS INFORMATION THAT IS  PROPRIETARY TO  \nMOLEX INC. AND SHOULD NOT BE USED WITHOUT WRITTEN P ERMISSION  REV.  DESCRIPTION  \nDOCUMENT NUMBER  \nPS-51021-009  \n FILE NAME \n \nPS51021009.doc  \nSHEET \n \n5 OF 12  \n                                                                                       EN-37-1(019)                                                                        \nPRODUCT SPECIFICATION  \n \n項    目 \nItem \n条            件 \nTest Condition \n規      格 \nRequirement \n4-3-6 \n耐寒性 \nCold \nResistance \nコネクタを嵌合させ、-40 ±3℃の雰囲気中に \n96 時間放置後取出し、1～2時間室温に \n放置する。 \n(JIS C60068-2-1) \n-40 ±3℃, 96 hours  \n(JIS C60068-2-1)  \n外  観  \nAppearance \n異状なきこと \nNo Damage \n接触抵抗 \nContact \nResistance \n40 milliohm MAX. \n4-3-7 耐湿性 \nHumidity \nコネクタを嵌合させ、60 ±2℃、相対温度  \n90 ～95 ％の雰囲気中に96 時間放置後取出し、 \n1～2時間室温に放置する。 \n(JIS C60068-2-3/MIL-STD-202 試験法103) \nTemperature  ：     60 ±2℃ \nRelative Humidity ： 90 ～95 ％ \nDuration  ：     96 hours \n(JIS C60068-2-3/MIL-STD-202 Method 103) \n外  観  \nAppearance \n異状なきこと \nNo Damage \n接触抵抗",
+              "similarity_score": 0.7764013354037312
             },
             {
-              "filename": "Risk Assessment CFE_28nov.xlsx",
-              "page": 1,
-              "text": "op-5 System Tripping Power entry and bulkhead locations that are not positioned correctly Moderate Rare 2 Plug and Power Entry locations designed in easy to see/reach areas and not near top of instrument  Unlikely 1\nop-6 Pneumatic System Release of pressure Release of high pressure causing destruction or damage. Projection of damaged debris under pressure Moderate Unlikely 2 All parts were spec’d with double the pressure rating and reviewed during safety testing Unlikely 2 add 61010 report #\nop-7 System Fire caused by short in system Electrical short causes fire  Catastrophic Unlikely 2 primary side fuses limit current drawn from the wall Unlikely 2 add 61010 report # & Lab equipment CE standard 61326\nop-8 System Damage to external equipment  Device emissions cause damage to other equipment  Minor Rare 1 Product Designed and tested to 61010\nEMC / EMI testing standard Rare 1 add 61010 report # \nop-9 System Crush  Operator pulls unit over  Severe Rare 2 Feet are placed wide on the instrument, most of the unit weight is located on the base. Rare 2 add 61010 report #",
-              "similarity_score": 0.7312294625930497
+              "filename": "CONN_RCPT_HSG_SOCKET_26-28_AWG_1.25MM_MOLEX_PS-51021-009.pdf",
+              "page": 3,
+              "preview_text": "LANGUAGE  \nJAPANESE \nENGLISH  \n \n REVISE ON PC ONLY  TITLE:  \n1.25mm PITCH WIRE TO WIRE CONNECTOR \n \n               -LEAD FREE-           製品仕様書製品仕様書製品仕様書製品仕様書 \n \nB SEE SHEET 1 OF 12 \nTHIS DOCUMENT CONTAINS INFORMATION THAT IS  PROPRIETARY TO  \nMOLEX INC. AND SHOULD NOT BE USED WITHOUT WRITTEN P ERMISSION  REV.  DESCRIPTION  \nDOCUMENT NUMBER  \nPS-51021-009  \n FILE NAME \n \nPS51021009.doc  \nSHEET \n \n4 OF 12  \n                                                                                       EN-37-1(019)                                                                        \nPRODUCT SPECIFICATION  \n4-3. その他 Environmental Performance and Others  \n項    目 \nItem \n条            件 \nTest Condition \n規      格 \nRequirement \n4-3-1 \n繰り返し挿抜 \nRepeated \nInsertion/ \nWithdrawal \n1分間に10 回以下の速さで挿入、抜去を30 回 \n繰り返す。 \nWhen mated up to 30 cycles repeatedly by \nthe rate of 10 cycles/minute. \n接触抵抗 \nContact \nResistance \n40 milliohm MAX. \n4-3-2 \n温度上昇 \nTemperature \nRise \nコネクタを嵌合させ、最大許容電流を通電し、 \nコネクタの温度上昇分を測定する。 \n(UL 498) \nCarrying rated current load. \n(UL 498) \n温度上昇 \nTemperature \nRise \n30 ℃ MAX. \n4-3-3 耐振動性 \nVibration \nDC 1mA 通電状態にて、嵌合軸を含む互いに \n垂直な3方向に掃引割合10 ～55 ～10Hz/ 分  \n全振幅 1.5mm の振動を各2時間加える。",
+              "similarity_score": 0.7759783911071498
             }
           ],
           "image_support": [
-            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/source_documents/PastedGraphic-1.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-02-28T15%3A36%3A06Z&st=2026-01-02T07%3A21%3A06Z&spr=https&sig=LRuMhEOLeB%2FcoBRctPsJbYNwgSnIlQyPBhIvWTdBnKI%3D"
+            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G9941/source_documents/TKDY_TP06-240250W_UL_E469869.jpg?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
           ],
           "confidence": 95
         },
@@ -1099,7 +1093,7 @@
           "prefix": "Internal Wiring",
           "field": "7.",
           "answer_cell": "B26",
-          "value": "Internal Wiring - Internal wiring is routed away from sharp or moving parts. Internal wiring leads terminating in soldered connections are made mechanically secure prior to soldering. Recognized Component separable connectors are acceptable. Wiring passing through metal walls is protected by bushings or grommets. All wiring is minimum ++ AWG, with a minimum rating of ++V, ++°C.",
+          "value": "Internal Wiring - Internal wiring is routed away from sharp or moving parts. Internal wiring leads terminating in soldered connections are made mechanically secure prior to soldering. Recognized Component separable connectors are acceptable. Wiring passing through metal walls is protected by bushings or grommets. All wiring is minimum 26 AWG, with a minimum rating of 300V, 105°C.",
           "val1": null,
           "val2": null,
           "val3": null,
@@ -1118,41 +1112,38 @@
           "accuracy_level": true,
           "text_support": [
             {
-              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
-              "page": 1,
-              "text": "Hi Grant,\r\n\r\n\r\n\r\nHope all is well. Below is the list of tests that will be performed on your equipment. As we progress through the project I'll provide updates on the outcome of the tests conducted. If you have any questions or concerns, please let me know. Thank you.\r\n\r\n\r\n\r\nClause no.\r\n\r\nTest Description\r\n\r\n4.4\r\n\r\nTesting in Single Fault Conditions\r\n\r\n5.1.3\r\n\r\nInput Test\r\n\r\n5.3\r\n\r\nDurability of markings\r\n\r\n6.2\r\n\r\nDetermination of accessible parts\r\n\r\n6.3.1\r\n\r\nElectric Shock Test \"Normal Conditions\"\r\n\r\n6.3.2\r\n\r\nElectric Shock Test \"Single Fault Conditions\"\r\n\r\n6.5.2.3<https://urldefense.proofpoint.com/v2/url?u=http-3A__6.5.2.3&d=DwQGaQ&c=euGZstcaTDllvimEN8b7jXrwqOf-v5A_CdpgnVfiiMM&r=9C7PSk_IsFDu4Gbc5VWQsKi5DnaqqJ3NaVpNN3BIbwY&m=ff1D8welbBc7eeMqsDrnNG7J44euu3meSHnM49oStTltzYs3JNWT4eBpmW29gmjQ&s=CFSCM_q9aEIgaCRvbKoGl9s9DPZRy4Kry-0l9XgqpKA&e=>\r\n\r\nBonding Imepedance Test \"Plug-connected equipment\" (Ground bond test)\r\n\r\n6.7\r\n\r\nInsulation requirements\r\n\r\n6.8.2\r\n\r\nHumidity pre-conditioning\r\n\r\n6.8.3\r\n\r\nDielectric Voltage Withstand Test (Hi-pot)\r\n\r\n6.10.3\r\n\r\nCap Discharge Test\r\n\r\n7.4\r\n\r\nStability Test\r\n\r\n8.2\r\n\r\nRigidity Test (Static)\r\n\r\n8.2.2\r\n\r\nRigidity Test (Dynamic)\r\n\r\n8.3.1",
-              "similarity_score": 0.7758433812141748
-            },
-            {
-              "filename": "Risk Assessment CFE_28nov.xlsx",
-              "page": 1,
-              "text": "op-5 System Tripping Power entry and bulkhead locations that are not positioned correctly Moderate Rare 2 Plug and Power Entry locations designed in easy to see/reach areas and not near top of instrument  Unlikely 1\nop-6 Pneumatic System Release of pressure Release of high pressure causing destruction or damage. Projection of damaged debris under pressure Moderate Unlikely 2 All parts were spec’d with double the pressure rating and reviewed during safety testing Unlikely 2 add 61010 report #\nop-7 System Fire caused by short in system Electrical short causes fire  Catastrophic Unlikely 2 primary side fuses limit current drawn from the wall Unlikely 2 add 61010 report # & Lab equipment CE standard 61326\nop-8 System Damage to external equipment  Device emissions cause damage to other equipment  Minor Rare 1 Product Designed and tested to 61010\nEMC / EMI testing standard Rare 1 add 61010 report # \nop-9 System Crush  Operator pulls unit over  Severe Rare 2 Feet are placed wide on the instrument, most of the unit weight is located on the base. Rare 2 add 61010 report #",
-              "similarity_score": 0.7693869366140909
-            },
-            {
-              "filename": "Qu-01390131-0.pdf",
-              "page": 5,
-              "text": "Quote No:  Qu-01390131-0\n6 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nItem # Evaluation Standard/Description Net Price\n6 CSA C22.2#61010-1:2004Ed.2+G1\nSafety Requirements For Electrical Equipment For Measurement, \nControl, And Laboratory Use Part 1: General Requirements (R2009)\n$0.00\n7 CB Certificate Fee $650.00\nTOTAL (USD) $21,350.00",
-              "similarity_score": 0.7660967307482421
-            },
-            {
-              "filename": "Qu-01390131-0.pdf",
-              "page": 3,
-              "text": "Quote No:  Qu-01390131-0\n4 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nSamples and Documentation Required: \nPlease provide the following prior the commencement of your evaluation. To avoid unnecessary delays, \nplease mark quote number Qu-01390131-0 on the outside of shipping materials containing samples or \ndocumentation.\nSamples:\n•1 fully functional sample (2 preferred), with any associated equipment/configurations for \nmaximum heat rise (generally assumed to be highest power draw version with maximum \nnumber of components).\n \nDocumentation to be provided:\n•Schematics\n•BOMs\n•Assembly/general arrangement drawings\n•Product literature (manuals, user instructions, etc. – if available)",
-              "similarity_score": 0.7627709726757369
-            },
-            {
-              "filename": "CFE-4LB011-E (1) (1).pdf",
+              "filename": "CONN_HSG_TERMINALS_MINI-FIT_JR_MOLEX_PS-5556-001.pdf",
               "page": 0,
-              "text": "REPRODUCTION IN PART OR AS A \nWHOLE WITHOUT THE WRITTEN \nPERMISSION OF GENER8 IS \nPROHIBITED.\nPROPRIETARY AND \nCONFIDENTIAL\nMATERIAL\nSURFACE TREATMENT\nTITLE:\nSIZE\nB\nDRAWING NUMBER REV\nEXPANDED TOLERANCES\nSCALE: 2:1\nUNLESS OTHERWISE SPECIFIED:\nDIMENSIONS ARE IN MILLIMETERS, INTERPRET \nDIMS AND TOLS PER ANSI/ASME Y14.5M-1994\nREGULATORY LABEL\nSHEET 1 OF 1DO NOT SCALE \nDRAWING\nSEE NOTES\nSEE NOTES\nDECIMALS\nX       1.00\nX.X     0.50\nX.XX    0.15\nASME Y14.5M-1994 THIRD \nANGLE PROJECTION\nANGULAR:\nX     1\n2560 JUNCTION AVE, SAN JOSE, CA 95134\n8\nCFE-4LB011 E\nInfinity MTx™ Instrument\nPart number: CFE-1TLA11\nInput pressure: 90-120 PSIG\n              CellFE, Inc.\n             1000 Atlantic Ave, Ste 104\n              Alameda, CA 94501, USA\n              support@cellfebiotech.com\nS/N\n110 - 240VAC\n5.9 - 2.7A\n50/60 Hz\n6A\n250VAC\nSLOW BLOW",
-              "similarity_score": 0.762686420581162
+              "preview_text": "4.6    Glow Wire                                                                                                         5 \n \n5.0    Wire-To-Wire Performance            5 \n5.1    Electrical Requirements        5 \n5.2    Mechanical Requirements           6 \n5.3    Environmental Requirements                 8  \n \n6.0    Wire-To-Board Performance            9 \n6.1    Electrical Requirements        9 \n6.2    Mechanical Requirements           9 \n6.3    Environmental Requirements                11  \n \n7.0    Test Sequences                       12 \n \n8.0    Packaging                   12  \n \n            9.0   Other Information                                                                                                       12 \n                        9.1    Gages and Fixtures                                                                                       12 \n                        9.2    Cable tie and/or twist location                                                                       12",
+              "similarity_score": 0.8059856246110783
+            },
+            {
+              "filename": "CONN_RCPT_HSG_6POS_2mm_MOLEX_510650600.pdf",
+              "page": 1,
+              "preview_text": "-\n-\n-\n-\n-\nMultiple Part Industry Compliance Documents\nIPC 1752A Class C\nIPC 1752A Class D\nMolex Product Compliance Declaration\nIEC-62474\nchemSHERPA (xml)\n \nEU RoHS Certificate of Compliance\n \nPart Details \nGeneral \n \n \nAgency \n \n \nPhysical \n \nStatus Active\nCategory Connector Housings\nSeries 51065\nDescription 2.00mm Pitch, Micro-Latch\nReceptacle Crimp Housing, Single\nRow, 6 Circuits, Natural\nApplication Signal, Wire-to-Board\nProduct Family Micro-Latch Wire-to-Board\nConnector System\nProduct Name Micro-Latch\nUPC 800753574274\nCSA LR19980\nUL E29179\nCircuits (maximum) 6\nColor - Resin Natural\nFlammability 94V-0\nGender Receptacle\nGlow-Wire Capable No\nLock to Mating Part Yes\nMaterial - Resin Polyester\nNet Weight 159.700/mg\nNumber of Rows 1\nPackaging Type Bag",
+              "similarity_score": 0.798991867442497
+            },
+            {
+              "filename": "CONN_HSG_TERMINALS_MINI-FIT_JR_MOLEX_PS-5556-001.pdf",
+              "page": 3,
+              "preview_text": "PRODUCT SPECIFICATION \nREVISION: ECR/ECN INFORMATION: TITLE: PRODUCT SPECIFICATION FOR \nMINI-FIT JR. \nCONNECTOR SYSTEM  \nSHEET No. \nE8 \nEC No: UCP2016-4279 \n4 of 12 \nDATE: 2016/05/09 \n   DOCUMENT NUMBER: CREATED / REVISED BY: CHECKED BY: APPROVED BY: \nPS -5556 -001  AZAHIROVIC JBELL FSMITH \nTEMPLATE FILENAME: PRODUCT_SPEC[SIZE_A](V.1).DOC  \n \n \n4.0 RATINGS  \n4.1 VOLTAGE \n600 Volts AC (RMS)  (or 600 Volts DC) \n*Voltage rating based on UL 1977. Maximum voltage allowed may vary dependent upon “End \nUse Application”. Refer to the applicable end use standard for additional information on Voltage, \nCreepage and Clearance requirements. \n \n4.2 APPLICABLE WIRES \n \nMaximum Insulation Diameter \nand \n Applicable Wire Gauges  \n16 AWG Standard, Copper:  3.15 mm / .124 inches MAXIMUM \n18-24 AWG Standard, Copper:  3.10 mm / .122 inches MAXIMUM \n22-28 AWG Standard, Copper:  1.80 mm / .071 inches MAXIMUM \n \n4.3 MAXIMUM CURRENT RATING (Amperes)** \n \n                   \nNote: PCB trace design may greatly affect temperature rise results in Wire-to-Board Applications. \n** Current rating is application dependent and may be affected by the wire rating such as listed in UL-",
+              "similarity_score": 0.7988686930580802
+            },
+            {
+              "filename": "CONN_RCPT_HSG_SOCKET_26-28_AWG_1.25MM_MOLEX_PS-51021-009.pdf",
+              "page": 0,
+              "preview_text": "LANGUAGE  \nJAPANESE \nENGLISH  \n \n REV. A B               \nSHEET 1-8 1-12               \nREVISE ON PC ONLY  TITLE:  \n1.25mm PITCH WIRE TO WIRE CONNECTOR \n \n               -LEAD FREE-           製品仕様書製品仕様書製品仕様書製品仕様書 B \n変 更  \nREVISED  \nJ2012-0524 \n'11/10/14 R.HORI  THIS DOCUMENT CONTAINS INFORMATION THAT IS PROPRIET ARY TO  \nMOLEX INC. AND SHOULD NOT BE USED WITHOUT WRITTEN P ERMISSION  REV.  DESCRIPTION  \nDESIGN CONTROL  \nJ \nSTATUS \n \nWRITTEN  \nBY: \nE.SUZUKI \nCHECKED  \nBY:  \nK.TOJO \nAPPROVED  \nBY:  \nN.UKITA \nDATE:  YR/MO/DAY  \n2004/12/07 \nDOCUMENT NUMBER  \nPS-51021-009  \n FILE NAME \n \nPS51021009.doc  \nSHEET \n \n1 OF 12  \nEN-37-1(019)    \nPRODUCT SPECIFICATION  \n【１． 適用範囲 SCOPE 】 \n本仕様書は、                                    殿  に納入する \n 1.25mm ピッチ 中継用 コネクタ  について規定する。 \nThis specification covers the 1.25mm PITCH WIRE TO WIRE CONNECTOR series. \n \n【２．製品名称及び型番 PRODUCT NAME AND PART NUMBER 】 \n製  品  名  称 \nProduct Name \n製  品  型  番 \nPart Number \nオスターミナル \nMale Terminal \nAWG #26-28 無 鉛  \nLEAD FREE ５０１２５－８＊００ \nAWG #28-32 無 鉛  \nLEAD FREE ５０１３３－８＊００ \nメスターミナル \nFemale Terminal \nAWG #28-32 無 鉛  \nLEAD FREE ５００５８－８＊００ \nAWG #26-28 無 鉛  \nLEAD FREE ５００７９－８＊００ \nプラグ ハウジング  \nPlug Housing \n無 鉛  \nLEAD FREE ５１０４７－＊＊００",
+              "similarity_score": 0.7967857047080751
+            },
+            {
+              "filename": "final_output_G9941.pdf",
+              "page": 25,
+              "preview_text": "Page 26 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nvalue for REINFORCED INSULATION are twice  the \nWORKING VOLTAGE \nTBD-Info available\nComplies as applicable: —\n1) ENCLOSURE or PROTECTIVE BARRIER of Clause 8 TBD-Info available\n2) moulded and potted parts requirements of \n6.7.3.4.2\n3) inner layers of printed wiring boards \nrequirements of 6.7.3.4.3\n4) thin-film insulation requirements of 6.7.3.4.4\n6.7.3.4.2 Moulded and potted parts —\nConductors between same two layers are separated \nby applicable distances of Table 8\nTBD-Info available\n6.7.3.4.3 Inner insulation layers of printed wiring boards —\nSeparated by at least the applicable distances of \nTable 8 between same two layers\nTBD-Info available\nREINFORCED INSULATION have adequate electric \nstrength; one of following methods used:\n—\na) thickness at least applicable distance of Table 8\nb) insulation is assembled of minimum two separate \nlayers, each RATED for test voltage of Table 6 for \nBASIC INSULATION\n(see Form A.18)\nc) insulation is assembled of min. two separate \nlayers, where the combination is RATED for 1,6 \ntimes the test voltage of Table 6\n(see Form A.18)",
+              "similarity_score": 0.7964476591824489
             }
           ],
-          "image_support": [
-            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/source_documents/CFE_block_diagram.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-02-28T15%3A36%3A06Z&st=2026-01-02T07%3A21%3A06Z&spr=https&sig=LRuMhEOLeB%2FcoBRctPsJbYNwgSnIlQyPBhIvWTdBnKI%3D",
-            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/source_documents/PastedGraphic-1.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-02-28T15%3A36%3A06Z&st=2026-01-02T07%3A21%3A06Z&spr=https&sig=LRuMhEOLeB%2FcoBRctPsJbYNwgSnIlQyPBhIvWTdBnKI%3D"
-          ],
-          "confidence": 70
+          "image_support": [],
+          "confidence": 90
         },
         {
           "question_cell": "A27",
@@ -1180,7 +1171,7 @@
           "prefix": "Markings",
           "field": "9.",
           "answer_cell": "B28",
-          "value": "Markings - The product is marked as follows: The product is marked with the applicant's name, brand name, model number, date of manufacture, electrical ratings, and relevant safety symbols and warnings. Markings are applied via direct imprint or adhesive-backed label, using legible, RoHS-compliant materials. Markings include information required for identification, traceability, and safe operation, such as voltage ratings, manufacturer details, and certification marks. Symbols for electrical ratings and safety are present as required by applicable standards.\n\nThe following markings in French are required:",
+          "value": "Markings - The product is marked as follows: The product marking includes the applicant's name, brand name, model number, electrical ratings (input/output voltage, current, power), certification marks (UL, CE, FCC), and relevant standards. Markings are present on the product and associated documentation, and include symbols and compliance information required for identification and safety purposes.  \n\nThe following markings in French are required:",
           "val1": null,
           "st1": "Markings - The product is marked <on a labeling system as described in item no. __ of Section 4.0 or by molding into polymeric enclosure> as follows: \n<Applicant's name, Basic or Multiple Listee's name as defined in section 9.0 or brand names;\nmodel number;\ndate of manufacturer;\nelectrical ratings, gas ratings>.x",
           "resp1": null,
@@ -1197,40 +1188,40 @@
           "accuracy_level": true,
           "text_support": [
             {
-              "filename": "Qu-01390131-0.pdf",
-              "page": 6,
-              "text": "documents can then be presented to any National Certification Body (NCB) as an application to apply \ntheir respective Certification Mark. If non-compliances are found, a formal report of our findings will be \nissued to assist you in making corrective actions. Please note that NCB Application Procedures can vary \nand the issuance of their \"license to mark\" is contingent on compliance with their rules. Unless \notherwise stated, this proposal assumes that all critical components are properly approved. \nNOTE: By signing this quotation, the manufacturer declares that when the products are produced at \nmultiple factories, sample(s) submitted to Intertek for evaluation are representative of products from \neach factory.\nCENELEC EN Test Reports for the European Union  \nYour product will be evaluated to determine compliance with the applicable requirements of the safety \nstandards referenced in this proposal. Should the product be found in compliance, a European Test \nReport will be issued which can be incorporated into your Technical File in order to support your CE \nMarking effort. If non-compliances are found, additional fees may apply, and a formal report will be",
-              "similarity_score": 0.7799085890976223
-            },
-            {
-              "filename": "CFE-4LB011-E (1) (1).pdf",
-              "page": 0,
-              "text": "75.00\n65.00\nR2.00\n0.05\n- -\nNOTES (UNLESS OTHERWISE SPECIFIED):\n1. MATERIAL: 3M7908 PLUS MATTE POLYESTER LAMINATION \n2. REFERENCED ARTWORK IS AN ADHESIVE BACKED LABEL\n3. FINISH: \n• DO NOT PRINT DIELINES\n• GRAPHICS COLOR: BLACK C:0 M:0 Y:0 K:100\n• BACKGROUND COLOR - WHITE C:0 M:0 Y:0 K:0\n4. THIS PDF FILE IS .AI COMPATIBLE AND CAN BE USED AS AN ARTWORK FILE IN ILLUSTRATOR.\n5. PACKAGE TO PREVENT DAMAGE; MARK PACKAGING WITH PART NUMBER AND REV.\n6. LABEL SHOULD BE LEGIBLE AND FREE FROM BLURS AND SCRATCHES.\n7. MATERIAL AND PROCESSES USED IN THE FABRICATION OF THIS PART TO BE ROHS COMPLIANT, \nCERTIFICATE(S) OF ROHS COMPLIANCE REQUIRED WITH DELIVERY.\nGENER8 IQA INSTRUCTIONS:\n1. CONFIRM ARTWORK MATCHES IMAGE\n2. LABEL TO BE FREE FROM BLURS AND SCRATCHES\n3. CHECK OF DIMENSIONS NOT REQUIRED\nREVISIONS\nREV. DESCRIPTION DATE INITIATED BY\nC REVISED ARTWORK 08/18/2023 JFRANCKE\nD REVISED ARTWORK 09/26/2023 JFRANCKE\nE REVISED ARTWORK 11/09/2023 JFRANCKE\nD\nC\nB\nAA\nB\nC\nD\n12345678\n7 6 5 4 3 2 1\nTHE INFORMATION CONTAINED IN \nTHIS DOCUMENT IS THE SOLE \nPROPERTY OF GENER8. ANY \nREPRODUCTION IN PART OR AS A \nWHOLE WITHOUT THE WRITTEN \nPERMISSION OF GENER8 IS \nPROHIBITED.\nPROPRIETARY AND \nCONFIDENTIAL\nMATERIAL",
-              "similarity_score": 0.7766551892228569
-            },
-            {
-              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
-              "page": 1,
-              "text": "Hi Grant,\r\n\r\n\r\n\r\nHope all is well. Below is the list of tests that will be performed on your equipment. As we progress through the project I'll provide updates on the outcome of the tests conducted. If you have any questions or concerns, please let me know. Thank you.\r\n\r\n\r\n\r\nClause no.\r\n\r\nTest Description\r\n\r\n4.4\r\n\r\nTesting in Single Fault Conditions\r\n\r\n5.1.3\r\n\r\nInput Test\r\n\r\n5.3\r\n\r\nDurability of markings\r\n\r\n6.2\r\n\r\nDetermination of accessible parts\r\n\r\n6.3.1\r\n\r\nElectric Shock Test \"Normal Conditions\"\r\n\r\n6.3.2\r\n\r\nElectric Shock Test \"Single Fault Conditions\"\r\n\r\n6.5.2.3<https://urldefense.proofpoint.com/v2/url?u=http-3A__6.5.2.3&d=DwQGaQ&c=euGZstcaTDllvimEN8b7jXrwqOf-v5A_CdpgnVfiiMM&r=9C7PSk_IsFDu4Gbc5VWQsKi5DnaqqJ3NaVpNN3BIbwY&m=ff1D8welbBc7eeMqsDrnNG7J44euu3meSHnM49oStTltzYs3JNWT4eBpmW29gmjQ&s=CFSCM_q9aEIgaCRvbKoGl9s9DPZRy4Kry-0l9XgqpKA&e=>\r\n\r\nBonding Imepedance Test \"Plug-connected equipment\" (Ground bond test)\r\n\r\n6.7\r\n\r\nInsulation requirements\r\n\r\n6.8.2\r\n\r\nHumidity pre-conditioning\r\n\r\n6.8.3\r\n\r\nDielectric Voltage Withstand Test (Hi-pot)\r\n\r\n6.10.3\r\n\r\nCap Discharge Test\r\n\r\n7.4\r\n\r\nStability Test\r\n\r\n8.2\r\n\r\nRigidity Test (Static)\r\n\r\n8.2.2\r\n\r\nRigidity Test (Dynamic)\r\n\r\n8.3.1",
-              "similarity_score": 0.7692075689319458
-            },
-            {
-              "filename": "Qu-01390131-0.pdf",
-              "page": 7,
-              "text": "Quote No:  Qu-01390131-0\n8 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nBefore the ETL Listing Mark can be applied to your products, we must execute a Certificate Agreement \nand establish Follow-up Services in you manufacturing locations. There are additional fees associated \nwith maintaining the ETL Listing Mark. To learn more about this important step, please contact your \nAccount Manager or visit http://intertek.com/guide-to-etl.\nPricing assumes all critical components are properly approved. If you have any questions regarding this \nassumption, please contact your account manager.\nAdditional Certification Services and Fees:\nFor services that result in the authorization of a certification mark; additional follow-up or surveillance \nservices may be required at an additional fee which will be charged separately.  Please ask your sales \nrepresentative for additional information or refer to our website:  \nhttp://www.intertek.com/certification\nExpenses:\nUnless specifically detailed within this proposal, travel expenses, all shipping costs including express",
-              "similarity_score": 0.7611398842827057
-            },
-            {
-              "filename": "Qu-01390131-0.pdf",
+              "filename": "final_output_G9941.pdf",
               "page": 11,
-              "text": "base rate from time to time of HSBC Bank in the relevant currency.\n6. INTELLECTUAL PROPERTY RIGHTS AND DATA PROTECTION\n6.1 All Intellectual Property Rights belonging to a party prior to entry into this Agreement shall remain vested in that party. Nothing in this Agreement is intended to \ntransfer any Intellectual Property Rights from either party to the other.\n6.2 Any use by the Client (or the Client's affiliated companies or subsidiaries) of the name \"Intertek\" or any of Intertek's trademarks or brand names for any reason \nmust be prior approved in writing by Intertek. Any other use of Intertek's trademarks or brand names is strictly prohibited and Intertek reserves the right to \nterminate this Agreement immediately as a result of any such unauthorized use.\n6.3 In the event of provision of certification services, Client agrees and acknowledges that the use of certification marks may be subject to national and international \nlaws, regulations and a separate certification agreement.\n6.4 All Intellectual Property Rights in any Reports, document, graphs, charts, photographs or",
-              "similarity_score": 0.7600467402455187
+              "preview_text": "N/A\nb) Symbols and text moulded, stamped or \nengraved in material min. 2,0 mm high and \nNo evidence of warning \nsymbols or text found.\nN/A\n0,5 mm depth or raised if not contrasting in \ncolour\nMarking color contrast not \nevidenced; depth not \nconfirmed.\n \nIf necessary marked with symbol 14, or No symbol 14 warning \nmarking found or required.\nN/A",
+              "similarity_score": 0.8286046458958943
+            },
+            {
+              "filename": "final_output_G9941.pdf",
+              "page": 5,
+              "preview_text": "Page 6 of 88 Report No.      \nTRF No. IEC61010_1P\nCopy of marking plate:\nThe artwork below may be only a draft. The use of certification marks on a product must be \nauthorized by the respective NCBs that own these marks.",
+              "similarity_score": 0.8212634845760107
+            },
+            {
+              "filename": "final_output_G9941.pdf",
+              "page": 47,
+              "preview_text": "Page 48 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement — Test Result — Remark Verdict\n5.3 TABLE: Durability of markings Form A.3\nMarking method (see NOTE) Agent\n1) Adhesive label A Water\n2) Ink printed B Isopropyl alcohol 70%\n3) Laser marked C (specify agent)\n4) Film-coated (plastic foil control panel) D (specify agent)\n5) Imprinted on plastic (moulded in) E (specify agent)\nNOTE – Where applicable include print method, label material, ink or paint type, \nfixing method, adhesive and surface to which marking is fixed.\nMarking location Marking method (see above)\nIdentification (5.1.2)\nMAINS supply (5.1.3)\nFuses (5.1.4)\nTerminals and operating devices (5.1.5.2)\nSwitches and circuit breakers (5.1.6)\nDouble/reinforced equipment (5.1.7)\nField wiring Terminal boxes (5.1.8)\nWarning marking (5.2)\nBattery charging (13.2.2)\nMethod Test agent Remains legible Label loose Curled edges Comments\nVerdict Verdict Verdict\nSupplementary information:",
+              "similarity_score": 0.8188750046956658
+            },
+            {
+              "filename": "final_output_G9941.pdf",
+              "page": 12,
+              "preview_text": "Page 13 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nAdditional symbols such as symbol 12, 13 or 17 \nused to indicate the nature of HAZARD\nNo evidence of additional \nhazard symbols found.\nN/A\nStatement to place equipment in a safe state before \naccess by using a tool to HAZARDOUS parts is \npermitted\nNo warning statement \nevidence found in \ndocumentation.\nN/A\n5.3 Durability of markings\nThe required markings remain clear and legible in \nNORMAL USE \n(see Form A.3)\n5.4 Documentation\n5.4.1 General\nEquipment is accompanied by documentation for \nsafety purposes for OPERATOR or RESPONSIBLE BODY\nManual and safety \ndocumentation are included.\nP\nSafety documentation for service personnel \nauthorized by the manufacturer\nNo evidence of service safety \ndocumentation provided.\n \nDocumentation necessary for safe operation is \nprovided in printed media or\nManual listed in product \ndocumentation evidence.\nP\nin electronic media if available at any time Manual and documentation \navailable in electronic format.\nP\nDocumentation includes: —\na) Intended use Device is for indoor use only. P\nb) Technical specification Technical specification is",
+              "similarity_score": 0.8156301573177706
+            },
+            {
+              "filename": "final_output_G9941.pdf",
+              "page": 9,
+              "preview_text": "Page 10 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\n– Visible from the exterior; or Required markings not visible \non equipment exterior.\nP\n– Visible after removing cover or opening door Required markings visibility \nnot evidenced in images.\n \n– Visible after removal from a rack or panel Required markings visibility \nnot evidenced in images.\n \nNot put on parts which can be removed by an \noperator\nNo evidence markings are on \nremovable operator parts.\nP\nLetter symbols (IEC 60027) used\nGraphic symbols of Table 1 used No Table 1 graphic symbols \nvisible on marking label.\n \n5.1.2 Identification P\nEquipment is identified by: —\na) Manufacturer’s or supplier’s name or trademark Manufacturer name \n'ESPRESSIF SYSTEMS' \nclearly identified.\nP\nb) Model number, name or other means Equipment identified by \nmodel, name, and type \ndesignation.\nP\nManufacturing location identified Manufacturing location \nidentified as Shanghai, China.\nP\n5.1.3 MAINS supply\nEquipment is marked as follows: —\na) Nature of supply: —\n1) a.c. RATED MAINS frequency or range of\nfrequencies....................................................:",
+              "similarity_score": 0.8077019237051525
             }
           ],
           "image_support": [
-            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/CellFE614_2/source_documents/CFE_block_diagram.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-02-28T15%3A36%3A06Z&st=2026-01-02T07%3A21%3A06Z&spr=https&sig=LRuMhEOLeB%2FcoBRctPsJbYNwgSnIlQyPBhIvWTdBnKI%3D"
+            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G9941/source_documents/TKDY_TP06-240250W_UL_E469869.jpg?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
           ],
-          "confidence": 90.0
+          "confidence": 95.0
         },
         {
           "question_cell": "A29",
@@ -1274,37 +1265,39 @@
           "accuracy_level": true,
           "text_support": [
             {
-              "filename": "Risk Assessment CFE_28nov.xlsx",
-              "page": 1,
-              "text": "op-10 System fire blocked ventilation or restricted ventilation  Catastrophic Unlikely 2 User manual has install information, System evaluated under blocked airflow conditions Unlikely 2 add 61010 report #\nop-11 Pneumatic System fire wrong gas (oxygen) attached to system Catastrophic Rare 2 air line has gas  specfic connector (air) Unlikely 2 add 61010 report #",
-              "similarity_score": 0.7789578287124032
+              "filename": "final_output_G9941.pdf",
+              "page": 14,
+              "preview_text": "protection impairment for \nmisuse.\n \n5.4.5 Equipment maintenance and service\nInstructions for RESPONSIBLE BODY include: —\nInstructions sufficient in detail permitting safe \nmaintenance and inspection and continued safety:\n—\nInstruction against the use of detachable MAINS \nsupply cord with inadequate RATING\nNo instructions found \nregarding inadequate mains \ncord rating.\n \nSpecific battery type of user replaceable batteries No replaceable batteries in the \nequipment.\nN/A",
+              "similarity_score": 0.8272901853672072
             },
             {
-              "filename": "Qu-01390131-0.pdf",
-              "page": 7,
-              "text": "•One complete and fully operational sample of each product to be evaluated.  Please consult \nwith your Intertek project manager for approval of representative or “worst-case” \nconfigurations.  Additional samples may be required as the evaluation progresses.\n•Operations manual and/or operating instructions.\n•Completed “Product Information Packet” which will include bill of materials, electrical ratings, \nschematics, and component data.  Please contact your sales representative for detail.\nSample Disposition:\nIf testing is to take place at an Intertek location, please indicate how you would like any test samples not\nconsumed during testing to be handled:\n[ ] Dispose of Sample(s):  If required, sample disposal fees will be invoiced in addition to quoted fees.",
-              "similarity_score": 0.777573228395837
+              "filename": "final_output_G9941.pdf",
+              "page": 12,
+              "preview_text": "P\nDocumentation includes: —\na) Intended use Device is for indoor use only. P\nb) Technical specification Technical specification is \nclearly documented and listed.\nP\nc) Name and address of manufacturer or supplier Manufacturer: ESPRESSIF \nSYSTEMS (SHANGHAI) CO., \nLTD., Shanghai, China\nP\nd) Information specified in 5.4.2 to 5.4.6 Technical specification is \nclearly documented and listed.\nP\ne) Information to mitigate residual RISK \n(see also subclause 17)\nNot Required P\nf) Accessories for safe operation of the equipment \nspecified\nNo accessory required for safe \noperation.\n \ng) Guidance provided to check correct function of \nthe equipment, if incorrect reading may cause a \nHAZARD from harmful or corrosive substances of \nHAZARDOUS live parts\nNo hazardous live parts \nidentified in documentation.\nP\nh) Instructions for lifting and carrying Not Applicable; equipment is a \nsmall radio module.\nN/A\nWarning statements and a clear explanation of \nwarning symbols:\n—\n– provided in the documentation; or Warning statements and \nsymbol explanations not \nfound.\n \n– information is marked on the equipment Warning statements and \nsymbol explanations not \nevident.\n \n5.4.2 Equipment RATINGS",
+              "similarity_score": 0.7939744344638546
             },
             {
-              "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
-              "page": 1,
-              "text": "Hi Shivam/Grant,\r\n\r\n\r\n\r\nCould you provide me with the manual/ instructions for use for your product as this is also needed for the evaluation. If you can provide it by today, that would be great. Thank you.\r\n\r\n\r\n\r\nBest regards,\r\n\r\nKenneth Tutor\r\n\r\nSAFETY ENGINEER\r\n\r\n\r\n\r\n________________________________\r\n\r\nFrom: Alvenn Kenneth Tutor Intertek <alvennkenneth.tutor@intertek.com<mailto:alvennkenneth.tutor@intertek.com>>\r\nSent: Monday, October 2, 2023 9:42 AM\r\nTo: Shivam Patel <spatel@gener8.net<mailto:spatel@gener8.net>>\r\nCc: Grant Sandwina <gsandwina@gener8.net<mailto:gsandwina@gener8.net>>; EPF Projects Intertek <projects.epf@intertek.com<mailto:projects.epf@intertek.com>>; Charlotte Johnson Intertek <charlotte.johnson@intertek.com<mailto:charlotte.johnson@intertek.com>>; Zaneer Iqbal Intertek <zaneer.iqbal@intertek.com<mailto:zaneer.iqbal@intertek.com>>; Stacey Chang Intertek <stacey.chang@intertek.com<mailto:stacey.chang@intertek.com>>\r\nSubject: Re: [External] Re: Intertek Order Qu-01390131-0 processed - Gener8 LLC Project G105581614\r\n\r\n\r\n\r\nHi Shivam,",
-              "similarity_score": 0.7679654128670921
+              "filename": "final_output_G9941.pdf",
+              "page": 15,
+              "preview_text": "Page 16 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nAny manufacturer specified parts Specified parts for safety are \nidentified in documentation.\nP\nRATING and characteristics of fuses Fuse value must match actual \ninput current.\n \nInstructions include following subjects permitting safe \nservicing and continued safety:\n—\na) Product specific RISKS may affect service \npersonnel\nProduct-specific service risks \nnot identified in instructions.\n \nb) Protective measures for these RISKS Protective measures for \nservice risks not documented.\n \nc) Verification of the safe state after repair No evidence of safe state \nverification after servicing.\n \n5.4.6 Integration into systems or effects resulting from \nspecial conditions\nIntegration instructions for \nhost product installation \nincluded.\nP\nAspects described in documentation Integration instructions for \nhost product are included.\nP\n6 PROTECTION AGAINST ELECTRIC SHOCK\n6.1 General (see Forms A.14 and A.15)\n6.1.1 Requirements\nProtection against electric shock maintained in \nNORMAL CONDITION and SINGLE FAULT CONDITION\nTBD-Info available",
+              "similarity_score": 0.7917592832879002
             },
             {
-              "filename": "Qu-01390131-0.pdf",
-              "page": 11,
-              "text": "acknowledges that any samples provided may become damaged or be destroyed in the course of testing as part of the necessary testing process and undertakes to \nhold Intertek harmless from any and all responsibility for such alteration, damage or destruction;\n(c) that it is responsible for providing the samples/equipment to be tested together, where appropriate, with any specified additional items, including but not \nlimited to connecting pieces, fuse-links, etc.;\n(d) to provide instructions and feedback to Intertek in a timely manner;\n(e) to provide Intertek (including its agents, sub-contractors and employees) with access to its premises as may be reasonably required for the provision of the \nServices and to any other relevant premises at which the Services are to be provided;\n(f) prior to Intertek attending any premises for the performance of the Services, to inform Intertek of all applicable health and safety rules and regulations and other \nreasonable security requirements that may apply at any relevant premises at which the Services are to be provided;",
-              "similarity_score": 0.7636561440614202
+              "filename": "Mornsun_5V_2A_regulator_K78xx-2000R3.pdf",
+              "page": 3,
+              "preview_text": "6.Productsarerelatedtolawsandregulations:see\"Features\"and\"EMC\";\n7.OurproductsshallbeclassifiedaccordingtoISO14001andrelatedenvironmentallawsandregulations,andshallbehandledbyqualified\nunits.\nMORNSUNGuangzhouScience&TechnologyCo.,Ltd.\nAddress:No.5,KehuiSt.1,KehuiDevelopmentCenter,ScienceAve.,GuangzhouScienceCity,HuangpuDistrict,Guangzhou,P.R.China\nTel:86-20-38601850 Fax:86-20-38601272 E-mail:info@mornsun.cn www.mornsun-power.com\nDimensionsandRecommendedLayout",
+              "similarity_score": 0.7913732805493331
             },
             {
-              "filename": "Qu-01390131-0.pdf",
-              "page": 1,
-              "text": "customers to power ahead safely.\nPlease let me know if you have any questions regarding this proposal or the testing and certification \nprocess. We thank you for the opportunity to be of service and hope to work with you soon.\nYours sincerely,\nCharlotte Johnson\nSales Representative",
-              "similarity_score": 0.7629206670833854
+              "filename": "final_output_G9941.pdf",
+              "page": 40,
+              "preview_text": "13.2.1 Components\nComponents liable to explode: —\nPressure release device provided; or No such components liable to \nexplode found.\nN/A\nApparatus incorporates operator\nprotection (see also 7.7)\nNo such components liable to \nexplode found.\nN/A\nPressure release device: —\nDischarge without danger No Pressure Release Device N/A\nCannot be obstructed No Pressure Release Device N/A\n13.2.2 Batteries and battery charging (see Form A.37)\nIf explosion or fire HAZARD could occur: —\nProtection incorporated in the equipment; or No Batteries N/A\nInstructions specify batteries with built-in protection No Batteries N/A\nIn case of wrong type of battery used: —\nNo HAZARD; or No Batteries N/A\nWarning by marking and within instructions No Batteries N/A\nEquipment with means to charge rechargeable \nbatteries:\n—\nWarning against the charging of non-rechargeable \nbatteries; and \nNo rechargeable batteries in \nequipment.\nN/A\nType of rechargeable battery indicated; or No rechargeable batteries. N/A\nSymbol 14 used No rechargeable batteries in \nequipment.\nN/A",
+              "similarity_score": 0.7910946288394527
             }
           ],
-          "image_support": [],
+          "image_support": [
+            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G9941/source_documents/TKDY_TP06-240250W_UL_E469869.jpg?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
+          ],
           "confidence": 95
         }
       ]
