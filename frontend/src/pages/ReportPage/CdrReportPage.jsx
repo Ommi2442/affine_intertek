@@ -19,7 +19,7 @@ import './ReportPage.css';
 //import localCDRJson from '../../utils/iec_output_cdr_PRJ_0000011.json';
 import CdrReport from '../../components/CdrReport/CdrReport';
 import CdrLoader from '../../components/CdrReport/CdrLoader';
-import ConfidenceScore from './ConfidenceScore';
+
 import CloseIcon from '@mui/icons-material/Close';
 import {
   triggerGenerateCdrApi,
@@ -37,6 +37,7 @@ import { useLocation } from 'react-router-dom';
 import { finaliseCdrReportRequest } from '../../redux/features/finaliseCdrReport/finaliseCdrReportSlice';
 import { reGenerateCdrClear } from '../../redux/api/RegenerateApi';
 import { usePreloadProjectPdfs } from '../../hooks/usePreloadProjectPdfs';
+import { ConfidenceScoreCDR } from './ConfidenceScore/ConfidenceScoreCDR';
 
 const STORAGE_KEY_PREFIX = 'cdr_report_';
 
@@ -79,6 +80,8 @@ const CdrReportPage = () => {
 
   const statusIntervalRef = useRef(null);
   const hasTriggeredGenerateRef = useRef(false);
+
+  const [imagePreview, setImagePreview] = useState(null);
 
   /* ---------------- SAVE EVERY APPROVE ---------------- */
   useEffect(() => {
@@ -329,6 +332,7 @@ const CdrReportPage = () => {
       });
     }
   };
+  //console.log('bookmarkData', bookmarkData?.image_support);
 
   /* ---------------- BOOKMARK ---------------- */
   const handleBookmarkFromChild = (data) => {
@@ -391,6 +395,21 @@ const CdrReportPage = () => {
                 ✕
               </Button>
             </Box>
+
+            {/* IMAGE SUPPORT — SHOW ONLY ONCE */}
+            {Array.isArray(bookmarkData?.image_support) &&
+              bookmarkData.image_support.length > 0 && (
+                <Box sx={{ mb: 2 }}>
+                  <Typography sx={{ fontWeight: 600, mb: 1 }}>
+                    Supporting Images
+                  </Typography>
+
+                  <RenderImageThumbnails
+                    images={bookmarkData.image_support}
+                    onClick={(img) => setImagePreview(img)}
+                  />
+                </Box>
+              )}
 
             {bookmarkData?.textSupportRaw?.map((item, idx) => {
               const rawText = item?.preview_text || item?.text || '';
@@ -535,11 +554,9 @@ const CdrReportPage = () => {
             </Card>
 
             {(liveCdrData || cdrJson) && (
-              <ConfidenceScore
+              <ConfidenceScoreCDR
                 data={liveCdrData || cdrJson}
-                reportType="cdr"
                 confidenceTick={confidenceTick}
-                projectId={projectId}
               />
             )}
           </Box>
@@ -722,6 +739,26 @@ const CdrReportPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* image support dialog box */}
+      {imagePreview && (
+        <Dialog
+          open={Boolean(imagePreview)}
+          onClose={() => setImagePreview(null)}
+          maxWidth="md"
+        >
+          <DialogContent sx={{ p: 0 }}>
+            <img
+              src={imagePreview}
+              alt="preview"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </Box>
   );
 };

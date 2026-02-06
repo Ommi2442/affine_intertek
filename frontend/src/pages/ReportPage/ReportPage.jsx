@@ -50,6 +50,7 @@ import { reGenerateTrfClear } from '../../redux/api/RegenerateApi';
 import { fetchProjectPdfsApi } from '../../redux/api/fetchPdfApi';
 import { savePdfToDb } from '../../components/pdfIndexedDb';
 import { usePreloadProjectPdfs } from '../../hooks/usePreloadProjectPdfs';
+import ConfidenceScoreTRF from './ConfidenceScore/ConfidenceScoreTrf';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
@@ -1122,7 +1123,7 @@ const ReportPage = () => {
 
           {/* CONFIDENCE CARD */}
           {reportClick === 'trf' && finalTrfJson && (
-            <ConfidenceScore
+            <ConfidenceScoreTRF
               data={reportClick === 'trf' && (liveTrfData ?? finalTrfJson)}
               reportType={reportClick}
               confidenceTick={confidenceTick}
