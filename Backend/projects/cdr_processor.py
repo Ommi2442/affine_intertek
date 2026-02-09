@@ -44,7 +44,7 @@ DATA_DIR = BASE_DIR / "data"
 def update_project_progress_CDR(
     project_doc: dict,
     cdr_stage: str,
-    cdr_percentage: int,
+    cdr_percentage: int = 10,
     cdr_step: str | None = None,
     error: str | None = None,
     last_updated: datetime | None = None,
@@ -66,7 +66,7 @@ def update_project_progress_CDR(
 def process_cdr_direct(project_id: str):
     try:
 
-        print(f"🚀 CDR started for project {project_id}")
+        print(f"CDR started for project {project_id}")
 
         query = "SELECT * FROM c WHERE c.Project_Id = @pid"
         params = [{"name": "@pid", "value": project_id}]        
@@ -140,13 +140,6 @@ def process_cdr_direct(project_id: str):
 
             user_name = project_doc.get("User_Name") or []
             user_id = user_name.split()[0]
-
-            update_project_progress_CDR(
-                project_doc,
-                cdr_stage="Running in Progress",
-                cdr_percentage=20,
-                cdr_step="Starting runnig CDR",
-                cdr_completed=False)
             
             result = main2(project_id,
             user_id,
@@ -177,7 +170,7 @@ def process_cdr_direct(project_id: str):
                         cdr_percentage=100,
                         cdr_step="CDR generated and stored",
                         cdr_completed=True
-                    )
+            )
             
         elif cdr_percentage==100:
             print("----CDR is already generated-----")

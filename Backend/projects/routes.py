@@ -2606,16 +2606,6 @@ def get_project_report_status(payload: CdrResult):
         raise HTTPException(status_code=404, detail="Project not found")
 
 
-    project_doc = docs[0]
-
-    update_project_progress_CDR(
-    project_doc,
-    cdr_stage="CDR generate Initiated",
-    cdr_percentage=0,
-    cdr_step="CDR generate Clicked",
-    cdr_completed=False
-    )
-
     cdr_progress = docs[0].get("CDR_Project_Progress")
 
 
