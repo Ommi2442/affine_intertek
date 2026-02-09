@@ -1620,7 +1620,7 @@ def sanitize_json(obj):
 def update_letter_progress(
     project_doc: dict,
     letter_stage: str,
-    letter_percentage: int = 10,
+    letter_percentage: int = 0,
     letter_step: str | None = None,
     error: str | None = None,
     last_updated: datetime | None = None,
@@ -2605,15 +2605,19 @@ def get_project_report_status(payload: CdrResult):
     if not docs:
         raise HTTPException(status_code=404, detail="Project not found")
 
+
+    project_doc = docs[0]
+
+    update_project_progress_CDR(
+    project_doc,
+    cdr_stage="CDR generate Initiated",
+    cdr_percentage=0,
+    cdr_step="CDR generate Clicked",
+    cdr_completed=False
+    )
+
     cdr_progress = docs[0].get("CDR_Project_Progress")
 
-    if not cdr_progress:
-        return {
-            "cdr_status": "Pending",
-            "cdr_percentage": 10,
-            "cdr_completed": 'No'
-        }
-    
 
     return {
         "cdr_status":cdr_progress.get("cdr_stage"),
