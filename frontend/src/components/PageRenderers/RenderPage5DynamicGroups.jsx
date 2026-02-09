@@ -7,6 +7,10 @@ export const RenderPage5DynamicGroups = ({
   isEditable,
   updateCell,
   editMode,
+  hovered,
+  setHovered,
+  renderHoverActions,
+  renderConfidenceColor,
 }) => {
   const PAGE_5_GROUPS = {
     reportRef: {
@@ -35,7 +39,7 @@ export const RenderPage5DynamicGroups = ({
 
   const ungroupedItems = items.filter((item) => !matchedItems.has(item));
 
-  // ✅ Clean polluted value (removes field prefix if backend sends it)
+  //  Clean polluted value (removes field prefix if backend sends it)
   const cleanValue = (field, value) => {
     if (!field || !value) return value;
 
@@ -50,7 +54,7 @@ export const RenderPage5DynamicGroups = ({
     return v;
   };
 
-  // ✅ Render FIELD with unlimited checkboxes for [*]
+  //  Render FIELD with unlimited checkboxes for [*]
   const renderFieldWithCheckboxes = (item, editable, tIdx, iIdx) => {
     const parts = (item.field || '').split('[*]');
 
@@ -110,7 +114,7 @@ export const RenderPage5DynamicGroups = ({
     );
   };
 
-  // ✅ Render Summary / Statement blocks
+  //  Render Summary / Statement blocks
   const renderUngroupedItem = (item) => {
     const tIdx = item.__t;
     const iIdx = item.__i;
@@ -119,20 +123,46 @@ export const RenderPage5DynamicGroups = ({
     const displayValue = cleanValue(item.field, item.value);
 
     return (
-      <Box key={`${tIdx}-${iIdx}`} sx={{ mb: 3 }}>
+      <Box
+        key={`${tIdx}-${iIdx}`}
+        sx={{ mb: 3 }}
+        className="dt-value-column-page5 dt-relative"
+        onMouseEnter={() => setHovered({ t: tIdx, i: iIdx })}
+        onMouseLeave={() => setHovered({ t: null, i: null })}
+      >
         {/* FIELD + MULTIPLE CHECKBOX SUPPORT */}
         {renderFieldWithCheckboxes(item, editable, tIdx, iIdx)}
 
         {/* VALUE TEXTBOX (ONLY CLEAN VALUE SHOWN) */}
         {item.value != null && item.value !== '' && (
-          <textarea
-            className="dt-textarea"
-            rows={item.rendering_row || 3}
-            value={displayValue}
-            disabled={!editable}
-            onChange={(e) => editable && updateCell(tIdx, iIdx, e.target.value)}
-          />
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 12,
+            }}
+          >
+            <textarea
+              className="dt-textarea"
+              rows={item.rendering_row || 3}
+              value={displayValue}
+              disabled={!editable}
+              onChange={(e) =>
+                editable && updateCell(tIdx, iIdx, e.target.value)
+              }
+              style={{ flex: 1 }}
+            />
+            <div style={{ flexShrink: 0 }}>
+              {renderConfidenceColor(
+                item.confidence,
+                item.is_user_edited,
+                item.ai_fillable,
+                item.accuracy_level
+              )}
+            </div>
+          </div>
         )}
+        {renderHoverActions(tIdx, iIdx)}
       </Box>
     );
   };
@@ -160,7 +190,13 @@ export const RenderPage5DynamicGroups = ({
                   const editable = isEditable(item);
 
                   return (
-                    <Box key={`${tIdx}-${iIdx}`} sx={{ flex: 1 }}>
+                    <Box
+                      key={`${tIdx}-${iIdx}`}
+                      sx={{ flex: 1 }}
+                      className="dt-value-column-page5 dt-relative"
+                      onMouseEnter={() => setHovered({ t: tIdx, i: iIdx })}
+                      onMouseLeave={() => setHovered({ t: null, i: null })}
+                    >
                       <Typography sx={{ fontSize: 14, mb: 0.5 }}>
                         {item.field}
                       </Typography>
@@ -173,6 +209,7 @@ export const RenderPage5DynamicGroups = ({
                           editable && updateCell(tIdx, iIdx, e.target.value)
                         }
                       />
+                      {renderHoverActions(tIdx, iIdx)}
                     </Box>
                   );
                 })}
