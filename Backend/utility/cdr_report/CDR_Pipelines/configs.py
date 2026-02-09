@@ -310,6 +310,7 @@ EXTRACTED_TXT_PATH = _DynamicPath(lambda: _cur() / "extracted.txt")
 SRC_ROOT = _DynamicPath(lambda: _cur() / "src_files")
 FLAT_ROOT = _DynamicPath(lambda: _cur() / "flattened_pdfs")
 IMG_ROOT = _DynamicPath(lambda: _cur() / "page_images")
+TEMP_DIR = _DynamicPath(lambda: _cur() / "temp_images")
 
 OUTPUT_EXCEL_AI_GEN_PATH = _DynamicPath(lambda: _cur() / "CDR_Report_AI.xlsx")
 OUTPUT_EXCEL_AI_FINAL_PATH = _DynamicPath(lambda: _cur() / "CDR_Final_Report_AI.xlsx")
