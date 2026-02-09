@@ -66,6 +66,31 @@ def update_project_progress(
     print(f" Progress updated → {trf_percentage}% | {trf_stage}")
 
 
+############################
+
+def update_project_progress_CDR(
+    project_doc: dict,
+    cdr_stage: str,
+    cdr_percentage: int = 0,
+    cdr_step: str | None = None,
+    error: str | None = None,
+    last_updated: datetime | None = None,
+    cdr_completed: bool = False
+):
+    project_doc["CDR_Project_Progress"] = {
+        "cdr_stage": cdr_stage,
+        "cdr_percentage": cdr_percentage,
+        "cdr_step": cdr_step,
+        "last_updated": (last_updated or datetime.utcnow()).isoformat(),
+        "error": error,
+        "cdr_completed": cdr_completed
+    }
+
+    projects_container.upsert_item(project_doc)
+
+
+
+
 def process_trf_direct(project_id: str):
     print(f"TRF started for project {project_id}")
 
@@ -164,6 +189,13 @@ def process_trf_direct(project_id: str):
             trf_step="TRF generated",
             trf_completed=True
         )
+
+        update_project_progress_CDR(
+        project_doc,
+        cdr_stage="CDR not Initiated",
+        cdr_percentage=0,
+        cdr_step="",
+        cdr_completed=False)
 
     except Exception as e:
         update_project_progress(
