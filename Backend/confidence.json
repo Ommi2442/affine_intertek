@@ -4,22 +4,11 @@
             "name": 100,
             "address": 100,
             "country": 100,
-            "contacts": 100,
+            "contacts": 90,
             "phone": 100,
-            "fax": 0,
+            "fax": 100,
             "email": 100
         },
-        "manufacturers": [
-            {
-                "label": "Manufacturer",
-                "name": 100,
-                "address": 100,
-                "country": 100,
-                "contacts": 100,
-                "phone": 0,
-                "fax": 0,
-                "email": 0
-            }
-        ]
+        "manufacturers": []
     }
 }

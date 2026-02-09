@@ -117,7 +117,7 @@
           "prefix": "Applicant",
           "field": "Applicant",
           "answer_cell": "B6",
-          "value": "CellFE, Inc.",
+          "value": "Sakura Finetek U.S.A., Inc.",
           "field_merged": false,
           "fm_range": null,
           "value_merged": true,
@@ -129,34 +129,34 @@
           "confidence": 100,
           "text_support": [
             {
-              "filename": "Cell_Gener8_Agent_Agreement_2018_1_.pdf",
+              "filename": "217187.pdf",
               "page": 1,
-              "similarity_score": 0.8456594142675564,
-              "text": "{\n  \"Applicant\": {\n    \"Legal Entity Name\": \"CellFE, Inc.\",\n    \"DBA\": null,\n    \"Street Address\": \"1000 Atlantic Avenue, Suite 104\",\n    \"City, State, Postal Code, Country\": \"USA\",\n    \"Phone Number\": \"(818) 699-2280\",\n    \"Email\": \"leo@cellfe biotech.com\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Leonid Fomin\",\n        \"Role\": \"Primary Contact\",\n        \"Phone Number\": null,\n        \"Email\": null\n      },\n      {\n        \"Name\": \"Sewon Han\",\n        \"Role\": \"Secondary Contact\",\n        \"Phone Number\": null,\n        \"Email\": null\n      }\n    ]\n  },\n  \"Bill-To\": {\n    \"Legal Entity Name\": null,\n    \"Street Address\": null,\n    \"City, State, Postal Code, Country\": null,\n    \"Accounts Payable Contact\": null,\n    \"Phone Number\": null,\n    \"Email\": null\n  },\n  \"Manufacturer\": {\n    \"Legal Entity Name\": \"Gener8 LLC\",\n    \"Street Address\": \"2560 Junction Avenue\",\n    \"City, State, Postal Code, Country\": \"USA\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Shivam Patel\",\n        \"Role\": \"Primary Contact\",\n        \"Phone Number\": null,\n        \"Email\": \"spatel@gener8.net\"\n      },\n      {\n        \"Name\": \"Desiree Minkler\",\n        \"Role\": \"Alternate Contact\",\n        \"Phone Number\": \"N/A\","
+              "similarity_score": 0.8710038065910339,
+              "preview_text": "Purchase Order Total:\t29,100.00 USD\n\nOrdered By\tJorge Castaneda\nDigitally signed by Jorge Castaneda\nDate: 2024.03.01 09:52:18 -08'00'\n\nSakura Finetek USA, Inc.\n1750 W 214th Street\nTorrance, CA 90501\nU.S.A.\nTel. +1 310 972 7800\nFax. +1 310 972 7888\nwww.sakuraus.com\n\nFO-09-003-02, v2.1, effective 06/12/2023"
             },
             {
-              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
-              "page": 1,
-              "similarity_score": 0.8445104369673728,
-              "text": "{\n  \"Applicant\": {\n    \"Legal Entity Name\": \"CellFE, Inc.\",\n    \"DBA\": null,\n    \"Street Address\": \"1000 Atlantic Avenue, Suite 104,\",\n    \"City, State, Postal Code, Country\": \"Alameda, CA, 95401, USA\",\n    \"Phone Number\": \"(818) 689-2280\",\n    \"Email\": \"leo@cellfebiotech.com\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Leonid Fomin\",\n        \"Role\": null,\n        \"Phone Number\": \"(818) 689-2280\",\n        \"Email\": \"leo@cellfebiotech.com\"\n      },\n      {\n        \"Name\": \"Sewoon Han\",\n        \"Role\": null,\n        \"Phone Number\": \"N/A\",\n        \"Email\": \"sewoon@cellfebiotech.com\"\n      }\n    ]\n  },\n  \"Bill-To\": {\n    \"Legal Entity Name\": \"CellFE, Inc.\",\n    \"Street Address\": \"1000 Atlantic Avenue, Suite 104\",\n    \"City, State, Postal Code, Country\": \"Alameda, CA, 95401, USA\",\n    \"Accounts Payable Contact\": \"Leonid Fomin\",\n    \"Phone Number\": \"(818) 689-2280\",\n    \"Email\": \"leo@cellfebiotech.com\"\n  },\n  \"Manufacturer\": {\n    \"Legal Entity Name\": \"Gener8 LLC\",\n    \"Street Address\": \"2560 Junction Avenue\",\n    \"City, State, Postal Code, Country\": \"San Jose, CA, 94085, USA\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Shivam Patel\",\n        \"Role\": null,\n        \"Phone Number\": \"N/A\","
+              "filename": "Qu-01387960-8.pdf",
+              "page": 2,
+              "similarity_score": 0.8431429862976074,
+              "preview_text": "Quote No:  Qu-01387960-8\n3 of 15\nINTERTEK - 25800 Commercentre Drive, ,Lake Forest, California, 92630,United States\nPrepared For: Michael Yang\nSakura Finetek U.S.A., Inc.\n1750 West 214th Street\nTorrance, CA 90501-2857\nUSA\nPrepared by: Jim Elmore\nSales Representative\nIntertek\n25800 Commercentre Drive\nLake Forest, California 92630\nUnited States\n310) 619 8016 19493933538\nmyang@sakuraus.com jim.elmore@intertek.com\nTesting and Evaluation Details:\nThis proposal is based upon the information Sakura Finetek U.S.A., Inc. provided to Intertek and covers \nthe services as noted below.   \nScope of Work:\ncETLus North American Certification - CHEQ-C"
             },
             {
-              "filename": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf",
-              "page": "1",
-              "similarity_score": 0.8045746376295089,
-              "text": "Billing info change - please update your recordsBilling info change - please update your recordsBilling info change - please update your recordsBilling info change - please update your records Purchase Order Revision Order DateBill ToBill ToBill ToBill To\nGENER8 Accounts Payable P70909 0 8/23/2023\n5975 Castle Creek Pkwy N. Dr. Supplier Print Date\nSuite 250\nINTZZ03 8/23/2023apgroup@gener8.net\nPurchase OrderPurchase OrderPurchase OrderPurchase Order\nIndianapolis, IN 46250-2781\nUNITED STATES\nSSSSuuuupppppppplllliiiieeeerrrr\nSSSShhhhiiiipppp TTTToooo Gener8 LLCIntertek Testing Services N.A. Inc\n3933 US Route 11 2560 Junction Ave\nCortland, NY 13045 San Jose, CA 95134\nUNITED STATES UNITED STATES\n+1-613-599-6626\nBuyer Attention\nMandy Nguyen  +1-613-599-6626\nShip ViaCredit Terms FOB\nPrePay & AddDue on Receipt Origin\nRemarks ProjectQuotes attached 13403\nGener8 PO & Part Number to be referenced on all packing lists & invoices.\n1. Include RoHS 3 certificate required with shipment\n2. Include CoC required with shipment.\n3. Include Materials Certificate if applicable.\n4. Include Plating Certificate if applicable.\n5. Include FAIR (1st Article Insp Report) if applicable.\n6. Include Packing slip"
+              "filename": "Qu-01387960-8.pdf",
+              "page": 10,
+              "similarity_score": 0.8248491883277893,
+              "preview_text": "_________________________  ___________________________     ____________________ \nAcceptance Date Preferred Project Start Date    Purchase Order #\nThank you for choosing Intertek!\nSincerely,\nJim Elmore\nSales Representative\n25800 Commercentre Drive\nLake Forest, California 92630\nUnited States\n19493933538\njim.elmore@intertek.com\nQuote #:  Qu-01387960-8\nQuote Issued Date: March 1, 2024\nSakura Finetek U.S.A., Inc.\n1750 West 214th Street\nTorrance, CA 90501-2857\nUSA"
             },
             {
-              "filename": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf",
-              "page": "1",
-              "similarity_score": 0.7854263473538332,
-              "text": "4. Include Plating Certificate if applicable.\n5. Include FAIR (1st Article Insp Report) if applicable.\n6. Include Packing slip\nPLEASE EMAIL ALL INVOICES TO : apgroup@gener8.net\nMail to :\nACCOUNTS PAYABLE\n5975 CASTLE CREEK PKWY N DR, STE 250\nINDIANAPOLIS, IN 46250\n(800) 338-4105 x55012\nLineLineLineLine Item NumberItem NumberItem NumberItem Number RevRevRevRev Need DateNeed DateNeed DateNeed Date qty_ordqty_ordqty_ordqty_ord UMUMUMUM TTTT Unit CostUnit CostUnit CostUnit Cost Extended CostExtended CostExtended CostExtended Cost\n1 EMC Testing 8/31/2023 1.0 EA N 24,050.00 24,050.00\n-\n*Per quote# Qu-01384314-3\n2 EMC testing 8/31/2023 1.0 EA N 11,400.00 11,400.00\n-\n*Per Quote# Qu-01384746-0\n3 Safety Testing 8/31/2023 1.0 EA N 21,350.00 21,350.00\n-\n*Per Quote# Qu-01382686-0\nUSD Line Total 56,800.00\nTotal Tax 0.00\nTotal Amount 56,800.00\n3:51:35 PM8/23/2023 1/1"
+              "filename": "Project Summary Report.pdf",
+              "page": 0,
+              "similarity_score": 0.7908948063850403,
+              "preview_text": "G105759941 Project Summary on 16-Oct-2025\nSakura Finetek U.S,A., Inc.\nProject Name: cETLus North American Certification - CHEQ-C\nProject Description:\nWork Orders Included in Summary: \"IOT US20110 Menlo Park - EMC\", \"EMC\", \"Safety\"\n \nProject Details\nBilling\nStatus : Open Operational\nStatus: SCHEDULED Folder\nStatus: Readiness Confirmed\nCustomer Ready Date: 15-\nOct-2024 Actual Ready Date: Promised Completion Date: 13-Dec-\n2024\nNext Scheduled\nAction Date:\nProject Operational\nNotes:\nEMC\nUA, WF\nProject Sample\nDescription:  \nProduct: LIGHTG -\nResidential/Commercial FixturesProject Owning OU: US20108 - Los Angeles CA\nModel: cETLus North American\nCertification - CHEQ-C Project Manager: Covarrubias, Rosanne\nParent ID:  Primary Sales: Elmore, Jim\nPO #:  Secondary Sales:  \nCust Ref#:  Project Total:  \n \nTransacting Customer Report Receiving Customer Bill To Customer\nSakura Finetek U.S,A., Inc. Sakura Finetek U.S,A., Inc. Sakura Finetek U.S,A., Inc.\nLOS ANGELES\n1750 West 214th Street\nTORRANCE CA 90501\nUSA\n \nLOS ANGELES\n1750 West 214th Street\nTORRANCE CA 90501\nUSA\n   \nPh:  Ph:  Ph:  \nEmail:  Email:  Email:  \n*See last page for additional customer/partner roles."
             },
             {
-              "filename": "Client_Information_Sheet_-_FUS_CIS_1_.pdf",
-              "page": 1,
-              "similarity_score": 0.7844868689910721,
-              "text": "\"Contacts\": [\n      {\n        \"Name\": \"Shivam Patel\",\n        \"Role\": null,\n        \"Phone Number\": \"N/A\",\n        \"Email\": \"spatel@gener8.net\"\n      },\n      {\n        \"Name\": \"Desiree Minkler\",\n        \"Role\": null,\n        \"Phone Number\": \"N/A\",\n        \"Email\": \"dminkler@gener8.net\"\n      }\n    ],\n    \"Estimated Production Date\": \"11/1/23\",\n    \"Labeling Method\": \"Obtained from another source (Direct Imprint)\"\n  },\n  \"Completed By\": \"Shivam Patel\",\n  \"Dates\": {\n    \"Form Completion\": \"9/21/23\"\n  },\n  \"Signatures\": null\n}"
+              "filename": "PKP223D15A2-R2EL-1.10in._28mm_2-PhaseBipolarStepperMotorwithEncoder.pdf",
+              "page": 4,
+              "similarity_score": 0.763495922088623,
+              "preview_text": "Product Number\n12/15/2022 | Page 5 of 7"
             }
           ]
         },
@@ -165,7 +165,7 @@
           "prefix": "Applicant",
           "field": "Address",
           "answer_cell": "B7",
-          "value": "1000 Atlantic Avenue, Suite 104, Alameda, CA, 95401, USA",
+          "value": "1750 West 214th Street, Torrance, CA 90501-2857, USA",
           "field_merged": false,
           "fm_range": null,
           "value_merged": true,
@@ -174,7 +174,39 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": true,
-          "confidence": 100
+          "confidence": 100,
+          "text_support": [
+            {
+              "filename": "Project Summary Report.pdf",
+              "page": 0,
+              "similarity_score": 0.9323177337646484,
+              "preview_text": "1750 West 214th Street\nTORRANCE CA 90501\nUSA\n   \nPh:  Ph:  Ph:  \nEmail:  Email:  Email:  \n*See last page for additional customer/partner roles. \n \nG101004153 Project Summary Page: 1 of 4"
+            },
+            {
+              "filename": "217187.pdf",
+              "page": 1,
+              "similarity_score": 0.7656233906745911,
+              "preview_text": "Purchase Order Total:\t29,100.00 USD\n\nOrdered By\tJorge Castaneda\nDigitally signed by Jorge Castaneda\nDate: 2024.03.01 09:52:18 -08'00'\n\nSakura Finetek USA, Inc.\n1750 W 214th Street\nTorrance, CA 90501\nU.S.A.\nTel. +1 310 972 7800\nFax. +1 310 972 7888\nwww.sakuraus.com\n\nFO-09-003-02, v2.1, effective 06/12/2023"
+            },
+            {
+              "filename": "Qu-01387960-8.pdf",
+              "page": 2,
+              "similarity_score": 0.7619394063949585,
+              "preview_text": "Quote No:  Qu-01387960-8\n3 of 15\nINTERTEK - 25800 Commercentre Drive, ,Lake Forest, California, 92630,United States\nPrepared For: Michael Yang\nSakura Finetek U.S.A., Inc.\n1750 West 214th Street\nTorrance, CA 90501-2857\nUSA\nPrepared by: Jim Elmore\nSales Representative\nIntertek\n25800 Commercentre Drive\nLake Forest, California 92630\nUnited States\n310) 619 8016 19493933538\nmyang@sakuraus.com jim.elmore@intertek.com\nTesting and Evaluation Details:\nThis proposal is based upon the information Sakura Finetek U.S.A., Inc. provided to Intertek and covers \nthe services as noted below.   \nScope of Work:\ncETLus North American Certification - CHEQ-C"
+            },
+            {
+              "filename": "Qu-01387960-8.pdf",
+              "page": 10,
+              "similarity_score": 0.7607812881469727,
+              "preview_text": "_________________________  ___________________________     ____________________ \nAcceptance Date Preferred Project Start Date    Purchase Order #\nThank you for choosing Intertek!\nSincerely,\nJim Elmore\nSales Representative\n25800 Commercentre Drive\nLake Forest, California 92630\nUnited States\n19493933538\njim.elmore@intertek.com\nQuote #:  Qu-01387960-8\nQuote Issued Date: March 1, 2024\nSakura Finetek U.S.A., Inc.\n1750 West 214th Street\nTorrance, CA 90501-2857\nUSA"
+            },
+            {
+              "filename": "final_output_G9941.pdf",
+              "page": 0,
+              "similarity_score": 0.75444495677948,
+              "preview_text": "Disclaimer: This document is controlled and has been released electronically. \nOnly the version on the IECEE Website is the current document version\nTest Report issued under the responsibility of: \n           \nTEST REPORT\nIEC 61010-1\nSafety requirements for electrical equipment for measurement, \ncontrol, and laboratory use\nPart 1: General requirements\nReport Number................................:      \nDate of issue................................... :\nTotal number of pages...................:\nName of Testing Laboratory pre-\nparing the Report............................:\nApplicant’s name............................: ESPRESSIF SYSTEMS (SHANGHAI) CO., LTD.\nAddress........................................... : 1750 West 214th Street, Torrance, CA 90501-2857, USA\nTest specification:\nStandard..........................................: IEC 61010-1:2010, IEC 61010-1:2010/AMD1:2016\nTest procedure................................: CB Scheme\nNon-standard test method.............: N/A\nTRF template used......................... : IECEE OD-2020-F1:2020, Ed.1.3\nTest Report Form No......................: IEC61010_1P\nTest Report Form(s) Originator.....: VDE Prüf- und Zertifizierungsinstitut GmbH"
+            }
+          ]
         },
         {
           "question_cell": "A8",
@@ -190,14 +222,46 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": true,
-          "confidence": 100
+          "confidence": 100,
+          "text_support": [
+            {
+              "filename": "217187.pdf",
+              "page": 1,
+              "similarity_score": 0.7628446817398071,
+              "preview_text": "Purchase Order Total:\t29,100.00 USD\n\nOrdered By\tJorge Castaneda\nDigitally signed by Jorge Castaneda\nDate: 2024.03.01 09:52:18 -08'00'\n\nSakura Finetek USA, Inc.\n1750 W 214th Street\nTorrance, CA 90501\nU.S.A.\nTel. +1 310 972 7800\nFax. +1 310 972 7888\nwww.sakuraus.com\n\nFO-09-003-02, v2.1, effective 06/12/2023"
+            },
+            {
+              "filename": "Project Summary Report.pdf",
+              "page": 0,
+              "similarity_score": 0.7541263103485107,
+              "preview_text": "1750 West 214th Street\nTORRANCE CA 90501\nUSA\n   \nPh:  Ph:  Ph:  \nEmail:  Email:  Email:  \n*See last page for additional customer/partner roles. \n \nG101004153 Project Summary Page: 1 of 4"
+            },
+            {
+              "filename": "Mornsun_5V_2A_regulator_K78xx-2000R3.pdf",
+              "page": 3,
+              "similarity_score": 0.7504751682281494,
+              "preview_text": "6.Productsarerelatedtolawsandregulations:see\"Features\"and\"EMC\";\n7.OurproductsshallbeclassifiedaccordingtoISO14001andrelatedenvironmentallawsandregulations,andshallbehandledbyqualified\nunits.\nMORNSUNGuangzhouScience&TechnologyCo.,Ltd.\nAddress:No.5,KehuiSt.1,KehuiDevelopmentCenter,ScienceAve.,GuangzhouScienceCity,HuangpuDistrict,Guangzhou,P.R.China\nTel:86-20-38601850 Fax:86-20-38601272 E-mail:info@mornsun.cn www.mornsun-power.com\nDimensionsandRecommendedLayout"
+            },
+            {
+              "filename": "Qu-01387960-8.pdf",
+              "page": 10,
+              "similarity_score": 0.7494423985481262,
+              "preview_text": "_________________________  ___________________________     ____________________ \nAcceptance Date Preferred Project Start Date    Purchase Order #\nThank you for choosing Intertek!\nSincerely,\nJim Elmore\nSales Representative\n25800 Commercentre Drive\nLake Forest, California 92630\nUnited States\n19493933538\njim.elmore@intertek.com\nQuote #:  Qu-01387960-8\nQuote Issued Date: March 1, 2024\nSakura Finetek U.S.A., Inc.\n1750 West 214th Street\nTorrance, CA 90501-2857\nUSA"
+            },
+            {
+              "filename": "A2882_English_V1.pdf",
+              "page": 0,
+              "similarity_score": 0.7488476634025574,
+              "preview_text": "EU Declaration of Conformity\nManufacturer: Name:\nAddress:\nApple Inc.\nOne Apple Park Way\nCupertino, California 95014, USA\nEquipment:\nAssessment procedure: Cert #: AN22C12911-1\nWe, Apple Inc, declare under our sole responsibility that the above referenced product complies with\nthe following:\n2014/53/EU\n2011/65/EU as amended by 2015/863/EU\n2009/125/EC\nDirectives:\n \n*Not covered by the defined cert #.\nSoftware: iOS\nProduct Type: Smart Phone\n*Supplied Accessories: Lightning Cable\nModel Number: A2882\nThe conformity assessment procedure as detailed in Annex III has been applied with the involvement of a\nnotified body for the assessment against Articles; 3.1a, 3.1b, 3.2 and 3.3. Notified Body Name: UL Verification\nServices inc; Number: 0984.\nThe following standards have been applied:\nArticle 3.1a: Safety and Health\nEN 50360:2017\nEN 50566:2017\nEN 50663:2017\nEN 50665:2017\nIEC 62368-1: 2018 [2020+A11:2020]\nArticle 3.1b: EMC\nEN 55032:2015 + A11:2020\nEN 55035:2017+A11:2020\nEN 301 489-1 V2.2.3\nEN 301 489-3 V2.2.0 [DRAFT]\nEN 301 489-17 V3.2.4\nEN 301 489-19 V2.2.0 [DRAFT]\nEN 301 489-52 V1.2.1\nEN 301 489-1 V2.2.0\nEN 301 489-33 V2.2.1\nEN 301 489-20 V2.2.1\nEN 300 328 V2.2.2\nEN 301 893 V2.1.1"
+            }
+          ]
         },
         {
           "question_cell": "A9",
           "prefix": "Applicant",
           "field": "Contact",
           "answer_cell": "B9",
-          "value": "Leonid Fomin\nSewoon Han",
+          "value": "Michael Yang",
           "field_merged": false,
           "fm_range": null,
           "value_merged": true,
@@ -206,14 +270,46 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": true,
-          "confidence": 100
+          "confidence": 90,
+          "text_support": [
+            {
+              "filename": "Mornsun_5V_2A_regulator_K78xx-2000R3.pdf",
+              "page": 3,
+              "similarity_score": 0.7445177435874939,
+              "preview_text": "6.Productsarerelatedtolawsandregulations:see\"Features\"and\"EMC\";\n7.OurproductsshallbeclassifiedaccordingtoISO14001andrelatedenvironmentallawsandregulations,andshallbehandledbyqualified\nunits.\nMORNSUNGuangzhouScience&TechnologyCo.,Ltd.\nAddress:No.5,KehuiSt.1,KehuiDevelopmentCenter,ScienceAve.,GuangzhouScienceCity,HuangpuDistrict,Guangzhou,P.R.China\nTel:86-20-38601850 Fax:86-20-38601272 E-mail:info@mornsun.cn www.mornsun-power.com\nDimensionsandRecommendedLayout"
+            },
+            {
+              "filename": "Qu-01387960-8.pdf",
+              "page": 10,
+              "similarity_score": 0.7336739301681519,
+              "preview_text": "_________________________  ___________________________     ____________________ \nAcceptance Date Preferred Project Start Date    Purchase Order #\nThank you for choosing Intertek!\nSincerely,\nJim Elmore\nSales Representative\n25800 Commercentre Drive\nLake Forest, California 92630\nUnited States\n19493933538\njim.elmore@intertek.com\nQuote #:  Qu-01387960-8\nQuote Issued Date: March 1, 2024\nSakura Finetek U.S.A., Inc.\n1750 West 214th Street\nTorrance, CA 90501-2857\nUSA"
+            },
+            {
+              "filename": "final_output_G9941.pdf",
+              "page": 6,
+              "similarity_score": 0.7272822856903076,
+              "preview_text": "includes more than one factory location and a \ndeclaration from the manufacturer stating that the \nsample(s) submitted for evaluation is (are) \nrepresentative of the products from each factory has \nbeen provided..............................................................:\n[*]Yes\n[*]Not applicable\nWhen differences exist; they shall be identified in the general product information section.\nName and address of factory (ies)...........................: ESPRESSIF SYSTEMS (SHANGHAI) CO., LTD, \nSuite 204, Block 2, 690 Bibo Road, Zhang Jiang Hi-\nTech Park, Shanghai, China\nSHENZHEN FIT-POWER TECHNOLOGY CO LTD, \n201, No.7 Bixi Road, East District, Baishizhou \nCommunity, Fuyong Street, Baoan District, \nShenzhen, Guangdong Sheng 518103 China"
+            },
+            {
+              "filename": "PKP223D15A2-R2EL-1.10in._28mm_2-PhaseBipolarStepperMotorwithEncoder.pdf",
+              "page": 4,
+              "similarity_score": 0.7268303036689758,
+              "preview_text": "Product Number\n12/15/2022 | Page 5 of 7"
+            },
+            {
+              "filename": "Qu-01387960-8.pdf",
+              "page": 2,
+              "similarity_score": 0.7216676473617554,
+              "preview_text": "Quote No:  Qu-01387960-8\n3 of 15\nINTERTEK - 25800 Commercentre Drive, ,Lake Forest, California, 92630,United States\nPrepared For: Michael Yang\nSakura Finetek U.S.A., Inc.\n1750 West 214th Street\nTorrance, CA 90501-2857\nUSA\nPrepared by: Jim Elmore\nSales Representative\nIntertek\n25800 Commercentre Drive\nLake Forest, California 92630\nUnited States\n310) 619 8016 19493933538\nmyang@sakuraus.com jim.elmore@intertek.com\nTesting and Evaluation Details:\nThis proposal is based upon the information Sakura Finetek U.S.A., Inc. provided to Intertek and covers \nthe services as noted below.   \nScope of Work:\ncETLus North American Certification - CHEQ-C"
+            }
+          ]
         },
         {
           "question_cell": "A10",
           "prefix": "Applicant",
           "field": "Phone",
           "answer_cell": "B10",
-          "value": "(818) 689-2280",
+          "value": "310) 619 8016",
           "field_merged": false,
           "fm_range": null,
           "value_merged": true,
@@ -222,7 +318,39 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": true,
-          "confidence": 100
+          "confidence": 100,
+          "text_support": [
+            {
+              "filename": "Project Summary Report.pdf",
+              "page": 0,
+              "similarity_score": 0.7958487272262573,
+              "preview_text": "1750 West 214th Street\nTORRANCE CA 90501\nUSA\n   \nPh:  Ph:  Ph:  \nEmail:  Email:  Email:  \n*See last page for additional customer/partner roles. \n \nG101004153 Project Summary Page: 1 of 4"
+            },
+            {
+              "filename": "217187.pdf",
+              "page": 1,
+              "similarity_score": 0.7781019806861877,
+              "preview_text": "Purchase Order Total:\t29,100.00 USD\n\nOrdered By\tJorge Castaneda\nDigitally signed by Jorge Castaneda\nDate: 2024.03.01 09:52:18 -08'00'\n\nSakura Finetek USA, Inc.\n1750 W 214th Street\nTorrance, CA 90501\nU.S.A.\nTel. +1 310 972 7800\nFax. +1 310 972 7888\nwww.sakuraus.com\n\nFO-09-003-02, v2.1, effective 06/12/2023"
+            },
+            {
+              "filename": "Qu-01387960-8.pdf",
+              "page": 10,
+              "similarity_score": 0.7726014852523804,
+              "preview_text": "_________________________  ___________________________     ____________________ \nAcceptance Date Preferred Project Start Date    Purchase Order #\nThank you for choosing Intertek!\nSincerely,\nJim Elmore\nSales Representative\n25800 Commercentre Drive\nLake Forest, California 92630\nUnited States\n19493933538\njim.elmore@intertek.com\nQuote #:  Qu-01387960-8\nQuote Issued Date: March 1, 2024\nSakura Finetek U.S.A., Inc.\n1750 West 214th Street\nTorrance, CA 90501-2857\nUSA"
+            },
+            {
+              "filename": "PKP223D15A2-R2EL-1.10in._28mm_2-PhaseBipolarStepperMotorwithEncoder.pdf",
+              "page": 4,
+              "similarity_score": 0.7625044584274292,
+              "preview_text": "Product Number\n12/15/2022 | Page 5 of 7"
+            },
+            {
+              "filename": "Qu-01387960-8.pdf",
+              "page": 2,
+              "similarity_score": 0.7575007081031799,
+              "preview_text": "Quote No:  Qu-01387960-8\n3 of 15\nINTERTEK - 25800 Commercentre Drive, ,Lake Forest, California, 92630,United States\nPrepared For: Michael Yang\nSakura Finetek U.S.A., Inc.\n1750 West 214th Street\nTorrance, CA 90501-2857\nUSA\nPrepared by: Jim Elmore\nSales Representative\nIntertek\n25800 Commercentre Drive\nLake Forest, California 92630\nUnited States\n310) 619 8016 19493933538\nmyang@sakuraus.com jim.elmore@intertek.com\nTesting and Evaluation Details:\nThis proposal is based upon the information Sakura Finetek U.S.A., Inc. provided to Intertek and covers \nthe services as noted below.   \nScope of Work:\ncETLus North American Certification - CHEQ-C"
+            }
+          ]
         },
         {
           "question_cell": "A11",
@@ -238,14 +366,22 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": true,
-          "confidence": 0
+          "confidence": 100,
+          "text_support": [
+            {
+              "filename": null,
+              "page": 0,
+              "similarity_score": 0.0,
+              "preview_text": "No evidence found"
+            }
+          ]
         },
         {
           "question_cell": "A12",
           "prefix": "Applicant",
           "field": "Email",
           "answer_cell": "B12",
-          "value": "leo@cellfebiotech.com\nsewoon@cellfebiotech.com",
+          "value": "myang@sakuraus.com",
           "field_merged": false,
           "fm_range": null,
           "value_merged": true,
@@ -254,14 +390,46 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": true,
-          "confidence": 100
+          "confidence": 100,
+          "text_support": [
+            {
+              "filename": "217187.pdf",
+              "page": 1,
+              "similarity_score": 0.8135707974433899,
+              "preview_text": "Purchase Order Total:\t29,100.00 USD\n\nOrdered By\tJorge Castaneda\nDigitally signed by Jorge Castaneda\nDate: 2024.03.01 09:52:18 -08'00'\n\nSakura Finetek USA, Inc.\n1750 W 214th Street\nTorrance, CA 90501\nU.S.A.\nTel. +1 310 972 7800\nFax. +1 310 972 7888\nwww.sakuraus.com\n\nFO-09-003-02, v2.1, effective 06/12/2023"
+            },
+            {
+              "filename": "Qu-01387960-8.pdf",
+              "page": 10,
+              "similarity_score": 0.7787970900535583,
+              "preview_text": "_________________________  ___________________________     ____________________ \nAcceptance Date Preferred Project Start Date    Purchase Order #\nThank you for choosing Intertek!\nSincerely,\nJim Elmore\nSales Representative\n25800 Commercentre Drive\nLake Forest, California 92630\nUnited States\n19493933538\njim.elmore@intertek.com\nQuote #:  Qu-01387960-8\nQuote Issued Date: March 1, 2024\nSakura Finetek U.S.A., Inc.\n1750 West 214th Street\nTorrance, CA 90501-2857\nUSA"
+            },
+            {
+              "filename": "Qu-01387960-8.pdf",
+              "page": 2,
+              "similarity_score": 0.7785958647727966,
+              "preview_text": "Quote No:  Qu-01387960-8\n3 of 15\nINTERTEK - 25800 Commercentre Drive, ,Lake Forest, California, 92630,United States\nPrepared For: Michael Yang\nSakura Finetek U.S.A., Inc.\n1750 West 214th Street\nTorrance, CA 90501-2857\nUSA\nPrepared by: Jim Elmore\nSales Representative\nIntertek\n25800 Commercentre Drive\nLake Forest, California 92630\nUnited States\n310) 619 8016 19493933538\nmyang@sakuraus.com jim.elmore@intertek.com\nTesting and Evaluation Details:\nThis proposal is based upon the information Sakura Finetek U.S.A., Inc. provided to Intertek and covers \nthe services as noted below.   \nScope of Work:\ncETLus North American Certification - CHEQ-C"
+            },
+            {
+              "filename": "Mornsun_5V_2A_regulator_K78xx-2000R3.pdf",
+              "page": 3,
+              "similarity_score": 0.7608951330184937,
+              "preview_text": "6.Productsarerelatedtolawsandregulations:see\"Features\"and\"EMC\";\n7.OurproductsshallbeclassifiedaccordingtoISO14001andrelatedenvironmentallawsandregulations,andshallbehandledbyqualified\nunits.\nMORNSUNGuangzhouScience&TechnologyCo.,Ltd.\nAddress:No.5,KehuiSt.1,KehuiDevelopmentCenter,ScienceAve.,GuangzhouScienceCity,HuangpuDistrict,Guangzhou,P.R.China\nTel:86-20-38601850 Fax:86-20-38601272 E-mail:info@mornsun.cn www.mornsun-power.com\nDimensionsandRecommendedLayout"
+            },
+            {
+              "filename": "Project Summary Report.pdf",
+              "page": 0,
+              "similarity_score": 0.7600985765457153,
+              "preview_text": "G105759941 Project Summary on 16-Oct-2025\nSakura Finetek U.S,A., Inc.\nProject Name: cETLus North American Certification - CHEQ-C\nProject Description:\nWork Orders Included in Summary: \"IOT US20110 Menlo Park - EMC\", \"EMC\", \"Safety\"\n \nProject Details\nBilling\nStatus : Open Operational\nStatus: SCHEDULED Folder\nStatus: Readiness Confirmed\nCustomer Ready Date: 15-\nOct-2024 Actual Ready Date: Promised Completion Date: 13-Dec-\n2024\nNext Scheduled\nAction Date:\nProject Operational\nNotes:\nEMC\nUA, WF\nProject Sample\nDescription:  \nProduct: LIGHTG -\nResidential/Commercial FixturesProject Owning OU: US20108 - Los Angeles CA\nModel: cETLus North American\nCertification - CHEQ-C Project Manager: Covarrubias, Rosanne\nParent ID:  Primary Sales: Elmore, Jim\nPO #:  Secondary Sales:  \nCust Ref#:  Project Total:  \n \nTransacting Customer Report Receiving Customer Bill To Customer\nSakura Finetek U.S,A., Inc. Sakura Finetek U.S,A., Inc. Sakura Finetek U.S,A., Inc.\nLOS ANGELES\n1750 West 214th Street\nTORRANCE CA 90501\nUSA\n \nLOS ANGELES\n1750 West 214th Street\nTORRANCE CA 90501\nUSA\n   \nPh:  Ph:  Ph:  \nEmail:  Email:  Email:  \n*See last page for additional customer/partner roles."
+            }
+          ]
         },
         {
           "question_cell": "D6",
           "prefix": "Manufacturer 1",
           "field": "Manufacturer 1",
           "answer_cell": "E6",
-          "value": "Gener8 LLC",
+          "value": null,
           "field_merged": false,
           "fm_range": null,
           "value_merged": true,
@@ -270,14 +438,21 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": true,
-          "confidence": 100
+          "text_support": [
+            {
+              "filename": null,
+              "page": 0,
+              "similarity_score": 0.0,
+              "preview_text": "No evidence found"
+            }
+          ]
         },
         {
           "question_cell": "D7",
           "prefix": "Manufacturer 1",
           "field": "Address",
           "answer_cell": "E7",
-          "value": "2560 Junction Avenue, San Jose, CA, 94085, USA",
+          "value": null,
           "field_merged": false,
           "fm_range": null,
           "value_merged": true,
@@ -286,14 +461,21 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": true,
-          "confidence": 100
+          "text_support": [
+            {
+              "filename": null,
+              "page": 0,
+              "similarity_score": 0.0,
+              "preview_text": "No evidence found"
+            }
+          ]
         },
         {
           "question_cell": "D8",
           "prefix": "Manufacturer 1",
           "field": "Country",
           "answer_cell": "E8",
-          "value": "USA",
+          "value": null,
           "field_merged": false,
           "fm_range": null,
           "value_merged": true,
@@ -302,14 +484,21 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": true,
-          "confidence": 100
+          "text_support": [
+            {
+              "filename": null,
+              "page": 0,
+              "similarity_score": 0.0,
+              "preview_text": "No evidence found"
+            }
+          ]
         },
         {
           "question_cell": "D9",
           "prefix": "Manufacturer 1",
           "field": "Contact",
           "answer_cell": "E9",
-          "value": "Shivam Patel\nDesiree Minkler",
+          "value": null,
           "field_merged": false,
           "fm_range": null,
           "value_merged": true,
@@ -318,14 +507,21 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": true,
-          "confidence": 100
+          "text_support": [
+            {
+              "filename": null,
+              "page": 0,
+              "similarity_score": 0.0,
+              "preview_text": "No evidence found"
+            }
+          ]
         },
         {
           "question_cell": "D10",
           "prefix": "Manufacturer 1",
           "field": "Phone",
           "answer_cell": "E10",
-          "value": "N/A",
+          "value": null,
           "field_merged": false,
           "fm_range": null,
           "value_merged": true,
@@ -334,14 +530,21 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": true,
-          "confidence": 0
+          "text_support": [
+            {
+              "filename": null,
+              "page": 0,
+              "similarity_score": 0.0,
+              "preview_text": "No evidence found"
+            }
+          ]
         },
         {
           "question_cell": "D11",
           "prefix": "Manufacturer 1",
           "field": "FAX",
           "answer_cell": "E11",
-          "value": "N/A",
+          "value": null,
           "field_merged": false,
           "fm_range": null,
           "value_merged": true,
@@ -350,14 +553,21 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": true,
-          "confidence": 0
+          "text_support": [
+            {
+              "filename": null,
+              "page": 0,
+              "similarity_score": 0.0,
+              "preview_text": "No evidence found"
+            }
+          ]
         },
         {
           "question_cell": "D12",
           "prefix": "Manufacturer 1",
           "field": "Email",
           "answer_cell": "E12",
-          "value": "spatel@gener8.net\ndminkler@gener8.net",
+          "value": null,
           "field_merged": false,
           "fm_range": null,
           "value_merged": true,
@@ -366,7 +576,14 @@
           "user_editable": true,
           "ai_fillable": true,
           "accuracy_level": true,
-          "confidence": 0
+          "text_support": [
+            {
+              "filename": null,
+              "page": 0,
+              "similarity_score": 0.0,
+              "preview_text": "No evidence found"
+            }
+          ]
         },
         {
           "question_cell": "A13",
