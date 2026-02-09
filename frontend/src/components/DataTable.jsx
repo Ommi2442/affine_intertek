@@ -735,13 +735,12 @@ const DataTable = forwardRef(
     if (totalPages === 0) return <Typography>No Data</Typography>;
 
     // HOVER ACTIONS: only show when editMode=true AND item editable AND hovered
-    const renderHoverActions = (tIdx, iIdx, userEditable) => {
-      if (!userEditable) return null;
+    const renderHoverActions = (tIdx, iIdx) => {
       if (tIdx == null || iIdx == null) return null;
       if (hovered.t !== tIdx || hovered.i !== iIdx) return null;
 
       const item = tables?.[tIdx]?.Items?.[iIdx];
-      if (!item || item.user_editable !== true) return null;
+      if (!item) return null;
 
       const hasValueField = Object.prototype.hasOwnProperty.call(item, 'value');
       if (!hasValueField) return null;
@@ -939,11 +938,7 @@ const DataTable = forwardRef(
                                 }
                               />
 
-                              {renderHoverActions(
-                                tIdx,
-                                iIdx,
-                                col.user_editable === true
-                              )}
+                              {renderHoverActions(tIdx, iIdx)}
                             </div>
                           </TableCell>
                         </TableRow>
@@ -965,7 +960,7 @@ const DataTable = forwardRef(
                               setHovered({ t: null, i: null })
                             }
                           >
-                            {renderHoverActions(tIdx, iIdx, true)}
+                            {renderHoverActions(tIdx, iIdx)}
 
                             {/* ================= SINGLE ROW ================= */}
                             {isPage7CheckboxUI ? (
@@ -1067,11 +1062,7 @@ const DataTable = forwardRef(
                               </Typography>
                             )}
 
-                            {renderHoverActions(
-                              tIdx,
-                              iIdx,
-                              col.user_editable === true
-                            )}
+                            {renderHoverActions(tIdx, iIdx)}
 
                             {col.user_comments?.[0]?.comment && (
                               <Typography
@@ -1163,6 +1154,12 @@ const DataTable = forwardRef(
                                             }}
                                           />
                                         )}
+                                        {renderConfidenceColor(
+                                          col.confidence,
+                                          col.is_user_edited,
+                                          col.ai_fillable,
+                                          col.accuracy_level
+                                        )}
                                       </div>
                                     </TableCell>
                                   );
@@ -1222,11 +1219,7 @@ const DataTable = forwardRef(
                                     </div>
                                   )}
 
-                                  {renderHoverActions(
-                                    tIdx,
-                                    iIdx,
-                                    col.user_editable === true
-                                  )}
+                                  {renderHoverActions(tIdx, iIdx)}
 
                                   {col._comment && (
                                     <Typography
@@ -1294,6 +1287,10 @@ const DataTable = forwardRef(
             isEditable={isEditable}
             updateCell={updateCell}
             editMode={editMode}
+            hovered={hovered}
+            setHovered={setHovered}
+            renderHoverActions={renderHoverActions}
+            renderConfidenceColor={renderConfidenceColor}
           />
         );
       }
@@ -1665,27 +1662,35 @@ const DataTable = forwardRef(
                                     fontWeight: 500,
                                     whiteSpace: 'pre-wrap',
                                     wordBreak: 'break-word',
-                                    mb: 1,
+                                    marginBottom: 8,
                                   }}
                                 >
                                   {fieldLabel}
                                 </Typography>
 
-                                {/* VALUE */}
-                                {!editable ? (
-                                  <Typography
-                                    sx={{
-                                      fontSize: 14,
-                                      whiteSpace: 'pre-wrap',
-                                      wordBreak: 'break-word',
-                                    }}
-                                  >
-                                    {cleanValue}
-                                  </Typography>
-                                ) : (
-                                  <div style={{ display: 'flex' }}>
+                                {/* VALUE + CONFIDENCE */}
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'flex-start',
+                                    gap: 12,
+                                  }}
+                                >
+                                  {!editable ? (
+                                    <Typography
+                                      sx={{
+                                        fontSize: 14,
+                                        whiteSpace: 'pre-wrap',
+                                        wordBreak: 'break-word',
+                                        flex: 1,
+                                      }}
+                                    >
+                                      {cleanValue}
+                                    </Typography>
+                                  ) : (
                                     <textarea
                                       className="dt-textarea dt-textarea-with-actions"
+                                      sx={{ pr: 2, mr: 2 }}
                                       value={cleanValue}
                                       rows={rows}
                                       disabled={!editable}
@@ -1697,15 +1702,18 @@ const DataTable = forwardRef(
                                           `${fieldLabel}\n${e.target.value}`
                                         )
                                       }
+                                      style={{ flex: 1 }}
                                     />
-                                    {renderConfidenceColor(
-                                      first.confidence,
-                                      first.is_user_edited,
-                                      first.ai_fillable,
-                                      first.accuracy_level
-                                    )}
-                                  </div>
-                                )}
+                                  )}
+
+                                  {/* ALWAYS render confidence dot */}
+                                  {renderConfidenceColor(
+                                    first.confidence,
+                                    first.is_user_edited,
+                                    first.ai_fillable,
+                                    first.accuracy_level
+                                  )}
+                                </div>
                               </div>
                             ) : first.checkbox_value !== undefined ? (
                               //  checkbox rows → NEVER show textarea
@@ -1733,11 +1741,7 @@ const DataTable = forwardRef(
                               </div>
                             )}
 
-                            {renderHoverActions(
-                              tIdx,
-                              iIdx,
-                              first.user_editable === true
-                            )}
+                            {renderHoverActions(tIdx, iIdx)}
 
                             {first._comment && (
                               <Typography
@@ -1878,11 +1882,7 @@ const DataTable = forwardRef(
                                   </div>
                                 )}
 
-                                {renderHoverActions(
-                                  tIdx,
-                                  iIdx,
-                                  r.user_editable === true
-                                )}
+                                {renderHoverActions(tIdx, iIdx)}
 
                                 {r._comment && (
                                   <Typography
@@ -2126,7 +2126,7 @@ const DataTable = forwardRef(
               )}
             </div>
 
-            {renderHoverActions(tIdx, iIdx, true)}
+            {renderHoverActions(tIdx, iIdx)}
 
             {comment && (
               <Typography variant="caption" className="dt-comment-caption">

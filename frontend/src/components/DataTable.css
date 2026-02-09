@@ -93,6 +93,16 @@
   text-align: justify !important;
 }
 
+.dt-value-column-page5 {
+  flex: 1;
+  padding: 8px;
+  position: relative;
+  box-sizing: border-box;
+  font-size: 10px;
+  white-space: pre-wrap;
+  text-align: justify !important;
+}
+
 /* .dt-value-column > * {
   font-weight: 700 !important;
 } */
@@ -131,17 +141,16 @@
 /* Hover actions (approve/comment/bookmark INSIDE textbox) */
 .dt-hover-actions {
   position: absolute;
-  right: 6px;
-  top: -37%; /* center vertically inside the textarea */
+  right: 8px;
+  top: 4px;
+  transform: translateY(-50%);
   display: flex;
   gap: 4px;
   background: rgba(255, 255, 255, 0.95);
-  padding: 2px 3px;
+  padding: 2px 4px;
   border-radius: 6px;
   align-items: center;
   z-index: 10;
-
-  /* soft shadow */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
