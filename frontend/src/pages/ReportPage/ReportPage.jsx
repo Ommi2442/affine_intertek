@@ -50,7 +50,7 @@ import { reGenerateTrfClear } from '../../redux/api/RegenerateApi';
 import { fetchProjectPdfsApi } from '../../redux/api/fetchPdfApi';
 import { savePdfToDb } from '../../components/pdfIndexedDb';
 import { usePreloadProjectPdfs } from '../../hooks/usePreloadProjectPdfs';
-import ConfidenceScoreTRF from './ConfidenceScore/ConfidenceScoreTrf';
+import ConfidenceScoreTRF from './ConfidenceScore/ConfidenceScoreTRF';
 
 const ReportPage = () => {
   const dispatch = useDispatch();
