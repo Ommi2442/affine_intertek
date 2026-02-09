@@ -570,42 +570,172 @@ def build_vision_message_grey(inputs, grey=False):
 # =============================================================================
 #   ATTACH SUPPORTING REFERENCES (v5 FINAL)
 # =============================================================================
-def normalize_image_file_fix(img):
-    if img.get("image_file"):
-        return img["image_file"]
+# def normalize_image_file_fix(img):
+#     if img.get("image_file"):
+#         return img["image_file"]
 
-    url = img.get("url")
-    if not url:
-        return None
+#     url = img.get("url")
+#     if not url:
+#         return None
 
-    clean = url.split("?")[0]
-    parts = clean.strip("/").split("/")
+#     clean = url.split("?")[0]
+#     parts = clean.strip("/").split("/")
 
-    filename = parts[-1]          # page_44.png
-    if len(parts) >= 2 and parts[-2].lower().endswith(".pdf"):
-        return f"{parts[-2]}_{filename}"
+#     filename = parts[-1]          # page_44.png
+#     if len(parts) >= 2 and parts[-2].lower().endswith(".pdf"):
+#         return f"{parts[-2]}_{filename}"
 
-    return filename
+#     return filename
 
+
+# def attach_supporting_refs_grey(
+#         docs,
+#         image_urls,
+#         llm_output,
+#         llm_classifier,   # unused but required for compatibility
+#         vs,
+#         accuracy_level=None,
+#         grey=False,
+#         question=None,
+#         k=5):
+
+#     import json
+#     import re
+
+#     # ---------------------------------------------------
+#     # STEP 0 — Robust JSON extraction
+#     # ---------------------------------------------------
+#     def extract_json_from_text(text):
+#         matches = re.findall(r"\{[\s\S]*\}", text)
+#         for block in reversed(matches):
+#             try:
+#                 return json.loads(block)
+#             except Exception:
+#                 continue
+#         return None
+
+#     parsed = extract_json_from_text(llm_output) or {
+#         "response": llm_output,
+#         "confidence": 0,
+#         "evidence_source": {"type": "text", "files": {}}
+#     }
+
+#     evidence = parsed.get("evidence_source", {})
+#     source_type = evidence.get("type", "text").lower()
+#     evidence_files = evidence.get("files", {})
+#     image_files_needed = set(evidence_files.get("image_files", [])) if isinstance(evidence_files, dict) else set()
+
+#     # ---------------------------------------------------
+#     # STEP 2 — TEXT SUPPORT USING VECTOR STORE (CORRECT)
+#     # ---------------------------------------------------
+#     similarity_query = question.strip() if question else parsed.get("response", "")
+
+#     try:
+#         scored_results = vs.similarity_search_with_score(similarity_query, k=k)
+#     except Exception as e:
+#         print("Vector search failed:", str(e))
+#         scored_results = []
+
+#     # Full chunk, real similarity score
+#     text_support = [
+#         {
+#             "filename": doc.metadata.get("source_file", "unknown"),
+#             "pdf_file": doc.metadata.get("source_file", "unknown"),
+#             "page": doc.metadata.get("page"),
+#             "similarity_score": float(score),
+#             "preview_text": doc.page_content  # FULL CHUNK — no truncation
+#         }
+#         for doc, score in scored_results
+#     ]
+
+#     # ---------------------------------------------------
+#     # STEP 3 — IMAGE SUPPORT (unchanged)
+#     # ---------------------------------------------------
+#     image_support = []
+
+#     if source_type in ("image", "both") and image_files_needed:
+
+#         image_lookup = {}
+
+#         for img in image_urls or []:
+#             if isinstance(img, dict) and "url" in img:
+#                 # image_file = img.get("image_file") or img["url"].split("?")[0].split("/")[-1]
+#                 image_file = normalize_image_file_fix(img)
+#                 image_lookup[image_file] = {
+#                     "url": img.get("url"),
+#                     "image_file": image_file,
+#                     "pdf_file": img.get("pdf_file"),
+#                     "page": img.get("page")
+#                 }
+#             elif isinstance(img, str):
+#                 image_file = img.split("?")[0].split("/")[-1]
+#                 image_lookup[image_file] = {
+#                     "url": img,
+#                     "image_file": image_file,
+#                     "pdf_file": None,
+#                     "page": None
+#                 }
+
+#         for image_file in image_files_needed:
+#             if image_file in image_lookup:
+#                 image_support.append(image_lookup[image_file])
+
+#     # ---------------------------------------------------
+#     # FINAL structured output
+#     # ---------------------------------------------------
+#     return {
+#         "answer": llm_output.strip(),
+#         "confidence": parsed.get("confidence", 0),
+
+#         "evidence_source": {
+#             "type": source_type,
+#             "files": {
+#                 "image_files": list(image_files_needed)
+#             }
+#         },
+
+#         "text_support": text_support,
+#         "image_support": image_support,
+
+#         "grey_mode": grey,
+#         "accuracy_level": accuracy_level,
+#         "similarity_query": question,
+#         "vector_search_based_on": "question"
+#     }
 
 def attach_supporting_refs_grey(
-        docs,
-        image_urls,
-        llm_output,
-        llm_classifier,   # unused but required for compatibility
-        vs,
-        accuracy_level=None,
-        grey=False,
-        question=None,
-        k=5):
-
+    docs,
+    image_urls,
+    llm_output,
+    llm_classifier,   
+    vs,
+    accuracy_level=None,
+    grey=False,
+    question=None,
+    k=5
+):
     import json
     import re
+
+    # ---------------------------------------------------
+    # Helper: canonical filename (CRITICAL)
+    # ---------------------------------------------------
+    def canonical_image_key(name):
+        if not name or not isinstance(name, str):
+            return None
+        name = name.strip()
+        name = name.replace("\\", "/")
+        name = name.split("/")[-1]
+        name = name.replace("%20", "_")
+        name = name.replace(" ", "_")
+        return name.lower()
 
     # ---------------------------------------------------
     # STEP 0 — Robust JSON extraction
     # ---------------------------------------------------
     def extract_json_from_text(text):
+        if not isinstance(text, str):
+            return None
         matches = re.findall(r"\{[\s\S]*\}", text)
         for block in reversed(matches):
             try:
@@ -620,77 +750,90 @@ def attach_supporting_refs_grey(
         "evidence_source": {"type": "text", "files": {}}
     }
 
-    evidence = parsed.get("evidence_source", {})
-    source_type = evidence.get("type", "text").lower()
-    evidence_files = evidence.get("files", {})
-    image_files_needed = set(evidence_files.get("image_files", [])) if isinstance(evidence_files, dict) else set()
+    evidence = parsed.get("evidence_source", {}) or {}
+    source_type = str(evidence.get("type", "text")).lower()
+    files = evidence.get("files") if isinstance(evidence.get("files"), dict) else {}
+    image_files_needed = set(files.get("image_files", []))
 
     # ---------------------------------------------------
-    # STEP 2 — TEXT SUPPORT USING VECTOR STORE (CORRECT)
+    # STEP 1 — TEXT SUPPORT (UNCHANGED)
     # ---------------------------------------------------
     similarity_query = question.strip() if question else parsed.get("response", "")
 
     try:
         scored_results = vs.similarity_search_with_score(similarity_query, k=k)
-    except Exception as e:
-        print("Vector search failed:", str(e))
+    except Exception:
         scored_results = []
 
-    # Full chunk, real similarity score
     text_support = [
         {
             "filename": doc.metadata.get("source_file", "unknown"),
             "pdf_file": doc.metadata.get("source_file", "unknown"),
             "page": doc.metadata.get("page"),
             "similarity_score": float(score),
-            "preview_text": doc.page_content  # FULL CHUNK — no truncation
+            "preview_text": doc.page_content
         }
         for doc, score in scored_results
     ]
 
     # ---------------------------------------------------
-    # STEP 3 — IMAGE SUPPORT (unchanged)
+    # STEP 2 — IMAGE SUPPORT (STRICT, SAFE)
     # ---------------------------------------------------
     image_support = []
 
     if source_type in ("image", "both") and image_files_needed:
 
+        # Build lookup ONLY from valid top-5 images
         image_lookup = {}
 
         for img in image_urls or []:
-            if isinstance(img, dict) and "url" in img:
-                # image_file = img.get("image_file") or img["url"].split("?")[0].split("/")[-1]
-                image_file = normalize_image_file_fix(img)
-                image_lookup[image_file] = {
-                    "url": img.get("url"),
-                    "image_file": image_file,
-                    "pdf_file": img.get("pdf_file"),
-                    "page": img.get("page")
-                }
-            elif isinstance(img, str):
-                image_file = img.split("?")[0].split("/")[-1]
-                image_lookup[image_file] = {
-                    "url": img,
-                    "image_file": image_file,
-                    "pdf_file": None,
-                    "page": None
-                }
+            if not isinstance(img, dict):
+                continue
 
+            image_file = img.get("image_file")
+            url = img.get("url")
+
+            
+            if not image_file or not url:
+                continue
+
+            key = canonical_image_key(image_file)
+            if not key:
+                continue
+
+            image_lookup[key] = {
+                "filename": image_file,
+                "image_file": image_file,
+                "pdf_file": img.get("pdf_file"),
+                "page": img.get("page"),
+                "url": url
+            }
+
+        # Resolve ONLY LLM-cited images
         for image_file in image_files_needed:
-            if image_file in image_lookup:
-                image_support.append(image_lookup[image_file])
+            key = canonical_image_key(image_file)
+            if not key:
+                continue
+
+            entry = image_lookup.get(key)
+            if not entry:
+                continue
+
+            image_support.append(entry)
 
     # ---------------------------------------------------
-    # FINAL structured output
+    # FINAL OUTPUT (NO NULL URLs POSSIBLE)
     # ---------------------------------------------------
+    valid_image_files = {img["image_file"] for img in image_support}
+
     return {
-        "answer": llm_output.strip(),
+        "answer": llm_output.strip() if isinstance(llm_output, str) else "",
         "confidence": parsed.get("confidence", 0),
 
         "evidence_source": {
             "type": source_type,
             "files": {
-                "image_files": list(image_files_needed)
+                "image_files": sorted(valid_image_files)
             }
         },
 
@@ -865,6 +1008,145 @@ def extract_pdf_page_from_filename(fname):
     return m.group(1), int(m.group(2))
 
 
+# def update_json_item_grey(item, result):
+
+#     if not item.get("ai_fillable", False):
+#         return
+
+#     answer_text = result.get("answer", "")
+#     raw_json = result.get("llm_raw_json")
+
+#     # -----------------------------
+#     # 1. Parse JSON safely
+#     # -----------------------------
+#     if raw_json:
+#         try:
+#             parsed = json.loads(raw_json)
+#         except:
+#             parsed = {}
+#     else:
+#         parsed = extract_json_block(answer_text) or {}
+
+#     # Human prefix override
+#     human_prefix = extract_human_prefix(answer_text)
+#     if human_prefix and len(human_prefix.split()) > 3:
+#         parsed["response"] = human_prefix
+
+#     response = str(parsed.get("response", "")).strip()
+#     confidence = parsed.get("confidence", result.get("confidence", 0))
+
+#     # -----------------------------
+#     # 2. Grey skip
+#     # -----------------------------
+#     if response.replace(" ", "").startswith("TBD"):
+#         item["value"] = response
+#         item["confidence"] = confidence
+#         return
+
+#     # -----------------------------
+#     # 3. Assign value
+#     # -----------------------------
+#     if item.get("task_type") == "verdict":
+#         item["value"] = normalize_verdict(response)
+#     else:
+#         item["value"] = response
+
+#     # -----------------------------
+#     # 4. SAFE extract image files from LLM JSON
+#     # -----------------------------
+#     evidence = parsed.get("evidence_source", {}) or {}
+#     files = evidence.get("files", {})
+
+#     if not isinstance(files, dict):
+#         files = {"text_files": [], "image_files": []}
+
+#     json_image_files = files.get("image_files") or []
+
+#     # -----------------------------
+#     # 5. Build text_support ALWAYS 5 hits
+#     # -----------------------------
+#     similarity_preview = (
+#         result.get("similarity_preview")
+#         or result.get("text_support")
+#         or []
+#     )
+
+#     text_support_final = [
+#         {
+#             "filename": hit.get("filename"),
+#             "page": hit.get("page"),
+#             "similarity_score": hit.get("similarity_score"),
+#             "preview_text": hit.get("preview_text")
+#         }
+#         for hit in similarity_preview
+#     ]
+
+#     # -----------------------------
+#     # 6. Build IMAGE SUPPORT (FULL FIX)
+#     # -----------------------------
+#     image_support_final = []
+
+#     pipeline_image_support = (
+#         result.get("image_support")
+#         or result.get("pipeline_output", {}).get("image_support")
+#         or []
+#     )
+
+#     pipeline_lookup = {
+#         d.get("image_file"): d for d in pipeline_image_support
+#     }
+
+#     task_images = item.get("image", []) or item.get("images", []) or []
+#     task_lookup = {d.get("image_file"): d for d in task_images}
+
+#     for fname in json_image_files:
+
+#         pdf_file, page = extract_pdf_page_from_filename(fname)
+
+#         enriched = {
+#             "filename": fname,
+#             "image_file": fname,
+#             "pdf_file": pdf_file,
+#             "page": page,
+#             "url": None
+#         }
+
+#         if fname in pipeline_lookup:
+#             enriched.update({
+#                 k: v for k, v in pipeline_lookup[fname].items()
+#                 if v is not None
+#             })
+
+#         if enriched["url"] is None and fname in task_lookup:
+#             enriched.update({
+#                 k: v for k, v in task_lookup[fname].items()
+#                 if v is not None
+#             })
+
+#         image_support_final.append(enriched)
+
+#     if not image_support_final:
+#         image_support_final = list(pipeline_image_support)
+
+#     # -----------------------------
+#     # 7. Final assignment
+#     # -----------------------------
+#     item["text_support"] = text_support_final
+#     item["image_support"] = image_support_final
+#     item["evidence_type"] = evidence.get("type") or "text"
+#     item["confidence"] = confidence
+
+def canonical_image_key(name):
+    if not name or not isinstance(name, str):
+        return None
+    name = name.strip()
+    name = name.replace("\\", "/")
+    name = name.split("/")[-1]
+    name = name.replace("%20", "_")
+    name = name.replace(" ", "_")
+    return name.lower()
+
+
 def update_json_item_grey(item, result):
 
     if not item.get("ai_fillable", False):
@@ -949,41 +1231,52 @@ def update_json_item_grey(item, result):
         or []
     )
 
+
     pipeline_lookup = {
-        d.get("image_file"): d for d in pipeline_image_support
+        canonical_image_key(d.get("image_file")): d
+        for d in pipeline_image_support
+        if d.get("image_file") and d.get("url")
     }
 
+
     task_images = item.get("image", []) or item.get("images", []) or []
-    task_lookup = {d.get("image_file"): d for d in task_images}
+    # task_lookup = {d.get("image_file"): d for d in task_images}
+    task_lookup = {
+        canonical_image_key(d.get("image_file")): d
+        for d in task_images
+        if d.get("image_file") and d.get("url")
+    }
+
+
+    image_support_final = []
 
     for fname in json_image_files:
 
-        pdf_file, page = extract_pdf_page_from_filename(fname)
+        key = canonical_image_key(fname)
+        if not key:
+            continue
 
-        enriched = {
+        enriched = None
+
+        # Priority 1: pipeline output (attach_supporting_refs_grey)
+        if key in pipeline_lookup:
+            enriched = pipeline_lookup[key]
+
+        # Priority 2: task top-5 images (vs2)
+        elif key in task_lookup:
+            enriched = task_lookup[key]
+
+        if not enriched or not enriched.get("url"):
+            continue
+
+        image_support_final.append({
             "filename": fname,
             "image_file": fname,
-            "pdf_file": pdf_file,
-            "page": page,
-            "url": None
-        }
+            "pdf_file": enriched.get("pdf_file"),
+            "page": enriched.get("page"),
+            "url": enriched.get("url"),
+        })
 
-        if fname in pipeline_lookup:
-            enriched.update({
-                k: v for k, v in pipeline_lookup[fname].items()
-                if v is not None
-            })
-
-        if enriched["url"] is None and fname in task_lookup:
-            enriched.update({
-                k: v for k, v in task_lookup[fname].items()
-                if v is not None
-            })
-
-        image_support_final.append(enriched)
-
-    if not image_support_final:
-        image_support_final = list(pipeline_image_support)
 
     # -----------------------------
     # 7. Final assignment
