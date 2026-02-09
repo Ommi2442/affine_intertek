@@ -67,7 +67,7 @@ def update_project_progress(
 
 
 def process_trf_direct(project_id: str):
-    print(f"🚀 TRF started for project {project_id}")
+    print(f"TRF started for project {project_id}")
 
     query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
     docs = list(
