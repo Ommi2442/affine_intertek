@@ -32,5 +32,5 @@ export const savePdfToDb = async (projectId, filename, buffer) => {
     data: buffer,
     savedAt: Date.now(),
   });
-  console.log('Saved to IDB:', key);
+  //console.log('Saved to IDB:', key);
 };
