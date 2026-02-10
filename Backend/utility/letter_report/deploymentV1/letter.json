@@ -15,7 +15,9 @@
           "value": "KEY1",
           "question": "Specify the type of testing being conducted",
           "custom_prompt": "Mention the project name.",
-          "ai_fillable": false
+          "ai_fillable": false,
+          "confidence_overRide": true,
+          "confidence": 100
         },
         {
           "key": "XXXXXXXXXXXXXXXXXXXXXXXX",
@@ -29,7 +31,9 @@
           "value": "KEY3",
           "question": "What's the Issue Date",
           "custom_prompt": "What's the Issue Date?",
-          "ai_fillable": false
+          "ai_fillable": false,
+          "confidence_overRide": true,
+          "confidence": 100
         },
         {
           "key": "[DD-mmmm-yyyy]",
@@ -55,7 +59,9 @@
           "value": "«IssuedDate»",
           "question": "What's the Issue Date?",
           "custom_prompt": "What's the Issue Date",
-          "ai_fillable": false
+          "ai_fillable": false,
+          "confidence_overRide": true,
+          "confidence": 100
         },
         {
           "key": "«ReportNumber»",
@@ -69,7 +75,9 @@
           "value": "«ProjectNumber»",
           "question": "What's the Project Number?",
           "custom_prompt": "What's the Project Number? Remove anything after 'MPK' including 'MPK'and append a 'G' in the start",
-          "ai_fillable": false
+          "ai_fillable": false,
+          "confidence_overRide": true,
+          "confidence": 100
         },
         {
           "key": "«AppContactName»",
@@ -125,7 +133,9 @@
           "value": "<ETL Listing/CB/Other Evaluation> of the «ProductType» «ProductCovModels»",
           "question": "",
           "custom_prompt": "Specify the type of evaluation being conducted. Choose one: 'ETL Listing' for North American certification, 'CB' for international CB scheme certification, or specify another evaluation type (e.g., 'Field Evaluation', 'Special Inspection')",
-          "ai_fillable": false
+          "ai_fillable": false,
+          "confidence_overRide": true,
+          "confidence": 100
         },
         {
           "key": "«AppContactName»",
@@ -203,7 +213,7 @@
           "custom_prompt": "Specify when the non-conformances were identified. If found during initial documentation review, keep as 'Initial Documentation Review'. If found during another phase, replace with the appropriate phase name (e.g., 'Physical Inspection', 'Performance Testing', 'Final Evaluation')",
           "ai_fillable": false,
           "dataframe_table": true,
-          "confidence":100
+          "confidence": 100
         },
         {
           "key": "Critical components table",
@@ -212,7 +222,7 @@
           "custom_prompt": "Specify when the non-conformances were identified. If found during initial documentation review, keep as 'Initial Documentation Review'. If found during another phase, replace with the appropriate phase name (e.g., 'Physical Inspection', 'Performance Testing', 'Final Evaluation')",
           "ai_fillable": false,
           "dataframe_table": true,
-          "confidence":100
+          "confidence": 100
         }
       ]
     },
@@ -224,7 +234,9 @@
           "value": "«ProjectNumber»",
           "question": "",
           "custom_prompt": "Extract the project number from the document. This is typically found in the header or introductory section and follows a format like 'Project No. XXXXX'",
-          "ai_fillable": false
+          "ai_fillable": false,
+          "confidence_overRide": true,
+          "confidence": 100
         },
         {
           "key": "photograph",
