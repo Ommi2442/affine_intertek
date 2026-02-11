@@ -22,9 +22,22 @@ export const calculateConfidenceScoreLetter = (data) => {
       normalizeConfidence(item.confidence) !== null
   );
 
-  const userEditedFields = allEntries.filter(
-    (item) => item?.is_user_edited === true
-  );
+  const HEADER_KEYS = ['«AppCOMPANYNAME»', 'Intertek Report: No:'];
+
+  let specialHeaderEdited = new Set();
+
+  const userEditedFields = allEntries.filter((item) => {
+    if (!item?.is_user_edited) return false;
+
+    const key = item?.key || item?.field || '';
+
+    if (HEADER_KEYS.includes(key)) {
+      specialHeaderEdited.add(key);
+      return false; // prevent double counting
+    }
+
+    return true;
+  });
 
   let totalAiFields = aiFields.length;
   if (totalAiFields === 0) return null;
@@ -77,6 +90,15 @@ export const calculateConfidenceScoreLetter = (data) => {
     totalAiFields = high + userEditedFields.length + dataframeUserEdited;
   }
 
+  //for headers
+  const EXTRA_HEADER_FIELDS = 8;
+
+  totalAiFields += EXTRA_HEADER_FIELDS;
+  high += EXTRA_HEADER_FIELDS;
+  sumConfidence += EXTRA_HEADER_FIELDS * 100;
+  aiConfidenceCount += EXTRA_HEADER_FIELDS;
+
+  //normal calculations
   const avgConfidence =
     aiConfidenceCount > 0 ? Math.round(sumConfidence / aiConfidenceCount) : 0;
 
@@ -90,6 +112,7 @@ export const calculateConfidenceScoreLetter = (data) => {
     low,
     avgConfidence,
     overallLabel,
-    userEditedCount: userEditedFields.length + dataframeUserEdited,
+    userEditedCount:
+      userEditedFields.length + dataframeUserEdited + specialHeaderEdited.size,
   };
 };

@@ -54,6 +54,7 @@ const CdrReportPage = () => {
     typeof state?.letterPercentage === 'number'
       ? state.letterPercentage
       : Number(localStorage.getItem(`letter_percentage_${projectId}`)) || 0;
+  //console.log('upperLetter', letterPercentage);
   /* ---------------- STATE ---------------- */
   const [cdrJson, setCdrJson] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -158,6 +159,7 @@ const CdrReportPage = () => {
         stage !== 'Completed' &&
         percentage < 100 &&
         !hasTriggeredGenerateRef.current;
+      //console.log('percentage', percentage);
       //console.log('shouldGenerate', shouldGenerate);
       // Trigger generate only once
       if (shouldGenerate) {
@@ -314,7 +316,8 @@ const CdrReportPage = () => {
   };
 
   const handleGenerateLetter = () => {
-    if (letterPercentage === 100) {
+    //console.log('letterper', letterPercentage);
+    if (letterPercentage >= 10) {
       navigate('/report-page/letter', {
         state: {
           projectId,

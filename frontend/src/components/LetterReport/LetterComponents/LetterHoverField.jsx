@@ -22,7 +22,8 @@ const LetterHoverField = ({
   const hasValue =
     item.value !== null && String(item.value || '').trim() !== '';
 
-  const canApprove = item.ai_fillable === true;
+  const canApprove =
+    item.ai_fillable === true || item.confidence_overRide === true;
 
   return (
     <Box
@@ -49,11 +50,11 @@ const LetterHoverField = ({
       />
 
       {/* CONFIDENCE DOT */}
-      {item.ai_fillable &&
+      {(item.ai_fillable || item.confidence_overRide) &&
         renderConfidenceColor(
           item.confidence,
           item.is_user_edited,
-          item.ai_fillable,
+          item.ai_fillable || item.confidence_overRide,
           true
         )}
 
