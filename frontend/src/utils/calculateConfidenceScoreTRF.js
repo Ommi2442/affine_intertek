@@ -16,11 +16,10 @@ export const calculateConfidenceScoreTRF = (data) => {
   };
 
   const aiFields = allEntries.filter(
-    (item) =>
-      item?.ai_fillable === true &&
-      item?.accuracy_level === true &&
-      normalizeConfidence(item.confidence) !== null
+    (item) => item?.ai_fillable === true && item?.accuracy_level === true
+    //normalizeConfidence(item.confidence) !== null
   );
+  //console.log('aifield', aiFields);
 
   const userEditedFields = aiFields.filter(
     (item) => item?.is_user_edited === true
