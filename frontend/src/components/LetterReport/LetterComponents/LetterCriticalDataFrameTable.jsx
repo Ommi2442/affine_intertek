@@ -10,6 +10,7 @@ import {
   Button,
   Box,
   TextField,
+  Tooltip,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { renderConfidenceColor } from '../../../utils/renderConfidenceColor';
@@ -43,7 +44,7 @@ const LetterCriticalDataFrameTable = ({
 
   const rows = item.value;
 
-  // Matrix-style headers: use all numeric keys
+  // Matrix-style headers
   const HEADERS = React.useMemo(() => {
     if (!rows.length) return [];
 
@@ -99,7 +100,7 @@ const LetterCriticalDataFrameTable = ({
         size="small"
         sx={{ border: '1px solid #ccc', tableLayout: 'fixed', width: '100%' }}
       >
-        {/* ================= HEADERS (0,1,2,3...) ================= */}
+        {/* ================= HEADERS ================= */}
         <TableHead>
           <TableRow sx={{ backgroundColor: '#ffeb3b' }}>
             {HEADERS.map((h) => (
@@ -110,6 +111,7 @@ const LetterCriticalDataFrameTable = ({
                 {h}
               </TableCell>
             ))}
+
             <TableCell
               align="center"
               sx={{
@@ -123,6 +125,7 @@ const LetterCriticalDataFrameTable = ({
             >
               Confidence
             </TableCell>
+
             {editMode && (
               <TableCell
                 sx={{
@@ -142,17 +145,42 @@ const LetterCriticalDataFrameTable = ({
         <TableBody>
           {rows.map((row, rowIndex) => (
             <TableRow key={rowIndex}>
-              {HEADERS.map((key) => (
-                <TableCell key={key} sx={{ border: '1px solid #ccc' }}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    value={row[key] ?? ''}
-                    InputProps={{ readOnly: !editMode }}
-                    onChange={(e) => updateCell(rowIndex, key, e.target.value)}
-                  />
-                </TableCell>
-              ))}
+              {HEADERS.map((key) => {
+                const cellValue = row[key] ?? '';
+
+                return (
+                  <TableCell key={key} sx={{ border: '1px solid #ccc' }}>
+                    <Tooltip
+                      title={
+                        <span style={{ whiteSpace: 'pre-wrap', fontSize: '12px' }}>
+                          {cellValue}
+                        </span>
+                      }
+                      arrow
+                      placement="top"
+                    >
+                      <TextField
+                        fullWidth
+                        size="small"
+                        value={cellValue}
+                        InputProps={{
+                          readOnly: !editMode,
+                          sx: {
+                            '& input': {
+                              textOverflow: 'ellipsis',
+                              overflow: 'hidden',
+                              whiteSpace: 'nowrap',
+                            },
+                          },
+                        }}
+                        onChange={(e) =>
+                          updateCell(rowIndex, key, e.target.value)
+                        }
+                      />
+                    </Tooltip>
+                  </TableCell>
+                );
+              })}
 
               {/* Confidence + Hover */}
               <TableCell
