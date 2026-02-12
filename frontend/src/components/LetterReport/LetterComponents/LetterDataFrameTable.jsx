@@ -10,18 +10,11 @@ import {
   Button,
   Box,
   TextField,
+  Tooltip,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { renderConfidenceColor } from '../../../utils/renderConfidenceColor';
 
-//const HEADERS = ['Clause', 'Requirement of the Clause', 'Remark and Findings'];
-
-// const emptyRow = () => ({
-//   Clause: '',
-//   'Requirement of the Clause': '',
-//   'Remark and Findings': '',
-//   __isNew: true,
-// });
 const makeEmptyRow = (headers) => {
   const row = {};
   headers.forEach((h) => {
@@ -49,6 +42,7 @@ const LetterDataFrameTable = ({
   if (!item || !Array.isArray(item.value)) return null;
 
   const rows = item.value;
+
   // -------- DERIVE HEADERS DYNAMICALLY --------
   const HEADERS = React.useMemo(() => {
     if (!rows.length) return [];
@@ -92,10 +86,6 @@ const LetterDataFrameTable = ({
   };
 
   /* -------- ADD ROW -------- */
-  // const addRow = () => {
-  //   item.value = [...rows, emptyRow()];
-  //   onChange?.();
-  // };
   const addRow = () => {
     const next = [...rows, makeEmptyRow(HEADERS)];
     item.value = next;
@@ -125,7 +115,8 @@ const LetterDataFrameTable = ({
                 {h}
               </TableCell>
             ))}
-            {/*  Confidence column */}
+
+            {/* Confidence column */}
             <TableCell
               align="center"
               sx={{
@@ -141,6 +132,7 @@ const LetterDataFrameTable = ({
             >
               Confidence
             </TableCell>
+
             {editMode && (
               <TableCell
                 sx={{
@@ -160,25 +152,51 @@ const LetterDataFrameTable = ({
         <TableBody>
           {rows.map((row, rowIndex) => (
             <TableRow key={rowIndex}>
-              {HEADERS.map((key) => (
-                <TableCell key={key} sx={{ border: '1px solid #ccc' }}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    value={
-                      row[key] ??
-                      row[
-                        Object.keys(row).find((k) => normalizeKey(k) === key)
-                      ] ??
-                      ''
-                    }
-                    InputProps={{ readOnly: !editMode }}
-                    onChange={(e) => updateCell(rowIndex, key, e.target.value)}
-                  />
-                </TableCell>
-              ))}
+              {HEADERS.map((key) => {
+                const cellValue =
+                  row[key] ??
+                  row[
+                    Object.keys(row).find(
+                      (k) => normalizeKey(k) === key
+                    )
+                  ] ??
+                  '';
 
-              {/*  Confidence DOT + Hover Actions */}
+                return (
+                  <TableCell key={key} sx={{ border: '1px solid #ccc' }}>
+                    <Tooltip
+                      title={
+                        <span style={{ whiteSpace: 'pre-wrap', fontSize: '12px' }}>
+                          {cellValue}
+                        </span>
+                      }
+                      arrow
+                      placement="top"
+                    >
+                      <TextField
+                        fullWidth
+                        size="small"
+                        value={cellValue}
+                        InputProps={{
+                          readOnly: !editMode,
+                          sx: {
+                            '& input': {
+                              textOverflow: 'ellipsis',
+                              overflow: 'hidden',
+                              whiteSpace: 'nowrap',
+                            },
+                          },
+                        }}
+                        onChange={(e) =>
+                          updateCell(rowIndex, key, e.target.value)
+                        }
+                      />
+                    </Tooltip>
+                  </TableCell>
+                );
+              })}
+
+              {/* Confidence DOT + Hover Actions */}
               <TableCell
                 align="center"
                 sx={{
@@ -189,7 +207,6 @@ const LetterDataFrameTable = ({
                 onMouseEnter={() => setHoveredRow(rowIndex)}
                 onMouseLeave={() => setHoveredRow(null)}
               >
-                {/*  Show dot only for existing rows */}
                 {!row.__isNew &&
                   renderConfidenceColor(
                     item.confidence,
@@ -198,7 +215,6 @@ const LetterDataFrameTable = ({
                     true
                   )}
 
-                {/*  Hover buttons after dot */}
                 {hoveredRow === rowIndex &&
                   typeof renderHoverActions === 'function' &&
                   renderHoverActions(null, null, true, row)}
@@ -206,7 +222,10 @@ const LetterDataFrameTable = ({
 
               {editMode && (
                 <TableCell sx={{ border: '1px solid #ccc' }}>
-                  <IconButton size="small" onClick={() => deleteRow(rowIndex)}>
+                  <IconButton
+                    size="small"
+                    onClick={() => deleteRow(rowIndex)}
+                  >
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </TableCell>
