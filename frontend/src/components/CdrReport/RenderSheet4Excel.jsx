@@ -12,6 +12,7 @@ import {
   Box,
   IconButton,
   Button,
+  Tooltip,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -47,7 +48,6 @@ const RenderSheet4Excel = ({
   const titleItem = sheet.Items?.[0] ?? null;
   const headerRow = sheet.Rows.find((r) => r.row_type === 'column_headings');
 
-  // Sync only when sheet changes (NOT on every keystroke)
   useEffect(() => {
     const data = sheet.Rows.filter((r) => r.row_type === 'table_data');
     setRowsState(data.map((r) => ({ ...r })));
@@ -81,7 +81,6 @@ const RenderSheet4Excel = ({
     setRowsState((prev) => prev.filter((_, i) => i !== idx));
   };
 
-  /* ---------------- LOCAL EDIT ---------------- */
   const updateLocal = (idx, key, value) => {
     setRowsState((prev) =>
       prev.map((r, i) =>
@@ -90,7 +89,6 @@ const RenderSheet4Excel = ({
     );
   };
 
-  /* ---------------- COMMIT ON APPROVE ---------------- */
   const commitRow = (idx) => {
     const row = rowsState[idx];
     if (!row) return;
@@ -100,19 +98,13 @@ const RenderSheet4Excel = ({
       typeof row.confidence === 'number' &&
       row.confidence < 100;
 
-    /*  Update local UI immediately */
     if (shouldBoost) {
       setRowsState((prev) =>
         prev.map((r, i) => (i === idx ? { ...r, confidence: 100 } : r))
       );
-    }
-
-    /* Push boosted confidence into parent JSON */
-    if (shouldBoost) {
       updateField(sheet.sheet_no, `confidence_${idx}`, 100);
     }
 
-    /* Push all other row values */
     Object.entries(row).forEach(([key, value]) => {
       if (
         !['row_type', 'accuracy_level', 'ai_fillable', 'confidence'].includes(
@@ -123,21 +115,30 @@ const RenderSheet4Excel = ({
       }
     });
 
-    /* Trigger IndexedDB + ConfidenceScore */
     handleApprove?.(idx);
   };
 
   /* ---------------- CELL ---------------- */
   const renderCell = (value, editable, onChange) => (
     <TableCell sx={border}>
-      <TextField
-        size="small"
-        fullWidth
-        value={value ?? ''}
-        InputProps={{ readOnly: !editable }}
-        onChange={(e) => editable && onChange(e.target.value)}
-        sx={{ backgroundColor: editable ? '#fff' : '#f5f5f5' }}
-      />
+      <Tooltip
+        title={
+          <span style={{ whiteSpace: 'pre-wrap', fontSize: '14px' }}>
+            {value ?? ''}
+          </span>
+        }
+        arrow
+        placement="top"
+      >
+        <TextField
+          size="small"
+          fullWidth
+          value={value ?? ''}
+          InputProps={{ readOnly: !editable }}
+          onChange={(e) => editable && onChange(e.target.value)}
+          sx={{ backgroundColor: editable ? '#fff' : '#f5f5f5' }}
+        />
+      </Tooltip>
     </TableCell>
   );
 
@@ -150,7 +151,17 @@ const RenderSheet4Excel = ({
             {titleItem && (
               <TableRow>
                 <TableCell colSpan={8} sx={{ ...border, fontWeight: 700 }}>
-                  {titleItem.field}
+                  <Tooltip
+                    title={
+                      <span style={{ whiteSpace: 'pre-wrap', fontSize: '14px' }}>
+                        {titleItem.field}
+                      </span>
+                    }
+                    arrow
+                    placement="top"
+                  >
+                    <span>{titleItem.field}</span>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             )}
@@ -168,18 +179,20 @@ const RenderSheet4Excel = ({
                   headerRow.marks_of_conf,
                   'Action',
                 ].map((h, i) => (
-                  <TableCell
-                    key={i}
-                    sx={{
-                      ...border,
-                      fontWeight: 600,
-                      whiteSpace: 'normal',
-                      wordBreak: 'break-word',
-                      overflowWrap: 'break-word',
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    {h}
+                  <TableCell key={i} sx={{...border,fontWeight: 600,whiteSpace: 'normal',wordBreak: 'break-word',overflowWrap: 'break-word',lineHeight: 1.2}}>
+                    <Tooltip
+                      title={
+                        <span
+                          style={{ whiteSpace: 'pre-wrap', fontSize: '14px' }}
+                        >
+                          {h}
+                        </span>
+                      }
+                      arrow
+                      placement="top"
+                    >
+                      <span>{h}</span>
+                    </Tooltip>
                   </TableCell>
                 ))}
               </TableRow>
@@ -193,19 +206,15 @@ const RenderSheet4Excel = ({
                 <TableRow key={idx}>
                   {renderCell(row.photo_no, false)}
                   {renderCell(row.item_no, false)}
-
                   {renderCell(row.name, editable, (v) =>
                     updateLocal(idx, 'name', v)
                   )}
-
                   {renderCell(row.manufacturer, editable, (v) =>
                     updateLocal(idx, 'manufacturer', v)
                   )}
-
                   {renderCell(row.type_model, editable, (v) =>
                     updateLocal(idx, 'type_model', v)
                   )}
-
                   {renderCell(row.technical_data, editable, (v) =>
                     updateLocal(idx, 'technical_data', v)
                   )}
@@ -217,16 +226,35 @@ const RenderSheet4Excel = ({
                     onMouseLeave={() => setHoveredRow(null)}
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <TextField
-                        size="small"
-                        fullWidth
-                        value={row.marks_of_conf ?? ''}
-                        InputProps={{ readOnly: !editable }}
-                        onChange={(e) =>
-                          editable &&
-                          updateLocal(idx, 'marks_of_conf', e.target.value)
+                      <Tooltip
+                        title={
+                          <span
+                            style={{
+                              whiteSpace: 'pre-wrap',
+                              fontSize: '14px',
+                            }}
+                          >
+                            {row.marks_of_conf ?? ''}
+                          </span>
                         }
-                      />
+                        arrow
+                        placement="top"
+                      >
+                        <TextField
+                          size="small"
+                          fullWidth
+                          value={row.marks_of_conf ?? ''}
+                          InputProps={{ readOnly: !editable }}
+                          onChange={(e) =>
+                            editable &&
+                            updateLocal(
+                              idx,
+                              'marks_of_conf',
+                              e.target.value
+                            )
+                          }
+                        />
+                      </Tooltip>
 
                       {row.accuracy_level &&
                         renderConfidenceColor(
@@ -257,7 +285,6 @@ const RenderSheet4Excel = ({
                     </Box>
                   </TableCell>
 
-                  {/* ----- DELETE ----- */}
                   <TableCell sx={{ ...border, textAlign: 'center' }}>
                     <IconButton color="error" onClick={() => deleteRow(idx)}>
                       <DeleteIcon />
@@ -270,14 +297,12 @@ const RenderSheet4Excel = ({
         </Table>
       </TableContainer>
 
-      {/* ---------- ADD ROW ---------- */}
       <Box mt={2} display="flex" justifyContent="flex-end">
         <Button variant="outlined" onClick={addRow}>
           + Add Row
         </Button>
       </Box>
 
-      {/* ---------- COMMENTS ---------- */}
       <CommentDialog
         open={isCommentOpen}
         onClose={() => setIsCommentOpen(false)}
