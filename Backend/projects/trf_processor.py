@@ -77,17 +77,18 @@ def update_project_progress_CDR(
     last_updated: datetime | None = None,
     cdr_completed: bool = False
 ):
-    project_doc["CDR_Project_Progress"] = {
-        "cdr_stage": cdr_stage,
-        "cdr_percentage": cdr_percentage,
-        "cdr_step": cdr_step,
-        "last_updated": (last_updated or datetime.utcnow()).isoformat(),
-        "error": error,
-        "cdr_completed": cdr_completed
-    }
+    # --- ONLY initialize if missing ---
+    if "CDR_Project_Progress" not in project_doc:
+        project_doc["CDR_Project_Progress"] = {
+            "cdr_stage": cdr_stage,
+            "cdr_percentage": cdr_percentage,
+            "cdr_step": cdr_step,
+            "last_updated": (last_updated or datetime.utcnow()).isoformat(),
+            "error": error,
+            "cdr_completed": cdr_completed
+        }
 
-    projects_container.upsert_item(project_doc)
-
+        projects_container.upsert_item(project_doc)
 
 
 
