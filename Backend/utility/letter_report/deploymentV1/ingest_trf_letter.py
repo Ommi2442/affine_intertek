@@ -73,10 +73,15 @@ from azure.storage.blob import BlobClient
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_core.documents import Document
-
 from openai import AzureOpenAI
-
 from dotenv import load_dotenv
+import fitz
+fitz.TOOLS.mupdf_display_errors(False)
+
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+ 
+
 load_dotenv()
 
 from projects.keyvault_load import *

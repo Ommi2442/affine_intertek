@@ -63,6 +63,12 @@ from openai import AzureOpenAI
 from pypdf import PdfReader
 from azure.cosmos.exceptions import CosmosResourceNotFoundError
 import shutil
+import fitz
+fitz.TOOLS.mupdf_display_errors(False)
+
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+ 
 
 
 from projects.keyvault_load import *
