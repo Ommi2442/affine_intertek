@@ -304,11 +304,12 @@ def _retrieve_bom_chunks(source_name: str, vs):
     qty quantity description manufacturer
     part number mpn mfr u/m line item
     """
-    docs = vs.similarity_search(query=query,k=20,where=where,)
+    docs = vs.similarity_search(query=query, k=20, where=where)
     for d in docs:
-        print(f"{source_name} → File:{bom_name}->Metadata:{d.metadata.get("source_file")}")
+        print(f"{source_name} -> File:{bom_name} -> Metadata:{d.metadata.get('source_file')}")
+
     return docs
- 
+
 # def _retrieve_bom_chunks(pdf_name: str, *, vs) -> list[str]:
 #     """
 #     Retrieve BOM-related chunks from the EXISTING vector store.

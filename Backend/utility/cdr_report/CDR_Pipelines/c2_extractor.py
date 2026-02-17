@@ -1,4 +1,6 @@
 # c2_extractor.py
+from openpyxl import Workbook
+
 import json
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -325,7 +327,19 @@ def merge_components(image_components, guide_components):
 
 #     #print(f"✔ Combined output written: {configs.OUTPUT_EXCEL_RAW}")
 #     #print("✔ Extraction completed successfully")
+import re
 
+ILLEGAL_XML_CHARS = re.compile(
+    r"[\x00-\x08\x0B\x0C\x0E-\x1F]"
+)
+
+def sanitize_excel_text(value):
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        value = str(value)
+    return ILLEGAL_XML_CHARS.sub("", value)
+ 
 
 def run_extractor():
     configs.require_runtime()
@@ -378,31 +392,64 @@ def run_extractor():
 
     for c in combined_components:
         for s in c["sources"]:
+            # rows.append({
+            #     "Component Name": c["component_name"],
+            #     "Category": c["component_category"],
+            #     "Confidence": c["confidence"],
+            #     "Source Type": s["source_type"],
+
+            #     # (1) URL logic
+            #     "URL": s["source_ref"],
+
+            #     # (3) filename
+            #     "Filename": s.get("filename"),
+
+            #     # (4) page number (guide only)
+            #     "Page Number": s.get("page_number"),
+
+            #     # (2) exact chunk
+            #     "Guide Reference": s.get("chunk") if s["source_type"] == "guide" else None,
+
+            #     "Evidence": s.get("evidence")
+            # })
             rows.append({
-                "Component Name": c["component_name"],
-                "Category": c["component_category"],
+                "Component Name": sanitize_excel_text(c["component_name"]),
+                "Category": sanitize_excel_text(c["component_category"]),
                 "Confidence": c["confidence"],
+
                 "Source Type": s["source_type"],
-
-                # (1) URL logic
-                "URL": s["source_ref"],
-
-                # (3) filename
-                "Filename": s.get("filename"),
-
-                # (4) page number (guide only)
+                "URL": sanitize_excel_text(s["source_ref"]),
+                "Filename": sanitize_excel_text(s.get("filename")),
                 "Page Number": s.get("page_number"),
 
-                # (2) exact chunk
-                "Guide Reference": s.get("chunk") if s["source_type"] == "guide" else None,
+                "Guide Reference": sanitize_excel_text(
+                    s.get("chunk") if s["source_type"] == "guide" else None
+                ),
 
-                "Evidence": s.get("evidence")
+                "Evidence": sanitize_excel_text(s.get("evidence")),
             })
+ 
 
     df_raw = pd.DataFrame(rows, columns=COLUMNS)
-    df_raw.to_excel(configs.OUTPUT_EXCEL_RAW, index=False)
+    # df_raw.to_excel(configs.OUTPUT_EXCEL_RAW, index=False)
+    # print(f"✔ Combined output written: {configs.OUTPUT_EXCEL_RAW}")
 
+    try:
+        df_raw.to_excel(configs.OUTPUT_EXCEL_RAW, index=False)
+        print(f"✔ Excel written: {configs.OUTPUT_EXCEL_RAW}")
 
-    print(f"✔ Combined output written: {configs.OUTPUT_EXCEL_RAW}")
+    except Exception as e:
+        print("❌ Excel write failed, creating blank Excel")
+        print(str(e))
+
+        wb = Workbook()
+        ws = wb.active
+        ws.append(COLUMNS)   # headers only
+        wb.save(configs.OUTPUT_EXCEL_RAW)
+
+        print(f"⚠ Blank Excel created: {configs.OUTPUT_EXCEL_RAW}")
+
+    
+    
     print("✔ Extraction completed successfully")
     
