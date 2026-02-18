@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - Dev
+      - Dev_test_branch
   paths:
     include:
       - frontend
