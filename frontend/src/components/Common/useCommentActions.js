@@ -1,8 +1,7 @@
-/* eslint-disable */
-import { useState, useRef } from 'react';
+import { useRef, useState } from 'react';
 import { getLoggedInUser } from './getLoggedInUser';
 
-export const useCommentActions = (sheet) => {
+export const useCommentActions = (sheet, rowKey = 'Items') => {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [commentHistory, setCommentHistory] = useState([]);
   const [currentCommentText, setCurrentCommentText] = useState('');
@@ -12,10 +11,12 @@ export const useCommentActions = (sheet) => {
   const openComment = (sheetNo, index) => {
     commentTargetRef.current = { sheetNo, index };
 
-    const item = sheet.Items[index];
+    const target = sheet?.[rowKey]?.[index];
 
-    const history = Array.isArray(item?.user_comments)
-      ? item.user_comments
+    if (!target) return;
+
+    const history = Array.isArray(target.user_comments)
+      ? target.user_comments
       : [];
 
     const latestComment =
@@ -31,18 +32,18 @@ export const useCommentActions = (sheet) => {
     const { index } = commentTargetRef.current || {};
     if (index == null) return;
 
+    const target = sheet?.[rowKey]?.[index];
+    if (!target) return;
+
     const newComment = {
       comment: currentCommentText,
       Submited_By: getLoggedInUser(),
       Submited_at: new Date().toISOString(),
     };
 
-    sheet.Items[index].user_comments = [
-      ...(sheet.Items[index].user_comments || []),
-      newComment,
-    ];
+    target.user_comments = [...(target.user_comments || []), newComment];
 
-    setCommentHistory(sheet.Items[index].user_comments);
+    setCommentHistory(target.user_comments);
     setIsCommentOpen(false);
   };
 
