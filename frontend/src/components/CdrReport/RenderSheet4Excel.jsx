@@ -43,7 +43,7 @@ const RenderSheet4Excel = ({
     setCurrentCommentText,
     openComment,
     saveComment,
-  } = useCommentActions(sheet);
+  } = useCommentActions(sheet, 'Rows');
 
   const titleItem = sheet.Items?.[0] ?? null;
   const headerRow = sheet.Rows.find((r) => r.row_type === 'column_headings');
@@ -153,7 +153,9 @@ const RenderSheet4Excel = ({
                 <TableCell colSpan={8} sx={{ ...border, fontWeight: 700 }}>
                   <Tooltip
                     title={
-                      <span style={{ whiteSpace: 'pre-wrap', fontSize: '14px' }}>
+                      <span
+                        style={{ whiteSpace: 'pre-wrap', fontSize: '14px' }}
+                      >
                         {titleItem.field}
                       </span>
                     }
@@ -179,7 +181,17 @@ const RenderSheet4Excel = ({
                   headerRow.marks_of_conf,
                   'Action',
                 ].map((h, i) => (
-                  <TableCell key={i} sx={{...border,fontWeight: 600,whiteSpace: 'normal',wordBreak: 'break-word',overflowWrap: 'break-word',lineHeight: 1.2}}>
+                  <TableCell
+                    key={i}
+                    sx={{
+                      ...border,
+                      fontWeight: 600,
+                      whiteSpace: 'normal',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'break-word',
+                      lineHeight: 1.2,
+                    }}
+                  >
                     <Tooltip
                       title={
                         <span
@@ -247,11 +259,7 @@ const RenderSheet4Excel = ({
                           InputProps={{ readOnly: !editable }}
                           onChange={(e) =>
                             editable &&
-                            updateLocal(
-                              idx,
-                              'marks_of_conf',
-                              e.target.value
-                            )
+                            updateLocal(idx, 'marks_of_conf', e.target.value)
                           }
                         />
                       </Tooltip>

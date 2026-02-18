@@ -132,7 +132,10 @@ const LetterPage3 = ({
             <LetterDataFrameTable
               item={item}
               editMode={editMode}
-              onChange={forceUpdate}
+              onChange={(updatedRows) => {
+                item.value = updatedRows;
+                forceUpdate();
+              }}
               renderHoverActions={renderHoverActions}
             />
           );

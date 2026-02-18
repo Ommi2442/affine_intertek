@@ -31,6 +31,7 @@ const HIDDEN_COLUMNS = new Set([
   'text_support',
   'confidence',
   'is_user_edited',
+  'user_comments',
 ]);
 
 const LetterDataFrameTable = ({
@@ -81,8 +82,7 @@ const LetterDataFrameTable = ({
       is_user_edited: true,
     };
 
-    item.value = next;
-    onChange?.();
+    onChange?.(next);
   };
 
   /* -------- ADD ROW -------- */
@@ -155,19 +155,19 @@ const LetterDataFrameTable = ({
               {HEADERS.map((key) => {
                 const cellValue =
                   row[key] ??
-                  row[
-                    Object.keys(row).find(
-                      (k) => normalizeKey(k) === key
-                    )
-                  ] ??
+                  row[Object.keys(row).find((k) => normalizeKey(k) === key)] ??
                   '';
 
                 return (
                   <TableCell key={key} sx={{ border: '1px solid #ccc' }}>
                     <Tooltip
                       title={
-                        <span style={{ whiteSpace: 'pre-wrap', fontSize: '12px' }}>
-                          {cellValue}
+                        <span
+                          style={{ whiteSpace: 'pre-wrap', fontSize: '12px' }}
+                        >
+                          {typeof cellValue === 'object'
+                            ? cellValue?.comment
+                            : cellValue}
                         </span>
                       }
                       arrow
@@ -176,7 +176,11 @@ const LetterDataFrameTable = ({
                       <TextField
                         fullWidth
                         size="small"
-                        value={cellValue}
+                        value={
+                          typeof cellValue === 'object' && cellValue !== null
+                            ? (cellValue.comment ?? '')
+                            : (cellValue ?? '')
+                        }
                         InputProps={{
                           readOnly: !editMode,
                           sx: {
@@ -222,10 +226,7 @@ const LetterDataFrameTable = ({
 
               {editMode && (
                 <TableCell sx={{ border: '1px solid #ccc' }}>
-                  <IconButton
-                    size="small"
-                    onClick={() => deleteRow(rowIndex)}
-                  >
+                  <IconButton size="small" onClick={() => deleteRow(rowIndex)}>
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </TableCell>
