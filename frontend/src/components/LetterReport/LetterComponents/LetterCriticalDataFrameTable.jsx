@@ -146,14 +146,21 @@ const LetterCriticalDataFrameTable = ({
           {rows.map((row, rowIndex) => (
             <TableRow key={rowIndex}>
               {HEADERS.map((key) => {
-                const cellValue = row[key] ?? '';
+                const rawValue = row[key] ?? '';
+
+                const displayValue =
+                  typeof rawValue === 'object' && rawValue !== null
+                    ? (rawValue.comment ?? '')
+                    : (rawValue ?? '');
 
                 return (
                   <TableCell key={key} sx={{ border: '1px solid #ccc' }}>
                     <Tooltip
                       title={
-                        <span style={{ whiteSpace: 'pre-wrap', fontSize: '12px' }}>
-                          {cellValue}
+                        <span
+                          style={{ whiteSpace: 'pre-wrap', fontSize: '12px' }}
+                        >
+                          {displayValue}
                         </span>
                       }
                       arrow
@@ -162,7 +169,7 @@ const LetterCriticalDataFrameTable = ({
                       <TextField
                         fullWidth
                         size="small"
-                        value={cellValue}
+                        value={displayValue}
                         InputProps={{
                           readOnly: !editMode,
                           sx: {
