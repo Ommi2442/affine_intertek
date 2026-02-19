@@ -2644,8 +2644,92 @@ def fetch_marking_plate_urls_and_update_json_new(
 #     }
 
 
-import json
+# import json
+# from copy import deepcopy
+
+# def update_pta_from_iec_correct(
+#     pta_path: str,
+#     iec_path: str,
+#     output_path: str
+# ):
+#     """
+#     CORRECT + SAFE UPDATE
+
+#     Unique key = (field, task_type)
+
+#     Rules:
+#     - Update existing PTA items
+#     - Append ONLY if key does not exist ANYWHERE in PTA
+#     - Append ONCE
+#     - No cross-table duplication
+#     - Idempotent
+#     """
+
+#     with open(pta_path, "r", encoding="utf-8") as f:
+#         pta = json.load(f)
+
+#     with open(iec_path, "r", encoding="utf-8") as f:
+#         iec = json.load(f)
+
+#     # -------------------------------------------------
+#     # 1. Build GLOBAL PTA key index
+#     # -------------------------------------------------
+#     pta_key_index = {}   # (field, task_type) -> item
+
+#     for table in pta.get("Tables", []):
+#         for item in table.get("Items", []):
+#             field = str(item.get("field", "")).strip()
+#             task_type = item.get("task_type")
+#             if field:
+#                 pta_key_index[(field, task_type)] = item
+
+#     # -------------------------------------------------
+#     # 2. Build IEC key index with table reference
+#     # -------------------------------------------------
+#     iec_items = []  # (table_ref, key, item)
+
+#     for table in iec.get("Tables", []):
+#         for item in table.get("Items", []):
+#             field = str(item.get("field", "")).strip()
+#             task_type = item.get("task_type")
+#             if field:
+#                 iec_items.append((table, (field, task_type), item))
+
+#     # -------------------------------------------------
+#     # 3. Update existing PTA items
+#     # -------------------------------------------------
+#     for _, key, iec_item in iec_items:
+#         if key in pta_key_index:
+#             pta_item = pta_key_index[key]
+#             for k, v in iec_item.items():
+#                 if v is not None:
+#                     pta_item[k] = deepcopy(v)
+
+#     # -------------------------------------------------
+#     # 4. Append ONLY truly missing keys (once)
+#     # -------------------------------------------------
+#     for iec_table, key, iec_item in iec_items:
+#         if key not in pta_key_index:
+#             # find matching PTA table by table number
+#             target_table_no = iec_table.get("Table")
+
+#             for pta_table in pta.get("Tables", []):
+#                 if pta_table.get("Table") == target_table_no:
+#                     pta_table["Items"].append(deepcopy(iec_item))
+#                     pta_key_index[key] = iec_item  # prevent future dupes
+#                     break
+
+#     # -------------------------------------------------
+#     # 5. Write output
+#     # -------------------------------------------------
+#     with open(output_path, "w", encoding="utf-8") as f:
+#         json.dump(pta, f, indent=2, ensure_ascii=False)
+
+#     return output_path
+
 from copy import deepcopy
+import json
+
 
 def update_pta_from_iec_correct(
     pta_path: str,
@@ -2653,9 +2737,10 @@ def update_pta_from_iec_correct(
     output_path: str
 ):
     """
-    CORRECT + SAFE UPDATE
+    CORRECT + SAFE UPDATE (ROW-SAFE)
 
-    Unique key = (field, task_type)
+    Unique key =
+        (field, task_type, answer_row, answer_column)
 
     Rules:
     - Update existing PTA items
@@ -2672,19 +2757,23 @@ def update_pta_from_iec_correct(
         iec = json.load(f)
 
     # -------------------------------------------------
-    # 1. Build GLOBAL PTA key index
+    # 1. Build GLOBAL PTA key index (ROW-SAFE)
     # -------------------------------------------------
-    pta_key_index = {}   # (field, task_type) -> item
+    pta_key_index = {}
 
     for table in pta.get("Tables", []):
         for item in table.get("Items", []):
             field = str(item.get("field", "")).strip()
             task_type = item.get("task_type")
+            answer_row = item.get("answer_row")
+            answer_column = item.get("answer_column")
+
             if field:
-                pta_key_index[(field, task_type)] = item
+                key = (field, task_type, answer_row, answer_column)
+                pta_key_index[key] = item
 
     # -------------------------------------------------
-    # 2. Build IEC key index with table reference
+    # 2. Collect IEC items with same ROW-SAFE key
     # -------------------------------------------------
     iec_items = []  # (table_ref, key, item)
 
@@ -2692,15 +2781,20 @@ def update_pta_from_iec_correct(
         for item in table.get("Items", []):
             field = str(item.get("field", "")).strip()
             task_type = item.get("task_type")
+            answer_row = item.get("answer_row")
+            answer_column = item.get("answer_column")
+
             if field:
-                iec_items.append((table, (field, task_type), item))
+                key = (field, task_type, answer_row, answer_column)
+                iec_items.append((table, key, item))
 
     # -------------------------------------------------
-    # 3. Update existing PTA items
+    # 3. Update existing PTA items (SAFE MERGE)
     # -------------------------------------------------
     for _, key, iec_item in iec_items:
         if key in pta_key_index:
             pta_item = pta_key_index[key]
+
             for k, v in iec_item.items():
                 if v is not None:
                     pta_item[k] = deepcopy(v)
@@ -2710,13 +2804,12 @@ def update_pta_from_iec_correct(
     # -------------------------------------------------
     for iec_table, key, iec_item in iec_items:
         if key not in pta_key_index:
-            # find matching PTA table by table number
             target_table_no = iec_table.get("Table")
 
             for pta_table in pta.get("Tables", []):
                 if pta_table.get("Table") == target_table_no:
                     pta_table["Items"].append(deepcopy(iec_item))
-                    pta_key_index[key] = iec_item  # prevent future dupes
+                    pta_key_index[key] = iec_item
                     break
 
     # -------------------------------------------------
@@ -2726,7 +2819,7 @@ def update_pta_from_iec_correct(
         json.dump(pta, f, indent=2, ensure_ascii=False)
 
     return output_path
-
+ 
 
 import json
 import os
