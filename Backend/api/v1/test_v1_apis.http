@@ -1,0 +1,57 @@
+# VS Code REST Client / compatible tools
+# Start server with mock mode (PowerShell):
+#   $env:API_V1_MOCK_MODE="true"
+#   uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+@baseUrl = http://localhost:8000
+
+### 0 — Check mock mode & sample IDs
+GET {{baseUrl}}/v1/mock/info
+
+### 0b — Reset mock data to defaults
+POST {{baseUrl}}/v1/mock/reset
+
+### 1 — Upload (mock project MOCK-001)
+POST {{baseUrl}}/v1/upload
+Content-Type: multipart/form-data; boundary=----mock
+
+------mock
+Content-Disposition: form-data; name="projectId"
+
+MOCK-001
+------mock
+Content-Disposition: form-data; name="category"
+
+source_documents
+------mock
+Content-Disposition: form-data; name="files"; filename="test.pdf"
+Content-Type: application/pdf
+
+%PDF-1.4 mock file content
+------mock--
+
+### 2 — Autosave
+POST {{baseUrl}}/v1/autosave
+Content-Type: application/json
+
+{
+  "projectId": "MOCK-001",
+  "reportType": "trf",
+  "section": "section-1",
+  "data": { "field1": "hello", "field2": 42 }
+}
+
+### 3 — Report dashboard (all mock projects)
+GET {{baseUrl}}/v1/report-dashboard?user_role=1
+
+### 3b — Report dashboard (user filter)
+GET {{baseUrl}}/v1/report-dashboard?user_role=2&user_email=mock.user@intertek.test
+
+### 3c — Single project
+GET {{baseUrl}}/v1/report-dashboard?project_id=MOCK-001
+
+### 4 — KPI dashboard
+GET {{baseUrl}}/v1/kpi-dashboard?user_role=1
+
+### 5 — Report statistics
+GET {{baseUrl}}/v1/report-statistics?user_role=1
