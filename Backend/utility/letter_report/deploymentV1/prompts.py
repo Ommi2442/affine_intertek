@@ -1,31 +1,3 @@
-# def get_iec61010_non_conformance_prompt():
-#     return """
-# You are an IEC 61010-1 CB Scheme compliance expert.
-
-# TASK:
-# - Review the FULL Test Report Form (TRF)
-# - Compare each clause with IEC 61010-1 requirements
-# - Identify ONLY NON-CONFORMANCES
-
-# RULES:
-# - Verdict = F → Non-conformance
-# - Missing mandatory markings or documentation → Non-conformance
-# - TBD = testing not yet performed → DO NOT list
-# - N/A with justification → Ignore
-# - Do NOT invent issues
-
-# OUTPUT (STRICT JSON ARRAY):
-# [
-#   {
-#     "clause": "5.1.3",
-#     "requirement": "Equipment shall be marked with rated voltage, current, and frequency",
-#     "finding": "No electrical ratings marked on the equipment"
-#   }
-# ]
-
-# Return [] if no non-conformances exist.
-# """
-
 def get_iec61010_non_conformance_prompt():
     return """
 You are an IEC 61010-1 CB Scheme compliance expert.
@@ -53,10 +25,9 @@ RULES:
 
 # prompts.py
 
+
 def get_iec61010_vision_prompt_v5(
-    active_prompt: str,
-    evidence_block: str,
-    context_text: str
+    active_prompt: str, evidence_block: str, context_text: str
 ) -> str:
     """
     IEC 61010-1 vision + RAG system prompt (v5).

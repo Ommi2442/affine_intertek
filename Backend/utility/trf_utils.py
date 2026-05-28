@@ -1,65 +1,42 @@
 import re
-import docx2pdf
 import tempfile
 import shutil
-import requests
 from urllib.parse import urlparse, unquote
 from email import policy
 from email.parser import BytesParser
 import extract_msg
 import uuid
 from langchain_core.documents import Document
-import io
 import openpyxl
 import xlrd
+from datetime import datetime, timezone
+
 # from utils import *
 from azure.storage.blob import BlobClient
 from azure.core.exceptions import ResourceNotFoundError, AzureError
+from azure.cosmos import CosmosClient
+
 # from templates import *
 import pandas as pd
-import math
-import copy
 import time
-from azure.cosmos import CosmosClient, PartitionKey, exceptions
-import json, os
-from azure.cosmos import CosmosClient, ConsistencyLevel
-from typing import List, Dict, Any, Tuple
+from azure.cosmos import exceptions
+import os
 from docx import Document as WordDocument
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
-from langchain_azure_ai.vectorstores import AzureCosmosDBNoSqlVectorSearch
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from azure.cosmos import CosmosClient
 from langchain_openai import AzureOpenAIEmbeddings
-from operator import itemgetter
-from langchain_core.runnables import (
-    RunnableParallel, RunnableLambda, RunnableMap
-)
-from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import AzureChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
-from tenacity import retry, retry_if_exception_type, wait_exponential, stop_never, RetryCallState
-from openai import RateLimitError  # Make sure this import exists
-from types import SimpleNamespace
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from azure.core.exceptions import HttpResponseError
-import time
-import os
 import subprocess
-import shutil
 import platform
 
-
-
-pd.set_option('display.max_colwidth', None)  # Don't truncate cell text
-pd.set_option('display.max_rows', None)      # Show all rows (optional)
-pd.set_option('display.max_columns', None) 
+pd.set_option("display.max_colwidth", None)  # Don't truncate cell text
+pd.set_option("display.max_rows", None)  # Show all rows (optional)
+pd.set_option("display.max_columns", None)
 
 
 IMAGE_EXTS = {"jpg", "jpeg", "png", "gif", "bmp", "tiff", "tif", "webp", "svg"}
+
 
 def set_checkbox_checked(docx_path, out_path, checkbox_index=0):
     doc = WordDocument(docx_path)
@@ -71,12 +48,27 @@ def set_checkbox_checked(docx_path, out_path, checkbox_index=0):
         if field.tag == qn("w:fldChar") and field.get(qn("w:fldCharType")) == "begin":
             # potential checkbox start
             parent = field.getparent()
-            ffData = parent.find(".//w:ffData", namespaces={"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"})
+            ffData = parent.find(
+                ".//w:ffData",
+                namespaces={
+                    "w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+                },
+            )
             if ffData is not None:
-                checkBox = ffData.find(".//w:checkBox", namespaces={"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"})
+                checkBox = ffData.find(
+                    ".//w:checkBox",
+                    namespaces={
+                        "w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+                    },
+                )
                 if checkBox is not None:
                     if count == checkbox_index:
-                        default = checkBox.find(".//w:default", namespaces={"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"})
+                        default = checkBox.find(
+                            ".//w:default",
+                            namespaces={
+                                "w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+                            },
+                        )
                         if default is None:
                             default = OxmlElement("w:default")
                             checkBox.append(default)
@@ -147,6 +139,7 @@ def _extract_from_eml(path):
             body = payload.decode(errors="ignore") if payload else ""
     return body
 
+
 ### If chunks ingested don't run
 def _extract_from_xlsx(path):
     out = []
@@ -158,6 +151,7 @@ def _extract_from_xlsx(path):
             if row_vals:
                 out.append(" ".join(row_vals))
     return "\n".join(out)
+
 
 ### If chunks ingested don't run
 def _extract_from_xls(path):
@@ -176,6 +170,7 @@ def _extract_from_xls(path):
                 out.append(" ".join(vals))
     return "\n".join(out)
 
+
 ### If chunks ingested don't run
 def _guess_ext_from_url(url):
     path = urlparse(url).path
@@ -184,6 +179,7 @@ def _guess_ext_from_url(url):
     if ext:
         return ext.lstrip(".").lower()
     return None
+
 
 ### If chunks ingested don't run
 def _extract_from_txt(path):
@@ -196,63 +192,6 @@ def _extract_from_txt(path):
                 return f.read().decode("utf-8", errors="ignore")
         except Exception:
             return ""
-
-
-#### For Windows
-# def convert_doc_to_pdf(input_path, output_path=None):
-#     """
-#     Convert .doc or .docx to PDF using LibreOffice.
-#     Works on Windows + Linux.
-#     """
-
-#     if not os.path.isfile(input_path):
-#         raise FileNotFoundError(f"Input file not found: {input_path}")
-
-#     # Determine output path
-#     if output_path is None:
-#         base, _ = os.path.splitext(input_path)
-#         output_path = base + ".pdf"
-
-#     out_dir = os.path.dirname(os.path.abspath(output_path))
-
-#     # Detect libreoffice binary
-#     system = platform.system().lower()
-
-#     if system == "windows":
-#         # Try typical install locations
-#         possible_paths = [
-#             r"C:\Program Files\LibreOffice\program\soffice.exe",
-#             r"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
-#         ]
-#         soffice = next((p for p in possible_paths if os.path.isfile(p)), None)
-
-#         if soffice is None:
-#             soffice = shutil.which("soffice")  # last fallback
-
-#         if soffice is None:
-#             raise RuntimeError("LibreOffice not found. Install from https://www.libreoffice.org/")
-#     else:
-#         # Linux/macOS
-#         soffice = shutil.which("libreoffice") or shutil.which("soffice")
-
-#         if soffice is None:
-#             raise RuntimeError("LibreOffice not installed. Install using your package manager.")
-
-#     cmd = [
-#         soffice,
-#         "--headless",
-#         "--convert-to", "pdf",
-#         "--outdir", out_dir,
-#         input_path
-#     ]
-
-#     try:
-#         subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-#     except subprocess.CalledProcessError as e:
-#         raise RuntimeError(f"PDF conversion failed: {e.stderr.decode()}")
-
-#     return output_path
-
 
 
 #### For Linux ######
@@ -277,13 +216,6 @@ def convert_doc_to_pdf_linux(doc_path: str, pdf_path: str):
         return
 
     raise RuntimeError(f"Unsupported OS for DOC conversion: {system}")
- 
-
-
-##### For Windows
-# def pdf_convert(file1,file2):
-#     """file1 is docx and file2 is pdf""" 
-#     return docx2pdf.convert(file1,file2)
 
 
 #### For Linux ######
@@ -310,8 +242,6 @@ def convert_docx_to_pdf_linux(docx_path: str, pdf_path: str):
     raise RuntimeError(f"Unsupported OS for DOCX conversion: {system}")
 
 
-
-
 ### If chunks ingested don't run
 def _blob_name_from_url(url, container):
     """
@@ -332,6 +262,7 @@ def _blob_name_from_url(url, container):
         return ""
     # otherwise return the full path (best-effort)
     return p
+
 
 ### If chunks ingested don't run
 def safe_download_blob_file(conn_str, container, blob_name, local_path):
@@ -362,57 +293,6 @@ def safe_download_blob_file(conn_str, container, blob_name, local_path):
         return False, f"General download error: {e}"
 
 
-# def create_db_and_container(client,DB_NAME,VECTOR_PATH,EMBED_DIM,CONT_NAME):
-#     print("→ Ensuring database...")
-#     db = client.create_database_if_not_exists(DB_NAME)
-#     print("✔ Database ready:", DB_NAME)
-
-#     vector_embedding_policy = {
-#         "vectorEmbeddings": [
-#             {
-#                 "path": VECTOR_PATH,
-#                 "dataType": "float32",
-#                 "dimensions": EMBED_DIM,
-#                 "distanceFunction": "cosine",
-#             }
-#         ]
-#     }
-
-#     indexing_policy = {
-#         "includedPaths": [{"path": "/*"}],
-#         "excludedPaths": [{"path": "/\"_etag\"/?"}, {"path": f"{VECTOR_PATH}/*"}],
-#         "vectorIndexes": [{"path": VECTOR_PATH, "type": "quantizedFlat"}],
-#     }
-
-#     print("→ Removing old container if exists (to avoid schema conflicts)...")
-#     try:
-#         c_old = db.get_container_client(CONT_NAME)
-#         c_old.read()  # will throw if not found
-#         db.delete_container(CONT_NAME)
-#         print("✔ Old container deleted")
-#     except exceptions.CosmosResourceNotFoundError:
-#         print(" ℹ No old container")
-
-#     print("→ Creating container with vector policy...")
-#     try:
-#         container = db.create_container(
-#             id=CONT_NAME,
-#             partition_key=PartitionKey(path="/id"),
-#             indexing_policy=indexing_policy,
-#             vector_embedding_policy=vector_embedding_policy,
-#             # If your account requires explicit RU: uncomment next line
-#             # offer_throughput=400,
-#         )
-#         print("✔ Container created:", CONT_NAME)
-#         return container
-#     except exceptions.CosmosHttpResponseError as e:
-#         print("❌ Failed to create container")
-#         print("StatusCode:", getattr(e, "status_code", None))
-#         print("Message:", getattr(e, "message", str(e)))
-#         raise
-
-
-
 def ensure_cosmos_database(client, DB_NAME):
     """
     Ensures Cosmos DB database exists.
@@ -434,10 +314,9 @@ def ensure_cosmos_database(client, DB_NAME):
         return db
 
 
-
 # Builders
 # -----------------------
-def build_embeddings(AOAI_ENDPOINT,AOAI_KEY,API_VERSION,EMBED_DEPLOY):
+def build_embeddings(AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY):
     return AzureOpenAIEmbeddings(
         azure_endpoint=AOAI_ENDPOINT,
         api_key=AOAI_KEY,
@@ -454,14 +333,16 @@ def add_ids_to_chunks(chunks):
                 page_content=ch.page_content,
                 metadata={
                     **ch.metadata,
-                    "id": str(uuid.uuid4())  # REQUIRED for Cosmos DB
-                }
+                    "id": str(uuid.uuid4()),  # REQUIRED for Cosmos DB
+                },
             )
         )
     return docs
 
-def process_blob_urls_2(blob_urls, conn_str, container,
-                      download_dir=None, keep_files=False, verbose=True):
+
+def process_blob_urls_2(
+    blob_urls, conn_str, container, download_dir=None, keep_files=False, verbose=True
+):
     """
     Robust process_blob_urls:
       - expects list of full blob URLs (SAS tokens OK)
@@ -481,8 +362,8 @@ def process_blob_urls_2(blob_urls, conn_str, container,
 
     extracted_texts = []
     image_urls = []
-    downloaded_pdf_paths = []   # newly added: local paths of downloaded PDFs
-    converted_pdf_paths = []    # newly added: pdf paths produced from docx conversion
+    downloaded_pdf_paths = []  # newly added: local paths of downloaded PDFs
+    converted_pdf_paths = []  # newly added: pdf paths produced from docx conversion
 
     try:
         for idx, url in enumerate(blob_urls):
@@ -502,7 +383,9 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                 if not blob_name:
                     if verbose:
                         print(f"[WARN] Could not determine blob_name for url: {url}")
-                    extracted_texts.append({"filename": base or f"file_{idx}", "text": ""})
+                    extracted_texts.append(
+                        {"filename": base or f"file_{idx}", "text": ""}
+                    )
                     continue
 
                 # If it's an image (by extension), skip download and collect url
@@ -517,7 +400,9 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                 local_path = os.path.join(out_dir, base_name)
 
                 # Download using safe_download_blob_file (which uses BlobClient and checks existence)
-                ok, err = safe_download_blob_file(conn_str, container, blob_name, local_path)
+                ok, err = safe_download_blob_file(
+                    conn_str, container, blob_name, local_path
+                )
                 if not ok:
                     if verbose:
                         print(f"[WARN] Failed to download '{blob_name}': {err}")
@@ -538,6 +423,7 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                         if system == "windows":
                             import pythoncom
                             from docx2pdf import convert
+
                             pythoncom.CoInitialize()
                             try:
                                 convert(local_path, pdf_path)
@@ -548,25 +434,17 @@ def process_blob_urls_2(blob_urls, conn_str, container,
 
                         converted_pdf_paths.append(pdf_path)
                         if verbose:
-                            print(f"[INFO] Converted DOCX to PDF: {local_path} -> {pdf_path}")
+                            print(
+                                f"[INFO] Converted DOCX to PDF: {local_path} -> {pdf_path}"
+                            )
 
                     except Exception as e:
                         if verbose:
-                            print(f"[WARN] docx->pdf conversion failed for {base_name}: {e}")
+                            print(
+                                f"[WARN] docx->pdf conversion failed for {base_name}: {e}"
+                            )
 
                     continue
-
-                # 🆕 DOC → convert to pdf (using your working helper) (windows)
-                # if ext == "doc":
-                #     try:
-                #         pdf_path = convert_doc_to_pdf(local_path)  # your working function
-                #         converted_pdf_paths.append(pdf_path)
-                #         if verbose:
-                #             print(f"[INFO] Converted DOC to PDF: {local_path} -> {pdf_path}")
-                #     except Exception as e:
-                #         if verbose:
-                #             print(f"[WARN] .doc conversion failed for {base_name}: {e}")
-                #     continue
 
                 if ext == "doc":
                     pdf_path = os.path.splitext(local_path)[0] + ".pdf"
@@ -574,14 +452,13 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                         convert_doc_to_pdf_linux(local_path, pdf_path)
                         converted_pdf_paths.append(pdf_path)
                         if verbose:
-                            print(f"[INFO] Converted DOC to PDF: {local_path} -> {pdf_path}")
+                            print(
+                                f"[INFO] Converted DOC to PDF: {local_path} -> {pdf_path}"
+                            )
                     except Exception as e:
                         if verbose:
                             print(f"[WARN] .doc conversion failed for {base_name}: {e}")
                     continue
- 
- 
-
 
                 # PDF -> record downloaded path (do NOT extract text)
                 if ext == "pdf":
@@ -595,7 +472,9 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                 if ext == "txt":
                     try:
                         text = _extract_from_txt(local_path)
-                        extracted_texts.append({"filename": base_name, "text": text or ""})
+                        extracted_texts.append(
+                            {"filename": base_name, "text": text or ""}
+                        )
                     except Exception as e:
                         if verbose:
                             print(f"[WARN] TXT extract failed for {base_name}: {e}")
@@ -606,7 +485,9 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                 if ext == "eml":
                     try:
                         text = _extract_from_eml(local_path)
-                        extracted_texts.append({"filename": base_name, "text": text or ""})
+                        extracted_texts.append(
+                            {"filename": base_name, "text": text or ""}
+                        )
                     except Exception as e:
                         if verbose:
                             print(f"[WARN] EML extract failed for {base_name}: {e}")
@@ -617,7 +498,9 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                 if ext == "msg":
                     try:
                         text = _extract_from_msg(local_path)
-                        extracted_texts.append({"filename": base_name, "text": text or ""})
+                        extracted_texts.append(
+                            {"filename": base_name, "text": text or ""}
+                        )
                     except Exception as e:
                         if verbose:
                             print(f"[WARN] MSG extract failed for {base_name}: {e}")
@@ -628,7 +511,9 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                 if ext == "xlsx":
                     try:
                         text = _extract_from_xlsx(local_path)
-                        extracted_texts.append({"filename": base_name, "text": text or ""})
+                        extracted_texts.append(
+                            {"filename": base_name, "text": text or ""}
+                        )
                     except Exception as e:
                         if verbose:
                             print(f"[WARN] XLSX extract failed for {base_name}: {e}")
@@ -639,7 +524,9 @@ def process_blob_urls_2(blob_urls, conn_str, container,
                 if ext == "xls":
                     try:
                         text = _extract_from_xls(local_path)
-                        extracted_texts.append({"filename": base_name, "text": text or ""})
+                        extracted_texts.append(
+                            {"filename": base_name, "text": text or ""}
+                        )
                     except Exception as e:
                         if verbose:
                             print(f"[WARN] XLS extract failed for {base_name}: {e}")
@@ -669,6 +556,7 @@ def process_blob_urls_2(blob_urls, conn_str, container,
             except Exception:
                 pass
 
+
 def ingest_to_cosmos_parallel(vs, chunks, batch_size=10, max_workers=10):
 
     def safe_add(doc):
@@ -690,7 +578,7 @@ def ingest_to_cosmos_parallel(vs, chunks, batch_size=10, max_workers=10):
 
     # Sequential batches (safe for Cosmos)
     for i in range(0, len(chunks), batch_size):
-        batch = chunks[i:i + batch_size]
+        batch = chunks[i : i + batch_size]
         print(f"\n🔵 Ingesting batch {i} → {i + len(batch) - 1}")
 
         # Parallel within each batch
@@ -703,3 +591,73 @@ def ingest_to_cosmos_parallel(vs, chunks, batch_size=10, max_workers=10):
                     future.result()
                 except Exception as e:
                     print(f"❌ Error inserting doc: {e}")
+
+
+def upsert_report_statistics(
+    payload: dict,
+    cosmos_config: dict,
+    project_id: str,
+):
+    """
+    Update report_statistics for a project document in Cosmos DB.
+
+    Args:
+        payload (dict): report_statistics payload
+        cosmos_config (dict): Cosmos DB configuration
+        project_id (str): Project ID to update
+
+    cosmos_config format:
+    {
+        "endpoint": "<cosmos-endpoint>",
+        "key": "<cosmos-key>",
+        "database_name": "<database-name>",
+        "container_name": "<container-name>"
+    }
+    """
+
+    # Initialize Cosmos client
+    client = CosmosClient(cosmos_config["endpoint"], credential=cosmos_config["key"])
+
+    database = client.get_database_client(cosmos_config["database_name"])
+
+    container = database.get_container_client(cosmos_config["container_name"])
+
+    # Ensure ISO timestamps
+    payload["report_start_time"] = (
+        payload.get("report_start_time") or datetime.now(timezone.utc).isoformat()
+    )
+
+    payload["report_end_time"] = (
+        payload.get("report_end_time") or datetime.now(timezone.utc).isoformat()
+    )
+
+    # Fetch existing document
+    query = "SELECT * FROM c WHERE c.project_id = @project_id"
+
+    params = [{"name": "@project_id", "value": project_id}]
+
+    items = list(
+        container.query_items(
+            query=query, parameters=params, enable_cross_partition_query=True
+        )
+    )
+
+    if not items:
+        raise Exception(f"Project document not found: {project_id}")
+
+    doc = items[0]
+
+    # Update statistics
+    doc["report_statistics"] = payload
+
+    # Optional update timestamp
+    doc["updated_on"] = datetime.now(timezone.utc).isoformat()
+
+    # Upsert document
+    updated_doc = container.upsert_item(doc)
+
+    return {
+        "status": "success",
+        "project_id": updated_doc["project_id"],
+        "report_statistics": updated_doc["report_statistics"],
+    }

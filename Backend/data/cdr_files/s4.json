@@ -3,9 +3,9 @@
         {
             "start_cell": "A3",
             "row_type": "table_data",
-            "photo_no": null,
-            "item_no": null,
-            "name": null,
+            "photo_no": "guide",
+            "item_no": "1",
+            "name": "Electrical installation provisions",
             "manufacturer": null,
             "type_model": null,
             "technical_data": null,
@@ -21,14 +21,14 @@
             "image_support": null,
             "text_support": [
                 {
-                    "filename": null,
-                    "page": null,
+                    "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
+                    "page": 1,
                     "similarity_score": null,
-                    "preview_text": null,
-                    "url": null
+                    "preview_text": "........ ................................ ...............  12 \nProvided Materials ................................ ................................ ....................  Error! Bookmark not defined. \nEquipment ..................................................................................................................... Error! Bookmark not defined. \nOptimizer Kit and Contents ......................................................................................................................................... 7 \nSite Preparations ................................ ................................ ................................ ...............................  12 \nPhysical Space Requirements ....................................................................................... Error! Bookmark not defined. \nElectrical Requirements ............................................................................................................................................. 12 \nInfrastructure Requirements ..................................................................................................................................... 12 \nSafety and Environmental Considerations .................................................................. Error! Bookmark not defined. \nSetting Up the Infinity MTx ................................ ................................ ................................ .................  13 \nUnpacking and Inspecting ......................................................................................................................................... 13 \nAssembling and Connecting ...................................................................................................................................... 14 \nTesting Functionality .................................................................................................................................................. 14 \nUsing the Infinity MTx .......................",
+                    "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/G105000008/Citation_docs/CellFE_Infinity_MTx_Operating_Manual.pdf"
                 }
             ],
-            "confidence": 0
+            "confidence": 62
         }
     ]
 }

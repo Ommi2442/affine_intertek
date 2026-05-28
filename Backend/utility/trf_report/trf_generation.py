@@ -10,12 +10,10 @@ from typing import Callable, Optional
 from urllib.parse import unquote, urlparse
 
 import requests
-from azure.core.exceptions import (
-    ResourceNotFoundError,
-)
-from azure.cosmos import (
-    CosmosClient,
-)
+
+from azure.core.exceptions import ResourceNotFoundError
+from azure.cosmos import CosmosClient
+
 from docx import Document as docx_document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -45,8 +43,15 @@ from utility.trf_report.prompts import (
 from utility.trf_report.trf_essential import *
 from utility.trf_utils import *
 
-from utility.progress_tracker import update_pipeline_progress, PipelineType
-from utility.pipeline_stages import TRF_STAGES, get_trf_message
+from utility.progress_tracker import (
+    PipelineType,
+    update_pipeline_progress,
+)
+
+from utility.pipeline_stages import (
+    TRF_STAGES,
+    get_trf_message,
+)
 
 
 load_dotenv()
@@ -1111,7 +1116,6 @@ def update_tasks_with_top5_images(tasks, retriever, max_threads=10):
                 updated[idx] = future.result()
             except Exception as e:
                 print(f"[ERROR] Task {idx + 1} failed: {e}")
-
     print(f"\n[COMPLETE] Completed all {total} tasks.\n")
 
     return updated
@@ -2232,8 +2236,4 @@ def run_trf_generation(
     print("\n===============================================")
     print(stats)
     print("===============================================")
-
-    # Save statistics
-    STATS_RESULTS = project_data_dir / "statistics_report.json"
-    with open(STATS_RESULTS, "w", encoding="utf-8") as f:
-        f.write(json.dumps(stats, indent=4, ensure_ascii=False))
+    return stats

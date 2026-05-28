@@ -19,12 +19,7 @@ COSMOS_DB_project_LETTER_Container = os.getenv("cosmos-db-project-letter-contain
 
 try:
     print(" Connecting to Cosmos DB...")
-    # client = CosmosClient(COSMOS_DB_URI, COSMOS_DB_KEY)
-    client = CosmosClient(
-    COSMOS_DB_URI,
-    COSMOS_DB_KEY,
-    connection_timeout=30)
-    
+    client = CosmosClient(COSMOS_DB_URI, COSMOS_DB_KEY)
     database = client.get_database_client(COSMOS_DB_DATABASE)
     users_container = database.get_container_client(COSMOS_DB_users_Container)
     users_reg = database.get_container_client(COSMOS_DB_users_registration)

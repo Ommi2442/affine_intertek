@@ -1,4 +1,5 @@
 import os
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -9,6 +10,7 @@ from projects.keyvault_load import load_keyvault_secrets
 from utility.embeddings import ingest_files_from_blob_urls_create_embeddings
 from utility.json_to_blob import *
 from utility.trf_report.trf_generation import run_trf_generation
+from utility.trf_utils import upsert_report_statistics
 
 load_dotenv()
 
@@ -37,14 +39,14 @@ INPUT_DOCX_PATH = BASE_DIR / "data" / "input_files" / "input.docx"
 DOWNLOAD_DIR = BASE_DIR / "data" / "src_files"
 
 DATA_DIR = BASE_DIR / "data"
+DATA_DIR = BASE_DIR / "data"
 
 IMAGE_URLS_PATH = BASE_DIR / "utility" / "image_urls.json"  # adjust if needed
 
 
-############################
-
 def process_trf_direct(project_id: str):
     print(f"TRF started for project {project_id}")
+    pipeline_start = time.perf_counter()
 
     from utility.progress_tracker import update_pipeline_progress, PipelineType
     from utility.pipeline_stages import TRF_STAGES, get_trf_message
@@ -54,7 +56,7 @@ def process_trf_direct(project_id: str):
         stages=TRF_STAGES,
         current_stage="GATHER_PROJECT_INFO",
         pipeline_type=PipelineType.TRF,
-        message=get_trf_message("GATHER_PROJECT_INFO")
+        message=get_trf_message("GATHER_PROJECT_INFO"),
     )
 
     query = f"SELECT * FROM c WHERE c.Project_Id = '{project_id}'"
@@ -83,7 +85,6 @@ def process_trf_direct(project_id: str):
         if isinstance(user_name, str) and user_name.strip()
         else None
     )
-
     text_container = f"vectorstorecontainer_new_itk_text_{first_name}_{project_id}"
     image_container = f"vectorstorecontainer_new_itk_image_{first_name}_{project_id}"
 
@@ -102,7 +103,7 @@ def process_trf_direct(project_id: str):
         # Single JSON mode: process the main PTA JSON directly
         INPUT_JSONS = [BASE_PTA_JSON_PATH]
 
-        run_trf_generation(
+        stats = run_trf_generation(
             blob_urls,
             text_container,
             image_container,
@@ -123,17 +124,33 @@ def process_trf_direct(project_id: str):
             str(OUTPUT_JSON), str(OUTPUT_DOCX), project_id, update_only=False
         )
 
+        end_time = time.perf_counter()
+        time_taken = end_time - pipeline_start
+        stats["time_taken"] = time_taken
+
+        # Update statistics report to Cosmos DB
+        upsert_report_statistics(
+            payload=stats,
+            cosmos_config={
+                "endpoint": COSMOS_DB_URI,
+                "key": COSMOS_DB_KEY,
+                "database_name": "intertek_pocplus_dev",
+                "container_name": "Project_TRF",
+            },
+            project_id=project_id,
+        )
+
     except Exception as e:
         from utility.progress_tracker import update_pipeline_progress, PipelineType
         from utility.pipeline_stages import TRF_STAGES, get_trf_message
-        
+
         # Emit error to progress tracker
         update_pipeline_progress(
             project_id=project_id,
             stages=TRF_STAGES,
-            current_stage="GATHER_PROJECT_INFO", 
+            current_stage="GATHER_PROJECT_INFO",
             pipeline_type=PipelineType.TRF,
             message=get_trf_message("GATHER_PROJECT_INFO"),
-            error=str(e)
+            error=str(e),
         )
         raise

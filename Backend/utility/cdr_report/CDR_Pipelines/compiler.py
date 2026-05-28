@@ -101,13 +101,7 @@ def set_uniform_row_height_px(ws, start_row, height_px):
         ws.row_dimensions[r].height = height_points
 
 
-# def resize_image_keep_ratio(img, target_height_px):
-#     """
-#     Resize image to target_height_px while preserving aspect ratio.
-#     """
-#     ratio = target_height_px / img.height
-#     img.height = int(target_height_px)
-#     img.width = int(img.width * ratio)
+
 
 from PIL import Image as PILImage
 

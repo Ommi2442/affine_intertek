@@ -1,24 +1,42 @@
-import sys
+import os
+from pathlib import Path
+
 from azure.cosmos import CosmosClient, ConsistencyLevel
 from openai import AzureOpenAI
+
+from projects.keyvault_load import load_keyvault_secrets
 
 # Core helpers (DO NOT MODIFY)
 from utility.letter_report.deploymentV1.core import *
 from utility.letter_report.deploymentV1.trf_utils import *
-from pathlib import Path
 
+from utility.letter_report.deploymentV1.config import (
+    AOAI_ENDPOINT,
+    AOAI_KEY,
+    API_VERSION,
+    AZURE_CONN_STRING,
+    BLOB_CONTAINER_NAME,
+    CHAT_DEPLOY,
+    CHUNK_OVERLAP,
+    CHUNK_SIZE,
+    CONT_NAME_IMG,
+    COSMOS_KEY,
+    COSMOS_URL,
+    DB_NAME,
+    DB_NAME_IMG,
+    EMBED_DEPLOY,
+    INITIAL_BACKOFF,
+    MAX_RETRIES,
+    MAX_THREADS,
+)
 
-from utility.letter_report.deploymentV1.config import AZURE_CONN_STRING, DB_NAME_IMG, CONT_NAME_IMG, CHUNK_SIZE, CHUNK_OVERLAP, TOP_K, EMBED_DIM, VECTOR_PATH, BLOB_CONTAINER_NAME, conn_str, IMAGE_EXTS, AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY, CHAT_DEPLOY, COSMOS_URL, COSMOS_KEY, COSMOS_DB, COSMOS_CONT, DB_NAME, CONT_NAME, MAX_THREADS, MAX_RETRIES, INITIAL_BACKOFF
-
-from projects.keyvault_load import *
 load_keyvault_secrets()
 
 COSMOS_DB_IMAGE  = DB_NAME_IMG
 COSMOS_CONT_IMAGE = CONT_NAME_IMG
 
 ENABLE_CAD_SCHEMATICS = os.getenv("enable-cad-schematics")
-# FLATTENED_DIR = os.getenv("flattened-dir")
-# LT_IMAGES_ROOT =os.getenv("lt-images-root")
+
 LT_DOWNLOAD_DIR = os.getenv("lt-download-dir")
 COSMOS_CONT_TEXT = os.getenv("cosmos-cont-text")
 COSMOS_DB_TEXT=os.getenv("cosmos-db-text")
@@ -41,7 +59,6 @@ def main(project_id,blob_urls,text_container,image_container):
     # STEP 1 — Cleanup existing vector container
     # -------------------------------------------------------
 
-    # print("[INFO] Cleaning existing Cosmos container...")
 
     cosmos_client = CosmosClient(
         COSMOS_URL,
@@ -49,13 +66,6 @@ def main(project_id,blob_urls,text_container,image_container):
         consistency_level=ConsistencyLevel.Eventual
     )
 
-    # container = cosmos_client.get_database_client(DB_NAME).get_container_client(text_container)
-
-    # items = container.read_all_items()
-    # for item in items:
-    #     container.delete_item(item=item, partition_key=item["id"])
-
-    # print("[SUCCESS] All existing documents deleted.\n")
 
     # -------------------------------------------------------
     # STEP 2 — Download + extract blob files
@@ -87,13 +97,6 @@ def main(project_id,blob_urls,text_container,image_container):
 
     print("\n[INFO] Creating Vector DB for TEXT...")
 
-    # container = create_db_and_container(
-    #     cosmos_client,
-    #     DB_NAME,
-    #     VECTOR_PATH,
-    #     EMBED_DIM,
-    #     CONT_NAME
-    # )
 
     embeddings = build_embeddings(
         AOAI_ENDPOINT,
@@ -164,13 +167,6 @@ def main(project_id,blob_urls,text_container,image_container):
         consistency_level=ConsistencyLevel.Eventual
     )
 
-    # container_IMG = create_db_and_container(
-    #     cosmos_client,
-    #     DB_NAME_IMG,
-    #     VECTOR_PATH,
-    #     EMBED_DIM,
-    #     CONT_NAME_IMG
-    # )
 
     embeddings = build_embeddings(
         AOAI_ENDPOINT,
@@ -233,29 +229,4 @@ def main(project_id,blob_urls,text_container,image_container):
     print("✅ INGESTION PIPELINE COMPLETED")
     print("==============================\n")
     return True
-
-# # -------------------------------------------------------
-# # CLI Runner
-# # -------------------------------------------------------
-
-# if __name__ == "__main__":
-
-#     # blob_urls = [
-#     #     'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Project%20Summary%20Report.pdf',
-#     #         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-001_TRF.doc',
-#     #         # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-002_TRF.doc',
-#     #         "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Lewco_CiS.pdf" ,
-#     #         "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01414060-2.pdf"
-#     #     ]
-    
-#     blob_urls =[
-#         #'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01390131-0.pdf',
-#     # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105709135MPK-002_TRF.doc',
-#     "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/CDR_105080268MPK-004.xlsx",
-#     "https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/105581614MPK-001A_CR.docx",
-#     # 'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf'
-#     ]
-
-#     main(blob_urls)
-
 

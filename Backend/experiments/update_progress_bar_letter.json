@@ -1,0 +1,200 @@
+{
+    "stages": [
+        "INITIALIZE_LETTER_PIPELINE",
+        "LOAD_TEMPLATE",
+        "FETCH_PROJECT_DETAILS",
+        "LOAD_TRF_DATA",
+        "EXTRACT_REPORT_SUMMARY",
+        "GENERATE_LETTER_CONTENT",
+        "FORMAT_LETTER_CONTENT",
+        "INSERT_DYNAMIC_FIELDS",
+        "APPLY_BRANDING",
+        "VALIDATE_LETTER_CONTENT",
+        "GENERATE_PDF",
+        "SAVE_FINAL_LETTER"
+    ],
+    "messages": [
+        "initializing letter pipeline",
+        "loading letter template",
+        "fetching project details",
+        "loading trf data",
+        "extracting report summary",
+        "generating letter content",
+        "formatting letter content",
+        "inserting dynamic fields",
+        "applying branding",
+        "validating letter content",
+        "generating pdf",
+        "saving final letter"
+    ],
+    "mock_pipeline_updates": [
+        {
+            "pipeline_status": "running",
+            "current_stage": "INITIALIZE_LETTER_PIPELINE",
+            "last_completed_stage": null,
+            "current_step": 1,
+            "total_steps": 12,
+            "percentage": 8.33,
+            "error": null,
+            "last_updated": "2026-05-19T11:00:00Z",
+            "extra": {
+                "message": "initializing letter pipeline"
+            },
+            "ts": "2026-05-19T11:00:00Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "LOAD_TEMPLATE",
+            "last_completed_stage": "INITIALIZE_LETTER_PIPELINE",
+            "current_step": 2,
+            "total_steps": 12,
+            "percentage": 16.67,
+            "error": null,
+            "last_updated": "2026-05-19T11:00:10Z",
+            "extra": {
+                "message": "loading letter template"
+            },
+            "ts": "2026-05-19T11:00:10Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "FETCH_PROJECT_DETAILS",
+            "last_completed_stage": "LOAD_TEMPLATE",
+            "current_step": 3,
+            "total_steps": 12,
+            "percentage": 25.0,
+            "error": null,
+            "last_updated": "2026-05-19T11:00:20Z",
+            "extra": {
+                "message": "fetching project details"
+            },
+            "ts": "2026-05-19T11:00:20Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "LOAD_TRF_DATA",
+            "last_completed_stage": "FETCH_PROJECT_DETAILS",
+            "current_step": 4,
+            "total_steps": 12,
+            "percentage": 33.33,
+            "error": null,
+            "last_updated": "2026-05-19T11:00:30Z",
+            "extra": {
+                "message": "loading trf data"
+            },
+            "ts": "2026-05-19T11:00:30Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "EXTRACT_REPORT_SUMMARY",
+            "last_completed_stage": "LOAD_TRF_DATA",
+            "current_step": 5,
+            "total_steps": 12,
+            "percentage": 41.67,
+            "error": null,
+            "last_updated": "2026-05-19T11:00:40Z",
+            "extra": {
+                "message": "extracting report summary"
+            },
+            "ts": "2026-05-19T11:00:40Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "GENERATE_LETTER_CONTENT",
+            "last_completed_stage": "EXTRACT_REPORT_SUMMARY",
+            "current_step": 6,
+            "total_steps": 12,
+            "percentage": 50.0,
+            "error": null,
+            "last_updated": "2026-05-19T11:00:50Z",
+            "extra": {
+                "message": "generating letter content"
+            },
+            "ts": "2026-05-19T11:00:50Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "FORMAT_LETTER_CONTENT",
+            "last_completed_stage": "GENERATE_LETTER_CONTENT",
+            "current_step": 7,
+            "total_steps": 12,
+            "percentage": 58.33,
+            "error": null,
+            "last_updated": "2026-05-19T11:01:00Z",
+            "extra": {
+                "message": "formatting letter content"
+            },
+            "ts": "2026-05-19T11:01:00Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "INSERT_DYNAMIC_FIELDS",
+            "last_completed_stage": "FORMAT_LETTER_CONTENT",
+            "current_step": 8,
+            "total_steps": 12,
+            "percentage": 66.67,
+            "error": null,
+            "last_updated": "2026-05-19T11:01:10Z",
+            "extra": {
+                "message": "inserting dynamic fields"
+            },
+            "ts": "2026-05-19T11:01:10Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "APPLY_BRANDING",
+            "last_completed_stage": "INSERT_DYNAMIC_FIELDS",
+            "current_step": 9,
+            "total_steps": 12,
+            "percentage": 75.0,
+            "error": null,
+            "last_updated": "2026-05-19T11:01:20Z",
+            "extra": {
+                "message": "applying branding"
+            },
+            "ts": "2026-05-19T11:01:20Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "VALIDATE_LETTER_CONTENT",
+            "last_completed_stage": "APPLY_BRANDING",
+            "current_step": 10,
+            "total_steps": 12,
+            "percentage": 83.33,
+            "error": null,
+            "last_updated": "2026-05-19T11:01:30Z",
+            "extra": {
+                "message": "validating letter content"
+            },
+            "ts": "2026-05-19T11:01:30Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "GENERATE_PDF",
+            "last_completed_stage": "VALIDATE_LETTER_CONTENT",
+            "current_step": 11,
+            "total_steps": 12,
+            "percentage": 91.67,
+            "error": null,
+            "last_updated": "2026-05-19T11:01:40Z",
+            "extra": {
+                "message": "generating pdf"
+            },
+            "ts": "2026-05-19T11:01:40Z"
+        },
+        {
+            "pipeline_status": "completed",
+            "current_stage": "SAVE_FINAL_LETTER",
+            "last_completed_stage": "GENERATE_PDF",
+            "current_step": 12,
+            "total_steps": 12,
+            "percentage": 100.0,
+            "error": null,
+            "last_updated": "2026-05-19T11:01:50Z",
+            "extra": {
+                "message": "saving final letter"
+            },
+            "ts": "2026-05-19T11:01:50Z"
+        }
+    ]
+}

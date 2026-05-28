@@ -1,6 +1,6 @@
 from utility.cdr_report.CDR_Pipelines.switch import find_bom_blob_url
-import utility.cdr_report.CDR_Pipelines.c1_main as c1_main
-import utility.cdr_report.CDR_Pipelines.c2_main as c2_main
+import utility.cdr_report.CDR_Pipelines.components_case_1 as case_1
+import utility.cdr_report.CDR_Pipelines.components_case_2 as case_2
 
 def run_sheet_3_and_4_main(*, vs):
     """
@@ -10,14 +10,14 @@ def run_sheet_3_and_4_main(*, vs):
     bom_files = find_bom_blob_url(vs=vs)
 
     if bom_files:
-        c1_main.run_case1_pipeline(vs=vs)
+        case_1.run_case1_pipeline(vs=vs)
         return {
             "case": "c1",
             "pipeline": "case1",
             "bom_files": bom_files,
         }
     else:
-        c2_main.run_case2_pipeline()
+        case_2.run_case2_pipeline()
         return {
             "case": "c2",
             "pipeline": "case2",

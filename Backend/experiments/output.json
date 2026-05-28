@@ -1,0 +1,116 @@
+{
+    "response": {
+        "answer": "{\n  \"response\": \"Gener8 LLC\",\n  \"confidence\": 100,\n  \"evidence_source\": {\n    \"type\": \"both\",\n    \"files\": {\n      \"text_files\": [\"Qu-01390131-0.pdf\"],\n      \"image_files\": [\"Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf_page_3.png\"]\n    }\n  }\n}",
+        "confidence": 100,
+        "evidence_source": {
+            "type": "both",
+            "files": {
+                "image_files": [
+                    "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf_page_3.png"
+                ]
+            }
+        },
+        "text_support": [
+            {
+                "filename": "Qu-01390131-0.pdf",
+                "pdf_file": "Qu-01390131-0.pdf",
+                "page": 9,
+                "similarity_score": 0.7865455648793569,
+                "preview_text": "Name Printed\nBeing an authorized representative of:\n__________________________________________________________ \nLegally Registered Business name of the Company who is authorizing commencement of this quotation\n_________________________  ___________________________     ____________________ \nAcceptance Date Preferred Project Start Date    Purchase Order #\nThank you for choosing Intertek!\nSincerely,\nCharlotte Johnson\nSales Representative\n1365 Adams Court\nMenlo Park, California 94025\nUnited States\n1 650 223-9986\ncharlotte.johnson@intertek.com\nQuote #:  Qu-01390131-0\nQuote Issued Date: September 8, 2023\nGener8 LLC\n2560 Junction Ave\nSan Jose, CA 95134\nUSA"
+            },
+            {
+                "filename": "Accepted_-_Gener8_LLC_-_Qu-01390131-0.msg",
+                "pdf_file": "Accepted_-_Gener8_LLC_-_Qu-01390131-0.msg",
+                "page": 1,
+                "similarity_score": 0.7651996180377802,
+                "preview_text": "This is a confirmation email to inform you that a customer has accepted the attached proposal through the Intertek eAccept platform. Please use this email as proof of acceptance in lieu of a signed hardcopy of your proposal.\nQuote Number: Qu-01390131-0\nQuote Name: cETLus/CB certification and report for CellFE Infinity MTx - Safety\nName of Acceptor: Shivam Patel\nCompany Legal Name: Gener8 LLC\nCustomer Ready Date: Not provided\nPO Note: PO Note: None\nPlease note: The customer may or may not have uploaded a Purchase Order along with this acceptance so if you require this to open your order, please reach out to your customer to follow up.\nThis is an automatically generated email – please do not reply to it.\nBest Regards,\nIntertek eAccept Team\nPlease note: The customer may or may not have uploaded a Purchase Order along with this acceptance so if you require this to open your order, please reach out to your customer to follow up."
+            },
+            {
+                "filename": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+                "pdf_file": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+                "page": 2,
+                "similarity_score": 0.7636127226637477,
+                "preview_text": "Examples: failure of a product manufactured by another company, failure of a product bearing an Intertek \nname, logo, or Mark (e.g., ETL, WH). Failures may include a wide range of events including: breakage, \ndecreased functionality, fire, personal injury, property damage.  \n \n \n☐YES    ☒NO \n \n \n \n \n☐YES    ☒NO \n \n \n☐YES    ☒NO \n \n \n \n☐YES    ☒NO \nIf you answered “YES” to any question in Section 4, a quote may not be issued without written approval from Regional \nCompliance Officer (RCO).  Forward the RAF and Project Details to RCO.  \n \nRAF DECISION TO BE COMPLETED BY REGIONAL COMPLIANCE OFFICER (RCO) \nDate:       \nDecision and Rationale:       \nRegional Compliance Officer Name/Signature:       \n☐APPROVED  \n \n☐CONDITIONALLY \nAPPROVED  \n \n☐DENIED"
+            },
+            {
+                "filename": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
+                "pdf_file": "RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml",
+                "page": 1,
+                "similarity_score": 0.7607732222620753,
+                "preview_text": "On Mon, Sep 18, 2023 at 4:33 PM Stacey Chang Intertek <stacey.chang@intertek.com<mailto:stacey.chang@intertek.com>> wrote:\nHi Shivam and Grant,\nThank you for taking our call just now. As mentioned, we have you scheduled to start on Friday, the 22nd.\nPlease let us know if you need a online shared folder to upload documentation.\nIn addition, is the product set up as you being the applicant and the manufacturer? Attached is a CIS that will also need to be filled out/provided.\nOn a side note, I spoke with Reema, your assigned EMC engineer. She is currently working on the report and is waiting for Bryce to respond back tonight regarding some data. Once she has completed the report, she will let you know when she has submitted it for review.\nThank you!\nStacey Chang\nRegional Production Specialist\n(Medical, Safety, NFL, Semi)\nMobile – (210) 243-3697\n(Texts Preferred)\nIntertek, 1365 Adams Ct, Menlo Park, CA 94025\nHi Stacey,"
+            },
+            {
+                "filename": "Qu-01390131-0.pdf",
+                "pdf_file": "Qu-01390131-0.pdf",
+                "page": 11,
+                "similarity_score": 0.7582220223147054,
+                "preview_text": "Quote No:  Qu-01390131-0\n12 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\ncircumstances, infringe any legal rights (including Intellectual Property Rights) of any third party.\n4.2 In the event that the Services provided relate to any third party, the Client shall cause any such third party to acknowledge and agree to the provisions in this \nAgreement and the Proposal prior to and as a condition precedent to such third party receiving any Reports or the benefit of any Services.\n4.3 The Client further agrees:\n(a) to co-operate with Intertek in all matters relating to the Services and appoint a manager in relation to the Services who shall be duly authorized to provide \ninstructions to Intertek on behalf of the Client and to bind the Client contractually as required;\n(b) to provide Intertek (including its agents, sub-contractors and employees), at its own expense, any and all samples, information, material or other documentation"
+            }
+        ],
+        "image_support": [
+            {
+                "filename": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf_page_3.png",
+                "image_file": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf_page_3.png",
+                "pdf_file": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+                "page": 3,
+                "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/D105581614/pdf_images/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf/page_3.png"
+            }
+        ],
+        "grey_mode": false,
+        "accuracy_level": true,
+        "similarity_query": "Mention the name of the Applicants. Use Quote file.",
+        "vector_search_based_on": "question",
+        "metadata": {
+            "question": "Mention the name of the Applicants. Use Quote file.",
+            "task_type": "extraction",
+            "custom_prompt": "Mention the name of the Applicants. Use Client Information Sheet (CIS).",
+            "accuracy_level": true,
+            "grey": false
+        },
+        "raw_llm_output": "{\n  \"response\": \"Gener8 LLC\",\n  \"confidence\": 100,\n  \"evidence_source\": {\n    \"type\": \"both\",\n    \"files\": {\n      \"text_files\": [\"Qu-01390131-0.pdf\"],\n      \"image_files\": [\"Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf_page_3.png\"]\n    }\n  }\n}"
+    },
+    "token_usage": {
+        "prompt": 5656,
+        "completion": 88,
+        "total": 5744
+    },
+    "llm_payload": {
+        "question": "Mention the name of the Applicants. Use Quote file.",
+        "image": [
+            {
+                "pdf_file": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+                "page": 1,
+                "image_file": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf_page_1.png",
+                "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/D105581614/pdf_images/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf/page_1.png"
+            },
+            {
+                "pdf_file": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+                "page": 3,
+                "image_file": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf_page_3.png",
+                "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/D105581614/pdf_images/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf/page_3.png"
+            },
+            {
+                "pdf_file": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf",
+                "page": 3,
+                "image_file": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf_page_3.png",
+                "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/D105581614/pdf_images/Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf/page_3.png"
+            },
+            {
+                "pdf_file": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+                "page": 19,
+                "image_file": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf_page_19.png",
+                "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/D105581614/pdf_images/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf/page_19.png"
+            },
+            {
+                "pdf_file": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+                "page": 16,
+                "image_file": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf_page_16.png",
+                "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/D105581614/pdf_images/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf/page_16.png"
+            }
+        ],
+        "task_type": "extraction",
+        "custom_prompt": "Mention the name of the Applicants. Use Client Information Sheet (CIS).",
+        "accuracy_level": true,
+        "grey": false
+    }
+}

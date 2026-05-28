@@ -75,9 +75,6 @@ COSMOS_DB_IMAGE = os.getenv("cosmos-db-image")
 COSMOS_CONT_IMAGE = os.getenv("cosmos-cont-image")
 ENABLE_CAD_SCHEMATICS = os.getenv("enable-cad-schematics")
 
-
-print("AOAI_ENDPOINT", AOAI_ENDPOINT)
-
 # ----------------------------------------------------------------------------------------
 # Azure OpenAI Client (shared for whole pipeline)
 # ----------------------------------------------------------------------------------------
@@ -1332,13 +1329,9 @@ def ingest_files_from_blob_urls_create_embeddings(
     """
 
     print("######### download_dir ########", download_dir)
-
     print("######## blob_urls #########", blob_urls)
-
     print("######## project_id #########", project_id)
-
     print("######## textDB_container_name #########", textDB_container_name)
-
     print("######## imageDB_container_name #########", imageDB_container_name)
 
     client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY)
@@ -1401,9 +1394,7 @@ def ingest_files_from_blob_urls_create_embeddings(
     pdf_paths = [p for p in pdf_paths if os.path.basename(p) not in editable_pdfs]
 
     copy_extracted_images_to_src(page_images_root=IMAGES_ROOT, src_root=DOWNLOAD_DIR)
-
     extracted_texts = clean_extracted_texts(extracted_texts)
-
     extracted_texts += cis_info
 
     print("\n======================================")

@@ -3,17 +3,21 @@ from typing import List, Optional
 from datetime import datetime
 import uuid
 
+
 class TRFItem(BaseModel):
     TRF_No: str
     TRF_Date: str
+
 
 class CDRItem(BaseModel):
     CDR_No: str
     CDR_Date: str
 
+
 class LetterItem(BaseModel):
     Letter_No: str
     Letter_Date: str
+
 
 class ProjectCreate(BaseModel):
     Standard: str
@@ -22,7 +26,6 @@ class ProjectCreate(BaseModel):
     User_Name: str
     Client_Name: str
     Product: str
-
 
 
 class ProjectProgress(BaseModel):
@@ -43,15 +46,16 @@ class ProjectProgress(BaseModel):
     # LETTER
     letter_percentage: Optional[int] = 10
     letter_step: Optional[str] = None
-    letter_last_updated: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+    letter_last_updated: str = Field(
+        default_factory=lambda: datetime.utcnow().isoformat()
+    )
     letter_error: Optional[str] = None
     letter_completed: bool = False
 
-    
 
 class Project(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    Project_Id : str
+    Project_Id: str
     Standard: str
     Client_Name: str
     Product: str
@@ -73,8 +77,9 @@ class ProjectFilter(BaseModel):
 
 
 class FinalizeReportPayload(BaseModel):
-    projectId: str  
-    data: dict      
+    projectId: str
+    data: dict
+
 
 class LetterGeneration(BaseModel):
     projectId: str
@@ -82,11 +87,14 @@ class LetterGeneration(BaseModel):
     cdr_urls: Optional[str] = None
     # other_urls: Optional[str] = None
 
+
 class RegenratePayload(BaseModel):
     projectId: str
 
+
 class LetterResult(BaseModel):
     projectId: str
+
 
 class CdrResult(BaseModel):
     projectId: str

@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any
 
 TRF_STAGES = [
     "GATHER_PROJECT_INFO",
@@ -12,8 +12,9 @@ TRF_STAGES = [
     "APPLY_POST_PROCESSING",
     "UPDATE_REPORT",
     "UPDATE_FORMAT",
-    "FINALIZE_REPORT"
+    "FINALIZE_REPORT",
 ]
+
 
 def get_trf_message(stage: str, **kwargs: Any) -> str:
     """
@@ -31,9 +32,10 @@ def get_trf_message(stage: str, **kwargs: Any) -> str:
         "APPLY_POST_PROCESSING": "applying post processing",
         "UPDATE_REPORT": "updating report",
         "UPDATE_FORMAT": "updating format",
-        "FINALIZE_REPORT": "finalizing report"
+        "FINALIZE_REPORT": "finalizing report",
     }
     return messages.get(stage, "")
+
 
 CDR_STAGES = [
     "INITIALIZE_WORKFLOW",
@@ -52,8 +54,9 @@ CDR_STAGES = [
     "GENERATE_PHOTOS_SHEET",
     "GENERATE_CRITICAL_COMPONENTS_SHEET",
     "RUN_FINAL_VALIDATIONS",
-    "EXPORT_FINAL_WORKBOOK"
+    "EXPORT_FINAL_WORKBOOK",
 ]
+
 
 def get_cdr_message(stage: str, **kwargs: Any) -> str:
     """
@@ -76,9 +79,10 @@ def get_cdr_message(stage: str, **kwargs: Any) -> str:
         "GENERATE_PHOTOS_SHEET": "generating photos sheet",
         "GENERATE_CRITICAL_COMPONENTS_SHEET": "generating critical components sheet",
         "RUN_FINAL_VALIDATIONS": "running final validations",
-        "EXPORT_FINAL_WORKBOOK": "exporting final workbook"
+        "EXPORT_FINAL_WORKBOOK": "exporting final workbook",
     }
     return messages.get(stage, "")
+
 
 LETTER_STAGES = [
     "INITIALIZE_LETTER_PIPELINE",
@@ -92,8 +96,9 @@ LETTER_STAGES = [
     "APPLY_BRANDING",
     "VALIDATE_LETTER_CONTENT",
     "GENERATE_PDF",
-    "SAVE_FINAL_LETTER"
+    "SAVE_FINAL_LETTER",
 ]
+
 
 def get_letter_message(stage: str, **kwargs: Any) -> str:
     """
@@ -111,6 +116,6 @@ def get_letter_message(stage: str, **kwargs: Any) -> str:
         "APPLY_BRANDING": "applying branding",
         "VALIDATE_LETTER_CONTENT": "validating letter content",
         "GENERATE_PDF": "generating pdf",
-        "SAVE_FINAL_LETTER": "saving final letter"
+        "SAVE_FINAL_LETTER": "saving final letter",
     }
     return messages.get(stage, "")

@@ -1,32 +1,35 @@
+import os
+import json
 import platform
+import shutil
 import subprocess
 from pathlib import Path
-import shutil
-from docx import Document
-from docx.shared import Pt
-from docx.oxml.ns import qn
-import json
-from utility.trf_report.trf_generation import *
+
+import pandas as pd
 from azure.storage.blob import ContentSettings
+from docx import Document
+from docx.oxml.ns import qn
+from docx.shared import Pt
 from fastapi import HTTPException
+
+from utility.trf_report.trf_generation import *
 
 
 def convert_docx_to_pdf(docx_path: str, pdf_path: str):
-    print('*************** 3.1 ******************************', docx_path)
+    print("*************** 3.1 ******************************", docx_path)
 
-    print('*************** 3.2 ******************************', pdf_path)
-
+    print("*************** 3.2 ******************************", pdf_path)
 
     system = platform.system().lower()
 
-    print('*************** 3.3 ******************************', system)
-    
+    print("*************** 3.3 ******************************", system)
 
     # ---------- WINDOWS (MS WORD via COM) ----------
     if system == "windows":
         import pythoncom
         from docx2pdf import convert
-        pythoncom.CoInitialize()     # ✅ REQUIRED
+
+        pythoncom.CoInitialize()  # ✅ REQUIRED
         try:
             convert(docx_path, pdf_path)
         finally:
@@ -54,7 +57,6 @@ def convert_docx_to_pdf(docx_path: str, pdf_path: str):
     raise RuntimeError(f"Unsupported OS for DOCX conversion: {system}")
 
 
-
 def fetch_final_json_record(container, project_id: str) -> dict:
     query = """
         SELECT * FROM c
@@ -66,9 +68,7 @@ def fetch_final_json_record(container, project_id: str) -> dict:
 
     items = list(
         container.query_items(
-            query=query,
-            parameters=params,
-            enable_cross_partition_query=True
+            query=query, parameters=params, enable_cross_partition_query=True
         )
     )
 
@@ -76,7 +76,7 @@ def fetch_final_json_record(container, project_id: str) -> dict:
     if not items:
         raise HTTPException(
             status_code=404,
-            detail=f"No final JSON record found in Cosmos for project_id={project_id}"
+            detail=f"No final JSON record found in Cosmos for project_id={project_id}",
         )
 
     record = items[0]
@@ -85,33 +85,22 @@ def fetch_final_json_record(container, project_id: str) -> dict:
     if "blob_path" not in record or "blob_url" not in record:
         raise HTTPException(
             status_code=500,
-            detail="Cosmos record is invalid: blob_path or blob_url missing"
+            detail="Cosmos record is invalid: blob_path or blob_url missing",
         )
 
     return record
 
 
-
-
 def replace_json_blob(
-    blob_service,
-    container_name: str,
-    blob_path: str,
-    json_data: dict
+    blob_service, container_name: str, blob_path: str, json_data: dict
 ):
-    blob_client = blob_service.get_blob_client(
-        container=container_name,
-        blob=blob_path
-    )
+    blob_client = blob_service.get_blob_client(container=container_name, blob=blob_path)
 
     blob_client.upload_blob(
         json.dumps(json_data, indent=2, ensure_ascii=False),
         overwrite=True,
-        content_settings=ContentSettings(
-            content_type="application/json"
-        )
+        content_settings=ContentSettings(content_type="application/json"),
     )
-
 
 
 def replace_local_final_json(project_id: str, json_data: dict):
@@ -125,8 +114,6 @@ def replace_local_final_json(project_id: str, json_data: dict):
         json.dump(json_data, f, indent=2, ensure_ascii=False)
 
     return final_path
-
-
 
 
 def update_docx_tables_from_json_arial(docx_path, json_path, output_path):
@@ -153,7 +140,6 @@ def update_docx_tables_from_json_arial(docx_path, json_path, output_path):
         doc_table = doc.tables[table_index]
 
         for item in table_obj["Items"]:
-
             ai_fillable = item.get("ai_fillable", False)
             task_type = item.get("task_type")
 
@@ -186,7 +172,6 @@ def update_docx_tables_from_json_arial(docx_path, json_path, output_path):
     print(f"✅ DOCX first update saved → {output_path}")
 
 
-
 def table2_json_rows_only(json_path):
     """
     Reads Table 2 from JSON and returns ONLY rows (no header).
@@ -207,15 +192,8 @@ def table2_json_rows_only(json_path):
 
     return df
 
-from docx import Document
-from docx.shared import Pt
 
-def insert_rows_into_attachments_table(
-    input_docx,
-    output_docx,
-    df,
-    anchor_text
-):
+def insert_rows_into_attachments_table(input_docx, output_docx, df, anchor_text):
     if df is None or df.empty:
         print("⚠️ DataFrame is empty. Skipping insertion.")
         return
@@ -260,8 +238,6 @@ def insert_rows_into_attachments_table(
     doc.save(output_docx)
     print("✅ Rows inserted in Arial, font size 7, with no extra space.")
 
-import json
-import pandas as pd
 
 def table3_json_to_df(json_path):
     """
@@ -290,15 +266,8 @@ def table3_json_to_df(json_path):
     df = pd.DataFrame(list(zip(*columns)))
     return df
 
-from docx import Document
-from docx.shared import Pt
 
-def insert_rows_into_table_by_anchor_no_gap(
-    input_docx,
-    output_docx,
-    df,
-    anchor_text
-):
+def insert_rows_into_table_by_anchor_no_gap(input_docx, output_docx, df, anchor_text):
     if df is None or df.empty:
         print("⚠️ DataFrame empty. No rows inserted.")
         return
@@ -343,11 +312,8 @@ def insert_rows_into_table_by_anchor_no_gap(
     doc.save(output_docx)
     print("✅ Table updated (Arial, size 7) with no gaps.")
 
-def run_table_insert_pipeline(
-    json_path,
-    input_docx,
-    output_docx
-):
+
+def run_table_insert_pipeline(json_path, input_docx, output_docx):
     """
     Orchestrates Table 2 and Table 3 insertion
     using already-defined helper functions.
@@ -362,7 +328,7 @@ def run_table_insert_pipeline(
         input_docx=input_docx,
         output_docx=output_docx,
         df=df_table_2,
-        anchor_text="List of Attachments (including a total number of pages in each attachment)"
+        anchor_text="List of Attachments (including a total number of pages in each attachment)",
     )
 
     # ----------------------------
@@ -374,7 +340,7 @@ def run_table_insert_pipeline(
         input_docx=output_docx,  # IMPORTANT: chain output
         output_docx=output_docx,
         df=df_table_3,
-        anchor_text="Documents referenced by this report (available on request):"
+        anchor_text="Documents referenced by this report (available on request):",
     )
 
     print("✅ Table 2 and Table 3 pipeline completed.")
@@ -408,15 +374,8 @@ def update_docx_from_existing_json(
     targets = [
         "General product information and other remarks:\nDescription of unit:\n",
         "Description of model differences:\n",
-        "Description of special features:\n(HV circuits, high pressure systems etc.)\n"
+        "Description of special features:\n(HV circuits, high pressure systems etc.)\n",
     ]
-
-    # data = apply_prefixes_to_items(data, targets)
-    # data = prefix_summary_of_compliance(data)
-
-    # Attach blob URLs
-    # data = attach_blob_urls_to_text_support(data, blob_urls)
-    # data = attach_blob_urls_to_image_support(data, blob_urls)
 
     # ---------------------------------------------------------
     # STEP 3 — SAVE FINAL JSON (OPTIONAL BUT SAFE)
@@ -431,7 +390,7 @@ def update_docx_from_existing_json(
     update_docx_tables_from_json_arial(
         docx_path=input_docx_path,
         json_path=input_json_path,
-        output_path=output_docx_path
+        output_path=output_docx_path,
     )
 
     # ---------------------------------------------------------
@@ -439,21 +398,18 @@ def update_docx_from_existing_json(
     # ---------------------------------------------------------
     print("\n[STEP] Applying checkbox ticks...")
     apply_checkboxes_from_json(
-        docx_path=output_docx_path,
-        output_path=output_docx_path,
-        json_data=data
+        docx_path=output_docx_path, output_path=output_docx_path, json_data=data
     )
 
     insert_legacy_checkbox_with_text(
-        docx_path=output_docx_path,     # update in-place
-        output_path=output_docx_path,   # overwrite same file
-        sentence='The product fulfils the requirements of IEC 61010-1:2010, IEC 61010-1:2010/AMD1:2016',
+        docx_path=output_docx_path,  # update in-place
+        output_path=output_docx_path,  # overwrite same file
+        sentence="The product fulfils the requirements of IEC 61010-1:2010, IEC 61010-1:2010/AMD1:2016",
         table_index=5,
         row=12,
         col=0,
-        new_lines=5
+        new_lines=5,
     )
-
 
     # ---------------------------------------------------------
     # STEP 6 — INSERT MARKING PLATE IMAGES (FROM JSON)
@@ -472,20 +428,15 @@ def update_docx_from_existing_json(
         table_index=6,
         row=0,
         col=0,
-        width_inches=2
+        width_inches=2,
     )
 
-    run_table_insert_pipeline(
-        input_json_path,
-        output_docx_path,
-        output_docx_path
-    )
+    run_table_insert_pipeline(input_json_path, output_docx_path, output_docx_path)
 
     print("\n✅ JSON → DOCX POPULATION COMPLETE")
     return output_docx_path
 
 
- 
 def delete_blobs_inside_folder(folder_path: str, container_client):
     # Normalize folder path to act like a prefix
     if not folder_path.endswith("/"):
@@ -501,8 +452,6 @@ def delete_blobs_inside_folder(folder_path: str, container_client):
             deleted_count += 1
 
     return deleted_count > 0
-
-
 
 
 def delete_local_project_outputs(project_id: str, reportType: str) -> bool:
@@ -530,7 +479,7 @@ def delete_local_project_outputs(project_id: str, reportType: str) -> bool:
             "pta_final_6_3_1_part3_output.json",
             "pta_final_6_3_1_part4_output.json",
             "pta_final_6_3_1_part5_output.json",
-            "src_files"
+            "src_files",
         ]
 
     elif reportType == "CDR":
@@ -561,7 +510,6 @@ def delete_local_project_outputs(project_id: str, reportType: str) -> bool:
             elif path.is_dir():
                 shutil.rmtree(path)
                 deleted = True
-    print('Deleted')
+    print("Deleted")
 
     return deleted
-
