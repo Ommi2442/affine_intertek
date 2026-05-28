@@ -19,15 +19,13 @@ from utility.cdr_report.CDR_Pipelines.configs import (
 
 import utility.cdr_report.CDR_Pipelines.configs as configs
 
-from utility.cdr_report.CDR_Pipelines.postprocessor import post_process_cdr
-from utility.cdr_report.CDR_Pipelines.form_utils import build_ref
+from utility.cdr_report.CDR_Pipelines.utils import (build_ref, post_process_cdr, get_image_urls_from_container_sas, move_device_images_in_blob, get_blob_urls)
 from utility.cdr_report.CDR_Pipelines.references import references_main
 from utility.cdr_report.CDR_Pipelines.features_agent import features_tools_main
-from utility.cdr_report.CDR_Pipelines.description import description_main, build_product_section_items
+from utility.cdr_report.CDR_Pipelines.description import (description_main, build_product_section_items)
 from utility.cdr_report.CDR_Pipelines.components_agent import run_sheet_3_and_4_agentic
 import utility.cdr_report.CDR_Pipelines.compiler as compiler
 import utility.cdr_report.CDR_Pipelines.utils as utils
-from utility.cdr_report.CDR_Pipelines.utils import get_image_urls_from_container_sas, move_device_images_in_blob, get_blob_urls
 from utility.cdr_report.CDR_Pipelines.editable_processing import extract_cis
 from langchain_azure_ai.vectorstores import AzureCosmosDBNoSqlVectorSearch
 

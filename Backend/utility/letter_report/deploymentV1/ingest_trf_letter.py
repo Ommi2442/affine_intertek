@@ -2,104 +2,81 @@
 # --------------------------------------------------------
 # SECTION 2.1 — Imports, Configuration Loading, Constants
 # --------------------------------------------------------
-import re
-import tempfile
-import shutil
-import requests
-from urllib.parse import urlparse, unquote
-from email import policy
-from email.parser import BytesParser
-import extract_msg
-import uuid
-import io
-import openpyxl
-import xlrd
+#!/usr/bin/env python
+# coding: utf-8
 
-from azure.storage.blob import BlobClient
-from azure.core.exceptions import ResourceNotFoundError, AzureError
-from utility.letter_report.deploymentV1.trf_essential import *
-from utility.letter_report.deploymentV1.trf_utils_new import *
-from utility.letter_report.deploymentV1.config import AZURE_CONN_STRING, DB_NAME_IMG, CONT_NAME_IMG, CHUNK_SIZE, CHUNK_OVERLAP, TOP_K, EMBED_DIM, VECTOR_PATH, BLOB_CONTAINER_NAME, conn_str, IMAGE_EXTS, AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY, CHAT_DEPLOY, COSMOS_URL, COSMOS_KEY, COSMOS_DB, COSMOS_CONT, DB_NAME, CONT_NAME, MAX_THREADS, MAX_RETRIES, INITIAL_BACKOFF
-
-# from trf_essential import *
-# from trf_utils_new import *
-# from config import AZURE_CONN_STRING, DB_NAME_IMG, CONT_NAME_IMG, CHUNK_SIZE, CHUNK_OVERLAP, TOP_K, EMBED_DIM, VECTOR_PATH, BLOB_CONTAINER_NAME, conn_str, IMAGE_EXTS, AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY, CHAT_DEPLOY, COSMOS_URL, COSMOS_KEY, COSMOS_DB, COSMOS_CONT, DB_NAME, CONT_NAME, MAX_THREADS, MAX_RETRIES, INITIAL_BACKOFF
-
-import pandas as pd
-import math
-import copy
-import time
-from azure.cosmos import CosmosClient, PartitionKey, exceptions
-import json, os
-from azure.cosmos import CosmosClient, ConsistencyLevel
-from typing import List, Dict, Any, Tuple
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
-from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
-from langchain_azure_ai.vectorstores import AzureCosmosDBNoSqlVectorSearch
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from azure.cosmos import CosmosClient
-from langchain_openai import AzureOpenAIEmbeddings
-from operator import itemgetter
-from langchain_core.runnables import (
-    RunnableParallel, RunnableLambda, RunnableMap
-)
-from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import AzureChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
-from tenacity import retry, retry_if_exception_type, wait_exponential, stop_never, RetryCallState
-from openai import RateLimitError  # Make sure this import exists
-from types import SimpleNamespace
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from azure.core.exceptions import HttpResponseError
-import time
-from langchain_community.callbacks import get_openai_callback
+import base64
+import json
 import os
 import re
-import json
-import time
 import shutil
-import tempfile
-from types import SimpleNamespace
+import time
+import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from urllib.parse import urlparse, unquote
+from pathlib import Path
+from types import SimpleNamespace
+from typing import Any, Dict, List
+from urllib.parse import urlparse
 
-# External dependencies
+import fitz  # PyMuPDF
+from dotenv import load_dotenv
+from openai import AzureOpenAI
+from PyPDF2 import PdfReader
+from PyPDF2.generic import IndirectObject
+
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
-from azure.core.exceptions import AzureError, ResourceNotFoundError, HttpResponseError
 from azure.storage.blob import BlobClient
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+from langchain_azure_ai.vectorstores import AzureCosmosDBNoSqlVectorSearch
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_core.documents import Document
-from openai import AzureOpenAI
-from dotenv import load_dotenv
-import fitz
+from langchain_openai import AzureOpenAIEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+
+from projects.keyvault_load import load_keyvault_secrets
+from utility.letter_report.deploymentV1.config import (
+    AOAI_ENDPOINT,
+    AOAI_KEY,
+    API_VERSION,
+    AZURE_CONN_STRING,
+    CHAT_DEPLOY,
+    CHUNK_OVERLAP,
+    CHUNK_SIZE,
+    CONT_NAME_IMG,
+    COSMOS_CONT,
+    COSMOS_KEY,
+    COSMOS_URL,
+    DB_NAME_IMG,
+    EMBED_DEPLOY,
+    EMBED_DIM,
+    INITIAL_BACKOFF,
+    MAX_RETRIES,
+    MAX_THREADS,
+    VECTOR_PATH,
+)
+from utility.letter_report.deploymentV1.trf_essential import *
+from utility.letter_report.deploymentV1.trf_utils_new import *
+
+
 fitz.TOOLS.mupdf_display_errors(False)
 
-import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
- 
 
 load_dotenv()
-
-from projects.keyvault_load import *
 load_keyvault_secrets()
 
-AZURE_CONN_STRING = os.getenv("azure-conn-string")
-COSMOS_CONT_TEXT = COSMOS_CONT
-COSMOS_DB_IMAGE  = DB_NAME_IMG
+COSMOS_CONT_TEXT = os.getenv("cosmos-cont-text", COSMOS_CONT)
+COSMOS_DB_TEXT = os.getenv("cosmos-db-text")
+
+COSMOS_DB_IMAGE = DB_NAME_IMG
 COSMOS_CONT_IMAGE = CONT_NAME_IMG
-BLOB_CONT_NAME= os.getenv("blob-container")
+
+BLOB_CONT_NAME = os.getenv("blob-container")
 ENABLE_CAD_SCHEMATICS = os.getenv("enable-cad-schematics")
 FLATTENED_DIR = os.getenv("flattened-dir")
-LT_IMAGES_ROOT_Folder_Name =os.getenv("lt-images-root")
+LT_IMAGES_ROOT_Folder_Name = os.getenv("lt-images-root")
 LT_DOWNLOAD_DIR_Folder_Name = os.getenv("trf-download-dir")
-
-COSMOS_CONT_TEXT = os.getenv("cosmos-cont-text")
-COSMOS_DB_TEXT=os.getenv("cosmos-db-text")
-
 
 
 # ----------------------------------------------------------------------------------------
@@ -107,7 +84,6 @@ COSMOS_DB_TEXT=os.getenv("cosmos-db-text")
 # ----------------------------------------------------------------------------------------
 
 print("#################  ",COSMOS_CONT_TEXT,"\n",COSMOS_CONT_IMAGE,"\n",COSMOS_DB_TEXT,"\n",COSMOS_DB_IMAGE)
-import time;time.sleep(5)
 
 aoai_client = AzureOpenAI(
     api_key=AOAI_KEY,
@@ -119,7 +95,6 @@ aoai_client = AzureOpenAI(
 # ----------------------------------------------------------------------------------------
 # Embedding Builder — same as notebook
 # ----------------------------------------------------------------------------------------
-from langchain_openai import AzureOpenAIEmbeddings
 
 
 
@@ -387,8 +362,6 @@ def extract_relevant_pdf_page_images(pdf_path, dpi=200):
 
 
 
- 
-
 
 # -------------------------------------------------------------------------
 # PDF Loader + Text Chunking (EXACT logic from notebook)
@@ -418,7 +391,14 @@ def load_and_split_pdfs_text(
     )
 
     # ----- STEP 1: PDF TEXT EXTRACTION -----
-    for path in pdf_paths:
+    for item in pdf_paths:
+        if isinstance(item, dict):
+            path = item.get("path")
+            category = item.get("category", "other")
+        else:
+            path = item
+            category = infer_category_from_path(path)
+
         if not str(path).lower().endswith(".pdf"):
             continue
 
@@ -430,6 +410,7 @@ def load_and_split_pdfs_text(
             page = int(d.metadata.get("page", 1))
             d.metadata["source_file"] = base
             d.metadata["page"] = page
+            d.metadata["category"] = category
             d.metadata["citation"] = f"{base}#page={page}"
 
         docs.extend(raw_docs)
@@ -473,7 +454,8 @@ def load_and_split_pdfs_text(
             metadata = {
                 "source_file": os.path.basename(str(filename)),
                 "page": 1,
-                "citation": os.path.basename(str(filename))
+                "category": category,
+                "citation": os.path.basename(str(filename)),
             }
 
             # ORIGINAL WORKING VERSION — KEEP SimpleNamespace
@@ -498,9 +480,6 @@ def load_and_split_pdfs_text(
 # -------------------------------------------------------------------------
 
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from azure.storage.blob import BlobClient
-import os
 
 def upload_pdf_images_and_append_urls(
     image_page_metadata,
@@ -570,12 +549,6 @@ def upload_pdf_images_and_append_urls(
 # SECTION 3.1 — Image URL Extraction + Agent-Based OCR Pipeline
 # --------------------------------------------------------
 
-import requests
-
-
-# --------------------------------------------------------
-# Extract image name from blob URL — EXACT as notebook
-# --------------------------------------------------------
 def extract_clean_image_name(blob_url: str):
     parsed = urlparse(blob_url)
     path = parsed.path
@@ -613,9 +586,6 @@ def extract_urls(mixed_list):
 # --------------------------------------------------------
 # The ORIGINAL process_single_image replaced by an AGENT CALL
 # --------------------------------------------------------
-MAX_THREADS = 10
-MAX_RETRIES = 5
-INITIAL_BACKOFF = 3
 
 
 def _direct_llm_fallback(url, index, total, vision_deploy_name):
@@ -868,37 +838,7 @@ def clear_cosmos_container(database_name, container_name):
     except Exception as e:
         print(f"[ERROR] Could not list/delete items: {e}")
 
-#!/usr/bin/env python
-# coding: utf-8
 
-
-from pathlib import Path
-from typing import List, Dict, Any
-from PyPDF2 import PdfReader
-from PyPDF2.generic import IndirectObject
-import fitz  # PyMuPDF
-import base64
-from dotenv import load_dotenv
-import os
-from pathlib import Path
-import json
-from openai import OpenAI
-import os
-import importlib
-# importlib.reload(configs)
-from openai import AzureOpenAI
-
-
-# # 🔍 Optional sanity check (don’t print the key!)
-# print("Endpoint:", AZURE_OPENAI_ENDPOINT)
-# print("API version:", AZURE_OPENAI_API_VERSION)
-
-# # ✅ Azure OpenAI client
-# client = AzureOpenAI(
-#     api_key=AZURE_OPENAI_API_KEY,
-#     api_version=AZURE_OPENAI_API_VERSION,
-#     azure_endpoint=AZURE_OPENAI_ENDPOINT,
-# )
 
 def _resolve_indirect(obj):
     if isinstance(obj, IndirectObject):
@@ -1107,87 +1047,6 @@ def extract_page_with_llm(img_path: Path) -> str:
 
     return response.choices[0].message.content
 
-from pathlib import Path
-import shutil
-import time
-from typing import Dict, Any
-
-# def process_pdfs(
-#     src_root: str = "src_files",
-#     flattened_dir: str = "flattened_pdfs",
-#     images_root: str = "page_images",
-#     dpi: int = 200,
-#     archive_root: str | None = None,
-# ) -> Dict[str, Any]:
-#     src_root = Path(src_root)
-#     flattened_dir = Path(flattened_dir)
-#     images_root = Path(images_root)
-
-#     flattened_dir.mkdir(exist_ok=True)
-#     images_root.mkdir(exist_ok=True)
-
-#     # ✅ NEW: archive folder NEXT TO src_root (same parent)
-#     if archive_root is None:
-#         archive_root = src_root.parent / "archived_editable"
-#     else:
-#         archive_root = Path(archive_root)
-
-#     archive_root.mkdir(parents=True, exist_ok=True)
-
-#     results: Dict[str, Any] = {}
-
-#     print(f"Scanning {src_root.resolve()} ...")
-
-#     for pdf_path in src_root.glob("*.pdf"):
-#         if not pdf_path.is_file():
-#             continue
-
-#         print(f"\nChecking {pdf_path.name}...")
-
-#         if not is_editable_form_pdf(pdf_path):
-#             print(" → Not editable. Skipping.")
-#             continue
-
-#         print(" → Editable PDF detected.")
-
-#         # 1) Flatten PDF
-#         flat_pdf_path = flattened_dir / f"{pdf_path.stem}_flat.pdf"
-#         pixmaps = flatten_and_get_images(str(pdf_path), str(flat_pdf_path), dpi=dpi)
-#         print(" ✔ Flattened PDF created.")
-
-#         # 2) Archive original (now outside src_root)
-#         archive_path = archive_root / pdf_path.name
-#         print(f"   → Archiving original editable to {archive_path}")
-
-#         for attempt in range(3):
-#             try:
-#                 shutil.move(str(pdf_path), str(archive_path))
-#                 break
-#             except PermissionError as e:
-#                 print(f"   ⚠️ PermissionError on move (attempt {attempt+1}/3): {e}")
-#                 if attempt == 2:
-#                     print("   ❌ Skipping archive for this file. It may be open in another program.")
-#                 else:
-#                     time.sleep(0.5)
-
-#         # 3) Save images + LLM extraction as you already do...
-#         img_dir = images_root / pdf_path.stem
-#         img_paths = save_pixmaps_to_images(pixmaps, img_dir, pdf_path.stem)
-
-#         llm_outputs = []
-#         for img_path in img_paths:
-#             print(f"   → Sending {img_path.name} to GPT-4.1...")
-#             output = extract_page_with_llm(img_path)
-#             llm_outputs.append(output)
-
-#         results[pdf_path.name] = {
-#             "original": archive_path,
-#             "flattened": flat_pdf_path,
-#             "images": img_paths,
-#             "extracted": llm_outputs,
-#         }
-
-#     return results
 
 def process_pdfs(
     src_root: str = "src_files_trf",
@@ -1208,13 +1067,6 @@ def process_pdfs(
         if not pdf_path.is_file():
             continue
 
-        # print(f"\nChecking {pdf_path.name}...")
-
-        # if not is_editable_form_pdf(pdf_path):
-        #     print(" → Not editable. Skipping.")
-        #     continue
-
-        # print(" → Editable PDF detected.")
 
         MAX_CIS_PAGES = 10
 
@@ -1263,11 +1115,7 @@ def process_pdfs(
             output = extract_page_with_llm(img_path)
             llm_outputs.append(output)
 
-        # results[pdf_path.name] = {
-        #     "original": pdf_path,
-        #     "images": img_paths,
-        #     "extracted": llm_outputs,
-        # }
+
         results[pdf_path.name] = {
             "original": pdf_path,
             "images": img_paths,
@@ -1299,8 +1147,6 @@ def extract_cis(src_root, images_root):
 
     return all_cis, editable_pdfs
 
-# with open("src_files\\all_cis_info.txt", "w", encoding="utf-8") as f:
-#     json.dump(all_cis, f, indent=4, default=str)
 
 def copy_extracted_images_to_src(page_images_root: str, src_root: str):
     """
@@ -1435,7 +1281,6 @@ def clean_text(text: str) -> str:
 
     return t.strip()
 
-import re
 
 def normalize_whitespace_only(text: str) -> str:
     if not text:
@@ -1550,14 +1395,10 @@ def run_full_ingestion(project_id,blob_urls,text_container,image_container):
         verbose=True
     )
 
-    # pdf_paths = downloaded_pdf_paths + converted_pdf_paths
     pdf_paths = downloaded_pdf_paths + converted_pdf_paths
     
 
 
-    # cis_info = extract_cis(src_root=LT_DOWNLOAD_DIR,
-    #     flattened_dir=FLATTENED_DIR,
-    #     images_root=LT_IMAGES_ROOT)
     cis_info, editable_pdfs = extract_cis(
         src_root=LT_DOWNLOAD_DIR,
         images_root=LT_IMAGES_ROOT
@@ -1566,7 +1407,7 @@ def run_full_ingestion(project_id,blob_urls,text_container,image_container):
     # ✅ Remove editable PDFs from PDF ingestion list (they are handled via OCR images)
     pdf_paths = [
         p for p in pdf_paths
-        if os.path.basename(p) not in editable_pdfs
+        if os.path.basename(p["path"] if isinstance(p, dict) else p) not in editable_pdfs
     ]
 
     
@@ -1577,14 +1418,6 @@ def run_full_ingestion(project_id,blob_urls,text_container,image_container):
     extracted_texts=clean_extracted_texts(extracted_texts)
     
     extracted_texts += cis_info
-
-    # print("###################### CIS INFO ##################################")
-    # print(cis_info)
-    # print("###################################################################")
-
-    # print(f"[INFO] Extracted text files: {len(extracted_texts)}")
-    # print(f"[INFO] Initial image URLs: {len(image_urls_raw)}")
-    # print(f"[INFO] Total PDFs: {len(pdf_paths)}\n")
 
 
     print("\n======================================")
@@ -1632,12 +1465,6 @@ def run_full_ingestion(project_id,blob_urls,text_container,image_container):
     print("   STEP 4 — UPLOAD CAD/SCHEMATIC PAGE IMAGES         ")
     print("=====================================================\n")
 
-    # image_urls = upload_pdf_images_and_append_urls(
-    #     image_page_metadata=image_page_metadata,
-    #     image_urls=image_urls_raw,
-    #     conn_str=AZURE_CONN_STRING,
-    #     container=BLOB_CONT_NAME,   # same notebook container
-    # )
 
     # Deduplicate local image paths
     seen = set()
@@ -1700,33 +1527,3 @@ def run_full_ingestion(project_id,blob_urls,text_container,image_container):
         "pdf_pages_extracted": len(image_page_metadata),
     }
 
-
-# if __name__ == "__main__":
-#     # --------------------------------------
-#     # Example: Pass your blob URLs here
-#     # --------------------------------------
-#     blob_urls = [  #source file's upload url
-#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Accepted_-_Gener8_LLC_-_Qu-01390131-0.msg',
-#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/CFE-4LB011-E%20(1)%20(1).pdf',
-#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/CFE_block_diagram.png',
-#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Client_Information_Sheet_-_FUS_CIS_1_.pdf',
-#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/PastedGraphic-1.png',
-#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/celFE_isol.docx',
-#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/RE__External_Re__Intertek_Order_Qu-01390131-0_processed_-_Gener8_LLC_Project_G105581614.eml',
-#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Risk%20Assessment%20CFE_28nov.xlsx',
-#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.docx',
-#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/CellFE_Infinity_MTx_Operating_Manual.docx',
-#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Cell_Gener8_Agent_Agreement_2018_1_.pdf',
-#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf',
-#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.docx',
-#         'https://saaffine.blob.core.windows.net/nasa-ebooks-pdfs-all/Qu-01390131-0.pdf'
-
-#     ]
-
-#     if not blob_urls:
-#         print("[WARNING] No blob URLs provided. Add URLs inside the blob_urls list.")
-#     else:
-#         print("\n🚀 Starting ingestion pipeline...\n")
-#         result = run_full_ingestion(blob_urls)
-#         print("\n📌 Final ingestion summary:")
-#         print(result)

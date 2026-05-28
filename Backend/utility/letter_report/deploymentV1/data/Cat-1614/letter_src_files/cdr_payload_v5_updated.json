@@ -1,0 +1,2066 @@
+{
+  "Sheets": [
+    {
+      "sheet_no": 1,
+      "sheet_name": "1.0 References",
+      "Items": [
+        {
+          "question_cell": "A1",
+          "prefix": null,
+          "field": "1.0 Reference and Address",
+          "answer_cell": null,
+          "value": null,
+          "field_merged": true,
+          "fm_range": "F1",
+          "value_merged": null,
+          "vm_range": null,
+          "task_type": "title",
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A2",
+          "prefix": null,
+          "field": null,
+          "answer_cell": null,
+          "value": null,
+          "field_merged": true,
+          "fm_range": "F2",
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "blank",
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A3",
+          "prefix": "Report",
+          "field": "Report Number",
+          "answer_cell": "B3",
+          "value": "Info not in TRF",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 100
+        },
+        {
+          "question_cell": "C3",
+          "prefix": "Report",
+          "field": "Original Issued:",
+          "answer_cell": "D3",
+          "value": "Info not in TRF",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 100
+        },
+        {
+          "question_cell": "E3",
+          "prefix": "Report",
+          "field": "Revised:",
+          "answer_cell": "F3",
+          "value": null,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": null,
+          "user_editable": true,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A4",
+          "prefix": "Report",
+          "field": "Standard(s)",
+          "answer_cell": "B4",
+          "value": "IEC 61010-1:2010, IEC 61010-1:2010/AMD1:2016",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "F4",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 100
+        },
+        {
+          "question_cell": "A5",
+          "prefix": null,
+          "field": null,
+          "answer_cell": null,
+          "value": null,
+          "field_merged": true,
+          "fm_range": "F5",
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "blank",
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A6",
+          "prefix": "Applicant",
+          "field": "Applicant",
+          "answer_cell": "B6",
+          "value": "Gener8 LLC",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "C6",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 100,
+          "text_support": [
+            {
+              "filename": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+              "page": 1,
+              "similarity_score": 0.7932440042495728,
+              "preview_text": "GFT-SC-01b Page 2 of 4 Version: 30 November 2022\nCOMPANY CONFIDENTIAL",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 0,
+              "similarity_score": 0.7891113758087158,
+              "preview_text": "INTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nPROJECT PROPOSAL\nGENER8 LLC\nShivam Patel\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nQUOTE NO\nQu-01390131-0\nPROJECT NAME\ncETLus/CB certification and report for CellFE Infinity MTx - Safety\nCOMPILED BY\nCharlotte Johnson\nDATE\nSeptember 8, 2023",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 2,
+              "similarity_score": 0.7832252979278564,
+              "preview_text": "Quote No:  Qu-01390131-0\n3 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nPrepared For: Shivam Patel\nConsultant\nGener8 LLC\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nPrepared by: Charlotte Johnson\nSales Representative\nIntertek\n1365 Adams Court\nMenlo Park, California 94025\nUnited States\n(650) 940-9898 1 650 223-9986\nspatel@gener8.net charlotte.johnson@intertek.c\nom\nTesting and Evaluation Details:\nThis proposal is based upon the information Gener8 LLC provided to Intertek and covers the services as \nnoted below.   \nScope of Work:\ncETLus/CB certification and report for CellFE Infinity MTx - Safety\nProject Summary:\nAssumptions:\n•This quotation is based on submitted information. Intertek reserves the right to adjust the \ncharge and timescales if further testing is found to be necessary on receipt of full samples and \ndocuments\n•Assumes single model to be tested based on determination of worst case sample. Additional \ntesting across multiple model versions may result in a change order.\n•Assumes Equipment/Product is not relied upon or critical for safety (i.e., is not relied upon to \nperform actions such as shutdown upstream or downstream processes, etc.)",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Cell_Gener8_Agent_Agreement_2018_1_.pdf",
+              "page": 1,
+              "similarity_score": 0.7664836645126343,
+              "preview_text": "{\n  \"Applicant\": {\n    \"Legal Entity Name\": \"CellFE, Inc.\",\n    \"DBA\": null,\n    \"Street Address\": \"1000 Atlantic Avenue, Suite 104\",\n    \"City, State, Postal Code, Country\": \"USA\",\n    \"Phone Number\": \"(818) 689-2280\",\n    \"Email\": \"leo@cellfetech.com\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Leonid Fomin\",\n        \"Role\": \"Contact Person (Primary)\",\n        \"Phone Number\": null,\n        \"Email\": null\n      },\n      {\n        \"Name\": \"Sewon Han\",\n        \"Role\": \"Contact Person (Secondary)\",\n        \"Phone Number\": null,\n        \"Email\": null\n      }\n    ]\n  },\n  \"Bill-To\": {\n    \"Legal Entity Name\": null,\n    \"Street Address\": null,\n    \"City, State, Postal Code, Country\": null,\n    \"Accounts Payable Contact\": null,\n    \"Phone Number\": null,\n    \"Email\": null\n  },\n  \"Manufacturer\": {\n    \"Legal Entity Name\": \"Gener8 LLC\",\n    \"Street Address\": \"2560 Junction Avenue\",\n    \"City, State, Postal Code, Country\": \"USA\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Shivam Patel\",\n        \"Role\": \"Contact Person (primary)\",\n        \"Phone Number\": null,\n        \"Email\": \"spatel@gener8.net\"\n      },\n      {\n        \"Name\": \"Desiree Minkler\",\n        \"Role\": \"Contact Person (Alternate)\",",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Cell_Gener8_Agent_Agreement_2018_1_.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf",
+              "page": 0,
+              "similarity_score": 0.7575716376304626,
+              "preview_text": "4. Include Plating Certificate if applicable.\n5. Include FAIR (1st Article Insp Report) if applicable.\n6. Include Packing slip\nPLEASE EMAIL ALL INVOICES TO : apgroup@gener8.net\nMail to :\nACCOUNTS PAYABLE\n5975 CASTLE CREEK PKWY N DR, STE 250\nINDIANAPOLIS, IN 46250\n(800) 338-4105 x55012\nLineLineLineLine Item NumberItem NumberItem NumberItem Number RevRevRevRev Need DateNeed DateNeed DateNeed Date qty_ordqty_ordqty_ordqty_ord UMUMUMUM TTTT Unit CostUnit CostUnit CostUnit Cost Extended CostExtended CostExtended CostExtended Cost\n1 EMC Testing 8/31/2023 1.0 EA N 24,050.00 24,050.00\n-\n*Per quote# Qu-01384314-3\n2 EMC testing 8/31/2023 1.0 EA N 11,400.00 11,400.00\n-\n*Per Quote# Qu-01384746-0\n3 Safety Testing 8/31/2023 1.0 EA N 21,350.00 21,350.00\n-\n*Per Quote# Qu-01382686-0\nUSD Line Total 56,800.00\nTotal Tax 0.00\nTotal Amount 56,800.00\n3:51:35 PM8/23/2023 1/1",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ]
+        },
+        {
+          "question_cell": "A7",
+          "prefix": "Applicant",
+          "field": "Address",
+          "answer_cell": "B7",
+          "value": "2560 Junction Ave, San Jose, CA 95134, USA",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "C7",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 100,
+          "text_support": [
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 0,
+              "similarity_score": 0.8292914628982544,
+              "preview_text": "INTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nPROJECT PROPOSAL\nGENER8 LLC\nShivam Patel\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nQUOTE NO\nQu-01390131-0\nPROJECT NAME\ncETLus/CB certification and report for CellFE Infinity MTx - Safety\nCOMPILED BY\nCharlotte Johnson\nDATE\nSeptember 8, 2023",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 2,
+              "similarity_score": 0.7823860049247742,
+              "preview_text": "Quote No:  Qu-01390131-0\n3 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nPrepared For: Shivam Patel\nConsultant\nGener8 LLC\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nPrepared by: Charlotte Johnson\nSales Representative\nIntertek\n1365 Adams Court\nMenlo Park, California 94025\nUnited States\n(650) 940-9898 1 650 223-9986\nspatel@gener8.net charlotte.johnson@intertek.c\nom\nTesting and Evaluation Details:\nThis proposal is based upon the information Gener8 LLC provided to Intertek and covers the services as \nnoted below.   \nScope of Work:\ncETLus/CB certification and report for CellFE Infinity MTx - Safety\nProject Summary:\nAssumptions:\n•This quotation is based on submitted information. Intertek reserves the right to adjust the \ncharge and timescales if further testing is found to be necessary on receipt of full samples and \ndocuments\n•Assumes single model to be tested based on determination of worst case sample. Additional \ntesting across multiple model versions may result in a change order.\n•Assumes Equipment/Product is not relied upon or critical for safety (i.e., is not relied upon to \nperform actions such as shutdown upstream or downstream processes, etc.)",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7758496403694153,
+              "preview_text": "Page 1 of 57\nCellFE Infinity MTx Operating Manual\nCellFE Biotech, Inc.\n1000 Atlantic Avenue, Suite 104\nAlameda, CA  94501-1098\n(512)-914-2840\nsupport@cellfebiotech.com\nhttps://www.cellfebiotech.com\n© 2023, CellFE Biotech, Inc.\nFor Research Use Only. Not for use in diagnostic procedures.\nPlaceholder: Image of Infinity MTx",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 6,
+              "similarity_score": 0.7728390693664551,
+              "preview_text": "includes more than one factory location and a \ndeclaration from the manufacturer stating that the \nsample(s) submitted for evaluation is (are) \nrepresentative of the products from each factory has \nbeen provided..............................................................:\n Yes\n Not applicable\nWhen differences exist; they shall be identified in the general product information section.\nName and address of factory (ies)...........................: CellFE Inc., 1000 Atlantic Ave, Suite 104, Alameda, \nCA, USA\nGener8 LLC, 2560 Junction Ave, San Jose, CA, \nUSA",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 7,
+              "similarity_score": 0.7667980790138245,
+              "preview_text": "Quote No:  Qu-01390131-0\n8 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nBefore the ETL Listing Mark can be applied to your products, we must execute a Certificate Agreement \nand establish Follow-up Services in you manufacturing locations. There are additional fees associated \nwith maintaining the ETL Listing Mark. To learn more about this important step, please contact your \nAccount Manager or visit http://intertek.com/guide-to-etl.\nPricing assumes all critical components are properly approved. If you have any questions regarding this \nassumption, please contact your account manager.\nAdditional Certification Services and Fees:\nFor services that result in the authorization of a certification mark; additional follow-up or surveillance \nservices may be required at an additional fee which will be charged separately.  Please ask your sales \nrepresentative for additional information or refer to our website:  \nhttp://www.intertek.com/certification\nExpenses:\nUnless specifically detailed within this proposal, travel expenses, all shipping costs including express",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ]
+        },
+        {
+          "question_cell": "A8",
+          "prefix": "Applicant",
+          "field": "Country",
+          "answer_cell": "B8",
+          "value": "USA",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "C8",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 100,
+          "text_support": [
+            {
+              "filename": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+              "page": 0,
+              "similarity_score": 0.7515296936035156,
+              "preview_text": "category\n1.2 Do the services include work for an attorney or use in litigation, an insurance claim or \nother commercial dispute? \n☐YES    ☒NO\n1.3 Is the client located in a Sanctioned Country or is a Specially Designated National on \nthis list, or are the product(s) on which services will be performed originating from or \ndestined for a Sanctioned Country?  LINK2  \nRequired to comply with national and international regulations.  \n☐YES    ☒NO\n1.4 Is the product subject to Import/Export Controls and Regulations (e.g., International \nTraffic and Arms Regulations (ITAR), Export Administration Regulations (EAR))? \nThis may involve military, defence or dual-use products and is required to comply with special project \nmanagement, record storage, and export handling requirements.  If testing is to MIL461, MIL704, \nMIL810, ATPD2352, ANSIZ26.1, or RTCA-DO-160, select “Yes” The Export Control Classification \nNumber (ECCN) must be submitted with the RAF to RCO for review.\n☐YES    ☒NO\nIf you answered “YES” to any question in Section 1, no quote may be issued. \nTo request an exception, the opportunity must be reviewed and approved by Regional Compliance Officer (RCO).",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 6,
+              "similarity_score": 0.7489163279533386,
+              "preview_text": "includes more than one factory location and a \ndeclaration from the manufacturer stating that the \nsample(s) submitted for evaluation is (are) \nrepresentative of the products from each factory has \nbeen provided..............................................................:\n Yes\n Not applicable\nWhen differences exist; they shall be identified in the general product information section.\nName and address of factory (ies)...........................: CellFE Inc., 1000 Atlantic Ave, Suite 104, Alameda, \nCA, USA\nGener8 LLC, 2560 Junction Ave, San Jose, CA, \nUSA",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 0,
+              "similarity_score": 0.7485034465789795,
+              "preview_text": "INTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nPROJECT PROPOSAL\nGENER8 LLC\nShivam Patel\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nQUOTE NO\nQu-01390131-0\nPROJECT NAME\ncETLus/CB certification and report for CellFE Infinity MTx - Safety\nCOMPILED BY\nCharlotte Johnson\nDATE\nSeptember 8, 2023",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+              "page": 1,
+              "similarity_score": 0.7473912239074707,
+              "preview_text": "GFT-SC-01b Page 2 of 4 Version: 30 November 2022\nCOMPANY CONFIDENTIAL",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 7,
+              "similarity_score": 0.7386413812637329,
+              "preview_text": "Quote No:  Qu-01390131-0\n8 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nBefore the ETL Listing Mark can be applied to your products, we must execute a Certificate Agreement \nand establish Follow-up Services in you manufacturing locations. There are additional fees associated \nwith maintaining the ETL Listing Mark. To learn more about this important step, please contact your \nAccount Manager or visit http://intertek.com/guide-to-etl.\nPricing assumes all critical components are properly approved. If you have any questions regarding this \nassumption, please contact your account manager.\nAdditional Certification Services and Fees:\nFor services that result in the authorization of a certification mark; additional follow-up or surveillance \nservices may be required at an additional fee which will be charged separately.  Please ask your sales \nrepresentative for additional information or refer to our website:  \nhttp://www.intertek.com/certification\nExpenses:\nUnless specifically detailed within this proposal, travel expenses, all shipping costs including express",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ]
+        },
+        {
+          "question_cell": "A9",
+          "prefix": "Applicant",
+          "field": "Contact",
+          "answer_cell": "B9",
+          "value": "Leonid Fomin\nSewon Han",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "C9",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 100,
+          "text_support": [
+            {
+              "filename": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+              "page": 1,
+              "similarity_score": 0.7476423978805542,
+              "preview_text": "GFT-SC-01b Page 2 of 4 Version: 30 November 2022\nCOMPANY CONFIDENTIAL",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Cell_Gener8_Agent_Agreement_2018_1_.pdf",
+              "page": 1,
+              "similarity_score": 0.7413560152053833,
+              "preview_text": "\"Email\": \"spatel@gener8.net\"\n      },\n      {\n        \"Name\": \"Desiree Minkler\",\n        \"Role\": \"Contact Person (Alternate)\",\n        \"Phone Number\": null,\n        \"Email\": null\n      }\n    ],\n    \"Estimated Production Date\": null,\n    \"Labeling Method\": null\n  },\n  \"Completed By\": \"Leonid Fomin\",\n  \"Dates\": {\n    \"Form Completion\": \"9/26/2023\"\n  },\n  \"Signatures\": null\n}",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Cell_Gener8_Agent_Agreement_2018_1_.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 0,
+              "similarity_score": 0.738976776599884,
+              "preview_text": "INTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nPROJECT PROPOSAL\nGENER8 LLC\nShivam Patel\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nQUOTE NO\nQu-01390131-0\nPROJECT NAME\ncETLus/CB certification and report for CellFE Infinity MTx - Safety\nCOMPILED BY\nCharlotte Johnson\nDATE\nSeptember 8, 2023",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Cell_Gener8_Agent_Agreement_2018_1_.pdf",
+              "page": 1,
+              "similarity_score": 0.7376805543899536,
+              "preview_text": "{\n  \"Applicant\": {\n    \"Legal Entity Name\": \"CellFE, Inc.\",\n    \"DBA\": null,\n    \"Street Address\": \"1000 Atlantic Avenue, Suite 104\",\n    \"City, State, Postal Code, Country\": \"USA\",\n    \"Phone Number\": \"(818) 689-2280\",\n    \"Email\": \"leo@cellfetech.com\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Leonid Fomin\",\n        \"Role\": \"Contact Person (Primary)\",\n        \"Phone Number\": null,\n        \"Email\": null\n      },\n      {\n        \"Name\": \"Sewon Han\",\n        \"Role\": \"Contact Person (Secondary)\",\n        \"Phone Number\": null,\n        \"Email\": null\n      }\n    ]\n  },\n  \"Bill-To\": {\n    \"Legal Entity Name\": null,\n    \"Street Address\": null,\n    \"City, State, Postal Code, Country\": null,\n    \"Accounts Payable Contact\": null,\n    \"Phone Number\": null,\n    \"Email\": null\n  },\n  \"Manufacturer\": {\n    \"Legal Entity Name\": \"Gener8 LLC\",\n    \"Street Address\": \"2560 Junction Avenue\",\n    \"City, State, Postal Code, Country\": \"USA\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Shivam Patel\",\n        \"Role\": \"Contact Person (primary)\",\n        \"Phone Number\": null,\n        \"Email\": \"spatel@gener8.net\"\n      },\n      {\n        \"Name\": \"Desiree Minkler\",\n        \"Role\": \"Contact Person (Alternate)\",",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Cell_Gener8_Agent_Agreement_2018_1_.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 6,
+              "similarity_score": 0.7336674332618713,
+              "preview_text": "includes more than one factory location and a \ndeclaration from the manufacturer stating that the \nsample(s) submitted for evaluation is (are) \nrepresentative of the products from each factory has \nbeen provided..............................................................:\n Yes\n Not applicable\nWhen differences exist; they shall be identified in the general product information section.\nName and address of factory (ies)...........................: CellFE Inc., 1000 Atlantic Ave, Suite 104, Alameda, \nCA, USA\nGener8 LLC, 2560 Junction Ave, San Jose, CA, \nUSA",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ]
+        },
+        {
+          "question_cell": "A10",
+          "prefix": "Applicant",
+          "field": "Phone",
+          "answer_cell": "B10",
+          "value": "N/A",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "C10",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 100,
+          "text_support": [
+            {
+              "filename": null,
+              "page": 0,
+              "similarity_score": 0.0,
+              "preview_text": "No evidence found"
+            }
+          ]
+        },
+        {
+          "question_cell": "A11",
+          "prefix": "Applicant",
+          "field": "FAX",
+          "answer_cell": "B11",
+          "value": "N/A",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "C11",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 0,
+          "text_support": [
+            {
+              "filename": null,
+              "page": 0,
+              "similarity_score": 0.0,
+              "preview_text": "No evidence found"
+            }
+          ]
+        },
+        {
+          "question_cell": "A12",
+          "prefix": "Applicant",
+          "field": "Email",
+          "answer_cell": "B12",
+          "value": "N/A",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "C12",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 100,
+          "text_support": [
+            {
+              "filename": null,
+              "page": 0,
+              "similarity_score": 0.0,
+              "preview_text": "No evidence found"
+            }
+          ]
+        },
+        {
+          "question_cell": "D6",
+          "prefix": "Manufacturer 1",
+          "field": "Manufacturer 1",
+          "answer_cell": "E6",
+          "value": "Gener8 LLC",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "F6",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 100,
+          "text_support": [
+            {
+              "filename": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+              "page": 1,
+              "similarity_score": 0.7932440042495728,
+              "preview_text": "GFT-SC-01b Page 2 of 4 Version: 30 November 2022\nCOMPANY CONFIDENTIAL",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 0,
+              "similarity_score": 0.7891113758087158,
+              "preview_text": "INTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nPROJECT PROPOSAL\nGENER8 LLC\nShivam Patel\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nQUOTE NO\nQu-01390131-0\nPROJECT NAME\ncETLus/CB certification and report for CellFE Infinity MTx - Safety\nCOMPILED BY\nCharlotte Johnson\nDATE\nSeptember 8, 2023",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 2,
+              "similarity_score": 0.7832252979278564,
+              "preview_text": "Quote No:  Qu-01390131-0\n3 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nPrepared For: Shivam Patel\nConsultant\nGener8 LLC\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nPrepared by: Charlotte Johnson\nSales Representative\nIntertek\n1365 Adams Court\nMenlo Park, California 94025\nUnited States\n(650) 940-9898 1 650 223-9986\nspatel@gener8.net charlotte.johnson@intertek.c\nom\nTesting and Evaluation Details:\nThis proposal is based upon the information Gener8 LLC provided to Intertek and covers the services as \nnoted below.   \nScope of Work:\ncETLus/CB certification and report for CellFE Infinity MTx - Safety\nProject Summary:\nAssumptions:\n•This quotation is based on submitted information. Intertek reserves the right to adjust the \ncharge and timescales if further testing is found to be necessary on receipt of full samples and \ndocuments\n•Assumes single model to be tested based on determination of worst case sample. Additional \ntesting across multiple model versions may result in a change order.\n•Assumes Equipment/Product is not relied upon or critical for safety (i.e., is not relied upon to \nperform actions such as shutdown upstream or downstream processes, etc.)",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Cell_Gener8_Agent_Agreement_2018_1_.pdf",
+              "page": 1,
+              "similarity_score": 0.7664836645126343,
+              "preview_text": "{\n  \"Applicant\": {\n    \"Legal Entity Name\": \"CellFE, Inc.\",\n    \"DBA\": null,\n    \"Street Address\": \"1000 Atlantic Avenue, Suite 104\",\n    \"City, State, Postal Code, Country\": \"USA\",\n    \"Phone Number\": \"(818) 689-2280\",\n    \"Email\": \"leo@cellfetech.com\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Leonid Fomin\",\n        \"Role\": \"Contact Person (Primary)\",\n        \"Phone Number\": null,\n        \"Email\": null\n      },\n      {\n        \"Name\": \"Sewon Han\",\n        \"Role\": \"Contact Person (Secondary)\",\n        \"Phone Number\": null,\n        \"Email\": null\n      }\n    ]\n  },\n  \"Bill-To\": {\n    \"Legal Entity Name\": null,\n    \"Street Address\": null,\n    \"City, State, Postal Code, Country\": null,\n    \"Accounts Payable Contact\": null,\n    \"Phone Number\": null,\n    \"Email\": null\n  },\n  \"Manufacturer\": {\n    \"Legal Entity Name\": \"Gener8 LLC\",\n    \"Street Address\": \"2560 Junction Avenue\",\n    \"City, State, Postal Code, Country\": \"USA\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Shivam Patel\",\n        \"Role\": \"Contact Person (primary)\",\n        \"Phone Number\": null,\n        \"Email\": \"spatel@gener8.net\"\n      },\n      {\n        \"Name\": \"Desiree Minkler\",\n        \"Role\": \"Contact Person (Alternate)\",",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Cell_Gener8_Agent_Agreement_2018_1_.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf",
+              "page": 0,
+              "similarity_score": 0.7575716376304626,
+              "preview_text": "4. Include Plating Certificate if applicable.\n5. Include FAIR (1st Article Insp Report) if applicable.\n6. Include Packing slip\nPLEASE EMAIL ALL INVOICES TO : apgroup@gener8.net\nMail to :\nACCOUNTS PAYABLE\n5975 CASTLE CREEK PKWY N DR, STE 250\nINDIANAPOLIS, IN 46250\n(800) 338-4105 x55012\nLineLineLineLine Item NumberItem NumberItem NumberItem Number RevRevRevRev Need DateNeed DateNeed DateNeed Date qty_ordqty_ordqty_ordqty_ord UMUMUMUM TTTT Unit CostUnit CostUnit CostUnit Cost Extended CostExtended CostExtended CostExtended Cost\n1 EMC Testing 8/31/2023 1.0 EA N 24,050.00 24,050.00\n-\n*Per quote# Qu-01384314-3\n2 EMC testing 8/31/2023 1.0 EA N 11,400.00 11,400.00\n-\n*Per Quote# Qu-01384746-0\n3 Safety Testing 8/31/2023 1.0 EA N 21,350.00 21,350.00\n-\n*Per Quote# Qu-01382686-0\nUSD Line Total 56,800.00\nTotal Tax 0.00\nTotal Amount 56,800.00\n3:51:35 PM8/23/2023 1/1",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ]
+        },
+        {
+          "question_cell": "D7",
+          "prefix": "Manufacturer 1",
+          "field": "Address",
+          "answer_cell": "E7",
+          "value": "2560 Junction Avenue",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "F7",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 100,
+          "text_support": [
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 0,
+              "similarity_score": 0.7941181659698486,
+              "preview_text": "INTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nPROJECT PROPOSAL\nGENER8 LLC\nShivam Patel\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nQUOTE NO\nQu-01390131-0\nPROJECT NAME\ncETLus/CB certification and report for CellFE Infinity MTx - Safety\nCOMPILED BY\nCharlotte Johnson\nDATE\nSeptember 8, 2023",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+              "page": 0,
+              "similarity_score": 0.7649015784263611,
+              "preview_text": "Page 1 of 57\nCellFE Infinity MTx Operating Manual\nCellFE Biotech, Inc.\n1000 Atlantic Avenue, Suite 104\nAlameda, CA  94501-1098\n(512)-914-2840\nsupport@cellfebiotech.com\nhttps://www.cellfebiotech.com\n© 2023, CellFE Biotech, Inc.\nFor Research Use Only. Not for use in diagnostic procedures.\nPlaceholder: Image of Infinity MTx",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 2,
+              "similarity_score": 0.763469934463501,
+              "preview_text": "Quote No:  Qu-01390131-0\n3 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nPrepared For: Shivam Patel\nConsultant\nGener8 LLC\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nPrepared by: Charlotte Johnson\nSales Representative\nIntertek\n1365 Adams Court\nMenlo Park, California 94025\nUnited States\n(650) 940-9898 1 650 223-9986\nspatel@gener8.net charlotte.johnson@intertek.c\nom\nTesting and Evaluation Details:\nThis proposal is based upon the information Gener8 LLC provided to Intertek and covers the services as \nnoted below.   \nScope of Work:\ncETLus/CB certification and report for CellFE Infinity MTx - Safety\nProject Summary:\nAssumptions:\n•This quotation is based on submitted information. Intertek reserves the right to adjust the \ncharge and timescales if further testing is found to be necessary on receipt of full samples and \ndocuments\n•Assumes single model to be tested based on determination of worst case sample. Additional \ntesting across multiple model versions may result in a change order.\n•Assumes Equipment/Product is not relied upon or critical for safety (i.e., is not relied upon to \nperform actions such as shutdown upstream or downstream processes, etc.)",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+              "page": 1,
+              "similarity_score": 0.7504129409790039,
+              "preview_text": "GFT-SC-01b Page 2 of 4 Version: 30 November 2022\nCOMPANY CONFIDENTIAL",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 6,
+              "similarity_score": 0.7423847913742065,
+              "preview_text": "includes more than one factory location and a \ndeclaration from the manufacturer stating that the \nsample(s) submitted for evaluation is (are) \nrepresentative of the products from each factory has \nbeen provided..............................................................:\n Yes\n Not applicable\nWhen differences exist; they shall be identified in the general product information section.\nName and address of factory (ies)...........................: CellFE Inc., 1000 Atlantic Ave, Suite 104, Alameda, \nCA, USA\nGener8 LLC, 2560 Junction Ave, San Jose, CA, \nUSA",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ]
+        },
+        {
+          "question_cell": "D8",
+          "prefix": "Manufacturer 1",
+          "field": "Country",
+          "answer_cell": "E8",
+          "value": "USA",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "F8",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 100,
+          "text_support": [
+            {
+              "filename": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+              "page": 0,
+              "similarity_score": 0.7515296936035156,
+              "preview_text": "category\n1.2 Do the services include work for an attorney or use in litigation, an insurance claim or \nother commercial dispute? \n☐YES    ☒NO\n1.3 Is the client located in a Sanctioned Country or is a Specially Designated National on \nthis list, or are the product(s) on which services will be performed originating from or \ndestined for a Sanctioned Country?  LINK2  \nRequired to comply with national and international regulations.  \n☐YES    ☒NO\n1.4 Is the product subject to Import/Export Controls and Regulations (e.g., International \nTraffic and Arms Regulations (ITAR), Export Administration Regulations (EAR))? \nThis may involve military, defence or dual-use products and is required to comply with special project \nmanagement, record storage, and export handling requirements.  If testing is to MIL461, MIL704, \nMIL810, ATPD2352, ANSIZ26.1, or RTCA-DO-160, select “Yes” The Export Control Classification \nNumber (ECCN) must be submitted with the RAF to RCO for review.\n☐YES    ☒NO\nIf you answered “YES” to any question in Section 1, no quote may be issued. \nTo request an exception, the opportunity must be reviewed and approved by Regional Compliance Officer (RCO).",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 6,
+              "similarity_score": 0.7489163279533386,
+              "preview_text": "includes more than one factory location and a \ndeclaration from the manufacturer stating that the \nsample(s) submitted for evaluation is (are) \nrepresentative of the products from each factory has \nbeen provided..............................................................:\n Yes\n Not applicable\nWhen differences exist; they shall be identified in the general product information section.\nName and address of factory (ies)...........................: CellFE Inc., 1000 Atlantic Ave, Suite 104, Alameda, \nCA, USA\nGener8 LLC, 2560 Junction Ave, San Jose, CA, \nUSA",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 0,
+              "similarity_score": 0.7485034465789795,
+              "preview_text": "INTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nPROJECT PROPOSAL\nGENER8 LLC\nShivam Patel\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nQUOTE NO\nQu-01390131-0\nPROJECT NAME\ncETLus/CB certification and report for CellFE Infinity MTx - Safety\nCOMPILED BY\nCharlotte Johnson\nDATE\nSeptember 8, 2023",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+              "page": 1,
+              "similarity_score": 0.7473912239074707,
+              "preview_text": "GFT-SC-01b Page 2 of 4 Version: 30 November 2022\nCOMPANY CONFIDENTIAL",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 7,
+              "similarity_score": 0.7386413812637329,
+              "preview_text": "Quote No:  Qu-01390131-0\n8 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nBefore the ETL Listing Mark can be applied to your products, we must execute a Certificate Agreement \nand establish Follow-up Services in you manufacturing locations. There are additional fees associated \nwith maintaining the ETL Listing Mark. To learn more about this important step, please contact your \nAccount Manager or visit http://intertek.com/guide-to-etl.\nPricing assumes all critical components are properly approved. If you have any questions regarding this \nassumption, please contact your account manager.\nAdditional Certification Services and Fees:\nFor services that result in the authorization of a certification mark; additional follow-up or surveillance \nservices may be required at an additional fee which will be charged separately.  Please ask your sales \nrepresentative for additional information or refer to our website:  \nhttp://www.intertek.com/certification\nExpenses:\nUnless specifically detailed within this proposal, travel expenses, all shipping costs including express",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ]
+        },
+        {
+          "question_cell": "D9",
+          "prefix": "Manufacturer 1",
+          "field": "Contact",
+          "answer_cell": "E9",
+          "value": "Shivam Patel\nDesiree Minkler",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "F9",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 100,
+          "text_support": [
+            {
+              "filename": "Cell_Gener8_Agent_Agreement_2018_1_.pdf",
+              "page": 1,
+              "similarity_score": 0.7725884318351746,
+              "preview_text": "\"Email\": \"spatel@gener8.net\"\n      },\n      {\n        \"Name\": \"Desiree Minkler\",\n        \"Role\": \"Contact Person (Alternate)\",\n        \"Phone Number\": null,\n        \"Email\": null\n      }\n    ],\n    \"Estimated Production Date\": null,\n    \"Labeling Method\": null\n  },\n  \"Completed By\": \"Leonid Fomin\",\n  \"Dates\": {\n    \"Form Completion\": \"9/26/2023\"\n  },\n  \"Signatures\": null\n}",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Cell_Gener8_Agent_Agreement_2018_1_.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 0,
+              "similarity_score": 0.7675521373748779,
+              "preview_text": "INTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nPROJECT PROPOSAL\nGENER8 LLC\nShivam Patel\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nQUOTE NO\nQu-01390131-0\nPROJECT NAME\ncETLus/CB certification and report for CellFE Infinity MTx - Safety\nCOMPILED BY\nCharlotte Johnson\nDATE\nSeptember 8, 2023",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 2,
+              "similarity_score": 0.7434258460998535,
+              "preview_text": "Quote No:  Qu-01390131-0\n3 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nPrepared For: Shivam Patel\nConsultant\nGener8 LLC\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nPrepared by: Charlotte Johnson\nSales Representative\nIntertek\n1365 Adams Court\nMenlo Park, California 94025\nUnited States\n(650) 940-9898 1 650 223-9986\nspatel@gener8.net charlotte.johnson@intertek.c\nom\nTesting and Evaluation Details:\nThis proposal is based upon the information Gener8 LLC provided to Intertek and covers the services as \nnoted below.   \nScope of Work:\ncETLus/CB certification and report for CellFE Infinity MTx - Safety\nProject Summary:\nAssumptions:\n•This quotation is based on submitted information. Intertek reserves the right to adjust the \ncharge and timescales if further testing is found to be necessary on receipt of full samples and \ndocuments\n•Assumes single model to be tested based on determination of worst case sample. Additional \ntesting across multiple model versions may result in a change order.\n•Assumes Equipment/Product is not relied upon or critical for safety (i.e., is not relied upon to \nperform actions such as shutdown upstream or downstream processes, etc.)",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+              "page": 1,
+              "similarity_score": 0.7418653964996338,
+              "preview_text": "GFT-SC-01b Page 2 of 4 Version: 30 November 2022\nCOMPANY CONFIDENTIAL",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Cell_Gener8_Agent_Agreement_2018_1_.pdf",
+              "page": 1,
+              "similarity_score": 0.7395841479301453,
+              "preview_text": "{\n  \"Applicant\": {\n    \"Legal Entity Name\": \"CellFE, Inc.\",\n    \"DBA\": null,\n    \"Street Address\": \"1000 Atlantic Avenue, Suite 104\",\n    \"City, State, Postal Code, Country\": \"USA\",\n    \"Phone Number\": \"(818) 689-2280\",\n    \"Email\": \"leo@cellfetech.com\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Leonid Fomin\",\n        \"Role\": \"Contact Person (Primary)\",\n        \"Phone Number\": null,\n        \"Email\": null\n      },\n      {\n        \"Name\": \"Sewon Han\",\n        \"Role\": \"Contact Person (Secondary)\",\n        \"Phone Number\": null,\n        \"Email\": null\n      }\n    ]\n  },\n  \"Bill-To\": {\n    \"Legal Entity Name\": null,\n    \"Street Address\": null,\n    \"City, State, Postal Code, Country\": null,\n    \"Accounts Payable Contact\": null,\n    \"Phone Number\": null,\n    \"Email\": null\n  },\n  \"Manufacturer\": {\n    \"Legal Entity Name\": \"Gener8 LLC\",\n    \"Street Address\": \"2560 Junction Avenue\",\n    \"City, State, Postal Code, Country\": \"USA\",\n    \"Contacts\": [\n      {\n        \"Name\": \"Shivam Patel\",\n        \"Role\": \"Contact Person (primary)\",\n        \"Phone Number\": null,\n        \"Email\": \"spatel@gener8.net\"\n      },\n      {\n        \"Name\": \"Desiree Minkler\",\n        \"Role\": \"Contact Person (Alternate)\",",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Cell_Gener8_Agent_Agreement_2018_1_.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ]
+        },
+        {
+          "question_cell": "D10",
+          "prefix": "Manufacturer 1",
+          "field": "Phone",
+          "answer_cell": "E10",
+          "value": "N/A",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "F10",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 0,
+          "text_support": [
+            {
+              "filename": null,
+              "page": 0,
+              "similarity_score": 0.0,
+              "preview_text": "No evidence found"
+            }
+          ]
+        },
+        {
+          "question_cell": "D11",
+          "prefix": "Manufacturer 1",
+          "field": "FAX",
+          "answer_cell": "E11",
+          "value": "N/A",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "F11",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 0,
+          "text_support": [
+            {
+              "filename": null,
+              "page": 0,
+              "similarity_score": 0.0,
+              "preview_text": "No evidence found"
+            }
+          ]
+        },
+        {
+          "question_cell": "D12",
+          "prefix": "Manufacturer 1",
+          "field": "Email",
+          "answer_cell": "E12",
+          "value": "spatel@gener8.net",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "F12",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "confidence": 100,
+          "text_support": [
+            {
+              "filename": "Cell_Gener8_Agent_Agreement_2018_1_.pdf",
+              "page": 1,
+              "similarity_score": 0.8025139570236206,
+              "preview_text": "\"Email\": \"spatel@gener8.net\"\n      },\n      {\n        \"Name\": \"Desiree Minkler\",\n        \"Role\": \"Contact Person (Alternate)\",\n        \"Phone Number\": null,\n        \"Email\": null\n      }\n    ],\n    \"Estimated Production Date\": null,\n    \"Labeling Method\": null\n  },\n  \"Completed By\": \"Leonid Fomin\",\n  \"Dates\": {\n    \"Form Completion\": \"9/26/2023\"\n  },\n  \"Signatures\": null\n}",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Cell_Gener8_Agent_Agreement_2018_1_.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf",
+              "page": 1,
+              "similarity_score": 0.7781342267990112,
+              "preview_text": "GFT-SC-01b Page 2 of 4 Version: 30 November 2022\nCOMPANY CONFIDENTIAL",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Gener8_SAF_Electrical_Risk_Assessment_Form_2022-11-30.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 0,
+              "similarity_score": 0.7764883637428284,
+              "preview_text": "INTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nPROJECT PROPOSAL\nGENER8 LLC\nShivam Patel\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nQUOTE NO\nQu-01390131-0\nPROJECT NAME\ncETLus/CB certification and report for CellFE Infinity MTx - Safety\nCOMPILED BY\nCharlotte Johnson\nDATE\nSeptember 8, 2023",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Qu-01390131-0.pdf",
+              "page": 2,
+              "similarity_score": 0.776212215423584,
+              "preview_text": "Quote No:  Qu-01390131-0\n3 of 14\nINTERTEK - 1365 Adams Court, ,Menlo Park, California, 94025,United States\nPrepared For: Shivam Patel\nConsultant\nGener8 LLC\n2560 Junction Ave\nSan Jose, CA 95134\nUSA\nPrepared by: Charlotte Johnson\nSales Representative\nIntertek\n1365 Adams Court\nMenlo Park, California 94025\nUnited States\n(650) 940-9898 1 650 223-9986\nspatel@gener8.net charlotte.johnson@intertek.c\nom\nTesting and Evaluation Details:\nThis proposal is based upon the information Gener8 LLC provided to Intertek and covers the services as \nnoted below.   \nScope of Work:\ncETLus/CB certification and report for CellFE Infinity MTx - Safety\nProject Summary:\nAssumptions:\n•This quotation is based on submitted information. Intertek reserves the right to adjust the \ncharge and timescales if further testing is found to be necessary on receipt of full samples and \ndocuments\n•Assumes single model to be tested based on determination of worst case sample. Additional \ntesting across multiple model versions may result in a change order.\n•Assumes Equipment/Product is not relied upon or critical for safety (i.e., is not relied upon to \nperform actions such as shutdown upstream or downstream processes, etc.)",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Qu-01390131-0.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf",
+              "page": 0,
+              "similarity_score": 0.766250729560852,
+              "preview_text": "4. Include Plating Certificate if applicable.\n5. Include FAIR (1st Article Insp Report) if applicable.\n6. Include Packing slip\nPLEASE EMAIL ALL INVOICES TO : apgroup@gener8.net\nMail to :\nACCOUNTS PAYABLE\n5975 CASTLE CREEK PKWY N DR, STE 250\nINDIANAPOLIS, IN 46250\n(800) 338-4105 x55012\nLineLineLineLine Item NumberItem NumberItem NumberItem Number RevRevRevRev Need DateNeed DateNeed DateNeed Date qty_ordqty_ordqty_ordqty_ord UMUMUMUM TTTT Unit CostUnit CostUnit CostUnit Cost Extended CostExtended CostExtended CostExtended Cost\n1 EMC Testing 8/31/2023 1.0 EA N 24,050.00 24,050.00\n-\n*Per quote# Qu-01384314-3\n2 EMC testing 8/31/2023 1.0 EA N 11,400.00 11,400.00\n-\n*Per Quote# Qu-01384746-0\n3 Safety Testing 8/31/2023 1.0 EA N 21,350.00 21,350.00\n-\n*Per Quote# Qu-01382686-0\nUSD Line Total 56,800.00\nTotal Tax 0.00\nTotal Amount 56,800.00\n3:51:35 PM8/23/2023 1/1",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Gener_8_PO_P70909_INTERTEK_TESTING_SERVICES__EMC_Safety_Testings_Proj_13403_-.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ]
+        },
+        {
+          "question_cell": "A13",
+          "prefix": null,
+          "field": null,
+          "answer_cell": null,
+          "value": null,
+          "field_merged": true,
+          "fm_range": "F13",
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "blank",
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        }
+      ]
+    },
+    {
+      "sheet_no": 2,
+      "sheet_name": "2.0 Description",
+      "Items": [
+        {
+          "question_cell": "A1",
+          "prefix": null,
+          "field": "2.0 Product Description",
+          "answer_cell": null,
+          "value": null,
+          "field_merged": true,
+          "fm_range": "J1",
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "title",
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A2",
+          "prefix": null,
+          "field": null,
+          "answer_cell": null,
+          "value": null,
+          "field_merged": true,
+          "fm_range": "J2",
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "blank",
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A3",
+          "prefix": "Product",
+          "field": "Product ",
+          "answer_cell": "B3",
+          "value": "CellFE Infinity MTx Instrument",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "J3",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "text_support": [
+            {
+              "filename": "final_output_B105581614.docx",
+              "page": "2",
+              "similarity_score": null,
+              "preview_text": null,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/Generated_trf_Report/final_output_B105581614.docx?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21:10:06Z&st=2026-01-19T12:55:06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
+            }
+          ],
+          "confidence": 100
+        },
+        {
+          "question_cell": "A4",
+          "prefix": "Product",
+          "field": "Brand name",
+          "answer_cell": "B4",
+          "value": "Gener8 LLC",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "J4",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "text_support": [
+            {
+              "filename": "final_output_B105581614.docx",
+              "page": "2",
+              "similarity_score": null,
+              "preview_text": null,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/Generated_trf_Report/final_output_B105581614.docx?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21:10:06Z&st=2026-01-19T12:55:06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
+            }
+          ],
+          "confidence": 100
+        },
+        {
+          "question_cell": "A5",
+          "prefix": "Product",
+          "field": "Description",
+          "answer_cell": "B5",
+          "value": "The product under evaluation is the CellFE Infinity MTx Imaging Station, designed for laboratory use. It is an 8-channel MPA compatible model that operates with a 125V 13A power cord (NEMA 5-15P, USA). The system includes pressure line tubing and fittings, and is supplied with an optimizer kit containing multiple optimizer kits with various channel gap sizes. The Imaging Station is intended for applications involving cell transfection and analysis, as indicated by the supporting graphs and charts related to cell proliferation and gene editing performance. The equipment is not classified as a toy, fire suppression system, or COVID-19 test kit, and does not incorporate UV light sources, ozone generation, or wireless communication. The product is intended for professional laboratory environments and is not subject to restricted product categories.",
+          "field_merged": true,
+          "fm_range": "A6",
+          "value_merged": true,
+          "vm_range": "J6",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "text_support": [
+            {
+              "filename": "final_output_B105581614.docx",
+              "page": "7",
+              "similarity_score": null,
+              "preview_text": null,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/Generated_trf_Report/final_output_B105581614.docx?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21:10:06Z&st=2026-01-19T12:55:06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
+            }
+          ],
+          "confidence": 100
+        },
+        {
+          "question_cell": "A7",
+          "prefix": "Product",
+          "field": "Models",
+          "answer_cell": "B7",
+          "value": "Infinity MTx, Optimizer kits A, B, C",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "J7",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "text_support": [
+            {
+              "filename": "final_output_B105581614.docx",
+              "page": "2",
+              "similarity_score": null,
+              "preview_text": null,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/Generated_trf_Report/final_output_B105581614.docx?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21:10:06Z&st=2026-01-19T12:55:06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
+            }
+          ],
+          "confidence": 100
+        },
+        {
+          "question_cell": "A8",
+          "prefix": "Product",
+          "field": "Model Similarity",
+          "answer_cell": "B8",
+          "value": "NA",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "J8",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "text_support": [
+            {
+              "filename": "final_output_B105581614.docx",
+              "page": "2",
+              "similarity_score": null,
+              "preview_text": null,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/Generated_trf_Report/final_output_B105581614.docx?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21:10:06Z&st=2026-01-19T12:55:06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
+            }
+          ],
+          "confidence": 100
+        },
+        {
+          "question_cell": "A9",
+          "prefix": "Product",
+          "field": "Ratings",
+          "answer_cell": "B9",
+          "value": "100-240VAC, 50/60Hz, 24VDC",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "J9",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "text_support": [
+            {
+              "filename": "final_output_B105581614.docx",
+              "page": "2",
+              "similarity_score": null,
+              "preview_text": null,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/Generated_trf_Report/final_output_B105581614.docx?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21:10:06Z&st=2026-01-19T12:55:06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
+            }
+          ],
+          "confidence": 100
+        },
+        {
+          "question_cell": "A10",
+          "prefix": "Product",
+          "field": "Other Ratings",
+          "answer_cell": "B10",
+          "value": "NA",
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": true,
+          "vm_range": "J10",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "text_support": [
+            {
+              "filename": "final_output_B105581614.docx",
+              "page": "2",
+              "similarity_score": null,
+              "preview_text": null,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/Generated_trf_Report/final_output_B105581614.docx?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21:10:06Z&st=2026-01-19T12:55:06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
+            }
+          ],
+          "confidence": 100
+        }
+      ]
+    },
+    {
+      "sheet_no": 3,
+      "sheet_name": "3.0 Photos",
+      "Items": [
+        {
+          "question_cell": "A1",
+          "prefix": null,
+          "field": "3.0 Product Photographs",
+          "answer_cell": null,
+          "value": null,
+          "field_merged": true,
+          "fm_range": "J1",
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "title",
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A3",
+          "prefix": "Product",
+          "field": null,
+          "answer_cell": "A4",
+          "photo_path": null,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "photo",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": false
+        }
+      ]
+    },
+    {
+      "sheet_no": 4,
+      "sheet_name": "4.0 Components",
+      "Items": [
+        {
+          "question_cell": "A1",
+          "prefix": null,
+          "field": "4.0 Critical Components",
+          "answer_cell": null,
+          "value": null,
+          "checkbox": true,
+          "field_merged": true,
+          "fm_range": "J1",
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "title",
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        }
+      ],
+      "Rows": [
+        {
+          "start_cell": "A2",
+          "row_type": "column_headings",
+          "photo_no": "Photo #",
+          "item_no": "Item no.1",
+          "name": "Name",
+          "manufacturer": "Manufacturer/trademark2",
+          "type_model": "Type/model2",
+          "technical_data": "Technical data and securement means",
+          "marks_of_conf": "Mark(s) of conformity3",
+          "answer_cell": null,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "null",
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "start_cell": "A3",
+          "row_type": "table_data",
+          "photo_no": "guide",
+          "item_no": "1",
+          "name": "3-prong plug (5-15)",
+          "manufacturer": null,
+          "type_model": null,
+          "technical_data": null,
+          "marks_of_conf": null,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": false,
+          "image_support": null,
+          "text_support": [
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+              "page": 1,
+              "similarity_score": null,
+              "preview_text": "ce behind instrument\nCompressed Air Inlet – The primary attachment point of the instrument –compatible with ¼” NPT Pressure line tubing fitted with a push to connect fitting. The instrument can be attached to a pressurized air source of 100 PSI for optimal functioning. The pressurized air may not exceed 120 PSI; the instrument can supply up to 80 PSI to liquid samples, but only if hooked up to a pressure source of 100 – 105 PSI. \nConnecting the tubing: Ensure the air source is turned off and decompressed. Gently push the push-to-connect fitting into the compressed air inlet of the instrument. \nDisconnecting the tubing: turn off the instrument and shut off the air source. Ensure both systems are decompressed before removing the tubing by pushing the small tab located on the instrument’s compressed air inlet.\nAir Intake Fan – Provides cooling for internal electrical components and power supply. CAUTION Do not block – Ensure at least 6” of clearance behind instrument\nPower Connection Port – Auxiliary port that powers the instrument. The C13 to 5-15 power cord can be plugged directly into the Infinity MTx, with the opposing 3-prong end able to connect to a properly grounded 3-prong, 110-120V/50-60Hz power source. \nPower Switch – Switch that turns the instrument on and off. Electrical supply is limited by the power switch, and after operation it is best to shut the instrument off. \nUSB-A Connection Port – An auxiliary port that a USB type A can be attached to. Used to export data. This data export process is detailed in the software section.\nLAN Connection Port – An auxiliary port that a LAN cable can be connected to. For current customer use, the instrument does not have internet connection capabilities.\n\nInfinity MPA \n\nMPA Lid – Attached via a hinge to the collection chamber lid. Once samples are loaded into the sample chambers, the lid can be closed by pushing down until the lid latch is locked in place. Once closed, the 0.2 um membrane filters located on the air inle",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual.docx"
+            }
+          ],
+          "confidence": 95
+        },
+        {
+          "start_cell": "A4",
+          "row_type": "table_data",
+          "photo_no": "guide",
+          "item_no": "2",
+          "name": "Air Intake Fan",
+          "manufacturer": null,
+          "type_model": null,
+          "technical_data": null,
+          "marks_of_conf": null,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": false,
+          "image_support": null,
+          "text_support": [
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+              "page": 1,
+              "similarity_score": null,
+              "preview_text": "ce behind instrument\nCompressed Air Inlet – The primary attachment point of the instrument –compatible with ¼” NPT Pressure line tubing fitted with a push to connect fitting. The instrument can be attached to a pressurized air source of 100 PSI for optimal functioning. The pressurized air may not exceed 120 PSI; the instrument can supply up to 80 PSI to liquid samples, but only if hooked up to a pressure source of 100 – 105 PSI. \nConnecting the tubing: Ensure the air source is turned off and decompressed. Gently push the push-to-connect fitting into the compressed air inlet of the instrument. \nDisconnecting the tubing: turn off the instrument and shut off the air source. Ensure both systems are decompressed before removing the tubing by pushing the small tab located on the instrument’s compressed air inlet.\nAir Intake Fan – Provides cooling for internal electrical components and power supply. CAUTION Do not block – Ensure at least 6” of clearance behind instrument\nPower Connection Port – Auxiliary port that powers the instrument. The C13 to 5-15 power cord can be plugged directly into the Infinity MTx, with the opposing 3-prong end able to connect to a properly grounded 3-prong, 110-120V/50-60Hz power source. \nPower Switch – Switch that turns the instrument on and off. Electrical supply is limited by the power switch, and after operation it is best to shut the instrument off. \nUSB-A Connection Port – An auxiliary port that a USB type A can be attached to. Used to export data. This data export process is detailed in the software section.\nLAN Connection Port – An auxiliary port that a LAN cable can be connected to. For current customer use, the instrument does not have internet connection capabilities.\n\nInfinity MPA \n\nMPA Lid – Attached via a hinge to the collection chamber lid. Once samples are loaded into the sample chambers, the lid can be closed by pushing down until the lid latch is locked in place. Once closed, the 0.2 um membrane filters located on the air inle",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual.docx"
+            }
+          ],
+          "confidence": 80
+        },
+        {
+          "start_cell": "A5",
+          "row_type": "table_data",
+          "photo_no": "guide",
+          "item_no": "3",
+          "name": "C13 to 5-15 power cord",
+          "manufacturer": null,
+          "type_model": null,
+          "technical_data": null,
+          "marks_of_conf": null,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": false,
+          "image_support": null,
+          "text_support": [
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+              "page": 1,
+              "similarity_score": null,
+              "preview_text": "ce behind instrument\nCompressed Air Inlet – The primary attachment point of the instrument –compatible with ¼” NPT Pressure line tubing fitted with a push to connect fitting. The instrument can be attached to a pressurized air source of 100 PSI for optimal functioning. The pressurized air may not exceed 120 PSI; the instrument can supply up to 80 PSI to liquid samples, but only if hooked up to a pressure source of 100 – 105 PSI. \nConnecting the tubing: Ensure the air source is turned off and decompressed. Gently push the push-to-connect fitting into the compressed air inlet of the instrument. \nDisconnecting the tubing: turn off the instrument and shut off the air source. Ensure both systems are decompressed before removing the tubing by pushing the small tab located on the instrument’s compressed air inlet.\nAir Intake Fan – Provides cooling for internal electrical components and power supply. CAUTION Do not block – Ensure at least 6” of clearance behind instrument\nPower Connection Port – Auxiliary port that powers the instrument. The C13 to 5-15 power cord can be plugged directly into the Infinity MTx, with the opposing 3-prong end able to connect to a properly grounded 3-prong, 110-120V/50-60Hz power source. \nPower Switch – Switch that turns the instrument on and off. Electrical supply is limited by the power switch, and after operation it is best to shut the instrument off. \nUSB-A Connection Port – An auxiliary port that a USB type A can be attached to. Used to export data. This data export process is detailed in the software section.\nLAN Connection Port – An auxiliary port that a LAN cable can be connected to. For current customer use, the instrument does not have internet connection capabilities.\n\nInfinity MPA \n\nMPA Lid – Attached via a hinge to the collection chamber lid. Once samples are loaded into the sample chambers, the lid can be closed by pushing down until the lid latch is locked in place. Once closed, the 0.2 um membrane filters located on the air inle",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual.docx"
+            }
+          ],
+          "confidence": 95
+        },
+        {
+          "start_cell": "A6",
+          "row_type": "table_data",
+          "photo_no": "guide",
+          "item_no": "4",
+          "name": "Compressed Air Inlet",
+          "manufacturer": null,
+          "type_model": null,
+          "technical_data": null,
+          "marks_of_conf": null,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": false,
+          "image_support": null,
+          "text_support": [
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+              "page": 1,
+              "similarity_score": null,
+              "preview_text": "ce behind instrument\nCompressed Air Inlet – The primary attachment point of the instrument –compatible with ¼” NPT Pressure line tubing fitted with a push to connect fitting. The instrument can be attached to a pressurized air source of 100 PSI for optimal functioning. The pressurized air may not exceed 120 PSI; the instrument can supply up to 80 PSI to liquid samples, but only if hooked up to a pressure source of 100 – 105 PSI. \nConnecting the tubing: Ensure the air source is turned off and decompressed. Gently push the push-to-connect fitting into the compressed air inlet of the instrument. \nDisconnecting the tubing: turn off the instrument and shut off the air source. Ensure both systems are decompressed before removing the tubing by pushing the small tab located on the instrument’s compressed air inlet.\nAir Intake Fan – Provides cooling for internal electrical components and power supply. CAUTION Do not block – Ensure at least 6” of clearance behind instrument\nPower Connection Port – Auxiliary port that powers the instrument. The C13 to 5-15 power cord can be plugged directly into the Infinity MTx, with the opposing 3-prong end able to connect to a properly grounded 3-prong, 110-120V/50-60Hz power source. \nPower Switch – Switch that turns the instrument on and off. Electrical supply is limited by the power switch, and after operation it is best to shut the instrument off. \nUSB-A Connection Port – An auxiliary port that a USB type A can be attached to. Used to export data. This data export process is detailed in the software section.\nLAN Connection Port – An auxiliary port that a LAN cable can be connected to. For current customer use, the instrument does not have internet connection capabilities.\n\nInfinity MPA \n\nMPA Lid – Attached via a hinge to the collection chamber lid. Once samples are loaded into the sample chambers, the lid can be closed by pushing down until the lid latch is locked in place. Once closed, the 0.2 um membrane filters located on the air inle",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual.docx"
+            }
+          ],
+          "confidence": 80
+        },
+        {
+          "start_cell": "A7",
+          "row_type": "table_data",
+          "photo_no": "guide",
+          "item_no": "5",
+          "name": "Power Connection Port",
+          "manufacturer": null,
+          "type_model": null,
+          "technical_data": null,
+          "marks_of_conf": null,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": false,
+          "image_support": null,
+          "text_support": [
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+              "page": 1,
+              "similarity_score": null,
+              "preview_text": "ce behind instrument\nCompressed Air Inlet – The primary attachment point of the instrument –compatible with ¼” NPT Pressure line tubing fitted with a push to connect fitting. The instrument can be attached to a pressurized air source of 100 PSI for optimal functioning. The pressurized air may not exceed 120 PSI; the instrument can supply up to 80 PSI to liquid samples, but only if hooked up to a pressure source of 100 – 105 PSI. \nConnecting the tubing: Ensure the air source is turned off and decompressed. Gently push the push-to-connect fitting into the compressed air inlet of the instrument. \nDisconnecting the tubing: turn off the instrument and shut off the air source. Ensure both systems are decompressed before removing the tubing by pushing the small tab located on the instrument’s compressed air inlet.\nAir Intake Fan – Provides cooling for internal electrical components and power supply. CAUTION Do not block – Ensure at least 6” of clearance behind instrument\nPower Connection Port – Auxiliary port that powers the instrument. The C13 to 5-15 power cord can be plugged directly into the Infinity MTx, with the opposing 3-prong end able to connect to a properly grounded 3-prong, 110-120V/50-60Hz power source. \nPower Switch – Switch that turns the instrument on and off. Electrical supply is limited by the power switch, and after operation it is best to shut the instrument off. \nUSB-A Connection Port – An auxiliary port that a USB type A can be attached to. Used to export data. This data export process is detailed in the software section.\nLAN Connection Port – An auxiliary port that a LAN cable can be connected to. For current customer use, the instrument does not have internet connection capabilities.\n\nInfinity MPA \n\nMPA Lid – Attached via a hinge to the collection chamber lid. Once samples are loaded into the sample chambers, the lid can be closed by pushing down until the lid latch is locked in place. Once closed, the 0.2 um membrane filters located on the air inle",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual.docx"
+            }
+          ],
+          "confidence": 85
+        },
+        {
+          "start_cell": "A8",
+          "row_type": "table_data",
+          "photo_no": "guide",
+          "item_no": "6",
+          "name": "Power Supply (implied)",
+          "manufacturer": null,
+          "type_model": null,
+          "technical_data": null,
+          "marks_of_conf": null,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": false,
+          "image_support": null,
+          "text_support": [
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+              "page": 1,
+              "similarity_score": null,
+              "preview_text": "Exceptional performance – high cell viability and delivery efficiencies with decreased recovery and expansion times\nSimple, streamlined workflow —  easy to optimize and no need for cell concentration and buffer exchanges\nOperational and cell-friendly processing — no specific media, buffers, or chemical additives required\n\n\nProduct Contents\nWith the purchase of the Infinity MTx, CellFE provides the following products and accessories:\nSystem contents\n\nOptimizer kit contents\nUpon purchase of the Infinity MTx, users are asked to select an Optimizer Kit with sizes relevant to the cell types that will be used (see sizes below). Optimizer kits come with four MPAs. Once the desired MPA size is determined, users can purchase single-use MPAs of the correct size in packs of four. \nOptimizer Kits\n\n\n\n\n\nSystem Components\nInfinity MTx device\nFront Panel\n\nUser Interface Touchscreen – From here, the operator can detail and conduct the transfection processes, view and export information about previous transfection runs, change default system settings, and access additional information about operating the Infinity MTx. (See the software section of the manual for more information).\n\nSample Loading Tray – Compatible with the Infinity MPA and Optimizer kit. Use the eject button on the touchscreen to open the tray. The MPA or Optimizer kit can be placed in the open tray by matching up the protrusion on the device with the recess on the tray.  WARNING:  Ensure nothing is touching the seam between the tray and the main body of the instrument, as this can damage the instrumentation and may cause harm to the user.\nBarcode Scanner – Located on the underside of the instrument above the tray. The barcode scanner reads the barcodes on the Infinity MPA package and saves device specific information to the notes section. Press the “Scan /Read ID” button to scan the barcode. \n\nBack Panel\nExhaust Air Vents – Used to vent air out of the instrument. CAUTION Do not block – Ensure at least 6” of clearan",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual.docx"
+            }
+          ],
+          "confidence": 95
+        },
+        {
+          "start_cell": "A9",
+          "row_type": "table_data",
+          "photo_no": "guide",
+          "item_no": "7",
+          "name": "Power Switch",
+          "manufacturer": null,
+          "type_model": null,
+          "technical_data": null,
+          "marks_of_conf": null,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": false,
+          "image_support": null,
+          "text_support": [
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+              "page": 1,
+              "similarity_score": null,
+              "preview_text": "ce behind instrument\nCompressed Air Inlet – The primary attachment point of the instrument –compatible with ¼” NPT Pressure line tubing fitted with a push to connect fitting. The instrument can be attached to a pressurized air source of 100 PSI for optimal functioning. The pressurized air may not exceed 120 PSI; the instrument can supply up to 80 PSI to liquid samples, but only if hooked up to a pressure source of 100 – 105 PSI. \nConnecting the tubing: Ensure the air source is turned off and decompressed. Gently push the push-to-connect fitting into the compressed air inlet of the instrument. \nDisconnecting the tubing: turn off the instrument and shut off the air source. Ensure both systems are decompressed before removing the tubing by pushing the small tab located on the instrument’s compressed air inlet.\nAir Intake Fan – Provides cooling for internal electrical components and power supply. CAUTION Do not block – Ensure at least 6” of clearance behind instrument\nPower Connection Port – Auxiliary port that powers the instrument. The C13 to 5-15 power cord can be plugged directly into the Infinity MTx, with the opposing 3-prong end able to connect to a properly grounded 3-prong, 110-120V/50-60Hz power source. \nPower Switch – Switch that turns the instrument on and off. Electrical supply is limited by the power switch, and after operation it is best to shut the instrument off. \nUSB-A Connection Port – An auxiliary port that a USB type A can be attached to. Used to export data. This data export process is detailed in the software section.\nLAN Connection Port – An auxiliary port that a LAN cable can be connected to. For current customer use, the instrument does not have internet connection capabilities.\n\nInfinity MPA \n\nMPA Lid – Attached via a hinge to the collection chamber lid. Once samples are loaded into the sample chambers, the lid can be closed by pushing down until the lid latch is locked in place. Once closed, the 0.2 um membrane filters located on the air inle",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual.docx"
+            }
+          ],
+          "confidence": 95
+        },
+        {
+          "start_cell": "A10",
+          "row_type": "table_data",
+          "photo_no": "guide",
+          "item_no": "8",
+          "name": "Push-to-connect fitting",
+          "manufacturer": null,
+          "type_model": null,
+          "technical_data": null,
+          "marks_of_conf": null,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": false,
+          "image_support": null,
+          "text_support": [
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+              "page": 1,
+              "similarity_score": null,
+              "preview_text": "ce behind instrument\nCompressed Air Inlet – The primary attachment point of the instrument –compatible with ¼” NPT Pressure line tubing fitted with a push to connect fitting. The instrument can be attached to a pressurized air source of 100 PSI for optimal functioning. The pressurized air may not exceed 120 PSI; the instrument can supply up to 80 PSI to liquid samples, but only if hooked up to a pressure source of 100 – 105 PSI. \nConnecting the tubing: Ensure the air source is turned off and decompressed. Gently push the push-to-connect fitting into the compressed air inlet of the instrument. \nDisconnecting the tubing: turn off the instrument and shut off the air source. Ensure both systems are decompressed before removing the tubing by pushing the small tab located on the instrument’s compressed air inlet.\nAir Intake Fan – Provides cooling for internal electrical components and power supply. CAUTION Do not block – Ensure at least 6” of clearance behind instrument\nPower Connection Port – Auxiliary port that powers the instrument. The C13 to 5-15 power cord can be plugged directly into the Infinity MTx, with the opposing 3-prong end able to connect to a properly grounded 3-prong, 110-120V/50-60Hz power source. \nPower Switch – Switch that turns the instrument on and off. Electrical supply is limited by the power switch, and after operation it is best to shut the instrument off. \nUSB-A Connection Port – An auxiliary port that a USB type A can be attached to. Used to export data. This data export process is detailed in the software section.\nLAN Connection Port – An auxiliary port that a LAN cable can be connected to. For current customer use, the instrument does not have internet connection capabilities.\n\nInfinity MPA \n\nMPA Lid – Attached via a hinge to the collection chamber lid. Once samples are loaded into the sample chambers, the lid can be closed by pushing down until the lid latch is locked in place. Once closed, the 0.2 um membrane filters located on the air inle",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual.docx"
+            }
+          ],
+          "confidence": 75
+        },
+        {
+          "start_cell": "A11",
+          "row_type": "table_data",
+          "photo_no": "guide",
+          "item_no": "9",
+          "name": "Sealing gasket",
+          "manufacturer": null,
+          "type_model": null,
+          "technical_data": null,
+          "marks_of_conf": null,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": false,
+          "image_support": null,
+          "text_support": [
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+              "page": 1,
+              "similarity_score": null,
+              "preview_text": "CellFE Infinity MTx Operating Manual\n\n\n\nCellFE Biotech, Inc.\n980 Atlantic Avenue, Suite 110\nAlameda, CA  94501-1098\n(512)-914-2840\nsupport@cellfebiotech.com\nhttps://www.cellfebiotech.com\n© 2023, CellFE Biotech, Inc.\n\n\n\n\nFor Research Use Only. Not for use in diagnostic procedures.\n\nChapter 1. Product Information\nProduct Description\nCellFE’s Infinity Platform is designed to deliver a wide range of payloads into any cell type, even with the most complex editing protocols needed to develop increasingly advanced cell therapies. This technology effectively delivers mRNA, CRISPR, Cas9 protein, and plasmid DNA and consists of the following two components:\nCellFE’s Infinity MTx™ platform is a microfluidic transfection methodology that offers a novel way to transfect cells rapidly and simply. The platform successfully delivers a wide range of payloads into any cell type, even with the most complex editing protocols needed to develop increasingly advanced cell therapies. This technology has demonstrated effective delivery of mRNA, CRISPR Cas9 protein, and plasmid DNA while maintaining pre-transfection proliferation rates, cellular phenotypes, and cell subset ratios.\nThe Infinity Microfluidic Processing Assembly (MPA) is a single use device wherein the transfection process occurs. The MPA contains sterilized membranes and an actuating lid that allows for aseptic use of the Infinity MTx platform outside of a biosafety cabinet. When the Infinity MTx platform directs the flow of cells though microfluidic channels, they pass under a single chevron ridge. This change in channel size leads to rapid cellular compression causing a fleeting loss of intracellular fluid and a subsequent decrease in cell size. Upon re-expansion, within milliseconds, the target payload is actively transported into the cell. This is known as VECT. The MPA is designed to process 8 separate channels of 25-100 uL and up to 2 million cells.\nKey Benefits\nGentle on cells — non-viral, non-electroporation technology",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual.docx"
+            }
+          ],
+          "confidence": 80
+        },
+        {
+          "start_cell": "A12",
+          "row_type": "table_data",
+          "photo_no": "guide",
+          "item_no": "10",
+          "name": "¼” NPT Pressure line tubing",
+          "manufacturer": null,
+          "type_model": null,
+          "technical_data": null,
+          "marks_of_conf": null,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": false,
+          "image_support": null,
+          "text_support": [
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual.docx",
+              "page": 1,
+              "similarity_score": null,
+              "preview_text": "ce behind instrument\nCompressed Air Inlet – The primary attachment point of the instrument –compatible with ¼” NPT Pressure line tubing fitted with a push to connect fitting. The instrument can be attached to a pressurized air source of 100 PSI for optimal functioning. The pressurized air may not exceed 120 PSI; the instrument can supply up to 80 PSI to liquid samples, but only if hooked up to a pressure source of 100 – 105 PSI. \nConnecting the tubing: Ensure the air source is turned off and decompressed. Gently push the push-to-connect fitting into the compressed air inlet of the instrument. \nDisconnecting the tubing: turn off the instrument and shut off the air source. Ensure both systems are decompressed before removing the tubing by pushing the small tab located on the instrument’s compressed air inlet.\nAir Intake Fan – Provides cooling for internal electrical components and power supply. CAUTION Do not block – Ensure at least 6” of clearance behind instrument\nPower Connection Port – Auxiliary port that powers the instrument. The C13 to 5-15 power cord can be plugged directly into the Infinity MTx, with the opposing 3-prong end able to connect to a properly grounded 3-prong, 110-120V/50-60Hz power source. \nPower Switch – Switch that turns the instrument on and off. Electrical supply is limited by the power switch, and after operation it is best to shut the instrument off. \nUSB-A Connection Port – An auxiliary port that a USB type A can be attached to. Used to export data. This data export process is detailed in the software section.\nLAN Connection Port – An auxiliary port that a LAN cable can be connected to. For current customer use, the instrument does not have internet connection capabilities.\n\nInfinity MPA \n\nMPA Lid – Attached via a hinge to the collection chamber lid. Once samples are loaded into the sample chambers, the lid can be closed by pushing down until the lid latch is locked in place. Once closed, the 0.2 um membrane filters located on the air inle",
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual.docx"
+            }
+          ],
+          "confidence": 75
+        }
+      ]
+    },
+    {
+      "sheet_no": 6,
+      "sheet_name": "6.0 Features",
+      "Items": [
+        {
+          "question_cell": "A1",
+          "prefix": null,
+          "field": "6.0 Features",
+          "answer_cell": null,
+          "value": null,
+          "st1": "grounding applicable",
+          "resp1": null,
+          "st2": "grounding not applicable",
+          "resp2": null,
+          "checkbox": true,
+          "field_merged": true,
+          "fm_range": "J1",
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "title",
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A2",
+          "prefix": null,
+          "field": "Recognized Component - A component part, which has been previously evaluated by an accredited certification body with restrictions and must be evaluated as part of the basic product considering the restrictions as specified by the Conditions of Acceptability.",
+          "answer_cell": null,
+          "value": null,
+          "field_merged": true,
+          "fm_range": "B4",
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": null,
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A5",
+          "prefix": null,
+          "field": null,
+          "answer_cell": null,
+          "value": null,
+          "field_merged": true,
+          "fm_range": "B5",
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "blank",
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A6",
+          "prefix": null,
+          "field": "Listed Component - A component part, which has been previously Listed or Certified by an accredited Certification Organization with no restrictions and is used in the intended application within its ratings.",
+          "answer_cell": null,
+          "value": null,
+          "field_merged": true,
+          "fm_range": "B7",
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": null,
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A8",
+          "prefix": null,
+          "field": null,
+          "answer_cell": null,
+          "value": null,
+          "field_merged": true,
+          "fm_range": "B8",
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "blank",
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A9",
+          "prefix": null,
+          "field": "Unlisted Component - A part that has not been previously evaluated to the appropriate designated component standard.  It may also be a Listed or Recognized component that is being used outside of its evaluated Listing or component recognition.",
+          "answer_cell": null,
+          "value": null,
+          "field_merged": true,
+          "fm_range": "B11",
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": null,
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A12",
+          "prefix": null,
+          "field": null,
+          "answer_cell": null,
+          "value": null,
+          "field_merged": true,
+          "fm_range": "B12",
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "blank",
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A13",
+          "prefix": null,
+          "field": "Critical Features/Components - An essential part, material, subassembly, system, software, or accessory of a product that has a direct bearing on the product’s conformance to applicable requirements of the product standard.",
+          "answer_cell": null,
+          "value": null,
+          "field_merged": true,
+          "fm_range": "B15",
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": null,
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A16",
+          "prefix": null,
+          "field": "Construction Details - For specific construction details, reference should be made to the photographs and descriptions.  All dimensions are approximate unless specified as exact or within a tolerance.  In addition to the specific construction details described in this Report, the following general requirements also apply.",
+          "answer_cell": null,
+          "field_merged": true,
+          "fm_range": "B18",
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": null,
+          "user_editable": false,
+          "ai_fillable": false,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A19",
+          "prefix": "Spacing",
+          "field": "1.",
+          "answer_cell": "B19",
+          "value": "Spacing - In primary circuits, 1.5 mm minimum spacing are maintained through air and over surfaces of insulating material between current-carrying parts of opposite polarity and 1.5 mm minimum between such current-carrying parts and dead-metal parts or low voltage isolated circuits. Refer to Illustration __ for areas to verify.",
+          "val1": null,
+          "val2": null,
+          "val3": null,
+          "st1": "Spacing - In primary circuits, ___ mm minimum spacing are maintained through air and over surfaces of insulating material between current-carrying parts of opposite polarity and ___ mm minimum between such current-carrying parts and dead-metal parts or low voltage isolated circuits.  Refer to Illustration __ for areas to verify.",
+          "resp1": null,
+          "st2": null,
+          "resp2": null,
+          "checkbox": true,
+          "field_merged": true,
+          "fm_range": "A20",
+          "value_merged": true,
+          "vm_range": "B20",
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "text_support": [
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+              "page": 7,
+              "preview_text": "Placeholder: Image of opened tray \n(either from angle or birds-eye view)\nPlaceholder: Image of someone \nscanning the barcode on the device \npackaging",
+              "similarity_score": 0.7800422393301178,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 30,
+              "preview_text": "Page 31 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nFollowing levels are met in NORMAL and SINGLE FAULT \nCONDITION:\n—\nContinuous contact pressure below 50 N / cm² with \nforce below 150 N\nTBD-Info available\nTemporary force below 250 N for an area at least of\n3 cm² for a maximum duration of 0,75 s\nTBD-Info available\n7.3.5 Gap limitations between moving parts (see Form A.20)\n7.3.5.1 Access normally allowed —\nIf levels of 7.3.4 exceeded and a body part may be \ninserted minimum gap as specified in Table 13 \nassured in NORMAL and in SINGLE FAULT CONDITION\nTBD-Info available\n7.3.5.2 Access normally prevented —\nMaximum gap as specified in Table 14 assured in \nNORMAL and in SINGLE FAULT CONDITION\nTBD-Info available\n7.4 Stability\nEquipment not secured to building structure is \nphysical stable\nPlaced on level surface, all \nfour feet contact ground.\nP\nStability maintained after opening of drawers etc. by \nautomatic means, or \nNo evidence drawer stability \nafter opening by automatic \nmeans.\nP\nwarning marking requires the application of means No additional means for \nstability\nN/A",
+              "similarity_score": 0.7733243127657509,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 62,
+              "preview_text": "Page 63 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement — Test Result — Remark Verdict\n7. TABLE: Protection against mechanical HAZARDS Form A.20\n7.3.4 Limitation of force and pressure —\n7.3.5 Gap limitations between moving parts —\nPart / Location Clause 7.3.4 Clause 7.3.5.1 Clause 7.3.5.2 Verdict Comments\nContinuous Temporary Minimum gaps [mm] Maximum gaps [mm]\nContact pressure\nmax. 50 N /cm²\n@ max. 150 N\nmax. 250 N / \n3 cm² @\nmax. 0,75 s\nTorso\n500\nHead\n300\nLeg\n180\nFoot\n120\nToes\n50\nArm\n120\nHand\n100\nFinger\n25\nHead\n120\nFoot\n35\nFinger\n4\nSupplementary information:",
+              "similarity_score": 0.7692335361248925,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 11,
+              "preview_text": "P\nb) Symbols and text moulded, stamped or \nengraved in material min. 2,0 mm high and \nSymbol/text height evidence \nnot available in \ndocumentation.\n \n0,5 mm depth or raised if not contrasting in \ncolour\nMarkings are in contrasting \ncolor; depth not required.\nP\nIf necessary marked with symbol 14, or Warning markings use symbol \n14 where necessary.\nP",
+              "similarity_score": 0.768479322288365,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "CFE-4LB011-E (1) (1).pdf",
+              "page": 0,
+              "preview_text": "REPRODUCTION IN PART OR AS A \nWHOLE WITHOUT THE WRITTEN \nPERMISSION OF GENER8 IS \nPROHIBITED.\nPROPRIETARY AND \nCONFIDENTIAL\nMATERIAL\nSURFACE TREATMENT\nTITLE:\nSIZE\nB\nDRAWING NUMBER REV\nEXPANDED TOLERANCES\nSCALE: 2:1\nUNLESS OTHERWISE SPECIFIED:\nDIMENSIONS ARE IN MILLIMETERS, INTERPRET \nDIMS AND TOLS PER ANSI/ASME Y14.5M-1994\nREGULATORY LABEL\nSHEET 1 OF 1DO NOT SCALE \nDRAWING\nSEE NOTES\nSEE NOTES\nDECIMALS\nX       1.00\nX.X     0.50\nX.XX    0.15\nASME Y14.5M-1994 THIRD \nANGLE PROJECTION\nANGULAR:\nX     1\n2560 JUNCTION AVE, SAN JOSE, CA 95134\n8\nCFE-4LB011 E\nInfinity MTx™ Instrument\nPart number: CFE-1TLA11\nInput pressure: 90-120 PSIG\n              CellFE, Inc.\n             1000 Atlantic Ave, Ste 104\n              Alameda, CA 94501, USA\n              support@cellfebiotech.com\nS/N\n110 - 240VAC\n5.9 - 2.7A\n50/60 Hz\n6A\n250VAC\nSLOW BLOW",
+              "similarity_score": 0.7674330746913791,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CFE-4LB011-E%20%281%29%20%281%29.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ],
+          "image_support": [
+            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/PastedGraphic-1.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
+          ],
+          "confidence": 95.0
+        },
+        {
+          "question_cell": "A21",
+          "prefix": "Mechanical Assembly",
+          "field": "2.",
+          "answer_cell": "B21",
+          "value": "Mechanical Assembly - Components such as switches, fuseholders, connectors, wiring terminals and display lamps are mounted and prevented from shifting or rotating by the use of lockwashers, starwashers, or other mounting format that prevents turning of the component.",
+          "st1": "Mechanical Assembly - Components such as switches, fuseholders, connectors, wiring terminals and display lamps are mounted and prevented from shifting or rotating by the use of lockwashers, starwashers, or other mounting format that prevents turning of the component.",
+          "resp1": null,
+          "st2": null,
+          "resp2": null,
+          "checkbox": true,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "text_support": [
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+              "page": 56,
+              "preview_text": "Page 57 of 57\n2. 2. Liu, A.  et al.  Cell Mechanical and Physiological Behavior in the Regime of  Rapid Mechanical  \nCompressions that Lead to Cell Volume Change. Small Weinh. Bergstr. Ger. 16, e1903857 (2020).\n3. Loo, J. et al. Microfluidic transfection of mRNA into human primary lymphocytes and hematopoietic  \nstem and progenitor cells using ultra-fast physical deformations. Scientific Reports 11, 21407 (2021).\n4. Nejadnik, H. et al. Instant labeling of therapeutic cells for multimodality imaging. Theranostics 10, \n6024–6034 (2020).",
+              "similarity_score": 0.7932976208857452,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+              "page": 37,
+              "preview_text": "1. In the biosafety cabinet, while holding the body of the MPA steady, either:\nSchematic/photo showing the inlet \nand outlet side of the MPA with \nthe lid on and the lid off\nSchematic/photo showing the key \non the sample loading tray \n(overhead view with no device) \nand another overhead view of the \nMPA loaded into the sample \nloading tray",
+              "similarity_score": 0.7900919306942674,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
+              "page": 1,
+              "preview_text": "System Components............................................................................................................................5\nFront Panel.......................................................................................................................................................5\nBack Panel........................................................................................................................................................6\nInfinity MPA.....................................................................................................................................................8\nChapter 2. Upon Receiving the Infinity MTx.......................................................................................9\nProvided Materials..........................................................................................................................................9\nEquipment.....................................................................................................................................................................9",
+              "similarity_score": 0.7864316243231239,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 31,
+              "preview_text": "Page 32 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nTested with four times maximum static load TBD-Info available\n7.6 Wall mounting\nMounting brackets withstand four times weight (see Form A.20B)\nOne fastener removed and test repeated with two \ntimes weight\n(see Form A.20B)\n7.7 Expelled parts P\nEquipment contains or limits the energy No expelled parts; energy is \ninternally limited.\nP\nProtection not removable without the aid of a tool No expelled parts. N/A\n8 RESISTANCE TO MECHANICAL STRESSES\n8.1 General\nEquipment does not cause a HAZARD when subjected \nto mechanical stresses in NORMAL USE\nTBD-Info available\nNormal protection level is 5 J TBD-Info available\nLevels below 5 J but not less than 1 J are acceptable \nif all of the following criteria are met:\n—\na) Lower level justified by RISK assessment of \nmanufacturer\nNo justification for lower \nmechanical protection found.\nN/A\nb) Equipment installed in its intended application is \nnot easily touched\nNot Applicable; no evidence of \n<5J mechanical protection.\nN/A\nc) Only occasional access during NORMAL USE Information on mechanical \nstress protection not available.\nN/A",
+              "similarity_score": 0.7833746016972839,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
+              "page": 17,
+              "preview_text": "MPA device. The button has three states, withdraw, in  \nmovement, and eject, depending on the current position \nof the drawer (right).\n4. Local Time and Date – Displays the local time and date as a running clock. This time/date is aligned \nwith the timestamps of each transfection process run (see run history section). The time and date \ncan be changed by the system Administrator in the administrator settings.\n6.\n5.4.3.\n1.\n2.\nEjectIn movementWithdraw",
+              "similarity_score": 0.782466812368693,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ],
+          "image_support": [],
+          "confidence": 85.0
+        },
+        {
+          "question_cell": "A22",
+          "prefix": "Corrosion Protection",
+          "field": "3.",
+          "answer_cell": "B22",
+          "value": "Corrosion Protection - All ferrous metal parts are protected against corrosion by painting, plating or the equivalent.",
+          "st1": "Corrosion Protection - All ferrous metal parts are protected against corrosion by painting, plating or the equivalent.",
+          "resp1": null,
+          "st2": null,
+          "resp2": null,
+          "checkbox": true,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "text_support": [
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 36,
+              "preview_text": "Page 37 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\n10.5 Resistance to heat\n10.5.1 Integrity of CLEARANCE and CREEPAGE DISTANCES (see Form A.16)\n10.5.2 Non-metallic ENCLOSURES (see Form A.27)\nWithin 10 min after treatment: —\nEquipment subjected to suitable stresses of 8.2 and \n8.3 complying with criteria of 8.1\nTBD-Info available\n10.5.3 Insulating material\na) Parts supporting parts connected to MAINS \nsupply\nTBD-Info available\nb) TERMINALS carrying a current more than 0,5 A\nExamination of material data; or TBD-Info available\nin case of doubt:\n1) Ball pressure test; or (see Form A.28)\n2) Vicat softening test of ISO 306 (see Form A.29)\n11 PROTECTION AGAINST HAZARDS FROM FLUIDS AND SOLID FOREIGN \nOBJECTS\n11.1 General\nProtection to OPERATORS and surrounding area \nprovided by EQUIPMENT\nTBD-Info available\nAll fluids specified by manufacturer considered Oil mentioned; equipment \nmust be safe with oil.\nP\n11.2 Cleaning (see Form A.30)\n11.3 Spillage (see Form A.30)\n11.4 Overflow (see Form A.30)\n11.5 Battery electrolyte\nBattery electrolyte leakage presents no HAZARD TBD-Info available\n11.6 Equipment RATED with a degree of ingress",
+              "similarity_score": 0.8030166579064099,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 44,
+              "preview_text": "Page 45 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nANNEX H QUALIFICATION OF CONFORMAL COATINGS FOR PROTECTION AGAINST \nPOLLUTION\nH.1 General \nConformal coatings meet the requirements of Clause \nH.2 and H.3. \nH.2 Technical properties \nTechnical properties of conformal coatings are \nsuitable for the intended application. In particular:\n—\na) Manufacturer indicate that it is a coating for \nPWBs; \nb) RATED operating temperature include the \ntemperature range of the indicated application; \nc) CTI, insulation resistance and dielectric strength \nare suitable for the intended application; \nd) Coating have adequate UV resistance, if it is \nexposed to sunlight; \ne) Flammability RATING of the coating is at least the \nrequired flammability RATING of the applied PWB. \nH.3 Qualification of coatings (see Form A.42)\nCoating complies with the conformity requirements. \nANNEX K INSULATION REQUIREMENTS NOT COVERED \nBY CLAUSE 6.7\n(see Forms A.15 and A.18)",
+              "similarity_score": 0.7980548525395464,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 37,
+              "preview_text": "Page 38 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nTERMINALS provided with protective cap or cover, \nare installed as specified by manufacturer\nTBD-Info available\nThe equipment is operating (energized) during the \ntreatment except:\n—\na) If manufacturer specifies degrees of protection \nfor non-operating (de-energized) equipment, or\nTBD-Info available\nb) Equipment is operating or non-operating during \nthe treatment with does not affect the test \nresults \nTBD-Info available\n11.6.3 Protection against solid foreign objects (including \ndust)\nApplicable test of IEC 60529 for protection against \nsolid foreign objects conducted\nAdditionally inspection of equipment resulted: —\na) No deposit on insulation parts that could lead to \na HAZARD\nb) No created accumulations that have the \npotential to cause spread of fire\n11.6.4 Protection against water\nApplicable test of IEC 60529 for protection against \nwater conducted\nIf any water has entered, safety is not impaired, \ninspection of equipment resulted:\n—\na) No deposit on insulation parts that could lead to \na HAZARD\nTBD-Info available\nb) Water has not reached hazardous live parts or",
+              "similarity_score": 0.7967539348627221,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 83,
+              "preview_text": "Page 84 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement – Test Result — Remark Verdict\nAnnex H TABLE: Qualification of conformal coating \nfor protection against pollution\nForm A.42 \nTechnical properties\nManufacturer.................................................. —\nType................................................................ —\nMeet requirements of ANSI / UL 746E [yes / no]\nManufacturer declaration of coating material [yes / no]\nOperating temperature of coating [   ] °C\nComparative tracking index (CTI) [   ]\nInsulation resistance [   ] MΩ\nDielectric strength [   ] V\nUV resistance (if required) [yes / no]\nFlammability rating\nPreparation of the test specimens conducted [yes / no]\nItem Test conditioning Parameter Td Samples Verdict Comments\nh 1 2 3 4 5 6\n1 Cold 24\n2 Dry heat 48\n3 Rapid temp. \nchange\n4 Damp heat 24\n5 Adhesion of coating 5 N\nVisual inspection\n6 Humidity 48\n7 Insulation \nresistance\n≥ 100 MΩ\nVisual inspection\nNOTE Td = Test duration time\nSupplementary information:",
+              "similarity_score": 0.793358291574544,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 18,
+              "preview_text": "Page 19 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nAlternatively one of the single means of protection is \nused:\n—\ne) REINFORCED INSULATION (see 6.5.3)\nf) PROTECTIVE IMPEDANCE (see 6.5.4)\n6.5.2 PROTECTIVE BONDING (see Forms A.7, A.8, A.9, A.10 \nor A.11)\n6.5.2.1 General\nACCESSIBLE conductive parts, may become \nHAZARDOUS LIVE in SINGLE FAULT CONDITION:\n—\nBonded to the PROTECTIVE CONDUCTOR TERMINAL; or TBD-Info available\nSeparated by conductive screen or barrier bonded to \nPROTECTIVE CONDUCTOR TERMINAL\nTBD-Info available\n6.5.2.2 Integrity of PROTECTIVE BONDING —\na) PROTECTIVE BONDING consists of directly \nconnected structural parts or discrete conductors \nor both; and withstands thermal and dynamic \nstresses\nTBD-Info available\nb) Soldered connections: —\nIndependently secured against loosening TBD-Info available\nNot used for other purposes TBD-Info available\nc) Screw connections are secured TBD-Info available\nd) PROTECTIVE BONDING not interrupted; or Protective bonding present; \nconnection path not \ninterrupted.\nP\nexcept as removable part that carries MAINS \nSUPPLY input connection to the whole equipment",
+              "similarity_score": 0.793143439948161,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ],
+          "image_support": [
+            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CFE_block_diagram.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D",
+            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/PastedGraphic-1.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
+          ],
+          "confidence": 85
+        },
+        {
+          "question_cell": "A23",
+          "prefix": "Accessibility of Live Parts",
+          "field": "4.",
+          "answer_cell": "B23",
+          "value": "Accessibility of Live Parts - All uninsulated live parts in primary circuitry are housed within a metal enclosure constructed with no openings other than those specifically described in Sections 4 and 5.",
+          "st1": "Accessibility of Live Parts - All uninsulated live parts in primary circuitry are housed within a <metal or non-metallic> enclosure constructed with no openings other than those specifically described in Sections 4 and 5.",
+          "resp1": null,
+          "st2": null,
+          "resp2": null,
+          "checkbox": true,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "text_support": [
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 15,
+              "preview_text": "TBD-Info available\nACCESSIBLE parts not HAZARDOUS LIVE TBD-Info available\nVoltage, current, charge or energy below the limits in \nNORMAL CONDITION and in SINGLE FAULT CONDITION \nbetween:\n—\nACCESSIBLE parts and earth TBD-Info available\ntwo ACCESSIBLE parts on same piece of the \nequipment within a distance of 1,8 m\nTBD-Info available\nConformity is checked by the determination of 6.2 \nand 6.3 followed by the tests of 6.4 to 6.11\n6.1.2 Exceptions\nFollowing HAZARDOUS LIVE parts may be ACCESSIBLE \nto an OPERATOR:\n—\na) parts of lamps and lamp sockets after lamp \nremoval\nTBD-Info available\nb) parts to be replaced by OPERATOR only by the \nuse of tool and warning marking\nTBD-Info available\nThose parts not HAZARDOUS LIVE 10 s after \ninterruption of supply\n(see Form A.5 )\nCapacitance test if charge is received from internal \ncapacitor\n(see Forms A.4 and A.5)\n6.2 Determination of ACCESSIBLE parts (see Form A.4)\n6.2.1 General\nUnless obviously determination of ACCESSIBLE parts \nas specified in 6.2.2 to 6.2.4",
+              "similarity_score": 0.8174489539847555,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 48,
+              "preview_text": "Page 49 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement — Test Result — Remark Verdict\n6.2 TABLE: List of ACCESSIBLE parts Form A.4\n6.1.2 Exceptions —\n6.2 Determination of ACCESSIBLE parts —\nItem Description Determination method\n(NOTE 5)\nException under 6.1.2\n(NOTE 4)\nNOTE 1  – Test fingers and pins are to be applied without force unless a force is specified (see 6.2.2)\nNOTE 2  – Special consideration should be given to inadequate insulation and high voltage parts (see 6.2)\nNOTE 3  – Parts are considered to be ACCESSIBLE if they could be touched in the absence of any covering which is not considered \nto provide suitable insulation (see 6.4).\nNOTE 4  – Capacitance test may be required (see Form A.5).\nNOTE 5  – The determination methods are: \nV = visual; R = rigid test finger; J = jointed test finger; P3 = pin 3 mm diameter; P4 = pin 4 mm diameter.\nSupplementary information:",
+              "similarity_score": 0.77187507003886,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 21,
+              "preview_text": "TERMINALS which receive a charge from an internal \ncapacitor are not HAZARDOUS LIVE after 10 s of \ninterrupting supply connection\n(see Form A.5)\n6.6.3 Circuits with terminals which are HAZARDOUS LIVE\nThese circuits are: —\nNot connected to ACCESSIBLE conductive parts; or TBD-Info available\nConnected to ACCESSIBLE conductive parts, but are \nnot MAINS CIRCUITS and have one TERMINAL contact at \nearth potential\nTBD-Info available\nNo ACCESSIBLE conductive parts are HAZARDOUS LIVE TBD-Info available\n6.6.4 Terminals for stranded conductors\nNo RISK of accidental contact because: —\n– Located or shielded TBD-Info available\n– Self-evident or marked whether or not \nconnected to ACCESSIBLE conductive parts\nTBD-Info available\nComplies as applicable: —\na) Manufacturer’s specified maximum length of \nremoved insulation, or\nTBD-Info available\nb) 8 mm length of insulation removed TBD-Info available\n6.7 Insulation requirements (see Form A.14)\n6.7.1 The nature of insulation\n6.7.1.1 General",
+              "similarity_score": 0.7704032325792591,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 32,
+              "preview_text": "Page 33 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\n– HAZARDOUS LIVE parts above the limits of 6.3.2 not \nACCESSIBLE\n– insulation pass the voltage tests of 6.8 (see Form A.30)\ni) No leaks of corrosive and harmful substances TBD-Info available\nii) ENCLOSURE shows no cracks resulting in a \nHAZARD\nTBD-Info available\niii) CLEARANCES not less than their permitted values TBD-Info available\niv) Insulation of internal wiring remains undamaged TBD-Info available\nv) PROTECTIVE BARRIERS not damaged or loosened TBD-Info available\nvi) No moving parts exposed, except permitted by \n7.3\nTBD-Info available\nvii) No damage which could cause spread of fire TBD-Info available\n8.2 ENCLOSURE rigidity test\n8.2.1 Static test (see Form A.21A)\n– 30 N with 12 mm rod applied to each part of \nENCLOSURE\nTBD-Info not available\n– in case of doubt test conducted at maximum RATED \nambient temperature\nTBD-Info available\n8.2.2 Impact test (see Form A.21A)\nImpact applied to any part of ENCLOSURE causing a \nHAZARD if damaged\nTBD-Info available\nImpact energy level and corresponding IK code.........: TBD-Info available —",
+              "similarity_score": 0.7628012539665515,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "Risk Assessment CFE_28nov (1).xlsx",
+              "page": 1,
+              "preview_text": "Risk # Sub-System Risk Description Severity Probablility Pre-Mitigation PRN Mitigation Post-Mitigation Probabliity Post-Mitigation PRN Verfication Reference Risk Acceptable ? Y/N\nSvc-1 System Shock Shock from touching live part of system with covers removed Catastrophic Likely 3 Service manual warnings, service personnel are trained, and connections are covered. Rare 2 training documentation/ 61010 report\nSvc-2 System Pinch hazard while performing maintenance While servicing the internal system, unit activates Severe Possible 2 Service manual warnings, service personnel are trained, interlocks must be over-ridden (personnel are trained to use EMO stop for panel interlock override) and use temporary covers while moving gantry.  Firmware has a position error timeout that will remove power to gantry in the event of a blockage.(under force limit for 61010). Rare 2 training documentation \nSvc-3 System Crush Service operator pulls unit over while installing  Severe Unlikely 2 instructions to tie down system and secure in field service manual Unlikely 2 user manual/",
+              "similarity_score": 0.7597751318160748,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/Risk%20Assessment%20CFE_28nov%20%281%29.xlsx?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ],
+          "image_support": [
+            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/PastedGraphic-1.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
+          ],
+          "confidence": 95.0
+        },
+        {
+          "question_cell": "A24",
+          "prefix": "Grounding",
+          "field": "5.",
+          "answer_cell": "B24",
+          "value": "Grounding – All exposed dead-metal parts and all dead-metal parts within the enclosure that are exposed are connected to the grounding lead of the power supply cord via the appliance inlet and chassis ground contact surfaces",
+          "val1": null,
+          "st1": "This product is not provided with a means of grounding as it is <double insulated or not required to be grounded since _____>",
+          "resp1": null,
+          "st2": "All exposed dead-metal parts and all dead-metal parts within the enclosure that are exposed are connected to the <grounding lead of the power supply cord or the equipment grounding terminal>",
+          "resp2": null,
+          "checkbox": true,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "text_support": [
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 27,
+              "preview_text": "Page 28 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\n6.10.2.2 Cord anchorage —\nProtective earth conductor is the last to take the \nstrain\nTBD-Info not available\na) cord is not clamped by direct pressure from a \nscrew\nTBD-Info available\nb) knots are not used TBD-Info available\nc) cannot push the cord into the equipment to \ncause a HAZARD\nTBD-Info available\nd) no failure of cord insulation in anchorage with \nmetal parts\nTBD-Info available\ne) not to be loosened without a tool TBD-Info available\nf) cord replacement does not cause a HAZARD and \nmethod of strain relief is clear\nTBD-Info available\nPush-pull and or torque test (see Form A.19)\n6.10.3 Plugs and connectors\nMAINS supply plugs, connectors etc., conform with \nrelevant specifications\nMains plug is grounded, rated, \nand compliant.\nP\nIf equipment supplied at voltages below 6.3.2.a) or \nfrom a sole source:\n—\nPlugs of supply cords do not fit MAINS sockets above \nrated SUPPLY voltage\nTBD-Info available\nMAINS type plugs used only for connection to MAINS \nsupply\nMains-type plug used only for \nmains connection.\nP\nPlug pins which receive a charge from an internal \ncapacitor",
+              "similarity_score": 0.8011373287313586,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 26,
+              "preview_text": "Page 27 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\n6.9.1 General\nIf a failure could cause a HAZARD: —\na) security of wiring connections TBD-Info available\nb) screws securing removable covers TBD-Info available\nc) accidental loosening TBD-Info available\nd) CLEARANCES and CREEPAGE DISTANCES not \nreduced below the values of basic insulation by \nloosening of parts or wires\nTBD-Info available\n6.9.2 Insulating materials\nMaterial not to be used for safety relevant insulation: —\na) easily damaged materials not used TBD-Info available\nb) non-impregnated hygroscopic materials not used TBD-Info available\n6.9.3 Colour coding\nGreen-and-yellow insulation shall not be used \nexcept:\n—\na) protective earth conductors; No Protective earth \nconductors\n \nb) PROTECTIVE BONDING conductors; No protective bonding \nconductors.\n \nc) potential equalization conductors; No potential equalization \nconductors\nN/A\nd) functional earth conductors No functional earth \nconductors.\nN/A\n6.10 Connection to MAINS supply source and \nconnections between parts of equipment\n6.10.1 MAINS supply cords",
+              "similarity_score": 0.784511077868338,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 19,
+              "preview_text": "Page 20 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nTERMINAL suitable for connection of a PROTECTIVE \nCONDUCTOR, and meets 6.5.2.3\nProtective conductor terminal \nshown in block diagram.\nP\n6.5.2.3 PROTECTIVE CONDUCTOR TERMINAL —\na) Contact surfaces are metal Chassis ground contact \nsurface shown as metal.\nP\nb) Appliance inlet used Protective conductor terminal \nuses appliance inlet.\nP\nc) For rewirable cords and PERMANENTLY \nCONNECTED EQUIPMENT, PROTECTIVE CONDUCTOR \nTERMINAL is close to MAINS supply TERMINALS\nProtective conductor terminal \nis close to mains terminals.\nP\nd) If no MAINS supply is required, any PROTECTIVE \nCONDUCTOR TERMINAL:\n—\nIs near terminals of circuit for which protective \nearthing is necessary\nMains supply required; \nprotective earth terminal \npresent.\nN/A\nExternal if other terminals external Mains supply required; \nprotective earth terminal is \nexternal.\nN/A\ne) Equivalent current-carrying capacity to MAINS \nsupply TERMINALS\n(see Form A.7)\nf) If plug-in, makes first and breaks last TBD-Info available\ng) If also used for other bonding purposes, \nPROTECTIVE CONDUCTOR:\n—\nApplied first; TBD-Info available",
+              "similarity_score": 0.7830155853105208,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 18,
+              "preview_text": "Page 19 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nAlternatively one of the single means of protection is \nused:\n—\ne) REINFORCED INSULATION (see 6.5.3)\nf) PROTECTIVE IMPEDANCE (see 6.5.4)\n6.5.2 PROTECTIVE BONDING (see Forms A.7, A.8, A.9, A.10 \nor A.11)\n6.5.2.1 General\nACCESSIBLE conductive parts, may become \nHAZARDOUS LIVE in SINGLE FAULT CONDITION:\n—\nBonded to the PROTECTIVE CONDUCTOR TERMINAL; or TBD-Info available\nSeparated by conductive screen or barrier bonded to \nPROTECTIVE CONDUCTOR TERMINAL\nTBD-Info available\n6.5.2.2 Integrity of PROTECTIVE BONDING —\na) PROTECTIVE BONDING consists of directly \nconnected structural parts or discrete conductors \nor both; and withstands thermal and dynamic \nstresses\nTBD-Info available\nb) Soldered connections: —\nIndependently secured against loosening TBD-Info available\nNot used for other purposes TBD-Info available\nc) Screw connections are secured TBD-Info available\nd) PROTECTIVE BONDING not interrupted; or Protective bonding present; \nconnection path not \ninterrupted.\nP\nexcept as removable part that carries MAINS \nSUPPLY input connection to the whole equipment",
+              "similarity_score": 0.782836617661281,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 14,
+              "preview_text": "P\n5.4.5 Equipment maintenance and service\nInstructions for RESPONSIBLE BODY include: —\nInstructions sufficient in detail permitting safe \nmaintenance and inspection and continued safety:\n—\nInstruction against the use of detachable MAINS \nsupply cord with inadequate RATING\nOnly use properly rated, \ngrounded supply cords.\nP\nSpecific battery type of user replaceable batteries No replaceable batteries in the \nequipment.\nN/A\nAny manufacturer specified parts No specific safety-critical parts \nidentified for maintenance.\nP",
+              "similarity_score": 0.7802144010512914,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ],
+          "image_support": [
+            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CFE_block_diagram.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
+          ],
+          "confidence": 98
+        },
+        {
+          "question_cell": "A25",
+          "prefix": "Polarized Connection",
+          "field": "6.",
+          "answer_cell": "B25",
+          "value": "Polarized Connection - This product is provided with a polarized power supply connection. All single pole switches and fuses are connected only to the ungrounded supply circuit conductor. The construction uses a standard NEMA 5-15P plug and IEC C13 connector, ensuring polarity by connecting the fuse and switch to the line conductor.",
+          "st1": "Polarized Connection - This product is provided with a polarized power supply connection. All single pole switches and fuses are connected only to the ungrounded supply circuit conductor.",
+          "resp1": null,
+          "st2": null,
+          "resp2": null,
+          "checkbox": true,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "text_support": [
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 18,
+              "preview_text": "connection path not \ninterrupted.\nP\nexcept as removable part that carries MAINS \nSUPPLY input connection to the whole equipment\nNo removable part that carries \nMAINS\nP\ne) Any movable PROTECTIVE BONDING connection \nspecifically designed, and meets 6.5.2.4\nNo movable protective \nbonding connection\nN/A\nf) No external metal braid of cables used\n(not regarded as PROTECTIVE BONDING)\nNo metal braid used for \nprotective bonding.\nP\ng) IF MAINS SUPPLY passes through: —\nMeans provided for passing protective \nconductor;\nProtective conductor passed \nwith mains supply through \nequipment.\nP\nImpedance meets 6.5.2.4\nh) Protective conductors bare or insulated, \nif insulated, green/yellow\nNo evidence of protective \nconductor insulation color \nprovided.\n \nExceptions: —\n1) earthing braids; No earthing braids observed in \nprovided documentation.\nN/A\n2) internal protective conductors etc.; No internal protective \nconductor present.\nN/A\nGreen/yellow not used for other purposes No evidence of green/yellow \ninsulation usage found.",
+              "similarity_score": 0.7828691393472343,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
+              "page": 9,
+              "preview_text": "Infinity MTx Operating Manual\nIFU-001 Rev. A 08/24/2023 10 of 48\n4. Power Connection Port – Auxiliary port that powers the instrument. The C13 to 5-15 power cord \ncan be plugged directly into the Infinity MTx, with the opposing 3-prong end able to connect to a \nproperly grounded 3-prong, 110-120V/50-60Hz power source. \n5. Power Switch – Switch that turns the instrument on and off. Electrical supply is limited by the  \npower switch, and after operation it is best to shut the instrument off. \n6. USB-A Connection Port – An auxiliary port that a USB type A can be attached to. Used to export  \ndata. This data export process is detailed in the software section.\n7. LAN Connection Port  – An auxiliary port that a LAN cable can be connected to. For current  \ncustomer use, the instrument does not have internet connection capabilities.\nInfinity MPA \n1. MPA Lid – Attached via a hinge to the collection chamber lid. Once samples are loaded  \ninto the sample chambers, the lid can be closed by pushing down until the lid latch is  \nlocked in place. Once closed, the 0.2 um membrane filters  located on the air inlet and  \noutlet ports allow the cell sample to remain sterile when removed.",
+              "similarity_score": 0.7747856854945042,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+              "page": 9,
+              "preview_text": "6. USB-A Connection Port – An auxiliary port that a USB type A can be attached to. Used to export  \ndata. This data export process is detailed in the software section.\nLAN Connection Port  – An auxiliary port that a LAN cable can be connected to. For current  \ncustomer use, the instrument does not have internet connection capabilities.\nWARNING:  Do not attempt to connect the Infinity MTx to the LAN. CellFE will not be held  \nresponsible for any damage that results as the Infinity MTx is not meant to be connected to your  \nnetwork.\nPlaceholder: Labeled image of the Infinity MPA with numbers corresponding to below \nsections\nPlacehold\ner: image \nof power \nswitch",
+              "similarity_score": 0.7688869189250491,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 28,
+              "preview_text": "Page 29 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nc) marking as disconnecting for the equipment Not Permanently connected or \nmulti-phase\nN/A\n6.11.3.2 Single-phase cord-connected equipment\nEquipment is provided with one of the following: —\na) switch or circuit-breaker Single-phase cord connection \nand power switch confirmed.\nP\nb) appliance coupler (disconnectable without tool) Single-phase cord connection \nwith appliance coupler \nconfirmed.\nP\nc) separable plug (without locking device) Single-phase cord connection \nwith separable plug confirmed.\nP\n6.11.4 Disconnecting devices\n6.11.4.1 General P\nDisconnecting device part of equipment Power switch is integrated into \nthe equipment.\nP\nElectrically close to the SUPPLY Power switch is electrically \nclose to supply.\nP\nPower-consuming components not electrically \nlocated between the supply source and the \ndisconnecting device\nNo power-consuming \ncomponents before \ndisconnecting device.\nP\nExcept electromagnetic interference suppression \ncircuits permitted to be located on the supply side of \nthe disconnecting device\nNo electromagnetic \ninterference suppression \ncircuits\nP",
+              "similarity_score": 0.7675118608542484,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 27,
+              "preview_text": "supply\nMains-type plug used only for \nmains connection.\nP\nPlug pins which receive a charge from an internal \ncapacitor \n(see Form A.5)\nAccessory MAINS socket outlets: —\na) marking if accepts a standard MAINS supply plug\n(see 5.1.3e)\nNo accessory mains socket \noutlets present.\nN/A\nb) input has a protective earth conductor if outlet \nhas EARTH TERMINAL CONTACT\nNo accessory mains socket \noutlets present.\nN/A\n6.11 Disconnection from supply source\n6.11.1 Disconnects all current-carrying conductors TBD-Info not available\n6.11.2 Exceptions\n6.11.3 Requirements according to type of equipment\n6.11.3.1 PERMANENTLY CONNECTED EQUIPMENT and\nmulti-phase equipment\nEmploys switch or circuit-breaker Not permanently connected or \nmulti-phase.\nN/A\nIf switch or circuit-breaker is not part of the \nequipment, documentation requires:\n—\na) switch or circuit-breaker to be included in building \ninstallation\nNot Permanently connected or \nmulti-phase\nN/A\nb) suitable location easily reached Not Permanently connected or \nmulti-phase\nN/A",
+              "similarity_score": 0.7674974825243085,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ],
+          "image_support": [
+            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/PastedGraphic-1.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
+          ],
+          "confidence": 95
+        },
+        {
+          "question_cell": "A26",
+          "prefix": "Internal Wiring",
+          "field": "7.",
+          "answer_cell": "B26",
+          "value": "Internal Wiring - Internal wiring is routed away from sharp or moving parts. Internal wiring leads terminating in soldered connections are made mechanically secure prior to soldering. Recognized Component separable connectors are acceptable. Wiring passing through metal walls is protected by bushings or grommets. All wiring is minimum ++ AWG, with a minimum rating of ++V, ++°C.",
+          "val1": null,
+          "val2": null,
+          "val3": null,
+          "st1": "Internal Wiring - Internal wiring is routed away from sharp or moving parts. Internal wiring leads terminating in soldered connections are made mechanically secure prior to soldering. Recognized Component separable (quick disconnect) connectors of the positive detent type, closed loop connectors, or other types specifically described in the text of this report are also acceptable as internal wiring terminals. At points where internal wiring passes through metal walls or partitions, the wiring insulation is protected against abrasion or damage by plastic bushings or grommets. All wiring is minimum ++ AWG, with a minimum rating of ++V, ++°C.",
+          "resp1": null,
+          "st2": null,
+          "resp2": null,
+          "checkbox": true,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "text_support": [
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 18,
+              "preview_text": "connection path not \ninterrupted.\nP\nexcept as removable part that carries MAINS \nSUPPLY input connection to the whole equipment\nNo removable part that carries \nMAINS\nP\ne) Any movable PROTECTIVE BONDING connection \nspecifically designed, and meets 6.5.2.4\nNo movable protective \nbonding connection\nN/A\nf) No external metal braid of cables used\n(not regarded as PROTECTIVE BONDING)\nNo metal braid used for \nprotective bonding.\nP\ng) IF MAINS SUPPLY passes through: —\nMeans provided for passing protective \nconductor;\nProtective conductor passed \nwith mains supply through \nequipment.\nP\nImpedance meets 6.5.2.4\nh) Protective conductors bare or insulated, \nif insulated, green/yellow\nNo evidence of protective \nconductor insulation color \nprovided.\n \nExceptions: —\n1) earthing braids; No earthing braids observed in \nprovided documentation.\nN/A\n2) internal protective conductors etc.; No internal protective \nconductor present.\nN/A\nGreen/yellow not used for other purposes No evidence of green/yellow \ninsulation usage found.",
+              "similarity_score": 0.7983457138143821,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 26,
+              "preview_text": "conductors.\nN/A\n6.10 Connection to MAINS supply source and \nconnections between parts of equipment\n6.10.1 MAINS supply cords\nRATED for maximum equipment current (see 5.1.3 c) Maximum mains cord current \nrating is 5.9-2.7A.\nP\nCable complies with IEC 60227 or IEC 60245 No evidence mains cable \nmeets IEC 60227/60245.\n \nHeat-resistant if likely to contact hot parts TBD-Info available\nTemperature RATING (cord and inlet)..........................: Temperature rating of supply \ncord/inlet not documented.\n—\nGreen/yellow used only for connection to PROTECTIVE \nCONDUCTOR TERMINALS\nProtective conductor terminal \nshown, insulation color not \nverified.\n \nDetachable cords with IEC 60320 MAINS connectors: —\nConform to IEC 60799; or C13 mains connector used; \nIEC 60799 compliance not \nconfirmed.\nP\nHave the current RATING of the MAINS connector Current rating of IEC \nconnector not mentioned.\nP\n6.10.2 Fitting of non-detachable MAINS supply cords\n6.10.2.1 Cord entry —\na) inlet or bushing with a smoothly rounded \nopening; or\nTBD-Info available\nb) insulated cord guard protruding >5 D (diameter) TBD-Info available",
+              "similarity_score": 0.7973915607709077,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 33,
+              "preview_text": "Requirements of 9.5 are met\n9.3.2 Constructional requirements\na) Connectors and insulating material have \nflammability classification V-2 or better\n(see TABLE 1.A or Form A.23)\nb) Insulated wires and cables are flame retardant \n(VW-1 or equivalent)\n(see TABLE 1.A or Form A.23)\nc) ENCLOSURE meets following requirements: (see Form A.22) —\n1) Bottom and sides in arc of 5 ° (see Figure 13) to \nnon-limited circuits (9.4) meets:\n—\ni) no openings; or TBD-Info not available\nii) perforated as specified in Table 16; or TBD-Info available\niii) metal screen with a mesh; or TBD-Info available\niv) baffles as specified in Figure 12 TBD-Info available\n2) Material of ENCLOSURE and any baffle or flame \nbarrier is made of:\n—\nMetal (except magnesium); or TBD-Info available\nNon-metallic materials have flammability \nclassification V-1 or better\n(see TABLE 1.A or Form A.22)\n3) ENCLOSURE and any baffle or flame barrier have \nadequate rigidity\nTBD-Info available",
+              "similarity_score": 0.7964794882814609,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 25,
+              "preview_text": "Page 26 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nvalue for REINFORCED INSULATION are twice  the \nWORKING VOLTAGE \nTBD-Info available\nComplies as applicable: —\n1) ENCLOSURE or PROTECTIVE BARRIER of Clause 8 TBD-Info available\n2) moulded and potted parts requirements of \n6.7.3.4.2\n3) inner layers of printed wiring boards \nrequirements of 6.7.3.4.3\n4) thin-film insulation requirements of 6.7.3.4.4\n6.7.3.4.2 Moulded and potted parts —\nConductors between same two layers are separated \nby applicable distances of Table 8\nTBD-Info available\n6.7.3.4.3 Inner insulation layers of printed wiring boards —\nSeparated by at least the applicable distances of \nTable 8 between same two layers\nTBD-Info available\nREINFORCED INSULATION have adequate electric \nstrength; one of following methods used:\n—\na) thickness at least applicable distance of Table 8\nb) insulation is assembled of minimum two separate \nlayers, each RATED for test voltage of Table 6 for \nBASIC INSULATION\n(see Form A.18)\nc) insulation is assembled of min. two separate \nlayers, where the combination is RATED for 1,6 \ntimes the test voltage of Table 6\n(see Form A.18)",
+              "similarity_score": 0.7964476591824489,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+              "page": 9,
+              "preview_text": "6. USB-A Connection Port – An auxiliary port that a USB type A can be attached to. Used to export  \ndata. This data export process is detailed in the software section.\nLAN Connection Port  – An auxiliary port that a LAN cable can be connected to. For current  \ncustomer use, the instrument does not have internet connection capabilities.\nWARNING:  Do not attempt to connect the Infinity MTx to the LAN. CellFE will not be held  \nresponsible for any damage that results as the Infinity MTx is not meant to be connected to your  \nnetwork.\nPlaceholder: Labeled image of the Infinity MPA with numbers corresponding to below \nsections\nPlacehold\ner: image \nof power \nswitch",
+              "similarity_score": 0.7929398350601597,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ],
+          "image_support": [
+            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CFE_block_diagram.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D",
+            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/PastedGraphic-1.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
+          ],
+          "confidence": 85
+        },
+        {
+          "question_cell": "A27",
+          "prefix": "Schematics",
+          "field": "8.",
+          "answer_cell": "B27",
+          "value": null,
+          "val1": null,
+          "st1": "Schematics - Refer to Illustration ++ for schematics requiring verification during Field Representative Inspection Audits.",
+          "resp1": null,
+          "st2": null,
+          "resp2": null,
+          "checkbox": true,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A28",
+          "prefix": "Markings",
+          "field": "9.",
+          "answer_cell": "B28",
+          "value": "Markings - The product is marked on as follows: The product displays the applicant's name, brand name, model number, and electrical ratings (100-240VAC, 5.9-2.7A, 50/60Hz). Markings include overvoltage category II, pollution degree 2, and appropriate graphic symbols (such as CE, ETL, and protective earth). Warning symbols and hazard markings are used where necessary. The markings are in contrasting color and are durable, remaining legible in normal use. Safety and operation documentation is provided for the operator. No evidence of markings for manufacturing location, wet location, or IP/IK ratings. Protective conductor terminal is present at the appliance inlet. Instructions for assembly, mounting, protective earthing, and supply connections are included in the documentation.",
+          "val1": null,
+          "st1": "Markings - The product is marked <on a labeling system as described in item no. __ of Section 4.0 or by molding into polymeric enclosure> as follows: \n<Applicant's name, Basic or Multiple Listee's name as defined in section 9.0 or brand names;\nmodel number;\ndate of manufacturer;\nelectrical ratings, gas ratings>.x",
+          "resp1": null,
+          "st2": null,
+          "resp2": null,
+          "checkbox": true,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "text_support": [
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 11,
+              "preview_text": "P\nb) Symbols and text moulded, stamped or \nengraved in material min. 2,0 mm high and \nSymbol/text height evidence \nnot available in \ndocumentation.\n \n0,5 mm depth or raised if not contrasting in \ncolour\nMarkings are in contrasting \ncolor; depth not required.\nP\nIf necessary marked with symbol 14, or Warning markings use symbol \n14 where necessary.\nP",
+              "similarity_score": 0.8301616427121661,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 5,
+              "preview_text": "Page 6 of 88 Report No.      \nTRF No. IEC61010_1P\nCopy of marking plate:\nThe artwork below may be only a draft. The use of certification marks on a product must be \nauthorized by the respective NCBs that own these marks.",
+              "similarity_score": 0.8212634845760107,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 12,
+              "preview_text": "Page 13 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\nAdditional symbols such as symbol 12, 13 or 17 \nused to indicate the nature of HAZARD\nWarning markings use \nappropriate hazard symbols \nas needed.\nP\nStatement to place equipment in a safe state before \naccess by using a tool to HAZARDOUS parts is \npermitted\nNo warning for tool access to \nhazardous parts found.\nP\n5.3 Durability of markings\nThe required markings remain clear and legible in \nNORMAL USE \n(see Form A.3)\n5.4 Documentation\n5.4.1 General\nEquipment is accompanied by documentation for \nsafety purposes for OPERATOR or RESPONSIBLE BODY\nSafety documentation for \noperator is provided.\nP\nSafety documentation for service personnel \nauthorized by the manufacturer\nNo service personnel safety \ndocumentation found in \nmanual.\nN/A\nDocumentation necessary for safe operation is \nprovided in printed media or\nPrinted safety and operation \ndocumentation is provided.\nP\nin electronic media if available at any time Electronic manual includes \nsafety operation \ndocumentation.\nP\nDocumentation includes: —\na) Intended use Intended for indoor laboratory \nuse only.\nP",
+              "similarity_score": 0.8203918623755231,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 47,
+              "preview_text": "Page 48 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement — Test Result — Remark Verdict\n5.3 TABLE: Durability of markings Form A.3\nMarking method (see NOTE) Agent\n1) Adhesive label A Water\n2) Ink printed B Isopropyl alcohol 70%\n3) Laser marked C (specify agent)\n4) Film-coated (plastic foil control panel) D (specify agent)\n5) Imprinted on plastic (moulded in) E (specify agent)\nNOTE – Where applicable include print method, label material, ink or paint type, \nfixing method, adhesive and surface to which marking is fixed.\nMarking location Marking method (see above)\nIdentification (5.1.2)\nMAINS supply (5.1.3)\nFuses (5.1.4)\nTerminals and operating devices (5.1.5.2)\nSwitches and circuit breakers (5.1.6)\nDouble/reinforced equipment (5.1.7)\nField wiring Terminal boxes (5.1.8)\nWarning marking (5.2)\nBattery charging (13.2.2)\nMethod Test agent Remains legible Label loose Curled edges Comments\nVerdict Verdict Verdict\nSupplementary information:",
+              "similarity_score": 0.8188750046956658,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 9,
+              "preview_text": "Page 10 of 88 Report No.      \nTRF No. IEC61010_1P\nIEC 61010-1\nClause Requirement + Test Result - Remark Verdict\n– Visible from the exterior; or Required exterior markings \nnot visible in images.\n \n– Visible after removing cover or opening door No evidence of required \nmarkings after cover removal.\n \n– Visible after removal from a rack or panel Required markings not visible \nin provided images.\n \nNot put on parts which can be removed by an \noperator\nNo evidence markings are on \nremovable operator parts.\nP\nLetter symbols (IEC 60027) used\nGraphic symbols of Table 1 used Required graphic symbols \nfrom Table 1 are present.\nP\n5.1.2 Identification\nEquipment is identified by: —\na) Manufacturer’s or supplier’s name or trademark Manufacturer name 'Gener8 \nLLC' clearly identified.\nP\nb) Model number, name or other means Identified by model name and \npart number.\nP\nManufacturing location identified Manufacturing location not \nidentified on equipment \nimages.\n \n5.1.3 MAINS supply\nEquipment is marked as follows: —\na) Nature of supply: —\n1) a.c. RATED MAINS frequency or range of\nfrequencies....................................................:\n50/60 Hz mains frequency \nclearly specified.\n—",
+              "similarity_score": 0.8119373294343819,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ],
+          "image_support": [
+            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CFE_block_diagram.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
+          ],
+          "confidence": 90.0
+        },
+        {
+          "question_cell": "A29",
+          "prefix": "Cautionary Markings",
+          "field": "10.",
+          "answer_cell": "B29",
+          "value": null,
+          "st1": "The following are required",
+          "resp1": null,
+          "st2": null,
+          "resp2": null,
+          "checkbox": true,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": false
+        },
+        {
+          "question_cell": "A30",
+          "prefix": "Installation, Operating and Safety Instructions",
+          "field": "11.",
+          "answer_cell": "B30",
+          "value": "Installation, Operating and Safety Instructions - Instructions for installation and use of this product are provided by the manufacturer.",
+          "val1": null,
+          "st1": "Installation, Operating and Safety Instructions - Instructions for installation and use of this product are provided by the manufacturer. Refer to Illustrations ++ for details.",
+          "resp1": null,
+          "st2": null,
+          "resp2": null,
+          "checkbox": true,
+          "field_merged": false,
+          "fm_range": null,
+          "value_merged": false,
+          "vm_range": null,
+          "task_type": "extraction",
+          "user_editable": true,
+          "ai_fillable": true,
+          "accuracy_level": true,
+          "text_support": [
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 14,
+              "preview_text": "P\n5.4.5 Equipment maintenance and service\nInstructions for RESPONSIBLE BODY include: —\nInstructions sufficient in detail permitting safe \nmaintenance and inspection and continued safety:\n—\nInstruction against the use of detachable MAINS \nsupply cord with inadequate RATING\nOnly use properly rated, \ngrounded supply cords.\nP\nSpecific battery type of user replaceable batteries No replaceable batteries in the \nequipment.\nN/A\nAny manufacturer specified parts No specific safety-critical parts \nidentified for maintenance.\nP",
+              "similarity_score": 0.8279401722575387,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "final_output_B105581614.pdf",
+              "page": 12,
+              "preview_text": "safety operation \ndocumentation.\nP\nDocumentation includes: —\na) Intended use Intended for indoor laboratory \nuse only.\nP\nb) Technical specification Technical specifications are \nclearly documented.\nP\nc) Name and address of manufacturer or supplier Manufacturer: Gener8 LLC, \n2560 Junction Avenue, San \nJose, CA, USA.\nP\nd) Information specified in 5.4.2 to 5.4.6 Technical specifications are \nclearly documented.\nP\ne) Information to mitigate residual RISK \n(see also subclause 17)\nResidual risk mitigation \ninformation is provided for \nbiohazards.\nP\nf) Accessories for safe operation of the equipment \nspecified\nAir compressor required for \nsafe operation.\nP\ng) Guidance provided to check correct function of \nthe equipment, if incorrect reading may cause a \nHAZARD from harmful or corrosive substances of \nHAZARDOUS live parts\nHazardous live parts present \nwith service covers removed.\nP\nh) Instructions for lifting and carrying Lifting instructions provided; \nequipment is portable.\nP\nWarning statements and a clear explanation of \nwarning symbols:\n—\n– provided in the documentation; or Warning statements and \nsymbol explanations are \nclearly provided.\nP",
+              "similarity_score": 0.8271589516869041,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/final_output_B105581614.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+              "page": 1,
+              "preview_text": "Safety and environmental considerations.........................................................................................................12\nSetting Up the Infinity MTx...............................................................................................................13\nUnpacking and Inspecting...................................................................................................................................13\nAssembling and Connecting the MTx.................................................................................................................14\nTesting MTx Functionality...................................................................................................................................14\nChapter 3: Using the Infinity MTx.......................................................................................... 15\nSoftware user interface.......................................................................................................................................15",
+              "similarity_score": 0.8154900654128787,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual.pdf",
+              "page": 3,
+              "preview_text": "Infinity MTx Operating Manual\nIFU-001 Rev. A 08/24/2023 4 of 48\nCustomer and Technical Support.................................................................................................................50\nLimited Product Warranty............................................................................................................................50\nReferences.....................................................................................................................................................50",
+              "similarity_score": 0.8055141436327925,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            },
+            {
+              "filename": "CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf",
+              "page": 11,
+              "preview_text": "a tripping hazard.\no Refer to the Werther P15-TC 115V User Manual for detailed information.\nSafety and environmental considerations\n The Infinity MTx is designed for indoor use only. Temperature, relative humidity, and altitude  \nrecommendations are provided in Appendix E. \n During installation, personal protective equipment (PPE), including safety goggles or glasses,  \ndisposable gloves, and a lab coat (if working in a biosafety level 2 facility or higher), must be  \nutilized.",
+              "similarity_score": 0.8044395991131426,
+              "url": "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CellFE_Infinity_MTx_Operating_Manual-jsg-11-16-2023_Final_1_.pdf?sp=racwdl&st=2026-01-19T12:40:59Z&se=2126-01-19T20:55:59Z&sv=2024-11-04&sr=c&sig=cF90ggYgSeglpEfVI44fO9FP1gknOyscit%2Fmfm7v1QQ%3D"
+            }
+          ],
+          "image_support": [
+            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/CFE_block_diagram.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D",
+            "https://stintertekesusdev.blob.core.windows.net/stintertekesusdev-blob/Documents/B105581614/source_documents/PastedGraphic-1.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2126-01-19T21%3A10%3A06Z&st=2026-01-19T12%3A55%3A06Z&spr=https&sig=K1nhnwEPGX%2FBKxWejkJK5NiGpUYZbaDNhlE9D303W6E%3D"
+          ],
+          "confidence": 100
+        }
+      ]
+    }
+  ]
+}

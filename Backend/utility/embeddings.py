@@ -1,77 +1,48 @@
-import os
-import time
-from urllib.parse import urlparse, unquote
-from azure.cosmos import CosmosClient, ConsistencyLevel
+import base64
 import json
-
-# Import helpers from your existing utils
-from utility.trf_utils import *
+import os
 import re
-import tempfile
 import shutil
-import requests
-from urllib.parse import urlparse, unquote
-from email import policy
-from email.parser import BytesParser
-import extract_msg
-import fitz
-import uuid
-from langchain_core.documents import Document
-import io
-import openpyxl
-import xlrd
-# from utils import *
-from azure.storage.blob import BlobClient
-from azure.core.exceptions import ResourceNotFoundError, AzureError
-# from templates import *
-import pandas as pd
-import math
-import copy
 import time
+import warnings
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+from types import SimpleNamespace
+from typing import Any, Dict, List
+from urllib.parse import urlparse
+
+import fitz  # PyMuPDF
+import pandas as pd
+import requests
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
-import json, os
-from azure.cosmos import CosmosClient, ConsistencyLevel
-from typing import List, Dict, Any, Tuple
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
-from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+from azure.storage.blob import BlobClient
+from dotenv import load_dotenv
 from langchain_azure_ai.vectorstores import AzureCosmosDBNoSqlVectorSearch
 from langchain_community.document_loaders import PyPDFLoader
+from langchain_core.documents import Document
+from langchain_openai import AzureOpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from azure.cosmos import CosmosClient
-from operator import itemgetter
-from langchain_core.runnables import (
-    RunnableParallel, RunnableLambda, RunnableMap
-)
-from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import AzureChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
-from tenacity import retry, retry_if_exception_type, wait_exponential, stop_never, RetryCallState
-from openai import RateLimitError  # Make sure this import exists
-from types import SimpleNamespace
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from azure.core.exceptions import HttpResponseError
-import time
-from langchain_community.callbacks import get_openai_callback
-pd.set_option('display.max_colwidth', None)  # Don't truncate cell text
-pd.set_option('display.max_rows', None)      # Show all rows (optional)
-pd.set_option('display.max_columns', None)
-from dotenv import load_dotenv
-from pathlib import Path
 from openai import AzureOpenAI
-from pypdf import PdfReader
-from azure.cosmos.exceptions import CosmosResourceNotFoundError
-import shutil
-import fitz
-fitz.TOOLS.mupdf_display_errors(False)
-
-import warnings
-warnings.filterwarnings("ignore", category=UserWarning)
- 
-
+from pypdf import PdfReader as PyPdfReader
+from PyPDF2 import PdfReader as PdfReader
+from PyPDF2.generic import IndirectObject
 
 from projects.keyvault_load import *
+from utility.trf_utils import *
+
+# from templates import *
+# from utils import *
+
+# importlib.reload(configs)
+pd.set_option("display.max_colwidth", None)  # Don't truncate cell text
+pd.set_option("display.max_rows", None)  # Show all rows (optional)
+pd.set_option("display.max_columns", None)
+
+fitz.TOOLS.mupdf_display_errors(False)
+
+warnings.filterwarnings("ignore", category=UserWarning)
+
+
 load_keyvault_secrets()
 
 load_dotenv()
@@ -85,25 +56,24 @@ TOP_K = 5
 
 
 # Load environment variables
-AOAI_ENDPOINT      = os.getenv("aoai-endpoint")
-AOAI_KEY           = os.getenv("aoai-key")
-API_VERSION        = os.getenv("api-version")
-EMBED_DEPLOY       = os.getenv("embed-deploy")
-COSMOS_DB_TEXT     = os.getenv("cosmos-db-text")
-COSMOS_CONT_TEXT   = os.getenv("cosmos-cont-text")
-AZURE_CONN_STRING  = os.getenv("azure-conn-string")
-BLOB_CONTAINER     = os.getenv("blob-container")
-COSMOS_URL         = os.getenv("cosmos-url")
-COSMOS_KEY         = os.getenv("cosmos-key")
-CHAT_DEPLOY        = os.getenv("chat-deploy")
-BLOB_CONTAINER     = os.getenv("blob-container")
-COSMOS_DB_IMAGE    = os.getenv("cosmos-db-image")
-COSMOS_CONT_IMAGE  = os.getenv("cosmos-cont-image")
-ENABLE_CAD_SCHEMATICS  = os.getenv("enable-cad-schematics")
+AOAI_ENDPOINT = os.getenv("aoai-endpoint")
+AOAI_KEY = os.getenv("aoai-key")
+API_VERSION = os.getenv("api-version")
+EMBED_DEPLOY = os.getenv("embed-deploy")
+COSMOS_DB_TEXT = os.getenv("cosmos-db-text")
+COSMOS_CONT_TEXT = os.getenv("cosmos-cont-text")
+AZURE_CONN_STRING = os.getenv("azure-conn-string")
+BLOB_CONTAINER = os.getenv("blob-container")
+COSMOS_URL = os.getenv("cosmos-url")
+COSMOS_KEY = os.getenv("cosmos-key")
+CHAT_DEPLOY = os.getenv("chat-deploy")
+BLOB_CONTAINER = os.getenv("blob-container")
+COSMOS_DB_IMAGE = os.getenv("cosmos-db-image")
+COSMOS_CONT_IMAGE = os.getenv("cosmos-cont-image")
+ENABLE_CAD_SCHEMATICS = os.getenv("enable-cad-schematics")
 
 
-
-print('AOAI_ENDPOINT', AOAI_ENDPOINT)
+print("AOAI_ENDPOINT", AOAI_ENDPOINT)
 
 # ----------------------------------------------------------------------------------------
 # Azure OpenAI Client (shared for whole pipeline)
@@ -118,6 +88,7 @@ aoai_client = AzureOpenAI(
 # ----------------------------------------------------------------------------------------
 # Embedding Builder — same as notebook
 # ----------------------------------------------------------------------------------------
+
 
 def build_embeddings():
     return AzureOpenAIEmbeddings(
@@ -135,28 +106,26 @@ def build_embeddings():
 
 
 def build_vectorstore_text(textDB_container_name):
-    cosmos_client = CosmosClient(
-        url=COSMOS_URL,
-        credential=COSMOS_KEY
-    )
+    cosmos_client = CosmosClient(url=COSMOS_URL, credential=COSMOS_KEY)
 
     return AzureCosmosDBNoSqlVectorSearch(
         cosmos_client=cosmos_client,
         embedding=build_embeddings(),
         database_name=COSMOS_DB_TEXT,
         container_name=textDB_container_name,
-
         vector_embedding_policy={
-            "vectorEmbeddings": [{
-                "path": "/vector",
-                "dataType": "float32",
-                "dimensions": EMBED_DIM,
-                "distanceFunction": "cosine"
-            }]
+            "vectorEmbeddings": [
+                {
+                    "path": "/vector",
+                    "dataType": "float32",
+                    "dimensions": EMBED_DIM,
+                    "distanceFunction": "cosine",
+                }
+            ]
         },
         indexing_policy={
             "includedPaths": [{"path": "/*"}],
-            "excludedPaths": [{"path": "/\"_etag\"/?"}, {"path": "/vector/*"}],
+            "excludedPaths": [{"path": '/"_etag"/?'}, {"path": "/vector/*"}],
             "vectorIndexes": [{"path": "/vector", "type": "quantizedFlat"}],
         },
         cosmos_container_properties={"partition_key": "/id"},
@@ -164,8 +133,8 @@ def build_vectorstore_text(textDB_container_name):
         vector_search_fields={
             "text_field": "text",
             "embedding_field": "vector",
-            "metadata_field": "metadata"
-        }
+            "metadata_field": "metadata",
+        },
     )
 
 
@@ -174,28 +143,26 @@ def build_vectorstore_text(textDB_container_name):
 # EXACT logic from notebook (not altered)
 # ----------------------------------------------------------------------------------------
 def build_vectorstore_image(imageDB_container_name):
-    cosmos_client = CosmosClient(
-        url=COSMOS_URL,
-        credential=COSMOS_KEY
-    )
+    cosmos_client = CosmosClient(url=COSMOS_URL, credential=COSMOS_KEY)
 
     return AzureCosmosDBNoSqlVectorSearch(
         cosmos_client=cosmos_client,
         embedding=build_embeddings(),
         database_name=COSMOS_DB_IMAGE,
         container_name=imageDB_container_name,
-
         vector_embedding_policy={
-            "vectorEmbeddings": [{
-                "path": "/vector",
-                "dataType": "float32",
-                "dimensions": EMBED_DIM,
-                "distanceFunction": "cosine"
-            }]
+            "vectorEmbeddings": [
+                {
+                    "path": "/vector",
+                    "dataType": "float32",
+                    "dimensions": EMBED_DIM,
+                    "distanceFunction": "cosine",
+                }
+            ]
         },
         indexing_policy={
             "includedPaths": [{"path": "/*"}],
-            "excludedPaths": [{"path": "/\"_etag\"/?"}, {"path": "/vector/*"}],
+            "excludedPaths": [{"path": '/"_etag"/?'}, {"path": "/vector/*"}],
             "vectorIndexes": [{"path": "/vector", "type": "quantizedFlat"}],
         },
         cosmos_container_properties={"partition_key": "/id"},
@@ -203,16 +170,9 @@ def build_vectorstore_image(imageDB_container_name):
         vector_search_fields={
             "text_field": "text",
             "embedding_field": "vector",
-            "metadata_field": "metadata"
-        }
+            "metadata_field": "metadata",
+        },
     )
-
-
-# ingestion_tool.py (continued)
-# --------------------------------------------------------
-# SECTION 2.2 — PDF Text Loading, CAD/Schematic Image Extraction,
-#                Chunking Logic, Image Upload to Azure Blob Storage
-# --------------------------------------------------------
 
 
 # -------------------------------------------------------------------------
@@ -224,126 +184,6 @@ def sanitize_blob_name(name: str) -> str:
     return name
 
 
-
-# def is_editable_pdf(pdf_path) -> bool:
-#     """
-#     True if PDF contains AcroForm (fillable fields).
-#     """
-#     reader = PdfReader(pdf_path)
-#     return bool(reader.get_fields())
-
-
-# -------------------------------------------------------------------------
-# STRICT CAD/Schematic Page Detector (EXACT logic from notebook)
-# -------------------------------------------------------------------------
-# def extract_relevant_pdf_page_images(pdf_path, dpi=200):
-#     """
-#     STRICT selection of pages containing diagrams / CAD / schematics.
-#     EXTENDED:
-#     - If PDF is editable → convert ALL pages to images
-#     - Else → keep EXACT notebook logic
-#     """
-
-#     import fitz
-#     import os
-
-#     pdf = fitz.open(pdf_path)
-#     base = os.path.basename(pdf_path)
-
-#     image_page_metadata = []
-
-#     # -------------------------------------------------
-#     # NEW: Editable PDF shortcut
-#     # -------------------------------------------------
-#     if is_editable_pdf(pdf_path):
-#         for i, page in enumerate(pdf):
-#             page_num = i + 1
-#             try:
-#                 pix = page.get_pixmap(dpi=dpi)
-#                 img_path = f"{pdf_path}_page_{page_num}.png"
-#                 pix.save(img_path)
-
-#                 image_page_metadata.append({
-#                     "pdf_file": base,
-#                     "page": page_num,
-#                     "local_image_path": img_path,
-#                     "reason": "editable_pdf_full_page"
-#                 })
-#             except Exception as e:
-#                 print(f"[WARN] Image extraction failed for {base} page {page_num}: {e}")
-
-#         return image_page_metadata
-
-#     # -------------------------------------------------
-#     # ORIGINAL NOTEBOOK LOGIC (UNTOUCHED)
-#     # -------------------------------------------------
-#     for i, page in enumerate(pdf):
-#         page_num = i + 1
-
-#         text = page.get_text().strip()
-#         images = page.get_images(full=True)
-#         drawings = page.get_drawings()
-#         blocks = page.get_text("blocks")
-
-#         text_len = len(text)
-#         num_blocks = len(blocks)
-#         vector_ops = len(drawings)
-
-#         raster_area = 0
-#         for img in images:
-#             try:
-#                 w = img[2]
-#                 h = img[3]
-#                 raster_area += (w * h)
-#             except:
-#                 continue
-
-#         should_extract = False
-
-#         if raster_area > 500000:
-#             should_extract = True
-#         elif vector_ops > 150:
-#             should_extract = True
-#         elif text_len < 30:
-#             should_extract = True
-#         elif num_blocks > 30 and text_len < 150:
-#             should_extract = True
-#         elif (
-#             any(k in text.lower() for k in ["label", "regulatory"])
-#             and vector_ops > 20
-#             and text_len < 600
-#         ):
-#             should_extract = True
-#         elif any(k in base.lower() for k in ["schematic", "cad", "drawing", "layout", "wiring"]) and text_len < 80:
-#             should_extract = True
-#         elif len(pdf) <= 3 and (vector_ops > 20 or text_len < 600):
-#             should_extract = True
-
-#         if not should_extract:
-#             continue
-
-#         try:
-#             pix = page.get_pixmap(dpi=dpi)
-#             img_path = f"{pdf_path}_page_{page_num}.png"
-#             pix.save(img_path)
-
-#             image_page_metadata.append({
-#                 "pdf_file": base,
-#                 "page": page_num,
-#                 "local_image_path": img_path,
-#                 "text_length": text_len,
-#                 "raster_area": raster_area,
-#                 "vector_ops": vector_ops,
-#                 "blocks": num_blocks,
-#             })
-
-#         except Exception as e:
-#             print(f"[WARN] Image extraction failed for {base} page {page_num}: {e}")
-
-#     return image_page_metadata
-
-
-
 def extract_relevant_pdf_page_images(pdf_path, dpi=200):
     """
     STRICT selection of pages containing diagrams / CAD / schematics.
@@ -351,6 +191,7 @@ def extract_relevant_pdf_page_images(pdf_path, dpi=200):
     """
 
     import fitz
+
     pdf = fitz.open(pdf_path)
     base = os.path.basename(pdf_path)
 
@@ -373,7 +214,7 @@ def extract_relevant_pdf_page_images(pdf_path, dpi=200):
             try:
                 w = img[2]
                 h = img[3]
-                raster_area += (w * h)
+                raster_area += w * h
             except:
                 continue
 
@@ -394,7 +235,13 @@ def extract_relevant_pdf_page_images(pdf_path, dpi=200):
             and text_len < 600
         ):
             should_extract = True
-        elif any(k in base.lower() for k in ["schematic", "cad", "drawing", "layout", "wiring"]) and text_len < 80:
+        elif (
+            any(
+                k in base.lower()
+                for k in ["schematic", "cad", "drawing", "layout", "wiring"]
+            )
+            and text_len < 80
+        ):
             should_extract = True
         elif len(pdf) <= 3 and (vector_ops > 20 or text_len < 600):
             should_extract = True
@@ -408,15 +255,17 @@ def extract_relevant_pdf_page_images(pdf_path, dpi=200):
             img_path = f"{pdf_path}_page_{page_num}.png"
             pix.save(img_path)
 
-            image_page_metadata.append({
-                "pdf_file": base,
-                "page": page_num,
-                "local_image_path": img_path,
-                "text_length": text_len,
-                "raster_area": raster_area,
-                "vector_ops": vector_ops,
-                "blocks": num_blocks,
-            })
+            image_page_metadata.append(
+                {
+                    "pdf_file": base,
+                    "page": page_num,
+                    "local_image_path": img_path,
+                    "text_length": text_len,
+                    "raster_area": raster_area,
+                    "vector_ops": vector_ops,
+                    "blocks": num_blocks,
+                }
+            )
 
         except Exception as e:
             print(f"[WARN] Image extraction failed for {base} page {page_num}: {e}")
@@ -424,16 +273,11 @@ def extract_relevant_pdf_page_images(pdf_path, dpi=200):
     return image_page_metadata
 
 
-
 # -------------------------------------------------------------------------
 # PDF Loader + Text Chunking (EXACT logic from notebook)
 # -------------------------------------------------------------------------
 def load_and_split_pdfs_text(
-    pdf_paths,
-    CHUNK_SIZE,
-    CHUNK_OVERLAP,
-    extracted_texts=None,
-    cad_schematics=True
+    pdf_paths, CHUNK_SIZE, CHUNK_OVERLAP, extracted_texts=None, cad_schematics=True
 ):
     """
     EXACT implementation from your notebook.
@@ -453,9 +297,14 @@ def load_and_split_pdfs_text(
     )
 
     # ----- STEP 1: PDF TEXT EXTRACTION -----
-    for path in pdf_paths:
-        if not str(path).lower().endswith(".pdf"):
-            continue
+    for item in pdf_paths:
+
+        if isinstance(item, dict):
+            path = item.get("path")
+            category = item.get("category", "other")
+        else:
+            path = item
+            category = infer_category_from_path(path)
 
         loader = PyPDFLoader(str(path))
         raw_docs = loader.load()
@@ -465,6 +314,7 @@ def load_and_split_pdfs_text(
             page = int(d.metadata.get("page", 1))
             d.metadata["source_file"] = base
             d.metadata["page"] = page
+            d.metadata["category"] = category
             d.metadata["citation"] = f"{base}#page={page}"
 
         docs.extend(raw_docs)
@@ -508,18 +358,13 @@ def load_and_split_pdfs_text(
             metadata = {
                 "source_file": os.path.basename(str(filename)),
                 "page": 1,
-                "citation": os.path.basename(str(filename))
+                "category": category,
+                "citation": os.path.basename(str(filename)),
+                # add category (based on file category will be fetched)
             }
 
             # ORIGINAL WORKING VERSION — KEEP SimpleNamespace
-            docs.append(
-                SimpleNamespace(
-                    page_content=text or "",
-                    metadata=metadata
-                )
-            )
-
-
+            docs.append(SimpleNamespace(page_content=text or "", metadata=metadata))
 
     # ----- STEP 4: Chunking -----
     chunks = splitter.split_documents(docs)
@@ -527,137 +372,8 @@ def load_and_split_pdfs_text(
     return chunks, image_page_metadata
 
 
-# -------------------------------------------------------------------------
-# Upload extracted PDF page images → Azure Blob Storage
-# (EXACT logic from notebook)
-# -------------------------------------------------------------------------
-# def upload_pdf_images_and_append_urls(
-#     image_page_metadata,
-#     image_urls,
-#     conn_str,
-#     container
-# ):
-#     """
-#     Takes CAD/schematic page images extracted above,
-#     uploads each PNG to blob storage,
-#     appends URLs in same format as notebook.
-#     """
-
-#     for item in image_page_metadata:
-#         local_path = item["local_image_path"]
-#         pdf_file = item["pdf_file"]
-#         page = item.get("page") or item.get("page_num")
-
-#         safe_pdf_name = sanitize_blob_name(pdf_file)
-#         safe_image_filename = sanitize_blob_name(os.path.basename(local_path))
-
-#         blob_name = f"{safe_pdf_name}/page_{page}.png"
-
-#         try:
-#             blob = BlobClient.from_connection_string(
-#                 conn_str,
-#                 container_name=container,
-#                 blob_name=blob_name,
-#             )
-
-#             with open(local_path, "rb") as f:
-#                 blob.upload_blob(f, overwrite=True)
-
-#             blob_url = blob.url
-
-#             # EXACT return structure from notebook
-#             image_urls.append({
-#                 "url": blob_url,
-#                 "image_file": safe_image_filename,
-#                 "pdf_file": pdf_file,
-#                 "page": page
-#             })
-
-#         except Exception as e:
-#             print(f"[ERROR] Upload failed for {local_path}: {e}")
-
-#     return image_urls
-
-
-
-# def upload_pdf_images_and_append_urls(
-#     image_page_metadata,
-#     image_urls,
-#     conn_str,
-#     container,
-#     max_workers=8
-# ):
-#     """
-#     Takes CAD/schematic page images extracted above,
-#     uploads each PNG to blob storage in parallel,
-#     appends URLs in same format as notebook.
-#     """
-
-#     def upload_single(item):
-#         local_path = item["local_image_path"]
-#         pdf_file = item["pdf_file"]
-#         page = item.get("page") or item.get("page_num")
-
-#         safe_pdf_name = sanitize_blob_name(pdf_file)
-#         safe_image_filename = sanitize_blob_name(os.path.basename(local_path))
-
-#         blob_name = f"{safe_pdf_name}/page_{page}.png"
-
-#         try:
-#             blob = BlobClient.from_connection_string(
-#                 conn_str,
-#                 container_name=container,
-#                 blob_name=blob_name,
-#             )
-
-#             with open(local_path, "rb") as f:
-#                 blob.upload_blob(f, overwrite=True)
-
-#             blob_url = blob.url
-
-#             return {
-#                 "url": blob_url,
-#                 "image_file": safe_image_filename,
-#                 "pdf_file": pdf_file,
-#                 "page": page
-#             }
-
-#         except Exception as e:
-#             print(f"[ERROR] Upload failed for {local_path}: {e}")
-#             return None
-
-#     # -------------------------------------------------
-#     # PARALLEL EXECUTION
-#     # -------------------------------------------------
-#     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-#         futures = [
-#             executor.submit(upload_single, item)
-#             for item in image_page_metadata
-#         ]
-
-#         for future in as_completed(futures):
-#             result = future.result()
-#             if result:
-#                 image_urls.append(result)
-
-#     return image_urls
-
-
-
-
-
-from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from azure.storage.blob import BlobClient
-import os
-
 def upload_pdf_images_and_append_urls(
-    image_page_metadata,
-    image_urls,
-    conn_str,
-    container,
-    max_workers,
-    project_id      
+    image_page_metadata, image_urls, conn_str, container, max_workers, project_id
 ):
     """
     Takes CAD/schematic page images extracted above,
@@ -672,10 +388,8 @@ def upload_pdf_images_and_append_urls(
     # BASE BLOB PATH (matches reference logic)
     # -------------------------------------------------
     base_blob_path = (
-        Path("Documents") /
-        str(project_id) /
-        "pdf_images"
-    ).as_posix()   # Azure requires forward slashes
+        Path("Documents") / str(project_id) / "pdf_images"
+    ).as_posix()  # Azure requires forward slashes
 
     def upload_single(item):
         local_path = item["local_image_path"]
@@ -704,7 +418,7 @@ def upload_pdf_images_and_append_urls(
                 "url": blob.url,
                 "image_file": os.path.basename(local_path),
                 "pdf_file": pdf_file,
-                "page": page
+                "page": page,
             }
 
         except Exception as e:
@@ -715,10 +429,7 @@ def upload_pdf_images_and_append_urls(
     # PARALLEL EXECUTION (UNCHANGED)
     # -------------------------------------------------
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [
-            executor.submit(upload_single, item)
-            for item in image_page_metadata
-        ]
+        futures = [executor.submit(upload_single, item) for item in image_page_metadata]
 
         for future in as_completed(futures):
             result = future.result()
@@ -726,15 +437,6 @@ def upload_pdf_images_and_append_urls(
                 image_urls.append(result)
 
     return image_urls
- 
-
-
-
-
-# ingestion_tool.py (continued)
-# --------------------------------------------------------
-# SECTION 3.1 — Image URL Extraction + Agent-Based OCR Pipeline
-# --------------------------------------------------------
 
 
 # --------------------------------------------------------
@@ -839,14 +541,16 @@ image_desc_schema = {
             "total": {"type": "integer"},
         },
         "required": ["url", "vision_deploy_name"],
-    }
+    },
 }
 
 
 # --------------------------------------------------------
 # run_function_agent_llm — EXACT as notebook
 # --------------------------------------------------------
-def run_function_agent_llm(client, user_prompt: str, function_schema: dict, python_callback: callable):
+def run_function_agent_llm(
+    client, user_prompt: str, function_schema: dict, python_callback: callable
+):
     response = client.chat.completions.create(
         model=CHAT_DEPLOY,
         messages=[{"role": "user", "content": user_prompt}],
@@ -909,7 +613,6 @@ def process_single_image(url, index, total, vision_deploy_name):
     backoff = INITIAL_BACKOFF
 
     for attempt in range(1, MAX_RETRIES + 1):
-
         try:
             # Validate URL
             resp = requests.get(url, timeout=20)
@@ -920,7 +623,7 @@ def process_single_image(url, index, total, vision_deploy_name):
                 blob_url=url,
                 vision_deploy_name=vision_deploy_name,
                 index=index,
-                total=total
+                total=total,
             )
 
             # -------------------------------------------------------------------
@@ -937,36 +640,54 @@ def process_single_image(url, index, total, vision_deploy_name):
                 text = result.get("text") or result.get("content") or str(result)
                 return Document(
                     page_content=text,
-                    metadata={"image_name": cleaned_name, "blob_url": url, "source_type": "image"}
+                    metadata={
+                        "image_name": cleaned_name,
+                        "blob_url": url,
+                        "source_type": "image",
+                    },
                 )
 
             # CASE 3: Agent returned string
             if isinstance(result, str):
                 return Document(
                     page_content=result,
-                    metadata={"image_name": cleaned_name, "blob_url": url, "source_type": "image"}
+                    metadata={
+                        "image_name": cleaned_name,
+                        "blob_url": url,
+                        "source_type": "image",
+                    },
                 )
 
             # CASE 4: Anything else (fallback)
             return Document(
                 page_content=str(result),
-                metadata={"image_name": cleaned_name, "blob_url": url, "source_type": "image"}
+                metadata={
+                    "image_name": cleaned_name,
+                    "blob_url": url,
+                    "source_type": "image",
+                },
             )
 
         except Exception as e:
-            print(f"[WARN] Attempt {attempt}/{MAX_RETRIES} failed for image {index} → {url}: {e}")
+            print(
+                f"[WARN] Attempt {attempt}/{MAX_RETRIES} failed for image {index} → {url}: {e}"
+            )
 
             if attempt == MAX_RETRIES:
                 print(f"[ERROR] Giving up after {MAX_RETRIES} attempts → {url}")
                 return Document(
                     page_content="OCR extraction failed.",
-                    metadata={"image_name": extract_clean_image_name(url), "blob_url": url, "source_type": "image", "error": str(e)}
+                    metadata={
+                        "image_name": extract_clean_image_name(url),
+                        "blob_url": url,
+                        "source_type": "image",
+                        "error": str(e),
+                    },
                 )
 
             print(f"[INFO] Cooling down {backoff}s before retry…")
             time.sleep(backoff)
             backoff *= 2
-
 
 
 # --------------------------------------------------------
@@ -979,9 +700,10 @@ def load_and_process_images(image_urls, vision_deploy_name=CHAT_DEPLOY):
     print(f"[START] Processing {total} images with up to {MAX_THREADS} threads.\n")
 
     with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
-
         futures = {
-            executor.submit(process_single_image, url, idx + 1, total, vision_deploy_name): idx
+            executor.submit(
+                process_single_image, url, idx + 1, total, vision_deploy_name
+            ): idx
             for idx, url in enumerate(image_urls)
         }
 
@@ -994,7 +716,7 @@ def load_and_process_images(image_urls, vision_deploy_name=CHAT_DEPLOY):
                 if result is not None:
                     docs.append(result)
                 else:
-                    print(f"[ERROR] Image {idx+1}/{total} → returned None")
+                    print(f"[ERROR] Image {idx + 1}/{total} → returned None")
 
             except Exception as e:
                 print(f"[FATAL] Unexpected error for {url}: {e}")
@@ -1003,10 +725,10 @@ def load_and_process_images(image_urls, vision_deploy_name=CHAT_DEPLOY):
     return docs
 
 
-# ingestion_tool.py (continued)
 # --------------------------------------------------------
 # SECTION 4 — Full Orchestration: run_full_ingestion()
 # --------------------------------------------------------
+
 
 def clear_cosmos_container(database_name, container_name):
     """
@@ -1015,7 +737,9 @@ def clear_cosmos_container(database_name, container_name):
     """
     client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY)
 
-    container = client.get_database_client(database_name).get_container_client(container_name)
+    container = client.get_database_client(database_name).get_container_client(
+        container_name
+    )
 
     print(f"[INFO] Deleting all items in {database_name}.{container_name} ...")
 
@@ -1031,8 +755,6 @@ def clear_cosmos_container(database_name, container_name):
 
     except Exception as e:
         print(f"[ERROR] Could not list/delete items: {e}")
-
-
 
 
 def get_or_create_vector_container_serverless(
@@ -1073,16 +795,8 @@ def get_or_create_vector_container_serverless(
     # ---- Indexing policy ----
     indexing_policy = {
         "includedPaths": [{"path": "/*"}],
-        "excludedPaths": [
-            {"path": "/\"_etag\"/?"},
-            {"path": f"{VECTOR_PATH}/*"}
-        ],
-        "vectorIndexes": [
-            {
-                "path": VECTOR_PATH,
-                "type": "quantizedFlat"
-            }
-        ],
+        "excludedPaths": [{"path": '/"_etag"/?'}, {"path": f"{VECTOR_PATH}/*"}],
+        "vectorIndexes": [{"path": VECTOR_PATH, "type": "quantizedFlat"}],
     }
 
     # ---- Check container ----
@@ -1099,29 +813,12 @@ def get_or_create_vector_container_serverless(
             id=CONT_NAME,
             partition_key=PartitionKey(path="/id"),
             indexing_policy=indexing_policy,
-            vector_embedding_policy=vector_embedding_policy
+            vector_embedding_policy=vector_embedding_policy,
         )
 
         print("✔ Vector container created:", CONT_NAME)
         return container
 
-
-from pathlib import Path
-from typing import List, Dict, Any
-from PyPDF2 import PdfReader
-from PyPDF2.generic import IndirectObject
-import fitz  # PyMuPDF
-import base64
-from dotenv import load_dotenv
-import os
-from pathlib import Path
-import json
-from openai import OpenAI
-import os
-import importlib
-# importlib.reload(configs)
-from openai import AzureOpenAI
- 
 
 def _resolve_indirect(obj):
     if isinstance(obj, IndirectObject):
@@ -1155,7 +852,8 @@ def _has_freetext_annotations(reader: PdfReader, max_pages: int = 3) -> bool:
         return False
     except Exception:
         return False
-        
+
+
 def is_editable_form_pdf(path: Path) -> bool:
     """
     Return True if the PDF appears to contain *editable* content:
@@ -1203,6 +901,7 @@ def is_editable_form_pdf(path: Path) -> bool:
     except Exception:
         return False
 
+
 def flatten_and_get_images(input_path: str, output_path: str, dpi: int = 200):
     """
     Flattens the PDF AND returns a list of page images (pixmaps).
@@ -1225,9 +924,11 @@ def flatten_and_get_images(input_path: str, output_path: str, dpi: int = 200):
 
     return pixmaps
 
+
 # ============================
 # 3) Convert pixmaps to PNG paths
 # ============================
+
 
 def save_pixmaps_to_images(pixmaps: List[fitz.Pixmap], out_dir: Path, stem: str):
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -1328,12 +1029,10 @@ def extract_page_with_llm(img_path: Path) -> str:
                     {"type": "image_url", "image_url": {"url": data_uri}},
                 ],
             }
-        ]
+        ],
     )
 
     return response.choices[0].message.content
-
-
 
 
 def process_pdfs(
@@ -1354,12 +1053,6 @@ def process_pdfs(
     for pdf_path in src_root.glob("*.pdf"):
         if not pdf_path.is_file():
             continue
-
-        # print(f"\nChecking {pdf_path.name}...")
-
-        # if not is_editable_form_pdf(pdf_path):
-        #     print(" → Not editable. Skipping.")
-        #     continue
 
         MAX_CIS_PAGES = 10
 
@@ -1384,9 +1077,9 @@ def process_pdfs(
             print(" → Treating as NORMAL PDF (no extraction).")
             continue
 
-        print(f" → Editable PDF detected ({page_count} pages). Proceeding with extraction.")
-
-
+        print(
+            f" → Editable PDF detected ({page_count} pages). Proceeding with extraction."
+        )
 
         # Extract images directly from original PDF
         pixmaps = []
@@ -1410,44 +1103,32 @@ def process_pdfs(
             output = extract_page_with_llm(img_path)
             llm_outputs.append(output)
 
-        # results[pdf_path.name] = {
-        #     "original": pdf_path,
-        #     "images": img_paths,
-        #     "extracted": llm_outputs,
-        # }
         results[pdf_path.name] = {
             "original": pdf_path,
             "images": img_paths,
             "extracted": llm_outputs,
-            "is_editable": True
+            "is_editable": True,
         }
-
 
     return results
 
 
 def extract_cis(src_root, images_root):
-    results = process_pdfs(
-        src_root=src_root,
-        images_root=images_root,
-        dpi=200
-    )
+    results = process_pdfs(src_root=src_root, images_root=images_root, dpi=200)
 
     all_cis = []
     editable_pdfs = []
 
     for pdfs in results.keys():
         dic_cis = {}
-        dic_cis['filename'] = pdfs
-        dic_cis['text'] = results[pdfs]['extracted'][0]
+        dic_cis["filename"] = pdfs
+        dic_cis["text"] = results[pdfs]["extracted"][0]
         all_cis.append(dic_cis)
 
         editable_pdfs.append(pdfs)
 
     return all_cis, editable_pdfs
 
-# with open("src_files\\all_cis_info.txt", "w", encoding="utf-8") as f:
-#     json.dump(all_cis, f, indent=4, default=str)
 
 def copy_extracted_images_to_src(page_images_root: str, src_root: str):
     """
@@ -1491,16 +1172,17 @@ def append_cis_images_to_image_metadata(images_root: str, image_page_metadata: l
         if not subdir.is_dir():
             continue
 
-        pdf_name = subdir.name + ".pdf"   # fake source name for metadata consistency
+        pdf_name = subdir.name + ".pdf"  # fake source name for metadata consistency
 
         for img in subdir.glob("*.png"):
-            image_page_metadata.append({
-                "pdf_file": pdf_name,
-                "page": None,
-                "local_image_path": str(img),
-                "reason": "editable_pdf_page"
-            })
-
+            image_page_metadata.append(
+                {
+                    "pdf_file": pdf_name,
+                    "page": None,
+                    "local_image_path": str(img),
+                    "reason": "editable_pdf_page",
+                }
+            )
 
 
 def clean_text(text: str) -> str:
@@ -1518,12 +1200,7 @@ def clean_text(text: str) -> str:
     # -------------------------------------------------
     # 2. Remove common email headers / reply markers
     # -------------------------------------------------
-    t = re.sub(
-        r"(^|\n)(from|sent|to|cc|subject):.*",
-        " ",
-        t,
-        flags=re.IGNORECASE
-    )
+    t = re.sub(r"(^|\n)(from|sent|to|cc|subject):.*", " ", t, flags=re.IGNORECASE)
 
     # -------------------------------------------------
     # 3. Remove legal / disclaimer style blocks
@@ -1634,20 +1311,23 @@ def clean_extracted_texts(extracted_texts):
         else:
             cleaned_text = clean_text(text)
 
-        cleaned_items.append({
-            "filename": filename,
-            "text": cleaned_text
-        })
+        cleaned_items.append({"filename": filename, "text": cleaned_text})
 
     return cleaned_items
 
 
-
-def ingest_files_from_blob_urls_create_embeddings(download_dir,blob_urls: list, project_id: str,
-textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose: bool = True):
+def ingest_files_from_blob_urls_create_embeddings(
+    download_dir,
+    blob_urls: list,
+    project_id: str,
+    textDB_container_name,
+    imageDB_container_name,
+    keep_files: bool = True,
+    verbose: bool = True,
+):
     """
     Single-call function that performs the full notebook ingestion pipeline.
-    - blob_urls: list of full blob URLs 
+    - blob_urls: list of full blob URLs
     - download_dir: local directory to store downloads and converted pdfs
     - keep_files: whether to keep local downloaded files
     - verbose: print progress
@@ -1655,24 +1335,15 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
     NOTE: This function will DELETE ALL DOCUMENTS in the target Cosmos container (as per notebook).
     """
 
-    print('######### download_dir ########', download_dir)
+    print("######### download_dir ########", download_dir)
 
-    print('######## blob_urls #########', blob_urls)
+    print("######## blob_urls #########", blob_urls)
 
-    print('######## project_id #########', project_id)
+    print("######## project_id #########", project_id)
 
-    print('######## textDB_container_name #########', textDB_container_name)
+    print("######## textDB_container_name #########", textDB_container_name)
 
-    print('######## imageDB_container_name #########', imageDB_container_name)
-
-
-
-
-
-    # 1) Cosmos client and container
-    # client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY, consistency_level=ConsistencyLevel.Eventual)
-    # db_client = client.get_database_client(COSMOS_DB_TEXT)
-    # container_client = db_client.get_container_client(textDB_container_name)
+    print("######## imageDB_container_name #########", imageDB_container_name)
 
     client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY)
 
@@ -1681,7 +1352,7 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
         DB_NAME=COSMOS_DB_TEXT,
         CONT_NAME=textDB_container_name,
         VECTOR_PATH=VECTOR_PATH,
-        EMBED_DIM=EMBED_DIM
+        EMBED_DIM=EMBED_DIM,
     )
 
     # 2) Delete all items (not reversible)
@@ -1701,9 +1372,15 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
     IMAGES_ROOT = BASE_DIR / "data" / project_id / "image_files"
 
     # 3) Process blob URLs (download/convert/extract)
-    extracted_texts, image_urls_raw, downloaded_pdf_paths, converted_pdf_paths = process_blob_urls_2(
-        blob_urls, AZURE_CONN_STRING, BLOB_CONTAINER,
-        download_dir=DOWNLOAD_DIR, keep_files=keep_files, verbose=verbose
+    extracted_texts, image_urls_raw, downloaded_pdf_paths, converted_pdf_paths = (
+        process_blob_urls_2(
+            blob_urls,
+            AZURE_CONN_STRING,
+            BLOB_CONTAINER,
+            download_dir=DOWNLOAD_DIR,
+            keep_files=keep_files,
+            verbose=verbose,
+        )
     )
 
     pdf_paths = downloaded_pdf_paths + converted_pdf_paths
@@ -1712,26 +1389,18 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
     print(f"[INFO] Initial image URLs: {len(image_urls_raw)}")
     print(f"[INFO] Total PDFs: {len(pdf_paths)}\n")
 
-    cis_info, editable_pdfs = extract_cis(src_root=DOWNLOAD_DIR,images_root=IMAGES_ROOT)
+    cis_info, editable_pdfs = extract_cis(
+        src_root=DOWNLOAD_DIR, images_root=IMAGES_ROOT
+    )
 
     # ✅ Remove editable PDFs from PDF ingestion list (they are handled via OCR images)
-    pdf_paths = [
-        p for p in pdf_paths
-        if os.path.basename(p) not in editable_pdfs
-    ]
-    
-    copy_extracted_images_to_src(
-    page_images_root=IMAGES_ROOT,
-    src_root=DOWNLOAD_DIR)
+    pdf_paths = [p for p in pdf_paths if os.path.basename(p["path"] if isinstance(p, dict) else p) not in editable_pdfs]
 
-    extracted_texts=clean_extracted_texts(extracted_texts)
-    
+    copy_extracted_images_to_src(page_images_root=IMAGES_ROOT, src_root=DOWNLOAD_DIR)
+
+    extracted_texts = clean_extracted_texts(extracted_texts)
+
     extracted_texts += cis_info
-
-    # print("###################### CIS INFO ##################################")
-    # print(cis_info)
-    # print("###################################################################")
-
 
     print("\n======================================")
     print("   STEP 2 — LOAD + SPLIT PDF TEXT      ")
@@ -1750,10 +1419,8 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
 
     # ✅ Add CIS extracted images into CAD schematic pipeline
     append_cis_images_to_image_metadata(
-        images_root=IMAGES_ROOT,
-        image_page_metadata=image_page_metadata
+        images_root=IMAGES_ROOT, image_page_metadata=image_page_metadata
     )
-
 
     print("\n======================================")
     print("   STEP 3 — CREATE TEXT VECTOR STORE   ")
@@ -1768,10 +1435,11 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
     chunks_uuid = add_ids_to_chunks(chunks)
 
     # Ingest in parallel
-    ingest_to_cosmos_parallel(vectorstore_text, chunks_uuid, batch_size=10, max_workers=10)
+    ingest_to_cosmos_parallel(
+        vectorstore_text, chunks_uuid, batch_size=10, max_workers=10
+    )
 
     print("\n[SUCCESS] Text ingestion completed.\n")
-
 
     print("\n=====================================================")
     print("   STEP 4 — UPLOAD CAD/SCHEMATIC PAGE IMAGES         ")
@@ -1793,15 +1461,13 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
         conn_str=AZURE_CONN_STRING,
         container=BLOB_CONTAINER,
         max_workers=8,
-        project_id=project_id   
+        project_id=project_id,
     )
-
 
     # Turn into flat list
     img_links = extract_urls(image_urls)
 
     print(f"[INFO] Total images for OCR (blob URLs): {len(img_links)}\n")
-
 
     print("\n==============================================")
     print("   STEP 5 — IMAGE OCR USING AGENT PIPELINE     ")
@@ -1810,7 +1476,6 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
     docs_image = load_and_process_images(img_links, vision_deploy_name=CHAT_DEPLOY)
 
     print(f"[SUCCESS] Finished OCR for {len(docs_image)} images.\n")
-
 
     print("\n==============================================")
     print("   STEP 6 — CREATE IMAGE VECTOR STORE          ")
@@ -1823,7 +1488,7 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
         DB_NAME=COSMOS_DB_IMAGE,
         CONT_NAME=imageDB_container_name,
         VECTOR_PATH=VECTOR_PATH,
-        EMBED_DIM=EMBED_DIM
+        EMBED_DIM=EMBED_DIM,
     )
 
     # Clear DB (EXACT notebook logic)
@@ -1835,25 +1500,22 @@ textDB_container_name, imageDB_container_name, keep_files: bool = True, verbose:
     docs_image_uuid = add_ids_to_chunks(docs_image)
 
     # Ingest
-    ingest_to_cosmos_parallel(vectorstore_image, docs_image_uuid, batch_size=10, max_workers=10)
+    ingest_to_cosmos_parallel(
+        vectorstore_image, docs_image_uuid, batch_size=10, max_workers=10
+    )
 
     print("\n[SUCCESS] Image ingestion completed.\n")
-
 
     print("\n==============================================")
     print("         FULL INGESTION PIPELINE DONE         ")
     print("==============================================\n")
 
-    
     return {
-            "project_id": project_id,
-            "image_urls": img_links,
-            "pdf_paths": pdf_paths,
-            "downloaded_pdfs": downloaded_pdf_paths,
-            "converted_pdfs": converted_pdf_paths,
-            "image_page_metadata": image_page_metadata,
-            "chunks_count": len(chunks)
-        }
-
-
-
+        "project_id": project_id,
+        "image_urls": img_links,
+        "pdf_paths": pdf_paths,
+        "downloaded_pdfs": downloaded_pdf_paths,
+        "converted_pdfs": converted_pdf_paths,
+        "image_page_metadata": image_page_metadata,
+        "chunks_count": len(chunks),
+    }

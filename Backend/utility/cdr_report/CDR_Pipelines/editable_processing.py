@@ -12,15 +12,10 @@ from dotenv import load_dotenv
 import os
 from pathlib import Path
 import json
-# Load .env from the current folder (where the notebook is)
-# env_path = Path('.') / '.env'
-# load_dotenv(dotenv_path=env_path)
 from openai import OpenAI
-#from dotenv import load_dotenv
 import os
 import importlib
 import utility.cdr_report.CDR_Pipelines.configs as configs
-# importlib.reload(configs)
 from openai import AzureOpenAI
 
 from utility.cdr_report.CDR_Pipelines.configs import (
@@ -30,13 +25,7 @@ from utility.cdr_report.CDR_Pipelines.configs import (
 )
 
 
-# AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
-# AZURE_OPENAI_API_KEY = os.getenv("AZURE_OPENAI_API_KEY")
-# AZURE_OPENAI_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION")
 
-# 🔍 Optional sanity check (don’t print the key!)
-#print("Endpoint:", AZURE_OPENAI_ENDPOINT)
-#print("API version:", AZURE_OPENAI_API_VERSION)
 
 # ✅ Azure OpenAI client
 client = AzureOpenAI(
@@ -162,66 +151,7 @@ def save_pixmaps_to_images(pixmaps: List[fitz.Pixmap], out_dir: Path, stem: str)
     return image_paths
 
 
-# prompt_lm = """
-# You are reading a scanned "Client Information Sheet".
 
-# Extract ALL fields into a STRICT JSON object with this exact shape:
-
-# {
-#   "Applicant": {
-#     "Legal Entity Name": string or null,
-#     "DBA": string or null,
-#     "Street Address": string or null,
-#     "City, State, Postal Code, Country": string or null,
-#     "Phone Number": string or null,
-#     "Email": string or null,
-#     "Contacts": [
-#       {
-#         "Name": string or null,
-#         "Role": string or null,
-#         "Phone Number": string or null,
-#         "Email": string or null
-#       }
-#     ]
-#   },
-#   "Bill-To": {
-#     "Legal Entity Name": string or null,
-#     "Street Address": string or null,
-#     "City, State, Postal Code, Country": string or null,
-#     "Accounts Payable Contact": string or null,
-#     "Phone Number": string or null,
-#     "Email": string or null
-#   },
-#   "Manufacturer": {
-#     "Legal Entity Name": string or null,
-#     "Street Address": string or null,
-#     "City, State, Postal Code, Country": string or null,
-#     "Contacts": [
-#       {
-#         "Name": string or null,
-#         "Role": string or null,
-#         "Phone Number": string or null,
-#         "Email": string or null
-#       }
-#     ],
-#     "Estimated Production Date": string or null,
-#     "Labeling Method": string or null
-#   },
-#   "Completed By": string or null,
-#   "Dates": {
-#     "Form Completion": string or null
-#   },
-#   "Signatures": string or null
-# }
-
-# Rules:
-# - DO NOT put fields like "Legal Entity Name" at the root.
-# - All applicant fields must be inside "Applicant".
-# - All bill-to fields must be inside "Bill-To".
-# - All manufacturer/production facility fields must be inside "Manufacturer".
-# - Use null if something is missing or unreadable.
-# - Return ONLY JSON, no extra text.
-# """
 
 prompt_lm = """
 You are reading a scanned document page.
@@ -417,25 +347,7 @@ def process_pdfs(
 
     return results
 
-# def extract_cis():
-#     import utility.cdr_report.CDR_Pipelines.configs as configs
-#     configs.require_runtime()
-#     results = process_pdfs(
-#         src_root=configs.SRC_ROOT,
-#         flattened_dir=configs.FLAT_ROOT,
-#         images_root=configs.IMG_ROOT,
-#         dpi=200
-#     )
 
-    
-#     all_cis=[]
-
-#     for pdfs in results.keys():
-#         dic_cis={}
-#         dic_cis['filename']=pdfs
-#         dic_cis['text']=results[pdfs]['extracted'][0]
-#         all_cis.append(dic_cis)
-#     return all_cis
 
 def extract_cis():
     import utility.cdr_report.CDR_Pipelines.configs as configs
@@ -456,14 +368,9 @@ def extract_cis():
             "text": page_text # different text/json per page
             })
  
-#     for pdfs in results.keys():
-#         dic_cis={}
-#         dic_cis['filename']=pdfs
-#         dic_cis['text']=results[pdfs]['extracted'][0]
-#         all_cis.append(dic_cis)
+
     return all_cis
  
 
-# with open("src_files\\all_cis_info.txt", "w", encoding="utf-8") as f:
-#     json.dump(all_cis, f, indent=4, default=str)
+
 

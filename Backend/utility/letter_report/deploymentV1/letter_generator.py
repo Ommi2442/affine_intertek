@@ -2,89 +2,51 @@
 # IMPORTS
 # ============================================================
 
-import os
+import base64
 import json
-from azure.cosmos import CosmosClient
-from langchain_openai import AzureChatOpenAI
-from openai import AzureOpenAI
+import os
+import platform
 import re
-import tempfile
-import shutil
-import requests
-from urllib.parse import urlparse, unquote
-from email import policy
-from email.parser import BytesParser
-import extract_msg
-import uuid
-from langchain_core.documents import Document
-import io
-import openpyxl
-import xlrd
-#from utils import *
-# from config import *
-# from ocr_image_processor import load_and_process_images
-# from trf_essential import *
-# from trf_utils import *
-# from core import *
-from utility.letter_report.deploymentV1.config import *
-from utility.letter_report.deploymentV1.ocr_image_processor import load_and_process_images
-from utility.letter_report.deploymentV1.trf_essential import *
-from utility.letter_report.deploymentV1.trf_utils import *
-from utility.letter_report.deploymentV1.core import *
-from utility.letter_report.deploymentV1.prompts import get_iec61010_non_conformance_prompt
-
-from azure.storage.blob import BlobClient
-from azure.core.exceptions import ResourceNotFoundError, AzureError
-
-import pandas as pd
-import math
-import copy
+import subprocess
 import time
-from azure.cosmos import CosmosClient, PartitionKey, exceptions
-import json, os
-from azure.cosmos import CosmosClient, ConsistencyLevel
-from typing import List, Dict, Any, Tuple
+import uuid
+from copy import deepcopy
+from datetime import datetime
+from pathlib import Path
+from urllib.parse import quote, unquote, urlparse
+
+import fitz
+import numpy as np
+import pandas as pd
+import pdfplumber
+import requests
+from rapidfuzz import fuzz
+
+from azure.core.exceptions import ResourceNotFoundError
+from azure.cosmos import CosmosClient
+from azure.storage.blob import BlobServiceClient, ContentSettings
+
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
-from langchain_azure_ai.vectorstores import AzureCosmosDBNoSqlVectorSearch
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from azure.cosmos import CosmosClient
-from langchain_openai import AzureOpenAIEmbeddings
-from operator import itemgetter
-from langchain_core.runnables import (
-    RunnableParallel, RunnableLambda, RunnableMap
-)
-from langchain_core.output_parsers import StrOutputParser
+from docx.shared import Inches
+from docx2pdf import convert
+
+from langchain_core.documents import Document as LCDocument
 from langchain_openai import AzureChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
-from tenacity import retry, retry_if_exception_type, wait_exponential, stop_never, RetryCallState
-from openai import RateLimitError  # Make sure this import exists
-from types import SimpleNamespace
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from azure.core.exceptions import HttpResponseError
-import time
-from langchain_community.callbacks import get_openai_callback
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-import requests
 from openai import AzureOpenAI
-from azure.storage.blob import BlobServiceClient
 
-from azure.storage.blob import ContainerClient
+from utility.letter_report.deploymentV1.config import *
+from utility.letter_report.deploymentV1.core import *
+from utility.letter_report.deploymentV1.prompts import (
+    get_iec61010_non_conformance_prompt,
+)
+from utility.letter_report.deploymentV1.trf_essential import *
+from utility.letter_report.deploymentV1.trf_utils import *
 
-import os
-import pdfplumber
-from fuzzywuzzy import fuzz
-
-#START FROM HERE
-import fitz
-
-import platform
-
-
+# START FROM HERE
 
 
 def contains_prepared_for_table(pdf_path):
@@ -117,7 +79,7 @@ def contains_prepared_for_table(pdf_path):
         r"date",
         r"prepared\s+for\s*:",
         r"prepared\s+by\s*:",
-        r"intertek"
+        r"intertek",
     ]
 
     matches = 0
@@ -139,19 +101,21 @@ def find_prepared_for_pdf(folder_path: str):
             pdf_path = os.path.join(folder_path, file)
             if contains_prepared_for_table(pdf_path):
                 return pdf_path  # Return full path instead of just filename
-    
+
     return None
 
 
 import re
 from PyPDF2 import PdfReader
+
+
 def extract_prepared_for_generic(pdf_path: str) -> dict:
     """
     Extracts ONLY the Scope of Work from an Intertek proposal PDF.
 
     Returns:
         {
-            "Scope of Work": "<scope text>" 
+            "Scope of Work": "<scope text>"
         }
         or
         {
@@ -162,46 +126,38 @@ def extract_prepared_for_generic(pdf_path: str) -> dict:
     text = "\n".join(page.extract_text() or "" for page in PdfReader(pdf_path).pages)
 
     match = re.search(
-        r"Scope\s*of\s*Work:\s*\n([^\n]+)",
-        text,
-        re.IGNORECASE | re.MULTILINE
+        r"Scope\s*of\s*Work:\s*\n([^\n]+)", text, re.IGNORECASE | re.MULTILINE
     )
 
     scope_of_work = match.group(1).strip() if match else None
 
-    return {
-        "Scope of Work": scope_of_work
-    }
+    return {"Scope of Work": scope_of_work}
+
 
 def process_quote_from_folder(folder_path: str):
     """
     Find the quote PDF in the folder and extract the 'Prepared For' information from it.
-    
+
     Args:
         folder_path: Path to the folder containing PDFs
-        
+
     Returns:
         Extracted fields from the quote PDF, or None if no quote PDF found
     """
     # Find the quote PDF
     quote_pdf_path = find_prepared_for_pdf(folder_path)
-    
+
     if quote_pdf_path is None:
         print(f"No quote PDF found in folder: {folder_path}")
         return None
-    
+
     print(f"Found quote PDF: {quote_pdf_path}")
-    
+
     # Extract fields from the quote PDF
     fields = extract_prepared_for_generic(quote_pdf_path)
-    
+
     return fields
 
-# find_prepared_for_pdf
-# extract_prepared_for_generic
-# process_quote_from_folder
-# update_scope_of_work_in_json
-import json
 
 def update_scope_of_work_in_json(input_json_path, output_json_path, extracted_data):
     """
@@ -222,7 +178,10 @@ def update_scope_of_work_in_json(input_json_path, output_json_path, extracted_da
     # Traverse pages and items
     for page in data.get("pages", []):
         for item in page.get("items", []):
-            if item.get("key") in ["KEY1", "<ETL Listing/CB/Other Evaluation> of the «ProductType» «ProductCovModels»"]:
+            if item.get("key") in [
+                "KEY1",
+                "<ETL Listing/CB/Other Evaluation> of the «ProductType» «ProductCovModels»",
+            ]:
                 item["value"] = scope_of_work
 
     # Write output JSON
@@ -231,16 +190,9 @@ def update_scope_of_work_in_json(input_json_path, output_json_path, extracted_da
 
     print(f"✅ Updated JSON saved to: {output_json_path}")
 
-# replace_keys_with_values_no_format_change_all
-# this will chnage filders from json. Run after UI recivees new data
-from docx import Document
-
-from docx import Document
 
 def replace_keys_with_values_no_format_change_all(
-    input_docx: str,
-    output_docx: str,
-    data: dict
+    input_docx: str, output_docx: str, data: dict
 ):
     """
     Replaces placeholders with values WITHOUT changing formatting.
@@ -250,10 +202,7 @@ def replace_keys_with_values_no_format_change_all(
     doc = Document(input_docx)
 
     # Keys to ignore (case-insensitive)
-    SKIP_KEYS = {
-        "non-conformance table",
-        "critical components table"
-    }
+    SKIP_KEYS = {"non-conformance table", "critical components table"}
 
     # Build replacement map
     replacements = {}
@@ -303,17 +252,10 @@ def replace_keys_with_values_no_format_change_all(
                     replace_in_para(para)
 
     doc.save(output_docx)
- 
-
-from docx import Document
-
 
 
 def delete_cosmos_container(
-    endpoint: str,
-    key: str,
-    database_name: str,
-    container_name: str
+    endpoint: str, key: str, database_name: str, container_name: str
 ):
     """
     Deletes a Cosmos DB container.
@@ -324,13 +266,12 @@ def delete_cosmos_container(
     try:
         database = client.get_database_client(database_name)
         database.delete_container(container_name)
-        
+
         print("\n===============================================")
         print(f" DELETING THE VECTOR COSMOS DB Container '{container_name}'")
         print("===============================================")
 
         print(f"Container '{container_name}' deleted successfully.")
-
 
     except ResourceNotFoundError:
         print(f"Container '{container_name}' or database '{database_name}' not found.")
@@ -339,12 +280,7 @@ def delete_cosmos_container(
         raise RuntimeError(f"Failed to delete container: {e}")
 
 
-
-def replace_keys_with_values_no_format_change_v2(
-    input_docx,
-    output_docx,
-    data
-):
+def replace_keys_with_values_no_format_change_v2(input_docx, output_docx, data):
     """
     Replaces placeholders with values WITHOUT changing formatting.
     Works even if Word splits placeholder across multiple runs.
@@ -360,7 +296,6 @@ def replace_keys_with_values_no_format_change_v2(
 
     for page in data.get("pages", []):
         for item in page.get("items", []):
-
             if item.get("ai_fillable") is not True:
                 continue
 
@@ -409,8 +344,6 @@ def replace_keys_with_values_no_format_change_v2(
 
     doc.save(output_docx)
 
-# replace_keys_with_values_no_format_change_v2
-# get_first_doc_or_docx
 
 def get_first_doc_or_docx(folder_path):
     """
@@ -426,81 +359,9 @@ def get_first_doc_or_docx(folder_path):
 
     return None
 
-# extract_table1a
-
-# format_critical_components_df
-# insert_dataframe_below_anchor
-# read_docx_full
-# extract_iec61010_non_conformances_full_doc
-
-# def insert_dataframe_below_anchor(
-#     input_docx,
-#     output_docx,
-#     df,
-#     anchor_text
-# ):
-#     doc = Document(input_docx)
-
-#     anchor_paragraph = None
-#     for para in doc.paragraphs:
-#         if anchor_text in para.text:
-#             anchor_paragraph = para
-#             break
-
-#     if anchor_paragraph is None:
-#         raise ValueError("Anchor text not found in document.")
-
-#     # -------------------------------------------------
-#     # INSERT BLANK PARAGRAPH AFTER ANCHOR (XML SAFE)
-#     # -------------------------------------------------
-#     blank_p = OxmlElement("w:p")
-#     anchor_paragraph._p.addnext(blank_p)
-
-#     # -------------------------------------------------
-#     # CREATE TABLE
-#     # -------------------------------------------------
-#     rows, cols = df.shape
-#     table = doc.add_table(rows=rows + 1, cols=cols)
-#     table.style = "Table Grid"
-
-#     # -----------------------------
-#     # Header row (Amber background)
-#     # -----------------------------
-#     for col_idx, col_name in enumerate(df.columns):
-#         cell = table.rows[0].cells[col_idx]
-#         cell.text = str(col_name)
-
-#         tc_pr = cell._tc.get_or_add_tcPr()
-#         shd = OxmlElement("w:shd")
-#         shd.set(qn("w:fill"), "FFC000")  # Amber
-#         tc_pr.append(shd)
-
-#     # -----------------------------
-#     # Data rows
-#     # -----------------------------
-#     for row_idx in range(rows):
-#         for col_idx in range(cols):
-#             table.rows[row_idx + 1].cells[col_idx].text = str(df.iat[row_idx, col_idx])
-
-#     # -------------------------------------------------
-#     # INSERT TABLE AFTER BLANK PARAGRAPH
-#     # -------------------------------------------------
-#     blank_p.addnext(table._element)
-
-#     doc.save(output_docx)
-
-
-
-from docx import Document
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
-
 
 def insert_dataframe_below_anchor_critical_components(
-    input_docx,
-    output_docx,
-    df,
-    anchor_text
+    input_docx, output_docx, df, anchor_text
 ):
     doc = Document(input_docx)
 
@@ -562,9 +423,7 @@ def insert_dataframe_below_anchor_critical_components(
     # -----------------------------
     for row_idx in range(rows):
         for col_idx in range(cols):
-            table.rows[row_idx + 1].cells[col_idx].text = str(
-                df.iat[row_idx, col_idx]
-            )
+            table.rows[row_idx + 1].cells[col_idx].text = str(df.iat[row_idx, col_idx])
 
     # -------------------------------------------------
     # INSERT TABLE AFTER BLANK PARAGRAPH
@@ -574,14 +433,8 @@ def insert_dataframe_below_anchor_critical_components(
     doc.save(output_docx)
 
 
-
-
-
 def insert_dataframe_below_anchor_non_conformance(
-    input_docx,
-    output_docx,
-    df,
-    anchor_text
+    input_docx, output_docx, df, anchor_text
 ):
     doc = Document(input_docx)
 
@@ -643,9 +496,7 @@ def insert_dataframe_below_anchor_non_conformance(
     # -----------------------------
     for row_idx in range(rows):
         for col_idx in range(cols):
-            table.rows[row_idx + 1].cells[col_idx].text = str(
-                df.iat[row_idx, col_idx]
-            )
+            table.rows[row_idx + 1].cells[col_idx].text = str(df.iat[row_idx, col_idx])
 
     # -------------------------------------------------
     # INSERT TABLE AFTER BLANK PARAGRAPH
@@ -654,16 +505,6 @@ def insert_dataframe_below_anchor_non_conformance(
 
     doc.save(output_docx)
 
-
-
-
-
-from docx import Document
-
-
-
-from docx import Document
-from pathlib import Path
 
 def read_docx_full(path):
     """
@@ -696,7 +537,6 @@ def read_docx_full(path):
     return "\n".join(content)
 
 
-
 def convert_docx_to_pdf_linux(docx_path: str, pdf_path: str):
     system = platform.system().lower()
 
@@ -725,7 +565,8 @@ def convert_pdf(docx_path, pdf_path):
     if system == "windows":
         import pythoncom
         import docx2pdf
-        pythoncom.CoInitialize()   # 🔑 REQUIRED per-thread
+
+        pythoncom.CoInitialize()  # 🔑 REQUIRED per-thread
         try:
             docx2pdf.convert(docx_path, pdf_path)
         finally:
@@ -734,13 +575,8 @@ def convert_pdf(docx_path, pdf_path):
         convert_docx_to_pdf_linux(docx_path, pdf_path)
 
 
-
 def run_iec61010_non_conformance_extraction(
-    docx_path,
-    deployment_name,
-    chunk_size=800,
-    chunk_overlap=100,
-    fuzzy_threshold=40
+    docx_path, deployment_name, chunk_size=800, chunk_overlap=100, fuzzy_threshold=40
 ):
     """
     One-call function.
@@ -751,12 +587,6 @@ def run_iec61010_non_conformance_extraction(
     """
 
     # ---------------- imports ----------------
-    from pathlib import Path
-    from docx import Document
-    from docx2pdf import convert
-    import pdfplumber
-    from rapidfuzz import fuzz
-    from langchain_text_splitters import RecursiveCharacterTextSplitter
 
     # ---------------- 1. DOCX → PDF ----------------
     pdf_path = Path(docx_path).with_suffix(".pdf")
@@ -778,53 +608,43 @@ def run_iec61010_non_conformance_extraction(
     for p in doc.paragraphs:
         if p.text.strip():
             para_idx += 1
-            blocks.append({
-                "text": p.text.strip(),
-                "source_ref": f"Paragraph {para_idx}"
-            })
+            blocks.append(
+                {"text": p.text.strip(), "source_ref": f"Paragraph {para_idx}"}
+            )
 
     for table in doc.tables:
         table_idx += 1
         for r_idx, row in enumerate(table.rows, start=1):
-            row_text = " | ".join(
-                c.text.strip() for c in row.cells if c.text.strip()
-            )
+            row_text = " | ".join(c.text.strip() for c in row.cells if c.text.strip())
             if row_text:
-                blocks.append({
-                    "text": row_text,
-                    "source_ref": f"Table {table_idx}, Row {r_idx}"
-                })
+                blocks.append(
+                    {"text": row_text, "source_ref": f"Table {table_idx}, Row {r_idx}"}
+                )
 
     for block in blocks:
         best_page = None
         best_score = 0
-    
+
         for page_num, page_text in pdf_pages.items():
             score = fuzz.partial_ratio(
-                block["text"][:300],   # anchor slice (REQUIRED)
-                page_text
+                block["text"][:300],  # anchor slice (REQUIRED)
+                page_text,
             )
             if score > best_score:
                 best_score = score
                 best_page = page_num
-    
+
         # 👇 ADD THIS DEBUG LINE HERE
         if best_score < fuzzy_threshold:
-            print(
-                "UNMAPPED:",
-                block["source_ref"],
-                "|",
-                block["text"][:120]
-            )
-    
-        block["pdf_page"] = best_page if best_score >= fuzzy_threshold else None
+            print("UNMAPPED:", block["source_ref"], "|", block["text"][:120])
 
+        block["pdf_page"] = best_page if best_score >= fuzzy_threshold else None
 
     # ---------------- 5. Split using RecursiveCharacterTextSplitter ----------------
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
-        separators=["\n\n", "\n", " | ", " ", ""]
+        separators=["\n\n", "\n", " | ", " ", ""],
     )
 
     document_chunks = []
@@ -832,18 +652,19 @@ def run_iec61010_non_conformance_extraction(
 
     for block in blocks:
         for chunk in splitter.split_text(block["text"]):
-            document_chunks.append({
-                "ref_id": ref_id,
-                "text": chunk,
-                "pdf_page": block["pdf_page"],
-                "source_ref": block["source_ref"]
-            })
+            document_chunks.append(
+                {
+                    "ref_id": ref_id,
+                    "text": chunk,
+                    "pdf_page": block["pdf_page"],
+                    "source_ref": block["source_ref"],
+                }
+            )
             ref_id += 1
 
     # ---------------- 6. CALL YOUR EXISTING FUNCTION ----------------
     df = extract_iec61010_non_conformances_full_doc(
-        document_chunks=document_chunks,
-        deployment_name=deployment_name
+        document_chunks=document_chunks, deployment_name=deployment_name
     )
 
     # df=df.drop('ref_id',axis=1)
@@ -855,11 +676,8 @@ def run_iec61010_non_conformance_extraction(
 
     return df
 
-def inject_non_conformance_text_support(
-    data,
-    df_nonpass,
-    source_docx_path
-):
+
+def inject_non_conformance_text_support(data, df_nonpass, source_docx_path):
     """
     Inject text_support into Non-conformance Table rows.
     Uses dropped Page Reference stored in _page_reference.
@@ -874,7 +692,6 @@ def inject_non_conformance_text_support(
 
     for page in data.get("pages", []):
         for item in page.get("items", []):
-
             if item.get("key") != "Non-conformance Table":
                 continue
 
@@ -885,12 +702,7 @@ def inject_non_conformance_text_support(
 
                 page_ref = row.pop("_page_reference", "")
 
-                row["text_support"] = [
-                    {
-                        "filename": filename,
-                        "page": page_ref or ""
-                    }
-                ]
+                row["text_support"] = [{"filename": filename, "page": page_ref or ""}]
 
                 enriched.append(row)
 
@@ -898,86 +710,11 @@ def inject_non_conformance_text_support(
 
     return data
 
+
 IEC_61010_NON_CONFORMANCE_PROMPT = get_iec61010_non_conformance_prompt()
 
 
-
-
-# def extract_iec61010_non_conformances_full_doc(
-#     document_text,
-#     deployment_name
-# ):
-#     system_prompt = """
-# You are an IEC 61010-1 CB Scheme compliance expert.
-
-# TASK:
-# - Review the FULL Test Report Form (TRF)
-# - Compare each clause with IEC 61010-1 requirements
-# - Identify ONLY NON-CONFORMANCES
-
-# RULES:
-# - Verdict = F → Non-conformance
-# - Missing mandatory markings or documentation → Non-conformance
-# - TBD = testing not yet performed → DO NOT list
-# - N/A with justification → Ignore
-# - Do NOT invent issues
-
-# OUTPUT (STRICT JSON ARRAY):
-# [
-#   {
-#     "clause": "5.1.3",
-#     "requirement": "Equipment shall be marked with rated voltage, current, and frequency",
-#     "finding": "No electrical ratings marked on the equipment"
-#   }
-# ]
-
-# Return [] if no non-conformances exist.
-# """
-#     client = AzureOpenAI(
-#         api_key=AOAI_KEY,
-#         api_version=API_VERSION,
-#         azure_endpoint=AOAI_ENDPOINT
-#     )
-
-#     response = client.chat.completions.create(
-#         model=deployment_name,   # MUST be Azure deployment name
-#         temperature=0,
-#         messages=[
-#             {"role": "system", "content": system_prompt},
-#             {
-#                 "role": "user",
-#                 "content": f"""
-# FULL TRF DOCUMENT:
-# ------------------
-# {document_text}
-# ------------------
-# """
-#             }
-#         ]
-#     )
-
-#     output = response.choices[0].message.content.strip()
-#     findings = json.loads(output)
-
-#     return pd.DataFrame(
-#         findings,
-#         columns=["clause", "requirement", "finding"]
-#     ).rename(columns={
-#         "clause": "Clause",
-#         "requirement": "Requirement of the Clause",
-#         "finding": "Remark and Findings"
-#     })
-
-
-
-
-def extract_iec61010_non_conformances_full_doc(
-    document_chunks,
-    deployment_name
-):
-    import json
-    import re
-    import pandas as pd
+def extract_iec61010_non_conformances_full_doc(document_chunks, deployment_name):
 
     def extract_json_array(text):
         """
@@ -1009,9 +746,7 @@ def extract_iec61010_non_conformances_full_doc(
     system_prompt = IEC_61010_NON_CONFORMANCE_PROMPT
 
     client = AzureOpenAI(
-        api_key=AOAI_KEY,
-        api_version=API_VERSION,
-        azure_endpoint=AOAI_ENDPOINT
+        api_key=AOAI_KEY, api_version=API_VERSION, azure_endpoint=AOAI_ENDPOINT
     )
 
     response = client.chat.completions.create(
@@ -1019,8 +754,8 @@ def extract_iec61010_non_conformances_full_doc(
         temperature=0,
         messages=[
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": flat_text}
-        ]
+            {"role": "user", "content": flat_text},
+        ],
     )
 
     raw_output = response.choices[0].message.content
@@ -1033,7 +768,7 @@ def extract_iec61010_non_conformances_full_doc(
                 "Clause",
                 "Requirement of the Clause",
                 "Remark and Findings",
-                "Page Reference"
+                "Page Reference",
             ]
         )
 
@@ -1043,35 +778,20 @@ def extract_iec61010_non_conformances_full_doc(
     for f in findings:
         ref = ref_map.get(f.get("ref_id"))
         f["Page Reference"] = (
-            f"Page {ref['pdf_page']}"
-            if ref and ref.get("pdf_page")
-            else "Unknown"
+            f"Page {ref['pdf_page']}" if ref and ref.get("pdf_page") else "Unknown"
         )
 
-    return pd.DataFrame(findings).rename(columns={
-        "clause": "Clause",
-        "requirement": "Requirement of the Clause",
-        "finding": "Remark and Findings"
-    })
-
-
-
-
-# download_files_from_blob
-# extract_images_from_docx
-# extract_images_from_excel
-# identify_iec61010_non_conforming_images_batch
-import os
-from urllib.parse import urlparse, unquote
-from azure.storage.blob import BlobServiceClient
-from azure.core.exceptions import ResourceNotFoundError
+    return pd.DataFrame(findings).rename(
+        columns={
+            "clause": "Clause",
+            "requirement": "Requirement of the Clause",
+            "finding": "Remark and Findings",
+        }
+    )
 
 
 def download_files_from_blob(
-    blob_file_list,
-    download_dir,
-    connection_string,
-    container_name
+    blob_file_list, download_dir, connection_string, container_name
 ):
     """
     Downloads files from Azure Blob Storage.
@@ -1112,7 +832,6 @@ def download_files_from_blob(
     # Download loop
     # ----------------------------------------
     for blob_item in blob_file_list:
-
         if not isinstance(blob_item, str) or not blob_item.strip():
             raise ValueError(f"Invalid blob entry: {blob_item}")
 
@@ -1131,7 +850,7 @@ def download_files_from_blob(
                     f"Blob URL does not belong to container '{container_name}': {blob_item}"
                 )
 
-            blob_name = unquote(path[len(prefix):])
+            blob_name = unquote(path[len(prefix) :])
         else:
             blob_name = unquote(blob_item.lstrip("/"))
 
@@ -1165,17 +884,12 @@ def download_files_from_blob(
     return downloaded_files
 
 
-
-
-import os
-from docx import Document
-
 def extract_images_from_docx(docx_path, output_dir=None):
     """
     Extracts all images from a .docx file and saves them to output_dir
     (defaults to current working directory).
     """
-    image_paths= []
+    image_paths = []
     if output_dir is None:
         output_dir = os.getcwd()
 
@@ -1197,94 +911,7 @@ def extract_images_from_docx(docx_path, output_dir=None):
                 f.write(image)
             image_paths.append(image_path)
 
-    return image_paths,image_count
-
-
-
-import os
-import subprocess
-import platform
-from openpyxl import load_workbook
-
-# def extract_images_from_excel(excel_path, output_dir=None):
-#     """
-#     Extract images from Excel files.
-#     - .xlsx / .xlsm: direct
-#     - .xls: converted using LibreOffice
-#     Works on Linux and Windows.
-#     """
-
-#     if output_dir is None:
-#         output_dir = os.getcwd()
-
-#     os.makedirs(output_dir, exist_ok=True)
-#     excel_path = os.path.abspath(excel_path)
-#     lower = excel_path.lower()
-
-#     # ----------------------------------
-#     # Locate LibreOffice executable
-#     # ----------------------------------
-#     if platform.system() == "Windows":
-#         soffice = r"C:\Program Files\LibreOffice\program\soffice.exe"
-#         if not os.path.exists(soffice):
-#             soffice = r"C:\Program Files (x86)\LibreOffice\program\soffice.exe"
-#         if not os.path.exists(soffice):
-#             raise RuntimeError("LibreOffice is not installed or soffice.exe not found")
-#     else:
-#         soffice = "soffice"
-
-#     # ----------------------------------
-#     # Convert .xls -> .xlsx if needed
-#     # ----------------------------------
-#     if lower.endswith(".xls") and not lower.endswith(".xlsx"):
-#         subprocess.run(
-#             [
-#                 soffice,
-#                 "--headless",
-#                 "--convert-to",
-#                 "xlsx",
-#                 "--outdir",
-#                 output_dir,
-#                 excel_path,
-#             ],
-#             check=True,
-#         )
-
-#         base = os.path.splitext(os.path.basename(excel_path))[0]
-#         excel_path = os.path.join(output_dir, base + ".xlsx")
-
-#         if not os.path.exists(excel_path):
-#             raise RuntimeError("LibreOffice conversion failed")
-
-#     # ----------------------------------
-#     # Extract images from .xlsx
-#     # ----------------------------------
-#     if not excel_path.lower().endswith((".xlsx", ".xlsm")):
-#         raise ValueError("Unsupported Excel format")
-
-#     wb = load_workbook(excel_path)
-#     extracted_paths = []
-#     counter = 1
-
-#     for sheet in wb.worksheets:
-#         for img in getattr(sheet, "_images", []):
-#             data = img._data()
-#             ext = img.format.lower() if img.format else "png"
-
-#             img_path = os.path.join(
-#                 output_dir,
-#                 f"excel_image_{counter}.{ext}"
-#             )
-
-#             with open(img_path, "wb") as f:
-#                 f.write(data)
-
-#             extracted_paths.append(img_path)
-#             counter += 1
-
-#     return extracted_paths
-
-
+    return image_paths, image_count
 
 
 def extract_images_from_excel(excel_path, output_dir=None):
@@ -1313,7 +940,6 @@ def extract_images_from_excel(excel_path, output_dir=None):
     # Convert .xls -> .xlsx if needed
     # ----------------------------------
     if lower.endswith(".xls") and not lower.endswith(".xlsx"):
-
         base = os.path.splitext(os.path.basename(excel_path))[0]
         converted_path = os.path.join(output_dir, base + ".xlsx")
 
@@ -1375,10 +1001,7 @@ def extract_images_from_excel(excel_path, output_dir=None):
             data = img._data()
             ext = img.format.lower() if img.format else "png"
 
-            img_path = os.path.join(
-                output_dir,
-                f"excel_image_{counter}.{ext}"
-            )
+            img_path = os.path.join(output_dir, f"excel_image_{counter}.{ext}")
 
             with open(img_path, "wb") as f:
                 f.write(data)
@@ -1388,19 +1011,9 @@ def extract_images_from_excel(excel_path, output_dir=None):
 
     return extracted_paths
 
- 
-
-
-
-import base64
-import json
-import os
-from openai import AzureOpenAI
 
 def identify_iec61010_non_conforming_images_batch(
-    image_paths,
-    clauses_start=4,
-    clauses_end=17
+    image_paths, clauses_start=4, clauses_end=17
 ):
     """
     Batch IEC 61010 image compliance checker using Azure OpenAI SDK.
@@ -1408,9 +1021,7 @@ def identify_iec61010_non_conforming_images_batch(
     """
 
     client = AzureOpenAI(
-        api_key=AOAI_KEY,
-        api_version=API_VERSION,
-        azure_endpoint=AOAI_ENDPOINT
+        api_key=AOAI_KEY, api_version=API_VERSION, azure_endpoint=AOAI_ENDPOINT
     )
 
     deployment = CHAT_DEPLOY
@@ -1418,7 +1029,6 @@ def identify_iec61010_non_conforming_images_batch(
     results = []
 
     for idx, image_path in enumerate(image_paths):
-
         # ----------------------------
         # Encode image
         # ----------------------------
@@ -1466,13 +1076,13 @@ Return STRICT JSON ONLY:
                                 "type": "image_url",
                                 "image_url": {
                                     "url": f"data:image/png;base64,{image_base64}"
-                                }
+                                },
                             }
-                        ]
-                    }
+                        ],
+                    },
                 ],
                 temperature=0.1,
-                max_tokens=800
+                max_tokens=800,
             )
 
             raw_text = response.choices[0].message.content
@@ -1480,51 +1090,31 @@ Return STRICT JSON ONLY:
             try:
                 parsed = json.loads(raw_text)
             except Exception:
-                parsed = {
-                    "image_verdict": "ERROR",
-                    "raw_response": raw_text
-                }
+                parsed = {"image_verdict": "ERROR", "raw_response": raw_text}
 
         except Exception as e:
-            parsed = {
-                "image_verdict": "ERROR",
-                "error": str(e)
-            }
+            parsed = {"image_verdict": "ERROR", "error": str(e)}
 
-        results.append({
-            "image_index": idx,
-            "image_path": image_path,
-            "result": parsed
-        })
+        results.append({"image_index": idx, "image_path": image_path, "result": parsed})
 
     return results
 
 
-
-
-from docx import Document
-from docx.shared import Inches
-
 def _normalize(text):
     return " ".join(text.replace("\u00a0", " ").split()).upper()
 
+
 def insert_photos_before_section_6_table(
-    docx_path,
-    output_path,
-    image_paths,
-    image_width_inches=3
+    docx_path, output_path, image_paths, image_width_inches=3
 ):
     doc = Document(docx_path)
 
     for table in doc.tables:
         table_text = " ".join(
-            _normalize(cell.text)
-            for row in table.rows
-            for cell in row.cells
+            _normalize(cell.text) for row in table.rows for cell in row.cells
         )
 
         if "SECTION 6" in table_text or "PROJECT STATUS" in table_text:
-
             tbl_element = table._tbl
             parent = tbl_element.getparent()
             tbl_index = parent.index(tbl_element)
@@ -1550,69 +1140,50 @@ def insert_photos_before_section_6_table(
     raise ValueError("SECTION 6 table anchor not found")
 
 
-
-import os
-
-# def inject_dataframes_into_letter_json(data, df_critical, df_nonpass):
-#     """
-#     Injects dataframe dictionaries into JSON placeholders:
-#       - 'Non-conformance Table' -> df_nonpass
-#       - 'Critical components table' -> df_critical
-#     """
- 
-#     # Convert DataFrames to dict format
-#     critical_dict = df_critical.to_dict(orient="records") if df_critical is not None else []
-#     nonpass_dict = df_nonpass.to_dict(orient="records") if df_nonpass is not None else []
- 
-#     for page in data.get("pages", []):
-#         for item in page.get("items", []):
- 
-#             # Inject Non-Conformance Table
-#             if item.get("key") == "Non-conformance Table" and item.get("dataframe_table") is True:
-#                 item["value"] = nonpass_dict
- 
-#             # Inject Critical Components Table
-#             if item.get("key") == "Critical components table" and item.get("dataframe_table") is True:
-#                 item["value"] = critical_dict
- 
-#     return data
-
-def inject_dataframes_into_letter_json(data, df_critical, df_nonpass,
-                                       critical_components_filename=None,
-                                       critical_components_page=None):
+def inject_dataframes_into_letter_json(
+    data,
+    df_critical,
+    df_nonpass,
+    critical_components_filename=None,
+    critical_components_page=None,
+):
     """
     Injects dataframe dictionaries into JSON placeholders:
       - 'Non-conformance Table' -> df_nonpass
       - 'Critical components table' -> df_critical
     """
- 
+
     # Convert DataFrames to dict format
-    critical_dict = df_critical.to_dict(orient="records") if df_critical is not None else []
-    nonpass_dict = df_nonpass.to_dict(orient="records") if df_nonpass is not None else []
- 
+    critical_dict = (
+        df_critical.to_dict(orient="records") if df_critical is not None else []
+    )
+    nonpass_dict = (
+        df_nonpass.to_dict(orient="records") if df_nonpass is not None else []
+    )
+
     for page in data.get("pages", []):
         for item in page.get("items", []):
- 
             # Inject Non-Conformance Table
-            if item.get("key") == "Non-conformance Table" and item.get("dataframe_table") is True:
-
+            if (
+                item.get("key") == "Non-conformance Table"
+                and item.get("dataframe_table") is True
+            ):
                 cleaned_rows = []
 
                 for row in nonpass_dict:
                     # Remove internal-only columns from JSON
-                    row = {
-                        k: v for k, v in row.items()
-                        if k != "_page_reference"
-                    }
+                    row = {k: v for k, v in row.items() if k != "_page_reference"}
                     cleaned_rows.append(row)
 
                 item["value"] = cleaned_rows
- 
- 
+
             # Inject Critical Components Table
             # if item.get("key") == "Critical components table" and item.get("dataframe_table") is True:
             #     item["value"] = critical_dict
-            if item.get("key") == "Critical components table" and item.get("dataframe_table") is True:
+            if (
+                item.get("key") == "Critical components table"
+                and item.get("dataframe_table") is True
+            ):
                 if not critical_dict:
                     continue
 
@@ -1625,7 +1196,7 @@ def inject_dataframes_into_letter_json(data, df_critical, df_nonpass,
                         "filename": critical_components_filename or "",
                         "page": "",
                         "table": "",
-                        "sheet": ""
+                        "sheet": "",
                     }
 
                     # DOCX source
@@ -1641,8 +1212,6 @@ def inject_dataframes_into_letter_json(data, df_critical, df_nonpass,
 
                 item["value"] = enriched_rows
 
-
- 
     return data
 
 
@@ -1652,7 +1221,7 @@ def orchestrate_iec61010_image_compliance_pipeline(
     source_docx_name,
     output_docx_path,
     connection_string,
-    container_name
+    container_name,
 ):
     """
     End-to-end orchestration:
@@ -1661,17 +1230,6 @@ def orchestrate_iec61010_image_compliance_pipeline(
     3. Identify IEC 61010 non-conforming images
     4. Insert non-conforming images into DOCX before Section 6 table
     """
-
-    # # ---------------------------------------------------------
-    # # 1. Download files from blob
-    # # ---------------------------------------------------------
-    # print("⬇️ Downloading files from blob...")
-    # downloaded_files = download_files_from_blob(
-    #     blob_file_list=blob_file_list,
-    #     download_dir=local_download_dir,
-    #     connection_string=connection_string,
-    #     container_name=container_name
-    # )
 
     # ---------------------------------------------------------
     # Build downloaded_files list from local_download_dir
@@ -1698,7 +1256,9 @@ def orchestrate_iec61010_image_compliance_pipeline(
         file_lower = file_path.lower()
 
         if file_lower.endswith(".docx"):
-            images, count = extract_images_from_docx(file_path, output_dir=local_download_dir)
+            images, count = extract_images_from_docx(
+                file_path, output_dir=local_download_dir
+            )
             extracted_images.extend(images)
 
         elif file_lower.endswith((".xls", ".xlsx")):
@@ -1740,7 +1300,7 @@ def orchestrate_iec61010_image_compliance_pipeline(
         insert_photos_before_section_6_table(
             docx_path=output_docx_path,
             output_path=output_docx_path,
-            image_paths=non_conforming_images
+            image_paths=non_conforming_images,
         )
 
         print("✅ Non-conforming images inserted into letter successfully.")
@@ -1751,16 +1311,13 @@ def orchestrate_iec61010_image_compliance_pipeline(
         print("⚠️ Failed to insert images into letter.")
         print(f"Reason: {e}")
 
-import uuid
-from pathlib import Path
-from azure.storage.blob import BlobServiceClient, ContentSettings
 
 def upload_images_to_blob(
     non_conforming_images,
     connection_string,
     container_name,
     base_path,
-    final_letter_images_path
+    final_letter_images_path,
 ):
     """
     Upload NON-CONFORMING images to:
@@ -1769,12 +1326,8 @@ def upload_images_to_blob(
     Fully OS-agnostic.
     """
 
-    blob_service_client = BlobServiceClient.from_connection_string(
-        connection_string
-    )
-    container_client = blob_service_client.get_container_client(
-        container_name
-    )
+    blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+    container_client = blob_service_client.get_container_client(container_name)
 
     uploaded_blob_urls = []
 
@@ -1794,18 +1347,13 @@ def upload_images_to_blob(
         blob_client = container_client.get_blob_client(blob_path)
 
         suffix = image_path.suffix.lower()
-        content_type = (
-            "image/png" if suffix == ".png"
-            else "image/jpeg"
-        )
+        content_type = "image/png" if suffix == ".png" else "image/jpeg"
 
         with image_path.open("rb") as f:
             blob_client.upload_blob(
                 f,
                 overwrite=True,
-                content_settings=ContentSettings(
-                    content_type=content_type
-                )
+                content_settings=ContentSettings(content_type=content_type),
             )
 
         uploaded_blob_urls.append(blob_client.url)
@@ -1813,22 +1361,10 @@ def upload_images_to_blob(
     return uploaded_blob_urls
 
 
-
-# insert_photos_before_section_6_table
-# orchestrate_iec61010_image_compliance_pipeline
-# replace_header_keys_with_values_header
-
-#citation with blob urls
-
-
-
-import os
-from urllib.parse import quote
-
 def map_pdf_path_to_blob_url(
     pdf_path: str,
     account_name: str = "saaffine",
-    container_name: str = "nasa-ebooks-pdfs-all"
+    container_name: str = "nasa-ebooks-pdfs-all",
 ) -> str | None:
     """
     Convert local PDF path to Azure Blob URL.
@@ -1841,83 +1377,11 @@ def map_pdf_path_to_blob_url(
     filename = os.path.basename(pdf_path)
     blob_name = quote(filename)
 
-    return (
-        f"https://{account_name}.blob.core.windows.net/"
-        f"{container_name}/{blob_name}"
-    )
+    return f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
 
-import json
-import os
-from copy import deepcopy
-
-# def add_text_support_with_blob_url_and_filename(
-#     letter_json_path: str,
-#     folder_path: str,
-#     page_number: int = 3
-# ):
-#     """
-#     Reads existing letter JSON and adds deterministic text_support
-#     using:
-#       - pdf_path from find_prepared_for_pdf(folder_path)
-#       - filename extracted from pdf_path
-#       - blob URL from map_pdf_path_to_blob_url(pdf_path)
-#     """
-
-#     TARGET_KEYS = {
-#         "KEY1",
-#         "<ETL Listing/CB/Other Evaluation> of the «ProductType» «ProductCovModels»"
-#     }
-
-#     # 1️⃣ Find prepared-for PDF
-#     pdf_path = find_prepared_for_pdf(folder_path)
-
-#     if not pdf_path:
-#         raise ValueError("No prepared-for PDF found.")
-
-#     # 2️⃣ Extract filename from path
-#     filename = os.path.basename(pdf_path)
-
-#     # 3️⃣ Get blob URL
-#     blob_url = map_pdf_path_to_blob_url(pdf_path)
-
-#     with open(letter_json_path, "r", encoding="utf-8") as f:
-#         letter = json.load(f)
-
-#     letter = deepcopy(letter)  # safety
-
-#     for page in letter.get("pages", []):
-#         for item in page.get("items", []):
-
-#             key = item.get("key")
-#             value = item.get("value")
-
-#             # Only act on target keys with real values
-#             if key not in TARGET_KEYS:
-#                 continue
-
-#             if not value or not isinstance(value, str):
-#                 continue
-
-#             # Attach deterministic text support
-#             item["text_support"] = [
-#                 {
-#                     "filename": filename,
-#                     "page": page_number,
-#                     "similarity_score": 1,
-#                     "preview_text": "",
-#                     "url": blob_url
-#                 }
-#             ]
-
-#             # Set confidence
-#             item["confidence"] = 100
-
-#     return letter
 
 def add_text_support_with_blob_url_and_filename(
-    letter_json_path: str,
-    folder_path: str,
-    page_number: int = 3
+    letter_json_path: str, folder_path: str, page_number: int = 3
 ):
     """
     Reads existing letter JSON and adds deterministic text_support
@@ -1929,7 +1393,7 @@ def add_text_support_with_blob_url_and_filename(
 
     TARGET_KEYS = {
         "KEY1",
-        "<ETL Listing/CB/Other Evaluation> of the «ProductType» «ProductCovModels»"
+        "<ETL Listing/CB/Other Evaluation> of the «ProductType» «ProductCovModels»",
     }
 
     # 1️⃣ Find prepared-for PDF
@@ -1942,7 +1406,7 @@ def add_text_support_with_blob_url_and_filename(
     filename = os.path.basename(pdf_path)
 
     # 3️⃣ Get blob URL
-    #blob_url = map_pdf_path_to_blob_url(pdf_path)
+    # blob_url = map_pdf_path_to_blob_url(pdf_path)
 
     with open(letter_json_path, "r", encoding="utf-8") as f:
         letter = json.load(f)
@@ -1951,7 +1415,6 @@ def add_text_support_with_blob_url_and_filename(
 
     for page in letter.get("pages", []):
         for item in page.get("items", []):
-
             key = item.get("key")
             value = item.get("value")
 
@@ -1968,8 +1431,8 @@ def add_text_support_with_blob_url_and_filename(
                     "filename": filename,
                     "page": page_number,
                     "similarity_score": 1,
-                    "preview_text": ""
-                    #"url": blob_url
+                    "preview_text": "",
+                    # "url": blob_url
                 }
             ]
 
@@ -1978,10 +1441,6 @@ def add_text_support_with_blob_url_and_filename(
 
     return letter
 
- 
-
- 
-from docx import Document
 
 def replace_header_keys_with_values_header(input_docx, output_docx, data):
     """
@@ -2036,8 +1495,6 @@ def replace_header_keys_with_values_header(input_docx, output_docx, data):
     doc.save(output_docx)
     return output_docx
 
-import pandas as pd
-import numpy as np
 
 def clean_dataframe_for_json(df, use_null=True):
     """
@@ -2057,8 +1514,6 @@ def clean_dataframe_for_json(df, use_null=True):
 
     return df
 
-from urllib.parse import unquote
-import os
 
 def attach_blob_urls_to_table_text_support(data, blob_urls):
     """
@@ -2082,10 +1537,9 @@ def attach_blob_urls_to_table_text_support(data, blob_urls):
     # -----------------------------------------
     for page in data.get("pages", []):
         for item in page.get("items", []):
-
             if item.get("key") not in {
                 "Non-conformance Table",
-                "Critical components table"
+                "Critical components table",
             }:
                 continue
 
@@ -2102,11 +1556,6 @@ def attach_blob_urls_to_table_text_support(data, blob_urls):
 
     return data
 
- 
-#entry function
-
-
-from datetime import datetime
 
 def update_system_date_and_project_id(data: dict, project_id: str) -> dict:
     """
@@ -2131,7 +1580,6 @@ def update_system_date_and_project_id(data: dict, project_id: str) -> dict:
 
     for page in data.get("pages", []):
         for item in page.get("items", []):
-
             key = item.get("key")
 
             # Update Issue Date keys
@@ -2143,6 +1591,7 @@ def update_system_date_and_project_id(data: dict, project_id: str) -> dict:
                 item["value"] = project_id
 
     return data
+
 
 def is_effectively_empty_critical_df(df: pd.DataFrame) -> bool:
     """
@@ -2156,11 +1605,8 @@ def is_effectively_empty_critical_df(df: pd.DataFrame) -> bool:
     df_check = df.drop(columns=["Item"], errors="ignore")
 
     # If all remaining cells are empty or whitespace → empty
-    return df_check.map(
-        lambda x: isinstance(x, str) and not x.strip()
-    ).all().all()
+    return df_check.map(lambda x: isinstance(x, str) and not x.strip()).all().all()
 
- 
 
 def generate_letter_pipeline(
     blob_urls,
@@ -2174,8 +1620,8 @@ def generate_letter_pipeline(
     letter_header_json_path_output,
     project_Id,
     text_container,
-    image_container
-    ):
+    image_container,
+):
     """
     Single entry function for full letter generation pipeline.
     """
@@ -2190,20 +1636,10 @@ def generate_letter_pipeline(
 
     embeddings = build_embeddings(AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY)
 
-    vs = build_vectorstore(
-        embeddings,
-        COSMOS_URL,
-        COSMOS_KEY,
-        DB_NAME,
-        text_container
-    )
+    vs = build_vectorstore(embeddings, COSMOS_URL, COSMOS_KEY, DB_NAME, text_container)
 
     vs2 = build_vectorstore2(
-        embeddings,
-        COSMOS_URL,
-        COSMOS_KEY,
-        DB_NAME_IMG,
-        image_container
+        embeddings, COSMOS_URL, COSMOS_KEY, DB_NAME_IMG, image_container
     )
 
     text_retriever_agent = vs.as_retriever(search_kwargs={"k": 5})
@@ -2216,14 +1652,12 @@ def generate_letter_pipeline(
         temperature=0.1,
     ).with_config({"response_format": "json_object"})
 
-
-
     rag_image = build_rag_image_pipeline_v5(
         text_retriever_agent,
         llm,
         build_vision_message_v5,
         attach_supporting_refs_grey,
-        vs
+        vs,
     )
 
     # -------------------------------------------------------
@@ -2264,7 +1698,7 @@ def generate_letter_pipeline(
         cooldown_sec=15,
         max_workers=6,
         use_llm_inGrey=False,
-        stats=True
+        stats=True,
     )
 
     results_header = process_tasks_with_batches_parallel_grey(
@@ -2276,32 +1710,20 @@ def generate_letter_pipeline(
         cooldown_sec=15,
         max_workers=6,
         use_llm_inGrey=False,
-        stats=True
+        stats=True,
     )
-    
+
     # -------------------------------------------------------
     # STEP 4 — Update Letter DOCX
     # -------------------------------------------------------
 
     replace_keys_with_values_no_format_change_v2(
-        input_docx=letter_template_docx,
-        output_docx=output_letter_docx,
-        data=data
+        input_docx=letter_template_docx, output_docx=output_letter_docx, data=data
     )
 
     replace_header_keys_with_values_header(
-        input_docx=output_letter_docx,
-        output_docx=output_letter_docx,
-        data=data_header
+        input_docx=output_letter_docx, output_docx=output_letter_docx, data=data_header
     )
-
-
-    # downloaded_files = download_files_from_blob(
-    #     blob_file_list=blob_urls,
-    #     download_dir=src_files_dir,
-    #     connection_string=AZURE_CONN_STRING,
-    # container_name=BLOB_CONTAINER_NAME
-    # )
 
     # -------------------------------------------------------
     # STEP 5 — Extract Critical Components
@@ -2317,7 +1739,7 @@ def generate_letter_pipeline(
 
         critical_components_source = None  # "docx" | "excel"
         critical_components_filename = None
-        critical_components_page = None        
+        critical_components_page = None
 
         # Step 1: Try extracting from DOCX only if available
         if docx_trf:
@@ -2326,7 +1748,9 @@ def generate_letter_pipeline(
                 if df_1a is not None:
                     df_1a = format_critical_components_df(df_1a)
                     if is_effectively_empty_critical_df(df_1a):
-                        print("⚠️ Table 1.A found in DOCX but contains no data. Falling back to CDR.")
+                        print(
+                            "⚠️ Table 1.A found in DOCX but contains no data. Falling back to CDR."
+                        )
                         df_1a = None
                     else:
                         critical_components_source = "docx"
@@ -2336,7 +1760,7 @@ def generate_letter_pipeline(
                 df_1a = None  # Table not found → fallback
 
         # Step 2: Fallback if extraction failed OR dataframe empty
-        if df_1a is None :
+        if df_1a is None:
             print("⚠️ Table 1.A not found or empty. Loading from CDR components.")
             df_1a = load_cdr_components_df(src_files_dir)
             if df_1a is not None:
@@ -2346,7 +1770,7 @@ def generate_letter_pipeline(
                         critical_components_filename = f
                         break
                 critical_components_page = "4.0 Components"
-            #print(df_1a)       
+            # print(df_1a)
             # df_1a = format_critical_components_df(df_1a)
             # Step 3: Try formatting (NON-BLOCKING)
             try:
@@ -2358,16 +1782,18 @@ def generate_letter_pipeline(
         # Clean NaN before using
         df_1a = clean_dataframe_for_json(df_1a, use_null=True)
 
-        print("####################### Critical Components Table ######################", df_1a)
+        print(
+            "####################### Critical Components Table ######################",
+            df_1a,
+        )
 
         # Step 3: Insert table
-        
+
         insert_dataframe_below_anchor_critical_components(
             input_docx=output_letter_docx,
             output_docx=output_letter_docx,
             df=df_1a,
-            anchor_text="Details for the following critical components or materials have not been provided as required:"
-            
+            anchor_text="Details for the following critical components or materials have not been provided as required:",
         )
 
         print("✅ Critical components table inserted successfully.")
@@ -2376,34 +1802,22 @@ def generate_letter_pipeline(
         print("⚠️ Failed to insert critical components table. Skipping this step.")
         print(f"Reason: {e}")
 
-
-
     # -------------------------------------------------------
     # STEP 6 — Extract IEC 61010 Non-Conformances
     # -------------------------------------------------------
-    #print(doc_path)
-    #print("@@@@@@@@@@@@",docx_trf)
-    text = read_docx_full(docx_trf)
 
+    text = read_docx_full(docx_trf)
 
     print("############  DOCUMENT READ    #######################################")
 
-    #print(text)
-
-    # df_9_nonpass = extract_iec61010_non_conformances_full_doc(
-    #     document_text=text,
-    #     deployment_name=CHAT_DEPLOY
-    # )
-    df_9_nonpass=run_iec61010_non_conformance_extraction(
+    df_9_nonpass = run_iec61010_non_conformance_extraction(
         docx_trf,
         deployment_name=CHAT_DEPLOY,
         chunk_size=800,
         chunk_overlap=100,
-        fuzzy_threshold=50
+        fuzzy_threshold=50,
     )
-    print('######'*5)
-    #print(df_9_nonpass)
-    # df_9_nonpass = df_9_nonpass.drop(columns=[c for c in ["_page_reference"] if c in df_9_nonpass.columns])
+    print("######" * 5)
     # ✅ Clean NaN
     df_9_nonpass = clean_dataframe_for_json(df_9_nonpass, use_null=True)
 
@@ -2412,69 +1826,37 @@ def generate_letter_pipeline(
         df_critical=df_1a,
         df_nonpass=df_9_nonpass,
         critical_components_filename=critical_components_filename,
-        critical_components_page=critical_components_page
+        critical_components_page=critical_components_page,
     )
 
     data = inject_non_conformance_text_support(
-        data=data,
-        df_nonpass=df_9_nonpass,
-        source_docx_path=docx_trf
+        data=data, df_nonpass=df_9_nonpass, source_docx_path=docx_trf
     )
 
-    df_9_nonpass = df_9_nonpass.drop(columns=[c for c in ["_page_reference"] if c in df_9_nonpass.columns])
-
+    df_9_nonpass = df_9_nonpass.drop(
+        columns=[c for c in ["_page_reference"] if c in df_9_nonpass.columns]
+    )
 
     insert_dataframe_below_anchor_non_conformance(
         input_docx=output_letter_docx,
         output_docx=output_letter_docx,
         df=df_9_nonpass,
-        anchor_text="The shared documents were evaluated during the intrinsic safety analysis and constructional evaluation and following non-conformances were observed:"
+        anchor_text="The shared documents were evaluated during the intrinsic safety analysis and constructional evaluation and following non-conformances were observed:",
     )
 
     # -------------------------------------------------------
     # STEP 7 — Image Compliance Pipeline (uses SAME blob_urls)
     # -------------------------------------------------------
 
-    # non_conforming_images=orchestrate_iec61010_image_compliance_pipeline(
-    #     blob_file_list=blob_urls,   # SAME LIST
-    #     local_download_dir=src_files_dir,
-    #     source_docx_name=output_letter_docx,
-    #     output_docx_path=output_letter_docx,
-    #     connection_string=AZURE_CONN_STRING,
-    #     container_name=BLOB_CONTAINER_NAME
-    # )
-    # print("Conforming Images : #####################")
-
-    # print(non_conforming_images)
-
-    # from pathlib import Path
-
-
-    # base_path = Path("Documents") / project_Id
-    # final_letter_images_path = base_path / "letter_images"
-
-    # blob_urls_non_conform = upload_images_to_blob(
-    # non_conforming_images=non_conforming_images,
-    # connection_string=AZURE_CONN_STRING,
-    # container_name=BLOB_CONTAINER_NAME,
-    # base_path=base_path,
-    # final_letter_images_path=final_letter_images_path
-    # )
-
-    # # print("blob urls: ###################################")
-    # # print(blob_urls_non_conform)
-
-    # update_non_conforming_urls_from_blob(data, blob_urls_non_conform)
-
     try:
         # Run IEC61010 image compliance pipeline
         non_conforming_images = orchestrate_iec61010_image_compliance_pipeline(
-            blob_file_list=blob_urls,   # SAME LIST
+            blob_file_list=blob_urls,  # SAME LIST
             local_download_dir=src_files_dir,
             source_docx_name=output_letter_docx,
             output_docx_path=output_letter_docx,
             connection_string=AZURE_CONN_STRING,
-            container_name=BLOB_CONTAINER_NAME
+            container_name=BLOB_CONTAINER_NAME,
         )
 
         # If pipeline returns empty or None
@@ -2490,7 +1872,7 @@ def generate_letter_pipeline(
             connection_string=AZURE_CONN_STRING,
             container_name=BLOB_CONTAINER_NAME,
             base_path=base_path,
-            final_letter_images_path=final_letter_images_path
+            final_letter_images_path=final_letter_images_path,
         )
 
         # Update URLs in final letter JSON
@@ -2505,25 +1887,15 @@ def generate_letter_pipeline(
         # Optional: ensure downstream code doesn't fail
         blob_urls_non_conform = []
 
-
-
-
-
     # -------------------------------------------------------
     # STEP 8 — Save Outputs
     # -------------------------------------------------------
-    
+
     with open(letter_json_path_output, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    
-
-
     with open(letter_header_json_path_output, "w", encoding="utf-8") as f:
         json.dump(data_header, f, indent=2, ensure_ascii=False)
-    
- 
-    
 
     print("\n==============================")
     print("✅ LETTER GENERATION COMPLETE")
@@ -2532,123 +1904,114 @@ def generate_letter_pipeline(
     return {
         "letter_json": "letter_output.json",
         "header_json": "letter_header_output.json",
-        "letter_docx": output_letter_docx
+        "letter_docx": output_letter_docx,
     }
 
-def letter_gen(blob_urls,    
-               container_name, src_files_dir,src_files_trf, letter_json_path,
-                letter_header_json_path,letter_template_docx,
-                output_letter_docx,
-                letter_json_path_output,
-                letter_header_json_path_output,
-                project_Id,blob_urls_trf,
-                text_container,
-                image_container):
-        
-        generate_letter_pipeline(
-            blob_urls,
-            container_name,
-            src_files_dir,
-            letter_json_path,
-            letter_header_json_path,
-            letter_template_docx,
-            output_letter_docx,
-            letter_json_path_output,
-            letter_header_json_path_output,
-            project_Id=project_Id,
-            text_container=text_container,
-            image_container=image_container)
 
-        # extracted_data =  process_quote_from_folder(src_files_trf)
-        # update_scope_of_work_in_json(letter_json_path_output,letter_json_path_output,extracted_data=extracted_data)
-        # ------------------------------------------------
+def letter_gen(
+    blob_urls,
+    container_name,
+    src_files_dir,
+    src_files_trf,
+    letter_json_path,
+    letter_header_json_path,
+    letter_template_docx,
+    output_letter_docx,
+    letter_json_path_output,
+    letter_header_json_path_output,
+    project_Id,
+    blob_urls_trf,
+    text_container,
+    image_container,
+):
+
+    generate_letter_pipeline(
+        blob_urls,
+        container_name,
+        src_files_dir,
+        letter_json_path,
+        letter_header_json_path,
+        letter_template_docx,
+        output_letter_docx,
+        letter_json_path_output,
+        letter_header_json_path_output,
+        project_Id=project_Id,
+        text_container=text_container,
+        image_container=image_container,
+    )
+
+    # ------------------------------------------------
     # STEP 2 — Extract Scope of Work Data (SAFE)
     # ------------------------------------------------
-        extracted_data = None
-        try:
-            extracted_data = process_quote_from_folder(src_files_trf)
+    extracted_data = None
+    try:
+        extracted_data = process_quote_from_folder(src_files_trf)
 
-            if not extracted_data:
-                print("⚠️ No extracted quote data found. Skipping scope of work update.")
-            else:
-                update_scope_of_work_in_json(
-                    letter_json_path_output,
-                    letter_json_path_output,
-                    extracted_data=extracted_data
-                )
-                print("✅ Scope of work updated successfully.")
-
-        except Exception as e:
-            print("⚠️ Failed to update scope of work. Continuing without it.")
-            print(f"Reason: {e}")
-
-        # updated_letter = add_text_support_with_blob_url_and_filename(
-        #         letter_json_path=letter_json_path_output,
-        #         folder_path=src_files_trf )
-
-        # with open(letter_json_path_output, "w", encoding="utf-8") as f:
-        #     json.dump(updated_letter, f, indent=2,ensure_ascii=False)
-
-        try:
-            updated_letter = add_text_support_with_blob_url_and_filename(
-                letter_json_path=letter_json_path_output,
-                folder_path=src_files_trf
+        if not extracted_data:
+            print("⚠️ No extracted quote data found. Skipping scope of work update.")
+        else:
+            update_scope_of_work_in_json(
+                letter_json_path_output,
+                letter_json_path_output,
+                extracted_data=extracted_data,
             )
+            print("✅ Scope of work updated successfully.")
 
-            if not updated_letter:
-                print("⚠️ Updated letter content is empty. Skipping JSON overwrite.")
-            else:
-                with open(letter_json_path_output, "w", encoding="utf-8") as f:
-                    json.dump(updated_letter, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print("⚠️ Failed to update scope of work. Continuing without it.")
+        print(f"Reason: {e}")
 
-                print("✅ Letter JSON updated with blob support text.")
-
-        except Exception as e:
-            print("⚠️ Failed while adding blob support text.")
-            print(f"Reason: {e}")
-
- 
-
-        with open(letter_json_path_output, "r", encoding="utf-8") as f:
-            data_final = json.load(f)
-
-        data_final=attach_blob_urls_to_image_support_letter(data_final, blob_urls_trf)
-        data_final=attach_blob_urls_to_text_support_letter(data_final, blob_urls_trf)
-
-        data_final = attach_blob_urls_to_table_text_support(data_final,blob_urls_trf)
-
-        data_final= update_system_date_and_project_id(data=data_final,project_id=project_Id)
-
-        with open(letter_json_path_output, "w", encoding="utf-8") as f:
-            json.dump(data_final, f, indent=2, ensure_ascii=False)
-
-
-
-        with open(letter_header_json_path_output, "r", encoding="utf-8") as f:
-            data_header_final = json.load(f)
-        data_header_final=attach_blob_urls_to_image_support_letter(data_header_final, blob_urls_trf)
-        data_header_final=attach_blob_urls_to_text_support_letter(data_header_final, blob_urls_trf)
-
-        with open(letter_header_json_path_output, "w", encoding="utf-8") as f:
-            json.dump(data_header_final, f, indent=2, ensure_ascii=False)
-        
-
-        replace_keys_with_values_no_format_change_all(
-            input_docx=output_letter_docx,
-            output_docx=output_letter_docx,
-            data=data_final
+    try:
+        updated_letter = add_text_support_with_blob_url_and_filename(
+            letter_json_path=letter_json_path_output, folder_path=src_files_trf
         )
 
-        delete_cosmos_container(
+        if not updated_letter:
+            print("⚠️ Updated letter content is empty. Skipping JSON overwrite.")
+        else:
+            with open(letter_json_path_output, "w", encoding="utf-8") as f:
+                json.dump(updated_letter, f, indent=2, ensure_ascii=False)
+
+            print("✅ Letter JSON updated with blob support text.")
+
+    except Exception as e:
+        print("⚠️ Failed while adding blob support text.")
+        print(f"Reason: {e}")
+
+    with open(letter_json_path_output, "r", encoding="utf-8") as f:
+        data_final = json.load(f)
+
+    data_final = attach_blob_urls_to_image_support_letter(data_final, blob_urls_trf)
+    data_final = attach_blob_urls_to_text_support_letter(data_final, blob_urls_trf)
+
+    data_final = attach_blob_urls_to_table_text_support(data_final, blob_urls_trf)
+
+    data_final = update_system_date_and_project_id(
+        data=data_final, project_id=project_Id
+    )
+
+    with open(letter_json_path_output, "w", encoding="utf-8") as f:
+        json.dump(data_final, f, indent=2, ensure_ascii=False)
+
+    with open(letter_header_json_path_output, "r", encoding="utf-8") as f:
+        data_header_final = json.load(f)
+    data_header_final = attach_blob_urls_to_image_support_letter(
+        data_header_final, blob_urls_trf
+    )
+    data_header_final = attach_blob_urls_to_text_support_letter(
+        data_header_final, blob_urls_trf
+    )
+
+    with open(letter_header_json_path_output, "w", encoding="utf-8") as f:
+        json.dump(data_header_final, f, indent=2, ensure_ascii=False)
+
+    replace_keys_with_values_no_format_change_all(
+        input_docx=output_letter_docx, output_docx=output_letter_docx, data=data_final
+    )
+
+    delete_cosmos_container(
         endpoint=COSMOS_URL,
         key=COSMOS_KEY,
         database_name=DB_NAME,
-        container_name=text_container
-        )
-
-        delete_cosmos_container(
-        endpoint=COSMOS_URL,
-        key=COSMOS_KEY,
-        database_name=DB_NAME_IMG,
-        container_name=image_container
-        )
+        container_name=text_container,
+    )

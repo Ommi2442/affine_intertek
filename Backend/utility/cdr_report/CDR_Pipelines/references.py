@@ -17,28 +17,34 @@ from utility.cdr_report.CDR_Pipelines.configs import(
     score_llm,
     llm
 )
-#from utility.cdr_report.CDR_Pipelines.prompts import 
 from collections import defaultdict
 from utility.cdr_report.CDR_Pipelines.prompts import ref_prompt as prompt
 from utility.cdr_report.CDR_Pipelines.prompts import score_prompt
-#cosmos_client = CosmosClient(url=COSMOS_URL, credential=COSMOS_KEY)
-# cosmos_container = cosmos_client.get_database_client(DB_NAME).get_container_client(CONT_NAME)
+
 
 EMAIL_RE = re.compile(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", re.I)
-# PHONE_RE = re.compile(r"(\+\d[\d\s\-\(\)]{6,}\d|\(\d{3}\)\s*\d{3}\-\d{4})")
 PHONE_RE = re.compile(
     r"(\+\d[\d\s\-\(\)]{6,}\d|\(\d{3}\)\s*\d{3}\-\d{4}|\b\d{3}[\s.-]?\d{3}[\s.-]?\d{4}\b)"
 )
-# ADDR_HINT_RE = re.compile(
-#     r"(Street Address|Address|City, State|Postal|Zip|Country|Name and address of factory|Factory|Manufacturer|Bill-To|Applicant|Legal Entity Name)",
-#     re.I,
-# )
+
 ADDR_HINT_RE = re.compile(
     r"(Street Address|Address|City, State|Postal|Zip|Country|Name and address of factory|Factory|Manufacturer|Bill-To|Applicant|Legal Entity Name|Prepared\s*For|Prepared\s*by)",
     re.I,
 )
 FORM_FILENAME_RE = re.compile(r"(cis|client[_\s-]?information|customer[_\s-]?information|agreement|agent)", re.I)
 FORM_CONTENT_RE  = re.compile(r'("Applicant"|"Bill-To"|"Manufacturer"|Legal Entity Name|Street Address)', re.I)
+QUOTE_FILENAME_RE = re.compile(
+    r"(^|[/\\_\-\s])("
+    r"qu"
+    r"|quote"
+    r"|quotation"
+    r"|proforma"
+    r"|pro[-\s]?invoice"
+    r"|sales[_\s-]?quote"
+    r")([_\-\s\d]|\.|$)",
+    re.I,
+)
+QUOTE_CONTENT_RE = re.compile(r"(quotation|quote\s*(no|number)|prepared\s*for|buyer|customer|ship[-\s]?to|bill[-\s]?to)",re.I,)
 ZERO_WIDTH_RE = re.compile(r"[\u200B-\u200D\uFEFF]")  # zero-width chars
 COMPONENT_SUPPLIER_RE = re.compile(
     r"(constituent|critical)\s+component|"
@@ -65,33 +71,18 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
-from utility.cdr_report.CDR_Pipelines.form_utils import to_tabular_json
+from utility.cdr_report.CDR_Pipelines.utils import to_tabular_json
 from pathlib import Path
-from utility.cdr_report.CDR_Pipelines.json_utils import enrich_sheet1_extractions_by_headers
-from utility.cdr_report.CDR_Pipelines.json_utils import sheet1_json_main
-from utility.cdr_report.CDR_Pipelines.json_utils import enrich_sheet1_extractions_by_headers
-from utility.cdr_report.CDR_Pipelines.json_utils import add_text_support_to_result_json
+from utility.cdr_report.CDR_Pipelines.utils import enrich_sheet1_extractions_by_headers
+from utility.cdr_report.CDR_Pipelines.utils import sheet1_json_main
+from utility.cdr_report.CDR_Pipelines.utils import enrich_sheet1_extractions_by_headers
+from utility.cdr_report.CDR_Pipelines.utils import add_text_support_to_result_json
 import utility.cdr_report.CDR_Pipelines.configs as configs
 # OUTPUT_PATH   = Path(r".\utility\cdr_report\CDR_Pipelines\sheet1_3filled_dummy.json")
 OUTPUT_PATH   = Path("sheet1_3filled_dummy.json")
 from langchain_core.output_parsers import JsonOutputParser
-from utility.cdr_report.CDR_Pipelines.json_utils import top_chunks_as_json
-# llm = AzureChatOpenAI(
-#     azure_endpoint=AOAI_ENDPOINT,
-#     api_key=AOAI_KEY,
-#     openai_api_version=API_VERSION,
-#     azure_deployment=CHAT_DEPLOY,
-#     temperature=0.1,
-# )
+from utility.cdr_report.CDR_Pipelines.utils import top_chunks_as_json
 
-
-# context = format_docs(out["docs"])                # reuse the exact same docs
-# extracted = out["answer"]                         # already a dict if JsonOutputParser used
-
-
-# def get_bom_source_files() -> set[str]:
-#     configs.require_runtime()
-#     return switch.get_bom_filenames()
 
 def limit_manufacturers_to_two(data_json: dict) -> dict:
     key = "ManufacturersSection"
@@ -107,9 +98,6 @@ def get_bom_source_files(vs) -> set[str]:
     return ex_files
 
 
-# from langchain_core.runnables import RunnableLambda, RunnableParallel, RunnablePassthrough
-# BOM_SOURCE_FILES = switch.get_bom_filenames()
-# ex_files = {x.lower() for x in BOM_SOURCE_FILES}
 def drop_excluded(docs, ex_files):
     kept = []
     for d in docs:
@@ -126,17 +114,7 @@ def drop_component_suppliers(docs: List[Document]) -> List[Document]:
             continue
         kept.append(d)
     return kept
-# def exclude_bom_docs(docs: list[Document]) -> list[Document]:
-#     bom_files = get_bom_source_files()
-#     filtered = []
 
-#     for d in docs:
-#         sf = (d.metadata.get("source_file") or "").lower()
-#         if sf and sf in bom_files:
-#             continue
-#         filtered.append(d)
-
-#     return filtered
 
 
 
@@ -164,30 +142,20 @@ def extract_signals(text: str) -> Tuple[Set[str], Set[str], bool]:
     return emails, phones, has_addr_hint
 
 
+
+
 def is_form_like(doc: Document) -> bool:
     sf = (doc.metadata.get("source_file") or "")
     txt = (doc.page_content or "")
-    return bool(FORM_CONTENT_RE.search(txt) or FORM_FILENAME_RE.search(sf))
+
+    return bool(
+        FORM_CONTENT_RE.search(txt)
+        or FORM_FILENAME_RE.search(sf)
+        or QUOTE_CONTENT_RE.search(txt)
+        or QUOTE_FILENAME_RE.search(sf)
+    )
 
 
-# def doc_usefulness_score(doc: Document) -> int:
-#     sf = (doc.metadata.get("source_file") or "").lower()
-#     txt = doc.page_content or ""
-#     emails, phones, has_addr_hint = extract_signals(txt)
-
-#     score = 0
-#     if has_addr_hint:
-#         score += 3
-#     score += min(len(emails), 3) * 2
-#     score += min(len(phones), 2) * 1
-
-#     # mild preference for PDFs/structured artifacts, no penalty for emails
-#     if sf.endswith(".pdf"):
-#         score += 2
-#     if sf.endswith(".xlsx") or sf.endswith(".xls"):
-#         score += 1
-
-#     return score
 
 def doc_usefulness_score(doc: Document) -> int:
     sf = (doc.metadata.get("source_file") or "").lower()
@@ -202,7 +170,11 @@ def doc_usefulness_score(doc: Document) -> int:
 
     # prefer structured / likely OEM docs
     if OEM_SIGNAL_RE.search(txt):
-        score += 6
+        score += 5
+
+    # prefer quote/invoice-like sources
+    if QUOTE_FILENAME_RE.search(sf) or QUOTE_CONTENT_RE.search(txt):
+        score +=7
 
     # penalize component/BOM-like sections (unless it also has OEM signals)
     if COMPONENT_SUPPLIER_RE.search(txt) and not OEM_SIGNAL_RE.search(txt):
@@ -302,13 +274,7 @@ def cap_per_source(docs: List[Document], max_per_source: int = 4) -> List[Docume
     return out
 
 
-# def build_fallback_query(user_question: str) -> str:
-#     # You can tune this. Goal: pull anything that contains relevant structured identifiers.
-#     return (
-#         user_question
-#         + " Applicant Bill-To Manufacturer Name Address Contacts Email Phone Fax "
-#         + " Name and address of factory"
-#     )
+
 def build_fallback_query(user_question: str) -> str:
     # You can tune this. Goal: pull anything that contains relevant structured identifiers.
     return (
@@ -371,13 +337,6 @@ def build_context_docs(vs, container, retrieved_docs: List[Document], user_quest
 
     # Second retrieval pass: real fallback to other files not in initial top-k
     fallback_query = build_fallback_query(user_question)
-#     fallback_candidates = exclude_bom_docs(
-#     vs.similarity_search(
-#         fallback_query,
-#         k=80,
-#         search_type="vector"
-#     )
-# )
     fallback_candidates = vs.similarity_search(
         fallback_query,
         k=80,
@@ -456,22 +415,10 @@ def references_main(vs, ref):
     # print("\n===== FINAL CHUNKS USED AS CONTEXT =====\n")
     for i, d in enumerate(out["docs"], 1):
         src = d.metadata.get("citation") or d.metadata.get("source_file") or d.metadata.get("source") or ""
-        # print(f"\n--- CHUNK {i} ---")
-        # print("Source:", src)
-        # print("Score:", doc_usefulness_score(d))
-        # print("Content:\n", (d.page_content or "")[:3500])
 
-    # top5 = top_chunks_as_json(vs, CURRENT_QUESTION, k_search=300, top_k=5)
-    #####
     context = format_docs(out["docs"])                # reuse the exact same docs
     extracted = out["answer"]   
-    # score_llm = AzureChatOpenAI(
-    #     azure_endpoint=AOAI_ENDPOINT,
-    #     api_key=AOAI_KEY,
-    #     openai_api_version=API_VERSION,
-    #     azure_deployment=CHAT_DEPLOY,
-    #     temperature=0.0,   # important for stable scoring
-    # )
+
 
     scores = (score_prompt | score_llm | JsonOutputParser()).invoke({
         "context": context,
@@ -494,18 +441,11 @@ def references_main(vs, ref):
     result = to_tabular_json(out['answer'])
     #print(result["ApplicantSection"])
     data_json=ref|result
+    data_json['ApplicantSection']['Applicant']=ref['Applicant']
+    data_json['ApplicantSection']['Address']=ref['Address']
     template = json.loads(configs.TEMPLATE_PATH.read_text(encoding="utf-8"))
 
-#     from pathlib import Path
 
-#     print("CWD:", Path.cwd())
-#     print("Template path:", TEMPLATE_PATH.resolve())
-
-#     template_text = TEMPLATE_PATH.read_text(encoding="utf-8")
-#     template = json.loads(template_text)
-
-#     print("Loaded template type:", type(template))
-#     print("Loaded template keys:", list(template.keys()) if isinstance(template, dict) else "NOT A DICT")
 
     data_json = limit_manufacturers_to_two(data_json)
     template = sheet1_json_main(data_json, template)

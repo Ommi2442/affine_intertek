@@ -45,6 +45,7 @@ Your JSON output MUST follow this schema:
 }}
 """
 
+
 # Grey mode system prompt template
 def get_grey_mode_prompt(evidence_block, context_text, active_prompt):
     """Returns grey mode system prompt with variables filled in."""
@@ -73,6 +74,7 @@ QUESTION:
 {active_prompt}
 """
 
+
 # Remark instruction block
 def get_remark_instruction(evidence_block):
     """Returns remark instruction with evidence block filled in."""
@@ -100,6 +102,7 @@ If no decision can still be made based on the framework (mentioned above), then 
 
 """
 
+
 # Verdict instruction block
 def get_verdict_instruction(evidence_block):
     """Returns verdict instruction with evidence block filled in."""
@@ -125,6 +128,7 @@ as referenced in the IEC Standard 61010-1
 " " = if evidence provided in the TRF text and Input images contradicts the requirement as specified in the IEC Standard 61010-1
 """
 
+
 # Description instruction block
 def get_description_instruction(evidence_block):
     """Returns description instruction with evidence block filled in."""
@@ -141,6 +145,7 @@ Provide ONLY the following JSON keys:
 }}
 {evidence_block}
 """
+
 
 # Default/Extract instruction block
 def get_default_instruction(evidence_block):
@@ -159,8 +164,11 @@ Provide ONLY the following JSON keys:
 {evidence_block}
 """
 
+
 # Base system prompt for normal mode
-def get_base_system_prompt(guideline_reference, active_prompt, instruction_block, context_text):
+def get_base_system_prompt(
+    guideline_reference, active_prompt, instruction_block, context_text
+):
     """Returns base system prompt with all variables filled in."""
     return f"""
 You are an expert electrical safety compliance engineer specializing in IEC 61010-1:2010 & IEC 61010-1:2010/AMD1:2016. 

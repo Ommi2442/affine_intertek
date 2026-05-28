@@ -1,24 +1,29 @@
-# New process for OCr extrcation of images (dont run)
-    
+# New process for OCR extraction of images (don't run)
+
+import os
+import re
 import time
-import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from urllib.parse import urlparse
+
+import requests
+from dotenv import load_dotenv
 from langchain_core.documents import Document
 from openai import AzureOpenAI
 
-from dotenv import load_dotenv
+from projects.keyvault_load import load_keyvault_secrets
 
 load_dotenv()
-import os
-
-from projects.keyvault_load import *
 load_keyvault_secrets()
 
 AZURE_CONN_STRING = os.getenv("azure-conn-string")
+
 DB_NAME_IMG = os.getenv("cosmos-db-image")
 CONT_NAME_IMG = os.getenv("cosmos-cont-image")
+
 CHUNK_SIZE = int(os.getenv("chunk-size"))
 CHUNK_OVERLAP = int(os.getenv("chunk-overlap"))
+
 TOP_K = int(os.getenv("lt-top-k"))
 EMBED_DIM = int(os.getenv("embed-dim"))
 VECTOR_PATH = os.getenv("vector-path")
@@ -31,22 +36,22 @@ IMAGE_EXTS = os.getenv("lt-image-exts")
 AOAI_ENDPOINT = os.getenv("aoai-endpoint")
 AOAI_KEY = os.getenv("aoai-key")
 API_VERSION = os.getenv("api-version")
+
 EMBED_DEPLOY = os.getenv("embed-deploy")
 CHAT_DEPLOY = os.getenv("chat-deploy")
 
 COSMOS_URL = os.getenv("cosmos-url")
 COSMOS_KEY = os.getenv("cosmos-key")
+
 COSMOS_DB = os.getenv("cosmos-db-text")
 COSMOS_CONT = os.getenv("cosmos-cont-text")
 
-DB_NAME = os.getenv("cosmos-db-text")
-CONT_NAME = os.getenv("cosmos-cont-text")
+DB_NAME = COSMOS_DB
+CONT_NAME = COSMOS_CONT
 
 MAX_THREADS = int(os.getenv("lt-max-threads"))
 MAX_RETRIES = int(os.getenv("lt-top-k"))
 INITIAL_BACKOFF = int(os.getenv("lt-initial-backoff"))
- 
-
 
 client = AzureOpenAI(
     api_key=AOAI_KEY,
@@ -54,9 +59,6 @@ client = AzureOpenAI(
     azure_endpoint=AOAI_ENDPOINT,
 )
 
-from urllib.parse import urlparse
-import os
-import re
 
 def extract_clean_image_name(blob_url: str):
     """
@@ -66,7 +68,7 @@ def extract_clean_image_name(blob_url: str):
     """
 
     parsed = urlparse(blob_url)
-    path = parsed.path                     # /container/.../<whatever>
+    path = parsed.path  # /container/.../<whatever>
     parts = path.split("/")
 
     # Identify pdf folder if present
@@ -77,7 +79,7 @@ def extract_clean_image_name(blob_url: str):
             break
 
     # Extract clean PNG filename without SAS
-    image_filename = os.path.basename(path)   # page_4.png
+    image_filename = os.path.basename(path)  # page_4.png
     # Make FULL relative path
     if pdf_file:
         return f"{pdf_file}/{image_filename}"
@@ -99,7 +101,6 @@ def process_single_image(url, index, total, vision_deploy_name):
     backoff = INITIAL_BACKOFF
 
     for attempt in range(1, MAX_RETRIES + 1):
-
         try:
             # Validate URL
             resp = requests.get(url, timeout=20)
@@ -131,7 +132,6 @@ def process_single_image(url, index, total, vision_deploy_name):
             extracted_text = completion.choices[0].message.content.strip()
             image_name = extract_clean_image_name(url)
 
-
             print(f"[SUCCESS] Completed image {index}/{total} → {url}")
 
             return Document(
@@ -144,10 +144,14 @@ def process_single_image(url, index, total, vision_deploy_name):
             )
 
         except Exception as e:
-            print(f"[WARN] Attempt {attempt}/{MAX_RETRIES} failed for image {index} → {url}: {e}")
+            print(
+                f"[WARN] Attempt {attempt}/{MAX_RETRIES} failed for image {index} → {url}: {e}"
+            )
 
             if attempt == MAX_RETRIES:
-                print(f"[ERROR] Giving up on image {index} → {url} after {MAX_RETRIES} attempts.")
+                print(
+                    f"[ERROR] Giving up on image {index} → {url} after {MAX_RETRIES} attempts."
+                )
                 return None
 
             print(f"[INFO] Cooling down {backoff}s before retry (image {index})...")
@@ -162,9 +166,10 @@ def load_and_process_images(image_urls, vision_deploy_name=CHAT_DEPLOY):
     print(f"[START] Processing {total} images with up to {MAX_THREADS} threads.\n")
 
     with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
-
         future_to_idx = {
-            executor.submit(process_single_image, url, idx+1, total, vision_deploy_name): idx
+            executor.submit(
+                process_single_image, url, idx + 1, total, vision_deploy_name
+            ): idx
             for idx, url in enumerate(image_urls)
         }
 
@@ -177,12 +182,11 @@ def load_and_process_images(image_urls, vision_deploy_name=CHAT_DEPLOY):
                 if result is not None:
                     docs.append(result)
                 else:
-                    print(f"[ERROR] Image {idx+1}/{total} → returned None")
+                    print(f"[ERROR] Image {idx + 1}/{total} → returned None")
             except Exception as e:
-                print(f"[FATAL] Unhandled error for image {idx+1}/{total} → {url}: {e}")
+                print(
+                    f"[FATAL] Unhandled error for image {idx + 1}/{total} → {url}: {e}"
+                )
 
     print(f"\n[COMPLETE] Finished processing {total} images.\n")
     return docs
-
-
-
