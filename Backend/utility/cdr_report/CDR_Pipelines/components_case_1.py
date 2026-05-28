@@ -12,13 +12,11 @@ import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from openai import AzureOpenAI
 
+from utility.cdr_report.CDR_Pipelines.token_tracker import token_tracker
 import utility.cdr_report.CDR_Pipelines.configs as configs
 from utility.cdr_report.CDR_Pipelines.switch import find_bom_blob_url
 
-
-
-
-
+from langchain_community.callbacks import get_openai_callback
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #                    COMPONENTS : UTILITIES
@@ -33,7 +31,7 @@ from azure.cosmos import CosmosClient, PartitionKey
 openai_client = AzureOpenAI(
     api_key=configs.AZURE_OPENAI_KEY,
     azure_endpoint=configs.AZURE_OPENAI_ENDPOINT,
-    api_version=configs.AZURE_OPENAI_API_VERSION
+    api_version=configs.AZURE_OPENAI_API_VERSION,
 )
 
 cosmos_client = CosmosClient(configs.COSMOS_ENDPOINT, configs.COSMOS_KEY)
@@ -90,6 +88,7 @@ Components:
 {components_json}
 """
 
+
 # ==================== LOGIC FUNCTIONS ====================
 def confidence_level(score):
     score = float(score)
@@ -99,6 +98,7 @@ def confidence_level(score):
         return "Medium"
     return "Low"
 
+
 def visual_confidence_from_distance(d, applicability):
     if applicability == "Direct" and d < 0.30:
         return "Visual support present"
@@ -106,22 +106,38 @@ def visual_confidence_from_distance(d, applicability):
         return "Visual context only"
     return "No visual evidence"
 
+
 def visual_applicability(component_name, description):
     text = f"{component_name} {description}".lower()
 
-    if any(k in text for k in [
-        "enclosure", "housing", "cabinet", "cover", "case",
-        "fan", "vent", "ventilation",
-        "label", "marking", "nameplate",
-        "power inlet", "ac inlet", "connector",
-        "earth", "ground", "protective earth"
-    ]):
+    if any(
+        k in text
+        for k in [
+            "enclosure",
+            "housing",
+            "cabinet",
+            "cover",
+            "case",
+            "fan",
+            "vent",
+            "ventilation",
+            "label",
+            "marking",
+            "nameplate",
+            "power inlet",
+            "ac inlet",
+            "connector",
+            "earth",
+            "ground",
+            "protective earth",
+        ]
+    ):
         return "Direct"
 
-    if any(k in text for k in [
-        "fuse", "transformer", "power supply",
-        "relay", "switch", "terminal"
-    ]):
+    if any(
+        k in text
+        for k in ["fuse", "transformer", "power supply", "relay", "switch", "terminal"]
+    ):
         return "Indirect"
 
     return "Not applicable"
@@ -158,8 +174,10 @@ def safe_json_load(text):
 
     return None
 
+
 def cosine_distance(a, b):
     return 1 - np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
 
 def clean_value(v):
     if pd.isna(v):
@@ -167,16 +185,9 @@ def clean_value(v):
     return v
 
 
-
-
-
-
-
-
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #                    COMPONENTS : MASTER BOM
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 
 
 # ============================================================
@@ -186,7 +197,7 @@ def clean_value(v):
 vision_client = AzureOpenAI(
     api_key=configs.AOAI_KEY,
     azure_endpoint=configs.AOAI_ENDPOINT,
-    api_version=configs.API_VERSION
+    api_version=configs.API_VERSION,
 )
 
 
@@ -220,10 +231,13 @@ MASTER_BOM_COLUMNS = BOM_COLUMNS + [
 # XLSX HELPERS
 # ============================================================
 
+
 def normalize(col: str) -> str:
     return str(col).strip().lower().replace("_", " ")
 
+
 NORMALIZED_BOM_COLS = {normalize(c): c for c in BOM_COLUMNS}
+
 
 def detect_header_row(df_preview: pd.DataFrame) -> int | None:
     for i in range(len(df_preview)):
@@ -235,6 +249,7 @@ def detect_header_row(df_preview: pd.DataFrame) -> int | None:
             return i
     return None
 
+
 def merge_bom_sheets_from_sas_url(bom_sas_url: str) -> pd.DataFrame:
     response = requests.get(bom_sas_url)
     response.raise_for_status()
@@ -244,28 +259,16 @@ def merge_bom_sheets_from_sas_url(bom_sas_url: str) -> pd.DataFrame:
 
     for sheet in xls.sheet_names:
         preview = pd.read_excel(
-            xls,
-            sheet_name=sheet,
-            header=None,
-            nrows=HEADER_SCAN_ROWS,
-            dtype=str
+            xls, sheet_name=sheet, header=None, nrows=HEADER_SCAN_ROWS, dtype=str
         )
 
         header_row = detect_header_row(preview)
         if header_row is None:
             continue
 
-        df = pd.read_excel(
-            xls,
-            sheet_name=sheet,
-            header=header_row,
-            dtype=str
-        )
+        df = pd.read_excel(xls, sheet_name=sheet, header=header_row, dtype=str)
 
-        df.columns = [
-            NORMALIZED_BOM_COLS.get(normalize(c), c)
-            for c in df.columns
-        ]
+        df.columns = [NORMALIZED_BOM_COLS.get(normalize(c), c) for c in df.columns]
 
         df = df[[c for c in BOM_COLUMNS if c in df.columns]]
         df = df.dropna(how="all")
@@ -279,6 +282,7 @@ def merge_bom_sheets_from_sas_url(bom_sas_url: str) -> pd.DataFrame:
         return pd.DataFrame(columns=MASTER_BOM_COLUMNS)
 
     return pd.concat(merged_rows, ignore_index=True)
+
 
 def structured_bom_confidence(df: pd.DataFrame) -> float:
     score = 0.0
@@ -297,6 +301,7 @@ def structured_bom_confidence(df: pd.DataFrame) -> float:
 
     return score
 
+
 # TEMP_DIR = "temp_images"
 # os.makedirs(TEMP_DIR, exist_ok=True)
 
@@ -309,7 +314,6 @@ def render_pages_to_temp_images(pdf_bytes, filename, pages, dpi=200):
     total_pages = len(doc)
 
     for p in sorted(pages):
-
         idx = p
 
         if idx < 0 or idx >= total_pages:
@@ -317,15 +321,13 @@ def render_pages_to_temp_images(pdf_bytes, filename, pages, dpi=200):
 
         pix = doc[idx].get_pixmap(dpi=dpi)
 
-        img_path = os.path.join(
-            configs.TEMP_DIR,
-            f"{filename}_page_{p}.png"
-        )
+        img_path = os.path.join(configs.TEMP_DIR, f"{filename}_page_{p}.png")
 
         pix.save(img_path)
         saved.append((p, img_path))
 
     return saved
+
 
 def extract_bom_from_image(img_bytes):
 
@@ -350,18 +352,33 @@ Schema:
 
     response = vision_client.chat.completions.create(
         model=configs.VISION_MODEL,
-        messages=[{
-            "role": "user",
-            "content": [
-                {"type": "text", "text": prompt},
-                {"type": "image_url", "image_url": {
-                    "url": f"data:image/png;base64,{b64}"
-                }}
-            ]
-        }],
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt},
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/png;base64,{b64}"},
+                    },
+                ],
+            }
+        ],
         temperature=0,
-        max_tokens=8000
+        max_tokens=8000,
     )
+    # =========================
+    # TRACK TOKEN USAGE
+    # =========================
+
+    usage = response.usage
+
+    if usage:
+        token_tracker.update(
+            prompt_tokens=usage.prompt_tokens,
+            completion_tokens=usage.completion_tokens,
+            total_tokens=usage.total_tokens,
+        )
 
     raw = response.choices[0].message.content or ""
     s = raw.strip()
@@ -372,23 +389,24 @@ Schema:
     if l == -1 or r == -1:
         return []
 
-    return json.loads(s[l:r+1])
+    return json.loads(s[l : r + 1])
 
 
 MAX_RETRIES = 6
 
 
 def safe_extract_with_retry(img_path):
-    
+
     for attempt in range(MAX_RETRIES):
         try:
             with open(img_path, "rb") as f:
                 return extract_bom_from_image(f.read())
 
         except Exception:
-            time.sleep(min(2 ** attempt, 15))
+            time.sleep(min(2**attempt, 15))
 
     return []
+
 
 # ============================================================
 # PDF BOM — RAG USING EXISTING VECTOR STORE
@@ -436,16 +454,19 @@ Context:
 
 llm = configs.llm2
 
-prompt = ChatPromptTemplate.from_messages([
-    ("system", SYSTEM_PROMPT),
-    ("human", USER_PROMPT),
-])
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", SYSTEM_PROMPT),
+        ("human", USER_PROMPT),
+    ]
+)
 
 parser = JsonOutputParser()
 rag_chain = prompt | llm
 
 from urllib.parse import unquote
 from os.path import basename
+
 
 def normalize(name: str) -> str:
     """
@@ -457,6 +478,7 @@ def normalize(name: str) -> str:
     if not name:
         return ""
     return unquote(str(name)).strip().lower()
+
 
 def _retrieve_bom_chunks(source_name: str, vs):
     print(f"Inside Excel_chunk before normalize {source_name}")
@@ -470,14 +492,12 @@ def _retrieve_bom_chunks(source_name: str, vs):
     """
     docs = vs.similarity_search(query=query, k=20, where=where)
     for d in docs:
-        print(f"{source_name} -> File:{bom_name} -> Metadata:{d.metadata.get('source_file')}")
+        print(
+            f"{source_name} -> File:{bom_name} -> Metadata:{d.metadata.get('source_file')}"
+        )
 
     return docs
 
-
-
-
-import json
 
 def _parse_bom_with_vs(
     *,
@@ -485,20 +505,41 @@ def _parse_bom_with_vs(
     source_name: str,
     vs,
 ) -> pd.DataFrame:
+
     rows = []
 
     chunks = _retrieve_bom_chunks(source_name, vs=vs)
+
     print(f"{source_name}: retrieved {len(chunks)} chunks")
 
     for idx, text in enumerate(chunks, start=1):
         try:
-            raw = rag_chain.invoke({"CONTEXT": text})
+            # ========================================
+            # TRACK LLM USAGE
+            # ========================================
+
+            with get_openai_callback() as cb:
+                raw = rag_chain.invoke({"CONTEXT": text})
+
+            token_tracker.update(
+                prompt_tokens=cb.prompt_tokens,
+                completion_tokens=cb.completion_tokens,
+                total_tokens=cb.total_tokens,
+            )
+
+            # ========================================
+            # PARSE RESPONSE
+            # ========================================
+
             raw_text = raw.content if hasattr(raw, "content") else raw
+
             raw_text = raw_text.strip()
+
             if not raw_text:
                 continue
 
             items = json.loads(raw_text)
+
         except Exception:
             continue
 
@@ -509,27 +550,30 @@ def _parse_bom_with_vs(
             if not any(it.values()):
                 continue
 
-            rows.append({
-                "Line": it.get("Line"),
-                "Parent Part Number": None,
-                "QTY": it.get("QTY"),
-                "U/M": it.get("U/M"),
-                "Description": it.get("Description"),
-                "Manufacturer": it.get("Manufacturer"),
-                "Manufacturer Part Number": it.get("Manufacturer Part Number"),
-                "Vendor": None,
-                "Vendor Part Number": None,
-                "Existing Netsuite Item Number": None,
-                "Modified PP Item Number": None,
-                "CAT": None,
-                "SP": None,
-                "Rev": it.get("Rev"),
-                "Customer Reference Number": None,
-                "sheet_name": source_name,
-                "source_doc": source_url,
-            })
+            rows.append(
+                {
+                    "Line": it.get("Line"),
+                    "Parent Part Number": None,
+                    "QTY": it.get("QTY"),
+                    "U/M": it.get("U/M"),
+                    "Description": it.get("Description"),
+                    "Manufacturer": it.get("Manufacturer"),
+                    "Manufacturer Part Number": it.get("Manufacturer Part Number"),
+                    "Vendor": None,
+                    "Vendor Part Number": None,
+                    "Existing Netsuite Item Number": None,
+                    "Modified PP Item Number": None,
+                    "CAT": None,
+                    "SP": None,
+                    "Rev": it.get("Rev"),
+                    "Customer Reference Number": None,
+                    "sheet_name": source_name,
+                    "source_doc": source_url,
+                }
+            )
 
     return pd.DataFrame(rows, columns=MASTER_BOM_COLUMNS)
+
 
 def _parse_pdf_with_vision(
     *,
@@ -549,11 +593,7 @@ def _parse_pdf_with_vision(
     qty quantity description manufacturer
     part number mpn mfr u/m line item
     """
-    docs = vs.similarity_search(
-        query=query,
-        k=25,
-        where=where
-    )
+    docs = vs.similarity_search(query=query, k=25, where=where)
     for d in docs:
         print(f"{source_name} → page {d.metadata['page']}")
     pages = {d.metadata["page"] for d in docs}
@@ -573,8 +613,7 @@ def _parse_pdf_with_vision(
     # 4️⃣ parallel vision extraction
     with ThreadPoolExecutor(max_workers=6) as executor:
         futures = {
-            executor.submit(safe_extract_with_retry, img): page
-            for page, img in images
+            executor.submit(safe_extract_with_retry, img): page for page, img in images
         }
 
         for future in as_completed(futures):
@@ -582,25 +621,27 @@ def _parse_pdf_with_vision(
             items = future.result()
 
             for it in items:
-                rows.append({
-                    "Line": it.get("Line"),
-                    "Parent Part Number": None,
-                    "QTY": it.get("QTY"),
-                    "U/M": it.get("U/M"),
-                    "Description": it.get("Description"),
-                    "Manufacturer": it.get("Manufacturer"),
-                    "Manufacturer Part Number": it.get("Manufacturer Part Number"),
-                    "Vendor": None,
-                    "Vendor Part Number": None,
-                    "Existing Netsuite Item Number": None,
-                    "Modified PP Item Number": None,
-                    "CAT": None,
-                    "SP": None,
-                    "Rev": None,
-                    "Customer Reference Number": None,
-                    "sheet_name": page + 1,
-                    "source_doc": source_name,
-                })
+                rows.append(
+                    {
+                        "Line": it.get("Line"),
+                        "Parent Part Number": None,
+                        "QTY": it.get("QTY"),
+                        "U/M": it.get("U/M"),
+                        "Description": it.get("Description"),
+                        "Manufacturer": it.get("Manufacturer"),
+                        "Manufacturer Part Number": it.get("Manufacturer Part Number"),
+                        "Vendor": None,
+                        "Vendor Part Number": None,
+                        "Existing Netsuite Item Number": None,
+                        "Modified PP Item Number": None,
+                        "CAT": None,
+                        "SP": None,
+                        "Rev": None,
+                        "Customer Reference Number": None,
+                        "sheet_name": page + 1,
+                        "source_doc": source_name,
+                    }
+                )
             print(f"✅ {source_name} page {page} → {len(rows)} rows")
     return pd.DataFrame(rows, columns=MASTER_BOM_COLUMNS)
 
@@ -618,40 +659,24 @@ def deduplicate_master_bom(df: pd.DataFrame) -> pd.DataFrame:
     """
 
     # Normalize matching keys (defensive)
-    df["_desc_norm"] = (
-        df["Description"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
-    )
-    
-    df["_mfr_norm"] = (
-        df["Manufacturer"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
-    )
+    df["_desc_norm"] = df["Description"].astype(str).str.strip().str.lower()
 
-    df["_mpn_norm"] = (
-        df["Manufacturer Part Number"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
-    )
+    df["_mfr_norm"] = df["Manufacturer"].astype(str).str.strip().str.lower()
+
+    df["_mpn_norm"] = df["Manufacturer Part Number"].astype(str).str.strip().str.lower()
 
     # Rows eligible for deduplication
-    has_keys = df["_desc_norm"].ne("nan") & df["_mpn_norm"].ne("nan") & df["_mfr_norm"].ne("nan")
+    has_keys = (
+        df["_desc_norm"].ne("nan")
+        & df["_mpn_norm"].ne("nan")
+        & df["_mfr_norm"].ne("nan")
+    )
 
     dedupe_df = df[has_keys].copy()
     passthrough_df = df[~has_keys].copy()
 
     def merge_unique(series):
-        vals = (
-            series.dropna()
-            .astype(str)
-            .str.strip()
-            .unique()
-        )
+        vals = series.dropna().astype(str).str.strip().unique()
         return " | ".join(vals)
 
     agg_map = {
@@ -666,17 +691,18 @@ def deduplicate_master_bom(df: pd.DataFrame) -> pd.DataFrame:
             agg_map[col] = "first"
 
     deduped = (
-        dedupe_df
-        .groupby(["_desc_norm", "_mfr_norm", "_mpn_norm"], dropna=False)
+        dedupe_df.groupby(["_desc_norm", "_mfr_norm", "_mpn_norm"], dropna=False)
         .agg(agg_map)
         .reset_index(drop=True)
     )
-    
+
     # Recombine with rows we intentionally skipped
     final_df = pd.concat([deduped, passthrough_df], ignore_index=True)
 
     # Cleanup
-    final_df = final_df.drop(columns=["_desc_norm", "_mfr_norm", "_mpn_norm"], errors="ignore")
+    final_df = final_df.drop(
+        columns=["_desc_norm", "_mfr_norm", "_mpn_norm"], errors="ignore"
+    )
 
     return final_df
 
@@ -684,6 +710,7 @@ def deduplicate_master_bom(df: pd.DataFrame) -> pd.DataFrame:
 # ============================================================
 # ORCHESTRATION
 # ============================================================
+
 
 def _process_single_bom_file(f: dict, *, vs) -> pd.DataFrame | None:
     print(f"Processing BOM: {f['name']}")
@@ -704,15 +731,12 @@ def _process_single_bom_file(f: dict, *, vs) -> pd.DataFrame | None:
             vs=vs,
         )
 
-
     if f["type"] == "pdf":
         return _parse_pdf_with_vision(
             source_url=f["url"],
             source_name=f["name"],
             vs=vs,
         )
-
-
 
     return None
 
@@ -738,8 +762,7 @@ def run_master_bom(
 
     with ThreadPoolExecutor(max_workers=configs.MAX_WORKERS) as executor:
         futures = [
-            executor.submit(_process_single_bom_file, f, vs=vs)
-            for f in bom_files
+            executor.submit(_process_single_bom_file, f, vs=vs) for f in bom_files
         ]
 
         for future in as_completed(futures):
@@ -766,25 +789,18 @@ def run_master_bom(
     print("✅ master_bom.xlsx generated successfully")
 
 
-
-
-
-
-
-
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #             COMPONENTS : EXTRACTION - CLASSIFICATION
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-
 def classify_in_batches(df, batch_size):
+
     configs.require_runtime()
 
     results = []
 
     for i in range(0, len(df), batch_size):
-        batch = df.iloc[i:i + batch_size].copy()
+        batch = df.iloc[i : i + batch_size].copy()
+
         batch["row_id"] = batch.index.astype(str)
 
         payload = batch.to_dict(orient="records")
@@ -798,79 +814,96 @@ def classify_in_batches(df, batch_size):
                     "role": "user",
                     "content": USER_PROMPT.format(
                         components_json=json.dumps(payload, indent=2)
-                    )
-                }
-            ]
+                    ),
+                },
+            ],
         )
 
+        # ========================================
+        # TRACK TOKEN USAGE
+        # ========================================
+
+        usage = response.usage
+
+        if usage:
+            token_tracker.update(
+                prompt_tokens=usage.prompt_tokens,
+                completion_tokens=usage.completion_tokens,
+                total_tokens=usage.total_tokens,
+            )
+
+        # ========================================
+        # PARSE RESPONSE
+        # ========================================
+
         raw_text = response.choices[0].message.content
+
         batch_result = safe_json_load(raw_text)
 
         if batch_result is None:
-            #print("⚠️ JSON parse failed, marking batch as LOW confidence")
+            # print("⚠️ JSON parse failed, marking batch as LOW confidence")
+
             for row_id in batch["row_id"]:
-                results.append({
-                    "row_id": row_id,
-                    "is_critical": True,
-                    "triggered_rules": [],
-                    "confidence_score": 0.3,
-                    "reasoning": "LLM response parsing failed"
-                })
+                results.append(
+                    {
+                        "row_id": row_id,
+                        "is_critical": True,
+                        "triggered_rules": [],
+                        "confidence_score": 0.3,
+                        "reasoning": "LLM response parsing failed",
+                    }
+                )
+
         else:
             results.extend(batch_result)
 
     return pd.DataFrame(results)
 
 
-
 def run_extraction():
-        configs.require_runtime()
+    configs.require_runtime()
 
-        print("Starting Extraction...")
-        # Load master sheet
+    print("Starting Extraction...")
+    # Load master sheet
 
-        master_path = configs.MASTER_SHEET_PATH
+    master_path = configs.MASTER_SHEET_PATH
 
-        # --------------------------------
-        # CASE: MASTER BOM DOES NOT EXIST
-        # --------------------------------
-        if not master_path.exists():
-            print("ℹ Master BOM not found. Writing empty extraction output.")
-            return
-        
-        
-        master_df = pd.read_excel(configs.MASTER_SHEET_PATH, dtype=str)
+    # --------------------------------
+    # CASE: MASTER BOM DOES NOT EXIST
+    # --------------------------------
+    if not master_path.exists():
+        print("ℹ Master BOM not found. Writing empty extraction output.")
+        return
 
-        
-        # Classify
-        results_df = classify_in_batches(master_df, configs.BATCH_SIZE)
+    master_df = pd.read_excel(configs.MASTER_SHEET_PATH, dtype=str)
 
-        # Rule-count scoring
-        results_df["rules_triggered_count"] = results_df["triggered_rules"].apply(
-            lambda x: len(x) if isinstance(x, list) else 0
-        )
-        results_df["rules_triggered_total"] = 8
-        results_df["rules_score"] = (
-            results_df["rules_triggered_count"] /
-            results_df["rules_triggered_total"]
-        )
+    # Classify
+    results_df = classify_in_batches(master_df, configs.BATCH_SIZE)
 
-        # Confidence level
-        results_df["confidence_level"] = results_df["confidence_score"].apply(confidence_level)
+    # Rule-count scoring
+    results_df["rules_triggered_count"] = results_df["triggered_rules"].apply(
+        lambda x: len(x) if isinstance(x, list) else 0
+    )
+    results_df["rules_triggered_total"] = 8
+    results_df["rules_score"] = (
+        results_df["rules_triggered_count"] / results_df["rules_triggered_total"]
+    )
 
-        # Merge back to master
-        final_df = master_df.copy()
-        results_df["row_id"] = results_df["row_id"].astype(int)
-        final_df = final_df.join(results_df.set_index("row_id"), how="left")
+    # Confidence level
+    results_df["confidence_level"] = results_df["confidence_score"].apply(
+        confidence_level
+    )
 
-        # Export
-        final_df.to_excel(configs.OUTPUT_PATH_FINAL, index=False)
+    # Merge back to master
+    final_df = master_df.copy()
+    results_df["row_id"] = results_df["row_id"].astype(int)
+    final_df = final_df.join(results_df.set_index("row_id"), how="left")
 
-        print("✔ Critical component classification complete")
-        print(f"✔ Output saved to: {configs.OUTPUT_PATH_FINAL}")
+    # Export
+    final_df.to_excel(configs.OUTPUT_PATH_FINAL, index=False)
 
-
-
+    print("✔ Critical component classification complete")
+    print(f"✔ Output saved to: {configs.OUTPUT_PATH_FINAL}")
 
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -885,6 +918,7 @@ from urllib.parse import quote
 
 # ===================== INTERNAL UTILS =====================
 
+
 def embed_text(text):
     """
     Generates embedding for a single text string.
@@ -894,15 +928,14 @@ def embed_text(text):
         return None
 
     try:
-        return openai_client.embeddings.create(
-            model=configs.EMBED_MODEL,
-            input=text
-        ).data[0].embedding
+        return (
+            openai_client.embeddings.create(model=configs.EMBED_MODEL, input=text)
+            .data[0]
+            .embedding
+        )
     except Exception as e:
-        #print(f"⚠ Embedding failed: {e}")
+        # print(f"⚠ Embedding failed: {e}")
         return None
-
-
 
 
 def get_image_urls_from_container_sas():
@@ -914,18 +947,17 @@ def get_image_urls_from_container_sas():
     blob_service = BlobServiceClient.from_connection_string(
         configs.AZURE_BLOB_CONNECTION_STRING
     )
-    container_client = blob_service.get_container_client(
-        configs.BLOB_CONTAINER_NAME
-    )
+    container_client = blob_service.get_container_client(configs.BLOB_CONTAINER_NAME)
 
     blob_urls = []
 
     for blob in container_client.list_blobs(name_starts_with=device_prefix):
         blob_client = container_client.get_blob_client(blob.name)
-        blob_urls.append(blob_client.url)   # ✅ SAFE, SDK-built URL
+        blob_urls.append(blob_client.url)  # ✅ SAFE, SDK-built URL
 
-    #print("Blobs found in device_images:", len(blob_urls))
+    # print("Blobs found in device_images:", len(blob_urls))
     return blob_urls
+
 
 def describe_image(image_url):
     try:
@@ -938,7 +970,7 @@ def describe_image(image_url):
                     "content": (
                         "You are an electrical safety engineer. "
                         "Describe the image factually. Do not guess."
-                    )
+                    ),
                 },
                 {
                     "role": "user",
@@ -946,36 +978,45 @@ def describe_image(image_url):
                         {
                             "type": "text",
                             "text": (
-                                    "Respond ONLY in JSON.\n\n"
-                                    "Rules for view_description:\n"
-                                    "- MAX 10 words\n"
-                                    "- One short sentence fragment\n"
-                                    "- Describe ONLY view/angle/type\n"
-                                    "- NO explanations\n\n"
-                                    "{"
-                                    "\"view_description\":\"\",\n"
-                                    "\"image_type\":\"exterior|interior|partial|schematic\",\n"
-                                    "\"visible_elements\":\"\""
-                                    "}"
-                                )
-
+                                "Respond ONLY in JSON.\n\n"
+                                "Rules for view_description:\n"
+                                "- MAX 10 words\n"
+                                "- One short sentence fragment\n"
+                                "- Describe ONLY view/angle/type\n"
+                                "- NO explanations\n\n"
+                                "{"
+                                '"view_description":"",\n'
+                                '"image_type":"exterior|interior|partial|schematic",\n'
+                                '"visible_elements":""'
+                                "}"
+                            ),
                         },
-                        {
-                            "type": "image_url",
-                            "image_url": {"url": image_url}
-                        }
-                    ]
-                }
-            ]
+                        {"type": "image_url", "image_url": {"url": image_url}},
+                    ],
+                },
+            ],
         )
 
         raw = response.choices[0].message.content.strip()
+        # =========================
+        # TRACK TOKEN USAGE
+        # =========================
+
+        usage = response.usage
+
+        if usage:
+            token_tracker.update(
+                prompt_tokens=usage.prompt_tokens,
+                completion_tokens=usage.completion_tokens,
+                total_tokens=usage.total_tokens,
+            )
         raw = raw.removeprefix("```json").removesuffix("```").strip()
         return json.loads(raw)
 
     except Exception as e:
-        #print(f"⚠ Image not readable by Vision ({image_url}): {e}")
+        # print(f"⚠ Image not readable by Vision ({image_url}): {e}")
         return None
+
 
 def extract_visible_elements(description):
     if not description or "VISIBLE ELEMENTS:" not in description:
@@ -985,7 +1026,9 @@ def extract_visible_elements(description):
         visible = visible.split("NOT VISIBLE")[0]
     return visible.strip()
 
+
 # ===================== OPTIMIZED MATCHING LOGIC =====================
+
 
 def calculate_cosine_distances_matrix(comp_embeddings, img_embeddings):
     """
@@ -994,7 +1037,7 @@ def calculate_cosine_distances_matrix(comp_embeddings, img_embeddings):
     Formula: 1 - (A . B) / (|A|*|B|)
     """
     # Convert to numpy arrays
-    A = np.array(comp_embeddings) # Shape: (C, D)
+    A = np.array(comp_embeddings)  # Shape: (C, D)
     B = np.array(img_embeddings)  # Shape: (I, D)
 
     # Normalize vectors
@@ -1012,11 +1055,11 @@ def calculate_cosine_distances_matrix(comp_embeddings, img_embeddings):
     return 1 - similarity
 
 
-
 # ===================== PHOTO-TAGGING =====================
 
+
 def run_phototagging():
-    
+
     configs.require_runtime()
 
     print("Starting Phototagging (Optimized)...")
@@ -1045,15 +1088,11 @@ def run_phototagging():
     if "is_critical" not in df_all.columns:
         print("⚠ 'is_critical' column missing. Skipping phototagging.")
         return
-    
 
     # STEP 0: LOAD ORIGINAL & FILTER CRITICAL
 
     df_all["is_critical_norm"] = (
-        df_all["is_critical"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
+        df_all["is_critical"].astype(str).str.strip().str.lower()
     )
 
     critical_df = df_all.loc[
@@ -1079,12 +1118,10 @@ def run_phototagging():
     print(f"Image URLs supplied: {len(image_urls)}")
     # SAVE ALL IMAGE URLS FOR FORMATTER
     pd.Series(image_urls, name="image_url").to_csv(
-        configs.ALL_IMAGE_URLS_CSV,
-        index=False
+        configs.ALL_IMAGE_URLS_CSV, index=False
     )
 
     has_images = len(image_urls) > 0
-
 
     print("...Generating Image Descriptions (Parallel)...")
     with ThreadPoolExecutor(max_workers=configs.MAX_WORKERS) as exe:
@@ -1093,15 +1130,16 @@ def run_phototagging():
     valid_items = []
     for url, meta in zip(image_urls, image_meta):
         if meta:
-            valid_items.append({
-                "url": url,
-                "view": meta.get("view_description"),
-                "type": meta.get("image_type"),
-                "visible": meta.get("visible_elements")
-            })
+            valid_items.append(
+                {
+                    "url": url,
+                    "view": meta.get("view_description"),
+                    "type": meta.get("image_type"),
+                    "visible": meta.get("visible_elements"),
+                }
+            )
 
     print(f"Images successfully described: {len(valid_items)}")
-
 
     # STEP 3: IMAGE EMBEDDINGS (PARALLEL)
     print("...Generating Image Embeddings (Parallel)...")
@@ -1113,22 +1151,23 @@ def run_phototagging():
     image_items = []
     for item, emb in zip(valid_items, valid_img_embeddings):
         if emb is not None:
-            image_items.append({
-                "url": item["url"],
-                "embedding": emb,
-                "caption": f'{item["view"]} ({item["type"]})'
-            })
+            image_items.append(
+                {
+                    "url": item["url"],
+                    "embedding": emb,
+                    "caption": f"{item['view']} ({item['type']})",
+                }
+            )
 
     print(f"Images with usable embeddings: {len(image_items)}")
-
 
     # STEP 4: COMPONENT EMBEDDINGS (ONLY IF IMAGES EXIST)
     if has_images:
         print("...Generating Component Embeddings (Parallel)...")
 
         df["component_text"] = df.apply(
-            lambda r: f"{r.get('Component Name','')} {r.get('Description','')}",
-            axis=1
+            lambda r: f"{r.get('Component Name', '')} {r.get('Description', '')}",
+            axis=1,
         )
 
         with ThreadPoolExecutor(max_workers=configs.MAX_WORKERS) as exe:
@@ -1141,8 +1180,7 @@ def run_phototagging():
         print("⚠ No images found — skipping component embeddings")
         df["embedding"] = None
 
-
-# STEP 5: MATCHING + JUSTIFICATION (VECTORIZED)
+    # STEP 5: MATCHING + JUSTIFICATION (VECTORIZED)
     print("...Calculating Matches...")
 
     results = []
@@ -1158,14 +1196,16 @@ def run_phototagging():
             desc = row.get("Description", "")
             applicability = visual_applicability(name, desc)
 
-            results.append({
-                "visual_applicability": applicability,
-                "found_in_images": False,
-                "image_url": None,
-                "image_caption": None,
-                "visual_confidence": "No visual evidence",
-                "visual_basis": "No product images available in device_images container"
-            })
+            results.append(
+                {
+                    "visual_applicability": applicability,
+                    "found_in_images": False,
+                    "image_url": None,
+                    "image_caption": None,
+                    "visual_confidence": "No visual evidence",
+                    "visual_basis": "No product images available in device_images container",
+                }
+            )
 
     else:
         # =================================
@@ -1198,7 +1238,7 @@ def run_phototagging():
                 "image_url": None,
                 "image_caption": None,
                 "visual_confidence": "No visual evidence",
-                "visual_basis": ""
+                "visual_basis": "",
             }
 
             # Case A: Not Applicable
@@ -1245,19 +1285,14 @@ def run_phototagging():
     # Attach results
     df = pd.concat([df.reset_index(drop=True), pd.DataFrame(results)], axis=1)
 
-
     # STEP 6: EXPORT FINAL OUTPUT
     df.to_excel(configs.FINAL_OUTPUT_WITH_EVIDENCE, index=False)
     print(f"✔ Completed. Output: {configs.FINAL_OUTPUT_WITH_EVIDENCE}")
 
 
-
-
-
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #                    COMPONENTS : FORMATTING
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 
 
 # ===================== HELPER FOR METADATA =====================
@@ -1267,8 +1302,10 @@ def build_field_text(photo_no, image_reason):
         return f"Photo {photo_no} - {short}"
     return f"Photo {photo_no}"
 
+
 import os
 from urllib.parse import urlparse, unquote
+
 
 def image_name_no_ext(url):
     filename = os.path.basename(unquote(urlparse(url).path))
@@ -1305,17 +1342,17 @@ def build_text_support_list(sheet_name, source_doc):
         page = pages[i] if i < len(pages) else None
         url = urls[i] if i < len(urls) else None
 
-        supports.append({
-            "filename": filename_from_url(url),
-            "page": page,               # sheet name only
-            "similarity_score": None,
-            "preview_text": None,
-            "url": url
-        })
+        supports.append(
+            {
+                "filename": filename_from_url(url),
+                "page": page,  # sheet name only
+                "similarity_score": None,
+                "preview_text": None,
+                "url": url,
+            }
+        )
 
-    return supports 
-
-
+    return supports
 
 
 NULL_COMPONENT_ITEM = {
@@ -1343,10 +1380,10 @@ NULL_COMPONENT_ITEM = {
             "page": None,
             "similarity_score": None,
             "preview_text": None,
-            "url": None
+            "url": None,
         }
     ],
-    "confidence": 0
+    "confidence": 0,
 }
 
 
@@ -1363,7 +1400,7 @@ NULL_PHOTO_META_ITEM = {
     "task_type": "photo",
     "user_editable": True,
     "ai_fillable": True,
-    "accuracy_level": False
+    "accuracy_level": False,
 }
 
 
@@ -1388,32 +1425,25 @@ def run_formatter():
             json.dump({"Items": [NULL_PHOTO_META_ITEM]}, f, indent=4)
 
         return
-    
+
     # ===================== PART 1: COMPONENT JSON =====================
     START_ROW = 3
     START_COLUMN = "A"
 
     df = pd.read_excel(configs.FINAL_OUTPUT_WITH_EVIDENCE, dtype=str)
 
-    df["found_norm"] = (
-        df["found_in_images"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
-    )
+    df["found_norm"] = df["found_in_images"].astype(str).str.strip().str.lower()
 
     matched_mask = df["found_norm"].isin(["true", "1", "yes", "y"])
 
-    matched_df   = df[matched_mask].copy()
+    matched_df = df[matched_mask].copy()
     unmatched_df = df[~matched_mask].copy()
-
 
     # print("Total rows in sheet           :", len(df))
     # print("Rows with image match (true) :", len(matched_df))
 
     if matched_df.empty:
         print("⚠ No image matches found — marking all components as Not Shown")
-
 
     # Assign Photo Numbers
     photo_map = {}
@@ -1430,24 +1460,18 @@ def run_formatter():
     # print("Unique photos detected:", len(photo_map))
     unmatched_df["photo_no"] = "Not Shown"
 
-
     # Sort
     matched_df = matched_df.sort_values(
-        by=["photo_no", "Description"],
-        ascending=[True, True]
+        by=["photo_no", "Description"], ascending=[True, True]
     ).reset_index(drop=True)
 
-    final_df = pd.concat(
-    [matched_df, unmatched_df],
-    ignore_index=True
-)
+    final_df = pd.concat([matched_df, unmatched_df], ignore_index=True)
 
     # print("Rows sorted by photo number")
 
     # Persist photo_no back to Excel
     final_df.to_excel(configs.FINAL_OUTPUT_WITH_EVIDENCE, index=False)
     # print("✔ photo_no persisted to Excel for all rows")
-
 
     # Build Items
     items = []
@@ -1476,17 +1500,16 @@ def run_formatter():
             "ai_fillable": True,
             "accuracy_level": True,
             "image_support": (
-                                clean_value(row.get("image_url"))
-                                if row["photo_no"] != "Not Shown"
-                                else None
-                            ),
-
+                clean_value(row.get("image_url"))
+                if row["photo_no"] != "Not Shown"
+                else None
+            ),
             "text_support": build_text_support_list(
-                                                        clean_value(row.get("sheet_name")),
-                                                        clean_value(row.get("source_doc"))
-                                                    ),
-
-            "confidence": int(float(clean_value(row.get("confidence_score")) or 0) * 100)
+                clean_value(row.get("sheet_name")), clean_value(row.get("source_doc"))
+            ),
+            "confidence": int(
+                float(clean_value(row.get("confidence_score")) or 0) * 100
+            ),
         }
 
         items.append(item)
@@ -1509,19 +1532,16 @@ def run_formatter():
 
     # Unique photos (No regeneration)
     photo_df = (
-        matched_df
-        .sort_values("photo_no")
+        matched_df.sort_values("photo_no")
         .drop_duplicates(subset=["photo_no"])
         .reset_index(drop=True)
     )
-    
+
     # ---------------- FIND UNMATCHED IMAGES ----------------
 
     used_images = set(matched_df["image_url"].dropna())
 
-    all_images = set(
-        pd.read_csv(configs.ALL_IMAGE_URLS_CSV)["image_url"]
-    )
+    all_images = set(pd.read_csv(configs.ALL_IMAGE_URLS_CSV)["image_url"])
 
     remaining_images = all_images - used_images
 
@@ -1536,8 +1556,7 @@ def run_formatter():
             "question_cell": question_cell,
             "prefix": "Product",
             "field": build_field_text(
-                clean_value(row["photo_no"]),
-                clean_value(row.get("image_caption"))
+                clean_value(row["photo_no"]), clean_value(row.get("image_caption"))
             ),
             "answer_cell": answer_cell,
             "photo_path": clean_value(row.get("image_url")),
@@ -1548,18 +1567,16 @@ def run_formatter():
             "task_type": "photo",
             "user_editable": True,
             "ai_fillable": True,
-            "accuracy_level": False
+            "accuracy_level": False,
         }
 
         items_meta.append(item)
         current_row_meta += ROW_GAP
 
-
     # Continue photo numbering after matched photos
-    max_photo_no = (matched_df["photo_no"].dropna().astype(float).max())
+    max_photo_no = matched_df["photo_no"].dropna().astype(float).max()
     max_photo_no = int(max_photo_no) if pd.notna(max_photo_no) else 0
     next_photo_no = max_photo_no + 1
-
 
     # ---------------- ADD UNMATCHED IMAGES ----------------
 
@@ -1567,38 +1584,35 @@ def run_formatter():
         question_cell = f"{START_COLUMN}{current_row_meta}"
         answer_cell = f"{START_COLUMN}{current_row_meta + 1}"
 
-        items_meta.append({
-            "question_cell": question_cell,
-            "prefix": "Product",
-            "field": build_field_text(
-                next_photo_no,
-                image_name_no_ext(img_url)  # used as caption-like text
-            ),
-            "answer_cell": answer_cell,
-            "photo_path": img_url,
-            "field_merged": False,
-            "fm_range": None,
-            "value_merged": False,
-            "vm_range": None,
-            "task_type": "photo",
-            "user_editable": True,
-            "ai_fillable": True,
-            "accuracy_level": False
-        })
+        items_meta.append(
+            {
+                "question_cell": question_cell,
+                "prefix": "Product",
+                "field": build_field_text(
+                    next_photo_no,
+                    image_name_no_ext(img_url),  # used as caption-like text
+                ),
+                "answer_cell": answer_cell,
+                "photo_path": img_url,
+                "field_merged": False,
+                "fm_range": None,
+                "value_merged": False,
+                "vm_range": None,
+                "task_type": "photo",
+                "user_editable": True,
+                "ai_fillable": True,
+                "accuracy_level": False,
+            }
+        )
 
         next_photo_no += 1
         current_row_meta += ROW_GAP
-
-
-
 
     with open(configs.OUTPUT_JSON_METADATA, "w", encoding="utf-8") as f:
         json.dump({"Items": items_meta}, f, indent=4)
 
     # print("✔ Photo metadata JSON created")
-    # print("✔ Output file:", configs.OUTPUT_JSON_METADATA) 
-
-
+    # print("✔ Output file:", configs.OUTPUT_JSON_METADATA)
 
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1609,15 +1623,14 @@ def run_formatter():
 def run_case1_pipeline(*, vs):
     configs.require_runtime()
 
-
-    #print("Step 1 : Creating Master BOM . . .")
+    # print("Step 1 : Creating Master BOM . . .")
     run_master_bom(vs=vs)
-    
-    #print("Step 2 : Extracting . . .")
+
+    # print("Step 2 : Extracting . . .")
     run_extraction()
-    
-    #print("Step 3 : Tagging Photos . . .")
+
+    # print("Step 3 : Tagging Photos . . .")
     run_phototagging()
-    
-    #print("Step 4 : Formatting JSON . . .")
+
+    # print("Step 4 : Formatting JSON . . .")
     run_formatter()

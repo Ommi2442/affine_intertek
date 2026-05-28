@@ -9,10 +9,12 @@ import uuid
 from langchain_core.documents import Document
 import openpyxl
 import xlrd
+from datetime import datetime, timezone
 
 # from utils import *
 from azure.storage.blob import BlobClient
 from azure.core.exceptions import ResourceNotFoundError, AzureError
+from azure.cosmos import CosmosClient
 
 # from templates import *
 import pandas as pd
@@ -28,13 +30,13 @@ from azure.core.exceptions import HttpResponseError
 import subprocess
 import platform
 
-
 pd.set_option("display.max_colwidth", None)  # Don't truncate cell text
 pd.set_option("display.max_rows", None)  # Show all rows (optional)
 pd.set_option("display.max_columns", None)
 
 
 IMAGE_EXTS = {"jpg", "jpeg", "png", "gif", "bmp", "tiff", "tif", "webp", "svg"}
+
 
 def infer_category_from_path(path):
     path_lower = str(path).lower()
@@ -607,3 +609,73 @@ def ingest_to_cosmos_parallel(vs, chunks, batch_size=10, max_workers=10):
                     future.result()
                 except Exception as e:
                     print(f"❌ Error inserting doc: {e}")
+
+
+def upsert_report_statistics(
+    payload: dict,
+    cosmos_config: dict,
+    project_id: str,
+):
+    """
+    Update report_statistics for a project document in Cosmos DB.
+
+    Args:
+        payload (dict): report_statistics payload
+        cosmos_config (dict): Cosmos DB configuration
+        project_id (str): Project ID to update
+
+    cosmos_config format:
+    {
+        "endpoint": "<cosmos-endpoint>",
+        "key": "<cosmos-key>",
+        "database_name": "<database-name>",
+        "container_name": "<container-name>"
+    }
+    """
+
+    # Initialize Cosmos client
+    client = CosmosClient(cosmos_config["endpoint"], credential=cosmos_config["key"])
+
+    database = client.get_database_client(cosmos_config["database_name"])
+
+    container = database.get_container_client(cosmos_config["container_name"])
+
+    # Ensure ISO timestamps
+    payload["report_start_time"] = (
+        payload.get("report_start_time") or datetime.now(timezone.utc).isoformat()
+    )
+
+    payload["report_end_time"] = (
+        payload.get("report_end_time") or datetime.now(timezone.utc).isoformat()
+    )
+
+    # Fetch existing document
+    query = "SELECT * FROM c WHERE c.project_id = @project_id"
+
+    params = [{"name": "@project_id", "value": project_id}]
+
+    items = list(
+        container.query_items(
+            query=query, parameters=params, enable_cross_partition_query=True
+        )
+    )
+
+    if not items:
+        raise Exception(f"Project document not found: {project_id}")
+
+    doc = items[0]
+
+    # Update statistics
+    doc["report_statistics"] = payload
+
+    # Optional update timestamp
+    doc["updated_on"] = datetime.now(timezone.utc).isoformat()
+
+    # Upsert document
+    updated_doc = container.upsert_item(doc)
+
+    return {
+        "status": "success",
+        "project_id": updated_doc["project_id"],
+        "report_statistics": updated_doc["report_statistics"],
+    }

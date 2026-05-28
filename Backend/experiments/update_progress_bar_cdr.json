@@ -1,0 +1,280 @@
+{
+    "stages": [
+        "INITIALIZE_WORKFLOW",
+        "PREPARE_INPUT_DOCUMENTS",
+        "RETRIEVE_SOURCE_FILES",
+        "PROCESS_TRF_DOCUMENTS",
+        "EXTRACT_EMBEDDED_IMAGES",
+        "PARSE_CIS_INFORMATION",
+        "STRUCTURE_EXTRACTED_CONTENT",
+        "CREATE_VECTOR_STORE",
+        "INDEX_SEARCHABLE_CONTENT",
+        "BUILD_REFERENCE_MAPPINGS",
+        "GENERATE_PRODUCT_DESCRIPTIONS",
+        "IDENTIFY_KEY_FEATURES",
+        "ORGANIZE_GENERATED_ASSETS",
+        "GENERATE_PHOTOS_SHEET",
+        "GENERATE_CRITICAL_COMPONENTS_SHEET",
+        "RUN_FINAL_VALIDATIONS",
+        "EXPORT_FINAL_WORKBOOK"
+    ],
+    "messages": [
+        "initializing workflow",
+        "preparing input documents",
+        "retrieving source files",
+        "processing trf documents",
+        "extracting embedded images",
+        "parsing cis information",
+        "structuring extracted content",
+        "creating vector store",
+        "indexing searchable content",
+        "building reference mappings",
+        "generating product descriptions",
+        "identifying key features",
+        "organizing generated assets",
+        "generating photos sheet",
+        "generating critical components sheet",
+        "running final validations",
+        "exporting final workbook"
+    ],
+    "mock_pipeline_updates": [
+        {
+            "pipeline_status": "running",
+            "current_stage": "INITIALIZE_WORKFLOW",
+            "last_completed_stage": null,
+            "current_step": 1,
+            "total_steps": 17,
+            "percentage": 5.88,
+            "error": null,
+            "last_updated": "2026-05-19T10:00:00Z",
+            "extra": {
+                "message": "initializing workflow"
+            },
+            "ts": "2026-05-19T10:00:00Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "PREPARE_INPUT_DOCUMENTS",
+            "last_completed_stage": "INITIALIZE_WORKFLOW",
+            "current_step": 2,
+            "total_steps": 17,
+            "percentage": 11.76,
+            "error": null,
+            "last_updated": "2026-05-19T10:00:10Z",
+            "extra": {
+                "message": "preparing input documents"
+            },
+            "ts": "2026-05-19T10:00:10Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "RETRIEVE_SOURCE_FILES",
+            "last_completed_stage": "PREPARE_INPUT_DOCUMENTS",
+            "current_step": 3,
+            "total_steps": 17,
+            "percentage": 17.65,
+            "error": null,
+            "last_updated": "2026-05-19T10:00:20Z",
+            "extra": {
+                "message": "retrieving source files"
+            },
+            "ts": "2026-05-19T10:00:20Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "PROCESS_TRF_DOCUMENTS",
+            "last_completed_stage": "RETRIEVE_SOURCE_FILES",
+            "current_step": 4,
+            "total_steps": 17,
+            "percentage": 23.53,
+            "error": null,
+            "last_updated": "2026-05-19T10:00:30Z",
+            "extra": {
+                "message": "processing trf documents"
+            },
+            "ts": "2026-05-19T10:00:30Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "EXTRACT_EMBEDDED_IMAGES",
+            "last_completed_stage": "PROCESS_TRF_DOCUMENTS",
+            "current_step": 5,
+            "total_steps": 17,
+            "percentage": 29.41,
+            "error": null,
+            "last_updated": "2026-05-19T10:00:40Z",
+            "extra": {
+                "message": "extracting embedded images"
+            },
+            "ts": "2026-05-19T10:00:40Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "PARSE_CIS_INFORMATION",
+            "last_completed_stage": "EXTRACT_EMBEDDED_IMAGES",
+            "current_step": 6,
+            "total_steps": 17,
+            "percentage": 35.29,
+            "error": null,
+            "last_updated": "2026-05-19T10:00:50Z",
+            "extra": {
+                "message": "parsing cis information"
+            },
+            "ts": "2026-05-19T10:00:50Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "STRUCTURE_EXTRACTED_CONTENT",
+            "last_completed_stage": "PARSE_CIS_INFORMATION",
+            "current_step": 7,
+            "total_steps": 17,
+            "percentage": 41.18,
+            "error": null,
+            "last_updated": "2026-05-19T10:01:00Z",
+            "extra": {
+                "message": "structuring extracted content"
+            },
+            "ts": "2026-05-19T10:01:00Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "CREATE_VECTOR_STORE",
+            "last_completed_stage": "STRUCTURE_EXTRACTED_CONTENT",
+            "current_step": 8,
+            "total_steps": 17,
+            "percentage": 47.06,
+            "error": null,
+            "last_updated": "2026-05-19T10:01:10Z",
+            "extra": {
+                "message": "creating vector store"
+            },
+            "ts": "2026-05-19T10:01:10Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "INDEX_SEARCHABLE_CONTENT",
+            "last_completed_stage": "CREATE_VECTOR_STORE",
+            "current_step": 9,
+            "total_steps": 17,
+            "percentage": 52.94,
+            "error": null,
+            "last_updated": "2026-05-19T10:01:20Z",
+            "extra": {
+                "message": "indexing searchable content"
+            },
+            "ts": "2026-05-19T10:01:20Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "BUILD_REFERENCE_MAPPINGS",
+            "last_completed_stage": "INDEX_SEARCHABLE_CONTENT",
+            "current_step": 10,
+            "total_steps": 17,
+            "percentage": 58.82,
+            "error": null,
+            "last_updated": "2026-05-19T10:01:30Z",
+            "extra": {
+                "message": "building reference mappings"
+            },
+            "ts": "2026-05-19T10:01:30Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "GENERATE_PRODUCT_DESCRIPTIONS",
+            "last_completed_stage": "BUILD_REFERENCE_MAPPINGS",
+            "current_step": 11,
+            "total_steps": 17,
+            "percentage": 64.71,
+            "error": null,
+            "last_updated": "2026-05-19T10:01:40Z",
+            "extra": {
+                "message": "generating product descriptions"
+            },
+            "ts": "2026-05-19T10:01:40Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "IDENTIFY_KEY_FEATURES",
+            "last_completed_stage": "GENERATE_PRODUCT_DESCRIPTIONS",
+            "current_step": 12,
+            "total_steps": 17,
+            "percentage": 70.59,
+            "error": null,
+            "last_updated": "2026-05-19T10:01:50Z",
+            "extra": {
+                "message": "identifying key features"
+            },
+            "ts": "2026-05-19T10:01:50Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "ORGANIZE_GENERATED_ASSETS",
+            "last_completed_stage": "IDENTIFY_KEY_FEATURES",
+            "current_step": 13,
+            "total_steps": 17,
+            "percentage": 76.47,
+            "error": null,
+            "last_updated": "2026-05-19T10:02:00Z",
+            "extra": {
+                "message": "organizing generated assets"
+            },
+            "ts": "2026-05-19T10:02:00Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "GENERATE_PHOTOS_SHEET",
+            "last_completed_stage": "ORGANIZE_GENERATED_ASSETS",
+            "current_step": 14,
+            "total_steps": 17,
+            "percentage": 82.35,
+            "error": null,
+            "last_updated": "2026-05-19T10:02:10Z",
+            "extra": {
+                "message": "generating photos sheet"
+            },
+            "ts": "2026-05-19T10:02:10Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "GENERATE_CRITICAL_COMPONENTS_SHEET",
+            "last_completed_stage": "GENERATE_PHOTOS_SHEET",
+            "current_step": 15,
+            "total_steps": 17,
+            "percentage": 88.24,
+            "error": null,
+            "last_updated": "2026-05-19T10:02:20Z",
+            "extra": {
+                "message": "generating critical components sheet"
+            },
+            "ts": "2026-05-19T10:02:20Z"
+        },
+        {
+            "pipeline_status": "running",
+            "current_stage": "RUN_FINAL_VALIDATIONS",
+            "last_completed_stage": "GENERATE_CRITICAL_COMPONENTS_SHEET",
+            "current_step": 16,
+            "total_steps": 17,
+            "percentage": 94.12,
+            "error": null,
+            "last_updated": "2026-05-19T10:02:30Z",
+            "extra": {
+                "message": "running final validations"
+            },
+            "ts": "2026-05-19T10:02:30Z"
+        },
+        {
+            "pipeline_status": "completed",
+            "current_stage": "EXPORT_FINAL_WORKBOOK",
+            "last_completed_stage": "RUN_FINAL_VALIDATIONS",
+            "current_step": 17,
+            "total_steps": 17,
+            "percentage": 100.0,
+            "error": null,
+            "last_updated": "2026-05-19T10:02:40Z",
+            "extra": {
+                "message": "exporting final workbook"
+            },
+            "ts": "2026-05-19T10:02:40Z"
+        }
+    ]
+}

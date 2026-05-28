@@ -33,7 +33,6 @@ from langchain_core.documents import Document
 from langchain_openai import AzureOpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-
 from projects.keyvault_load import load_keyvault_secrets
 from utility.letter_report.deploymentV1.config import (
     AOAI_ENDPOINT,
@@ -57,7 +56,6 @@ from utility.letter_report.deploymentV1.config import (
 )
 from utility.letter_report.deploymentV1.trf_essential import *
 from utility.letter_report.deploymentV1.trf_utils_new import *
-
 
 fitz.TOOLS.mupdf_display_errors(False)
 

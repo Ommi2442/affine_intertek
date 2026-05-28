@@ -49,7 +49,7 @@ async def run_trf(job: TRFJob):
 
 
 @app.post("/run-cdr", status_code=202)
-async def run_trf(job: CDRJob):
+async def run_cdr(job: CDRJob):
     try:
         print("----- CDR Worker Started-------")
         loop = asyncio.get_running_loop()

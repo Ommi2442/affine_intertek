@@ -10,12 +10,10 @@ from typing import Callable, Optional
 from urllib.parse import unquote, urlparse
 
 import requests
-from azure.core.exceptions import (
-    ResourceNotFoundError,
-)
-from azure.cosmos import (
-    CosmosClient,
-)
+
+from azure.core.exceptions import ResourceNotFoundError
+from azure.cosmos import CosmosClient
+
 from docx import Document as docx_document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -41,6 +39,18 @@ from utility.trf_report.prompts import (
     get_grey_mode_prompt,
     get_remark_instruction,
     get_verdict_instruction,
+)
+from utility.trf_report.trf_essential import *
+from utility.trf_utils import *
+
+from utility.progress_tracker import (
+    PipelineType,
+    update_pipeline_progress,
+)
+
+from utility.pipeline_stages import (
+    TRF_STAGES,
+    get_trf_message,
 )
 from utility.trf_report.trf_essential import *
 from utility.trf_utils import *
@@ -796,6 +806,7 @@ def process_tasks_with_batches_parallel_grey(
     rag_image,
     vs,
     run_single_task_tool,
+    project_id: str = None,
     batch_size=150,
     cooldown_sec=15,
     max_workers=6,
@@ -888,6 +899,15 @@ def process_tasks_with_batches_parallel_grey(
 
         print(f"\n🔵 Starting batch: {start + 1} → {end}")
 
+        if project_id:
+            update_pipeline_progress(
+                project_id=project_id,
+                stages=TRF_STAGES,
+                current_stage="FETCH_LLM_RESPONSES",
+                pipeline_type=PipelineType.TRF,
+                message=get_trf_message("FETCH_LLM_RESPONSES", processed=start, total=total)
+            )
+
         with ThreadPoolExecutor(max_workers=max_workers) as exe:
             futures = {}
 
@@ -960,6 +980,15 @@ def process_tasks_with_batches_parallel_grey(
         if end < total:
             print(f"⏳ Cooling down for {cooldown_sec} seconds...")
             time.sleep(cooldown_sec)
+
+    if project_id:
+        update_pipeline_progress(
+            project_id=project_id,
+            stages=TRF_STAGES,
+            current_stage="FETCH_LLM_RESPONSES",
+            pipeline_type=PipelineType.TRF,
+            message=get_trf_message("FETCH_LLM_RESPONSES", processed=total, total=total)
+        )
 
     print("\n✅ ALL TASKS COMPLETED.")
 
@@ -1089,7 +1118,6 @@ def update_tasks_with_top5_images(tasks, retriever, max_threads=10):
                 updated[idx] = future.result()
             except Exception as e:
                 print(f"[ERROR] Task {idx + 1} failed: {e}")
-
     print(f"\n[COMPLETE] Completed all {total} tasks.\n")
 
     return updated
@@ -1854,6 +1882,7 @@ def trf_gen_partwise(
     input_json_path: str,
     output_json_path: str,
     excel_output_path: str,
+    project_id: str = None,
     batch_size=150,
     cooldown_sec=15,
     max_workers=6,
@@ -1890,6 +1919,15 @@ def trf_gen_partwise(
     print("       STEP 2 — BUILD TASKS")
     print("===============================================")
 
+    if project_id:
+        update_pipeline_progress(
+            project_id=project_id,
+            stages=TRF_STAGES,
+            current_stage="BUILD_TASKS",
+            pipeline_type=PipelineType.TRF,
+            message=get_trf_message("BUILD_TASKS")
+        )
+
     tasks, item_refs = build_tasks_with_custom_prompt_grey(data, blob_urls)
 
     # ---------------------------------------------------------
@@ -1898,6 +1936,15 @@ def trf_gen_partwise(
     print("\n===============================================")
     print("       STEP 3 — COMPUTE TOP-5 IMAGE HINTS")
     print("===============================================")
+
+    if project_id:
+        update_pipeline_progress(
+            project_id=project_id,
+            stages=TRF_STAGES,
+            current_stage="ENRICH_TASKS_WITH_IMAGES",
+            pipeline_type=PipelineType.TRF,
+            message=get_trf_message("ENRICH_TASKS_WITH_IMAGES")
+        )
 
     image_retriever_agent = vs2.as_retriever(search_kwargs={"k": 5})
     tasks = update_tasks_with_top5_images(tasks, image_retriever_agent)
@@ -1915,6 +1962,7 @@ def trf_gen_partwise(
         rag_image,
         vs,
         run_single_task_tool,
+        project_id=project_id,
         batch_size=batch_size,
         cooldown_sec=cooldown_sec,
         max_workers=max_workers,
@@ -1949,6 +1997,7 @@ def run_trf_generation(
     base_pta_path: str,
     input_json_paths: list,
     project_data_dir: Path,
+    project_id: str = None,
     batch_size=150,
     final_output_path: str | None = None,
     cooldown_sec=15,
@@ -2007,6 +2056,7 @@ def run_trf_generation(
         input_json_path=str(input_json_path),
         output_json_path=str(final_output_path),
         excel_output_path=str(excel_output_path),
+        project_id=project_id,
         batch_size=batch_size,
         cooldown_sec=cooldown_sec,
         max_workers=max_workers,
@@ -2026,9 +2076,18 @@ def run_trf_generation(
     with open(final_output_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    print("\n===============================================")
+    print("===============================================")
     print("       STEP 8 — APPLY POST-PROCESSING")
     print("===============================================")
+
+    if project_id:
+        update_pipeline_progress(
+            project_id=project_id,
+            stages=TRF_STAGES,
+            current_stage="APPLY_POST_PROCESSING",
+            pipeline_type=PipelineType.TRF,
+            message=get_trf_message("APPLY_POST_PROCESSING")
+        )
 
     update_verdict_dependencies(data)
 
@@ -2053,9 +2112,18 @@ def run_trf_generation(
     # # ---------------------------------------------------------
     # # Update Word DOCX with JSON values
     # # ---------------------------------------------------------
-    print("\n===============================================")
+    print("===============================================")
     print("       STEP 10 — UPDATE DOCX (VALUES + Arial 10)")
     print("===============================================")
+
+    if project_id:
+        update_pipeline_progress(
+            project_id=project_id,
+            stages=TRF_STAGES,
+            current_stage="UPDATE_REPORT",
+            pipeline_type=PipelineType.TRF,
+            message=get_trf_message("UPDATE_REPORT")
+        )
 
     update_docx_tables_from_json_arial(
         docx_path=input_docx_path,
@@ -2066,9 +2134,18 @@ def run_trf_generation(
     # ---------------------------------------------------------
     # Insert checkbox at designated position
     # ---------------------------------------------------------
-    print("\n===============================================")
+    print("===============================================")
     print("       STEP 11 — FINAL DOCX CHECKBOX UPDATE")
     print("===============================================")
+
+    if project_id:
+        update_pipeline_progress(
+            project_id=project_id,
+            stages=TRF_STAGES,
+            current_stage="UPDATE_FORMAT",
+            pipeline_type=PipelineType.TRF,
+            message=get_trf_message("UPDATE_FORMAT")
+        )
 
     insert_legacy_checkbox_with_text(
         docx_path=output_docx_path,  # update in-place
@@ -2127,6 +2204,15 @@ def run_trf_generation(
 
     print("\n✅ TRF GENERATION COMPLETED SUCCESSFULLY")
 
+    if project_id:
+        update_pipeline_progress(
+            project_id=project_id,
+            stages=TRF_STAGES,
+            current_stage="FINALIZE_REPORT",
+            pipeline_type=PipelineType.TRF,
+            message=get_trf_message("FINALIZE_REPORT")
+        )
+
     print("\n===============================================")
     print("       FINAL SUMMARY")
     print("===============================================")
@@ -2152,8 +2238,4 @@ def run_trf_generation(
     print("\n===============================================")
     print(stats)
     print("===============================================")
-
-    # Save statistics
-    STATS_RESULTS = project_data_dir / "statistics_report.json"
-    with open(STATS_RESULTS, "w", encoding="utf-8") as f:
-        f.write(json.dumps(stats, indent=4, ensure_ascii=False))
+    return stats

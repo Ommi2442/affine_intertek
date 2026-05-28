@@ -18,6 +18,8 @@ import importlib
 import utility.cdr_report.CDR_Pipelines.configs as configs
 from openai import AzureOpenAI
 
+from utility.cdr_report.CDR_Pipelines.token_tracker import token_tracker
+
 from utility.cdr_report.CDR_Pipelines.configs import (
     AZURE_OPENAI_ENDPOINT,
     AZURE_OPENAI_API_KEY,
@@ -248,6 +250,16 @@ def extract_page_with_llm(img_path: Path) -> str:
             }
         ]
     )
+
+    usage = response.usage
+
+
+    if usage:
+        token_tracker.update(
+            prompt_tokens=usage.prompt_tokens,
+            completion_tokens=usage.completion_tokens,
+            total_tokens=usage.total_tokens,
+        )
 
     return response.choices[0].message.content
 

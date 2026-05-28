@@ -1,9 +1,16 @@
 import os
 import platform
+import os
+import platform
 import re
 import shutil
 import subprocess
+import shutil
+import subprocess
 import tempfile
+import time
+import uuid
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -12,10 +19,21 @@ from email.parser import BytesParser
 from urllib.parse import unquote, urlparse
 
 import docx2pdf
+from urllib.parse import unquote, urlparse
+
+import docx2pdf
 import extract_msg
 import openpyxl
 import pandas as pd
+import pandas as pd
 import xlrd
+
+from azure.core.exceptions import (
+    AzureError,
+    HttpResponseError,
+    ResourceNotFoundError,
+)
+from azure.cosmos import PartitionKey, exceptions
 
 from azure.core.exceptions import (
     AzureError,
@@ -26,8 +44,12 @@ from azure.cosmos import PartitionKey, exceptions
 from azure.storage.blob import BlobClient
 
 from docx import Document as DocxDocument
+
+from docx import Document as DocxDocument
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
+
+from langchain_core.documents import Document as LCDocument
 
 from langchain_core.documents import Document as LCDocument
 from langchain_openai import AzureOpenAIEmbeddings
@@ -72,6 +94,7 @@ def set_checkbox_checked(docx_path, out_path, checkbox_index=0):
             count += 1
 
     doc.save(out_path)
+
 
 
 ### If chunks ingested don't run
@@ -136,6 +159,7 @@ def _extract_from_eml(path):
     return body
 
 
+
 ### If chunks ingested don't run
 def _extract_from_xlsx(path):
     out = []
@@ -147,6 +171,7 @@ def _extract_from_xlsx(path):
             if row_vals:
                 out.append(" ".join(row_vals))
     return "\n".join(out)
+
 
 
 ### If chunks ingested don't run
@@ -167,6 +192,7 @@ def _extract_from_xls(path):
     return "\n".join(out)
 
 
+
 ### If chunks ingested don't run
 def _guess_ext_from_url(url):
     path = urlparse(url).path
@@ -175,6 +201,7 @@ def _guess_ext_from_url(url):
     if ext:
         return ext.lstrip(".").lower()
     return None
+
 
 
 ### If chunks ingested don't run
@@ -224,6 +251,9 @@ def convert_doc_to_pdf(input_path, output_path=None):
             raise RuntimeError(
                 "LibreOffice not found. Install from https://www.libreoffice.org/"
             )
+            raise RuntimeError(
+                "LibreOffice not found. Install from https://www.libreoffice.org/"
+            )
     else:
         # Linux/macOS
         soffice = shutil.which("libreoffice") or shutil.which("soffice")
@@ -232,10 +262,18 @@ def convert_doc_to_pdf(input_path, output_path=None):
             raise RuntimeError(
                 "LibreOffice not installed. Install using your package manager."
             )
+            raise RuntimeError(
+                "LibreOffice not installed. Install using your package manager."
+            )
 
     cmd = [
         soffice,
         "--headless",
+        "--convert-to",
+        "pdf",
+        "--outdir",
+        out_dir,
+        input_path,
         "--convert-to",
         "pdf",
         "--outdir",
@@ -249,6 +287,11 @@ def convert_doc_to_pdf(input_path, output_path=None):
         raise RuntimeError(f"PDF conversion failed: {e.stderr.decode()}")
 
     return output_path
+
+
+def pdf_convert(file1, file2):
+    """file1 is docx and file2 is pdf"""
+    return docx2pdf.convert(file1, file2)
 
 
 def pdf_convert(file1, file2):
@@ -276,6 +319,7 @@ def _blob_name_from_url(url, container):
         return ""
     # otherwise return the full path (best-effort)
     return p
+
 
 
 ### If chunks ingested don't run
@@ -308,6 +352,7 @@ def safe_download_blob_file(conn_str, container, blob_name, local_path):
 
 
 def create_db_and_container(client, DB_NAME, VECTOR_PATH, EMBED_DIM, CONT_NAME):
+def create_db_and_container(client, DB_NAME, VECTOR_PATH, EMBED_DIM, CONT_NAME):
     print("→ Ensuring database...")
     db = client.create_database_if_not_exists(DB_NAME)
     print("✔ Database ready:", DB_NAME)
@@ -325,6 +370,7 @@ def create_db_and_container(client, DB_NAME, VECTOR_PATH, EMBED_DIM, CONT_NAME):
 
     indexing_policy = {
         "includedPaths": [{"path": "/*"}],
+        "excludedPaths": [{"path": '/"_etag"/?'}, {"path": f"{VECTOR_PATH}/*"}],
         "excludedPaths": [{"path": '/"_etag"/?'}, {"path": f"{VECTOR_PATH}/*"}],
         "vectorIndexes": [{"path": VECTOR_PATH, "type": "quantizedFlat"}],
     }
@@ -360,6 +406,7 @@ def create_db_and_container(client, DB_NAME, VECTOR_PATH, EMBED_DIM, CONT_NAME):
 # Builders
 # -----------------------
 def build_embeddings(AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY):
+def build_embeddings(AOAI_ENDPOINT, AOAI_KEY, API_VERSION, EMBED_DEPLOY):
     return AzureOpenAIEmbeddings(
         azure_endpoint=AOAI_ENDPOINT,
         api_key=AOAI_KEY,
@@ -376,6 +423,8 @@ def add_ids_to_chunks(chunks):
                 page_content=ch.page_content,
                 metadata={
                     **ch.metadata,
+                    "id": str(uuid.uuid4()),  # REQUIRED for Cosmos DB
+                },
                     "id": str(uuid.uuid4()),  # REQUIRED for Cosmos DB
                 },
             )
@@ -434,6 +483,9 @@ def convert_doc_to_pdf_linux(doc_path: str, pdf_path: str):
 def process_blob_urls_2(
     blob_urls, conn_str, container, download_dir=None, keep_files=False, verbose=True
 ):
+def process_blob_urls_2(
+    blob_urls, conn_str, container, download_dir=None, keep_files=False, verbose=True
+):
     """
     Robust process_blob_urls:
       - expects list of full blob URLs (SAS tokens OK)
@@ -443,6 +495,7 @@ def process_blob_urls_2(
       - returns (extracted_texts, image_urls, downloaded_pdf_paths, converted_pdf_paths)
         extracted_texts: list of dicts { 'filename': ..., 'text': ..., optional 'pages': [...] }
     """
+    print("download_dir", download_dir)
     print("download_dir", download_dir)
     tempdir = None
     if download_dir:
@@ -454,6 +507,8 @@ def process_blob_urls_2(
 
     extracted_texts = []
     image_urls = []
+    downloaded_pdf_paths = []  # newly added: local paths of downloaded PDFs
+    converted_pdf_paths = []  # newly added: pdf paths produced from docx conversion
     downloaded_pdf_paths = []  # newly added: local paths of downloaded PDFs
     converted_pdf_paths = []  # newly added: pdf paths produced from docx conversion
 
@@ -500,6 +555,9 @@ def process_blob_urls_2(
                 ok, err = safe_download_blob_file(
                     conn_str, container, blob_name, local_path
                 )
+                ok, err = safe_download_blob_file(
+                    conn_str, container, blob_name, local_path
+                )
                 if not ok:
                     if verbose:
                         print(f"[WARN] Failed to download '{blob_name}': {err}")
@@ -523,6 +581,7 @@ def process_blob_urls_2(
                             import pythoncom
                             from docx2pdf import convert
 
+
                             pythoncom.CoInitialize()
                             try:
                                 convert(local_path, pdf_path)
@@ -536,9 +595,15 @@ def process_blob_urls_2(
                             print(
                                 f"[INFO] Converted DOCX to PDF: {local_path} -> {pdf_path}"
                             )
+                            print(
+                                f"[INFO] Converted DOCX to PDF: {local_path} -> {pdf_path}"
+                            )
 
                     except Exception as e:
                         if verbose:
+                            print(
+                                f"[WARN] docx->pdf conversion failed for {base_name}: {e}"
+                            )
                             print(
                                 f"[WARN] docx->pdf conversion failed for {base_name}: {e}"
                             )
@@ -552,6 +617,9 @@ def process_blob_urls_2(
                         convert_doc_to_pdf_linux(local_path, pdf_path)
                         converted_pdf_paths.append({"path": pdf_path, "category": category})
                         if verbose:
+                            print(
+                                f"[INFO] Converted DOC to PDF: {local_path} -> {pdf_path}"
+                            )
                             print(
                                 f"[INFO] Converted DOC to PDF: {local_path} -> {pdf_path}"
                             )
@@ -673,6 +741,7 @@ def process_blob_urls_2(
                 pass
 
 
+
 def ingest_to_cosmos_parallel(vs, chunks, batch_size=10, max_workers=10):
 
     def safe_add(doc):
@@ -695,6 +764,7 @@ def ingest_to_cosmos_parallel(vs, chunks, batch_size=10, max_workers=10):
     # Sequential batches (safe for Cosmos)
     for i in range(0, len(chunks), batch_size):
         batch = chunks[i : i + batch_size]
+        batch = chunks[i : i + batch_size]
         print(f"\n🔵 Ingesting batch {i} → {i + len(batch) - 1}")
 
         # Parallel within each batch
@@ -707,3 +777,4 @@ def ingest_to_cosmos_parallel(vs, chunks, batch_size=10, max_workers=10):
                     future.result()
                 except Exception as e:
                     print(f"❌ Error inserting doc: {e}")
+

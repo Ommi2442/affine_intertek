@@ -34,6 +34,9 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+from langchain_community.callbacks import get_openai_callback
+
+from utility.cdr_report.CDR_Pipelines.token_tracker import token_tracker
 
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
 import json
@@ -968,7 +971,16 @@ def analyze_image(url: str) -> dict:
 
     from utility.cdr_report.CDR_Pipelines.configs import llm
 
-    resp = llm.invoke(messages)
+    with get_openai_callback() as cb:
+        resp = llm.invoke(messages)
+
+    # Aggregate globally
+    token_tracker.update(
+        prompt_tokens=cb.prompt_tokens,
+        completion_tokens=cb.completion_tokens,
+        total_tokens=cb.total_tokens,
+    )
+
     text = resp.content if isinstance(resp.content, str) else resp.content[0].text
 
     try:
@@ -1217,7 +1229,18 @@ def invoke_with_rate_limit_retry(
     last_err = None
     for attempt in range(1, retries + 1):
         try:
-            return llm.invoke(messages)
+            # Track THIS successful LLM call
+            with get_openai_callback() as cb:
+                response = llm.invoke(messages)
+
+            # Aggregate globally
+            token_tracker.update(
+                prompt_tokens=cb.prompt_tokens,
+                completion_tokens=cb.completion_tokens,
+                total_tokens=cb.total_tokens,
+            )
+
+            return response
         except Exception as e:
             last_err = e
 

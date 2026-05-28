@@ -23,12 +23,15 @@ from langchain_core.documents import Document
 from langchain_openai import AzureOpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from openai import AzureOpenAI
-from pypdf import PdfReader as PyPdfReader
-from PyPDF2 import PdfReader as PdfReader
+from pypdf import PdfReader as PdfReader
+from PyPDF2 import PdfReader as PyPDF2Reader
 from PyPDF2.generic import IndirectObject
 
 from projects.keyvault_load import *
 from utility.trf_utils import *
+
+from utility.progress_tracker import update_pipeline_progress, PipelineType
+from utility.pipeline_stages import TRF_STAGES, get_trf_message
 
 # from templates import *
 # from utils import *
@@ -71,9 +74,6 @@ BLOB_CONTAINER = os.getenv("blob-container")
 COSMOS_DB_IMAGE = os.getenv("cosmos-db-image")
 COSMOS_CONT_IMAGE = os.getenv("cosmos-cont-image")
 ENABLE_CAD_SCHEMATICS = os.getenv("enable-cad-schematics")
-
-
-print("AOAI_ENDPOINT", AOAI_ENDPOINT)
 
 # ----------------------------------------------------------------------------------------
 # Azure OpenAI Client (shared for whole pipeline)
@@ -214,6 +214,7 @@ def extract_relevant_pdf_page_images(pdf_path, dpi=200):
             try:
                 w = img[2]
                 h = img[3]
+                raster_area += w * h
                 raster_area += w * h
             except:
                 continue
@@ -1336,13 +1337,9 @@ def ingest_files_from_blob_urls_create_embeddings(
     """
 
     print("######### download_dir ########", download_dir)
-
     print("######## blob_urls #########", blob_urls)
-
     print("######## project_id #########", project_id)
-
     print("######## textDB_container_name #########", textDB_container_name)
-
     print("######## imageDB_container_name #########", imageDB_container_name)
 
     client = CosmosClient(COSMOS_URL, credential=COSMOS_KEY)
@@ -1370,6 +1367,14 @@ def ingest_files_from_blob_urls_create_embeddings(
     BASE_DIR = Path(__file__).resolve().parent.parent
     DOWNLOAD_DIR = BASE_DIR / "data" / project_id / "src_files"
     IMAGES_ROOT = BASE_DIR / "data" / project_id / "image_files"
+
+    update_pipeline_progress(
+        project_id=project_id,
+        stages=TRF_STAGES,
+        current_stage="DOWNLOAD_BLOB_FILES",
+        pipeline_type=PipelineType.TRF,
+        message=get_trf_message("DOWNLOAD_BLOB_FILES")
+    )
 
     # 3) Process blob URLs (download/convert/extract)
     extracted_texts, image_urls_raw, downloaded_pdf_paths, converted_pdf_paths = (
@@ -1405,6 +1410,14 @@ def ingest_files_from_blob_urls_create_embeddings(
     print("\n======================================")
     print("   STEP 2 — LOAD + SPLIT PDF TEXT      ")
     print("======================================\n")
+
+    update_pipeline_progress(
+        project_id=project_id,
+        stages=TRF_STAGES,
+        current_stage="CREATE_CHUNKS",
+        pipeline_type=PipelineType.TRF,
+        message=get_trf_message("CREATE_CHUNKS")
+    )
 
     chunks, image_page_metadata = load_and_split_pdfs_text(
         pdf_paths,
@@ -1473,6 +1486,14 @@ def ingest_files_from_blob_urls_create_embeddings(
     print("   STEP 5 — IMAGE OCR USING AGENT PIPELINE     ")
     print("==============================================\n")
 
+    update_pipeline_progress(
+        project_id=project_id,
+        stages=TRF_STAGES,
+        current_stage="EXTRACT_IMAGE_INFO",
+        pipeline_type=PipelineType.TRF,
+        message=get_trf_message("EXTRACT_IMAGE_INFO")
+    )
+
     docs_image = load_and_process_images(img_links, vision_deploy_name=CHAT_DEPLOY)
 
     print(f"[SUCCESS] Finished OCR for {len(docs_image)} images.\n")
@@ -1498,6 +1519,14 @@ def ingest_files_from_blob_urls_create_embeddings(
 
     # Assign UUIDs to image docs
     docs_image_uuid = add_ids_to_chunks(docs_image)
+
+    update_pipeline_progress(
+        project_id=project_id,
+        stages=TRF_STAGES,
+        current_stage="CREATE_EMBEDDINGS",
+        pipeline_type=PipelineType.TRF,
+        message=get_trf_message("CREATE_EMBEDDINGS")
+    )
 
     # Ingest
     ingest_to_cosmos_parallel(

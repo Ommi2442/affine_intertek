@@ -1,0 +1,202 @@
+{
+  "stages": [
+    "GATHER_PROJECT_INFO",
+    "DOWNLOAD_BLOB_FILES",
+    "CREATE_CHUNKS",
+    "EXTRACT_IMAGE_INFO",
+    "CREATE_EMBEDDINGS",
+    "BUILD_TASKS",
+    "ENRICH_TASKS_WITH_IMAGES",
+    "FETCH_LLM_RESPONSES",
+    "APPLY_POST_PROCESSING",
+    "UPDATE_REPORT",
+    "UPDATE_FORMAT",
+    "FINALIZE_REPORT"
+  ],
+
+  "messages": [
+    "gathering project information",
+    "downloading blob files",
+    "creating chunks",
+    "extracting info from images",
+    "creating embeddings",
+    "building tasks",
+    "enriching tasks with images",
+    "fetching response from llm - (150 of 525)",
+    "applying post processing",
+    "updating report",
+    "updating format",
+    "finalizing report"
+  ],
+
+  "mock_pipeline_updates": [
+    {
+      "pipeline_status": "running",
+      "current_stage": "GATHER_PROJECT_INFO",
+      "last_completed_stage": null,
+      "current_step": 1,
+      "total_steps": 12,
+      "percentage": 8.33,
+      "error": null,
+      "last_updated": "2026-05-19T10:00:00Z",
+      "extra": {
+        "message": "gathering project information"
+      },
+      "ts": "2026-05-19T10:00:00Z"
+    },
+    {
+      "pipeline_status": "running",
+      "current_stage": "DOWNLOAD_BLOB_FILES",
+      "last_completed_stage": "GATHER_PROJECT_INFO",
+      "current_step": 2,
+      "total_steps": 12,
+      "percentage": 16.67,
+      "error": null,
+      "last_updated": "2026-05-19T10:00:10Z",
+      "extra": {
+        "message": "downloading blob files"
+      },
+      "ts": "2026-05-19T10:00:10Z"
+    },
+    {
+      "pipeline_status": "running",
+      "current_stage": "CREATE_CHUNKS",
+      "last_completed_stage": "DOWNLOAD_BLOB_FILES",
+      "current_step": 3,
+      "total_steps": 12,
+      "percentage": 25.0,
+      "error": null,
+      "last_updated": "2026-05-19T10:00:20Z",
+      "extra": {
+        "message": "creating chunks"
+      },
+      "ts": "2026-05-19T10:00:20Z"
+    },
+    {
+      "pipeline_status": "running",
+      "current_stage": "EXTRACT_IMAGE_INFO",
+      "last_completed_stage": "CREATE_CHUNKS",
+      "current_step": 4,
+      "total_steps": 12,
+      "percentage": 33.33,
+      "error": null,
+      "last_updated": "2026-05-19T10:00:30Z",
+      "extra": {
+        "message": "extracting info from images"
+      },
+      "ts": "2026-05-19T10:00:30Z"
+    },
+    {
+      "pipeline_status": "running",
+      "current_stage": "CREATE_EMBEDDINGS",
+      "last_completed_stage": "EXTRACT_IMAGE_INFO",
+      "current_step": 5,
+      "total_steps": 12,
+      "percentage": 41.67,
+      "error": null,
+      "last_updated": "2026-05-19T10:00:40Z",
+      "extra": {
+        "message": "creating embeddings"
+      },
+      "ts": "2026-05-19T10:00:40Z"
+    },
+    {
+      "pipeline_status": "running",
+      "current_stage": "BUILD_TASKS",
+      "last_completed_stage": "CREATE_EMBEDDINGS",
+      "current_step": 6,
+      "total_steps": 12,
+      "percentage": 50.0,
+      "error": null,
+      "last_updated": "2026-05-19T10:00:50Z",
+      "extra": {
+        "message": "building tasks"
+      },
+      "ts": "2026-05-19T10:00:50Z"
+    },
+    {
+      "pipeline_status": "running",
+      "current_stage": "ENRICH_TASKS_WITH_IMAGES",
+      "last_completed_stage": "BUILD_TASKS",
+      "current_step": 7,
+      "total_steps": 12,
+      "percentage": 58.33,
+      "error": null,
+      "last_updated": "2026-05-19T10:01:00Z",
+      "extra": {
+        "message": "enriching tasks with images"
+      },
+      "ts": "2026-05-19T10:01:00Z"
+    },
+    {
+      "pipeline_status": "running",
+      "current_stage": "FETCH_LLM_RESPONSES",
+      "last_completed_stage": "ENRICH_TASKS_WITH_IMAGES",
+      "current_step": 8,
+      "total_steps": 12,
+      "percentage": 66.67,
+      "error": null,
+      "last_updated": "2026-05-19T10:01:10Z",
+      "extra": {
+        "message": "fetching response from llm - (150 of 750)"
+      },
+      "ts": "2026-05-19T10:01:10Z"
+    },
+    {
+      "pipeline_status": "running",
+      "current_stage": "APPLY_POST_PROCESSING",
+      "last_completed_stage": "FETCH_LLM_RESPONSES",
+      "current_step": 9,
+      "total_steps": 12,
+      "percentage": 75.0,
+      "error": null,
+      "last_updated": "2026-05-19T10:01:20Z",
+      "extra": {
+        "message": "applying post processing"
+      },
+      "ts": "2026-05-19T10:01:20Z"
+    },
+    {
+      "pipeline_status": "running",
+      "current_stage": "UPDATE_REPORT",
+      "last_completed_stage": "APPLY_POST_PROCESSING",
+      "current_step": 10,
+      "total_steps": 12,
+      "percentage": 83.33,
+      "error": null,
+      "last_updated": "2026-05-19T10:01:30Z",
+      "extra": {
+        "message": "updating report"
+      },
+      "ts": "2026-05-19T10:01:30Z"
+    },
+    {
+      "pipeline_status": "running",
+      "current_stage": "UPDATE_FORMAT",
+      "last_completed_stage": "UPDATE_REPORT",
+      "current_step": 11,
+      "total_steps": 12,
+      "percentage": 91.67,
+      "error": null,
+      "last_updated": "2026-05-19T10:01:40Z",
+      "extra": {
+        "message": "updating format"
+      },
+      "ts": "2026-05-19T10:01:40Z"
+    },
+    {
+      "pipeline_status": "completed",
+      "current_stage": "FINALIZE_REPORT",
+      "last_completed_stage": "UPDATE_FORMAT",
+      "current_step": 12,
+      "total_steps": 12,
+      "percentage": 100.0,
+      "error": null,
+      "last_updated": "2026-05-19T10:01:50Z",
+      "extra": {
+        "message": "finalizing report"
+      },
+      "ts": "2026-05-19T10:01:50Z"
+    }
+  ]
+}

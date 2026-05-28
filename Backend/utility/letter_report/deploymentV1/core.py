@@ -9,6 +9,21 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from operator import itemgetter
 from typing import Optional
 from urllib.parse import unquote, urlparse
+
+import pandas as pd
+import requests
+from azure.cosmos import (
+    ConsistencyLevel,
+    CosmosClient,
+)
+from azure.storage.blob import BlobClient
+import subprocess
+import sys
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from operator import itemgetter
+from typing import Optional
+from urllib.parse import unquote, urlparse
 from utility.letter_report.deploymentV1.trf_utils_new import infer_category_from_path
 import pandas as pd
 import requests
@@ -43,6 +58,7 @@ from types import SimpleNamespace
 from utility.letter_report.deploymentV1.config import (
     CHAT_DEPLOY,
 )
+
 from utility.letter_report.deploymentV1.prompts import *
 from utility.letter_report.deploymentV1.trf_essential import *
 from utility.letter_report.deploymentV1.trf_utils import *

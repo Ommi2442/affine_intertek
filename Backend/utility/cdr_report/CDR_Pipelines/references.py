@@ -21,6 +21,9 @@ from collections import defaultdict
 from utility.cdr_report.CDR_Pipelines.prompts import ref_prompt as prompt
 from utility.cdr_report.CDR_Pipelines.prompts import score_prompt
 
+from langchain_community.callbacks import get_openai_callback
+from utility.cdr_report.CDR_Pipelines.token_tracker import token_tracker
+import json
 
 EMAIL_RE = re.compile(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", re.I)
 PHONE_RE = re.compile(
@@ -364,12 +367,15 @@ def build_context_docs(vs, container, retrieved_docs: List[Document], user_quest
     return final_docs[:max_final]
 
 
+
 def references_main(vs, ref):
+
     configs.require_runtime()
 
-    cosmos_container = configs.get_cosmos_container_client()  # ✅ per request
-    ex_files=get_bom_source_files(vs)
-    # print('inside reference_main')
+    cosmos_container = configs.get_cosmos_container_client()
+
+    ex_files = get_bom_source_files(vs)
+
     retriever = vs.as_retriever(
         search_type="vector",
         k=20,
@@ -378,13 +384,23 @@ def references_main(vs, ref):
 
     rag_chain_debug = (
         RunnableParallel(
-            # docs=retriever | RunnableLambda(lambda docs: drop_excluded(docs, ex_files)),
-            docs=retriever | RunnableLambda(lambda docs: drop_component_suppliers(drop_excluded(docs, ex_files))),
+            docs=retriever
+            | RunnableLambda(
+                lambda docs: drop_component_suppliers(
+                    drop_excluded(docs, ex_files)
+                )
+            ),
             question=RunnablePassthrough(),
         )
         | RunnableLambda(lambda x: {
             "raw_docs": x["docs"],
-            "docs": build_context_docs(vs, cosmos_container, x["docs"], x["question"], ex_files),
+            "docs": build_context_docs(
+                vs,
+                cosmos_container,
+                x["docs"],
+                x["question"],
+                ex_files
+            ),
             "question": x["question"],
         })
         | RunnableLambda(lambda x: {
@@ -394,74 +410,112 @@ def references_main(vs, ref):
         })
         | RunnableLambda(lambda x: {
             "docs": x["docs"],
-            "answer": (prompt | llm | JsonOutputParser()).invoke({
-                "context": x["context"],
-                "question": x["question"]
-            })
+            "answer": run_llm_with_tracking(
+                (prompt | llm | JsonOutputParser()),
+                {
+                    "context": x["context"],
+                    "question": x["question"]
+                }
+            )
         })
     )
 
-    # print('rag_chain_got')
     CURRENT_QUESTION = (
-        "Extract the Applicant and ALL Manufacturer/Factory details (including all manufacturer contacts and emails). "
-        "Look for sections like Applicant, Bill-To, Manufacturer, Legal Entity Name, Street Address."
+        "Extract the Applicant and ALL Manufacturer/Factory details "
+        "(including all manufacturer contacts and emails). "
+        "Look for sections like Applicant, Bill-To, Manufacturer, "
+        "Legal Entity Name, Street Address."
     )
 
     out = rag_chain_debug.invoke(CURRENT_QUESTION)
 
-    # print("\n===== ANSWER (JSON) =====\n")
-    # print(out["answer"])
+    context = format_docs(out["docs"])
+    extracted = out["answer"]
 
-    # print("\n===== FINAL CHUNKS USED AS CONTEXT =====\n")
-    for i, d in enumerate(out["docs"], 1):
-        src = d.metadata.get("citation") or d.metadata.get("source_file") or d.metadata.get("source") or ""
+    # ========================================
+    # SCORE LLM TRACKING
+    # ========================================
 
-    context = format_docs(out["docs"])                # reuse the exact same docs
-    extracted = out["answer"]   
-
-
-    scores = (score_prompt | score_llm | JsonOutputParser()).invoke({
-        "context": context,
-        "extracted_json": json.dumps(extracted, ensure_ascii=False)
-    })
-
+    scores = run_llm_with_tracking(
+        (score_prompt | score_llm | JsonOutputParser()),
+        {
+            "context": context,
+            "extracted_json": json.dumps(
+                extracted,
+                ensure_ascii=False
+            )
+        }
+    )
 
     if hasattr(scores, "dict"):
         scores_obj = scores.dict()
     else:
         scores_obj = scores
 
-    # 2) Dump with default=str, and make sure it's UTF-8 JSON text (not .txt)
-    with open("confidence.json", "w", encoding="utf-8") as f:
-        json.dump(scores_obj, f, indent=4, ensure_ascii=False, default=str)
-
-    #print("✅ Saved: confidence.json")
-
+    with open(
+        "confidence.json",
+        "w",
+        encoding="utf-8"
+    ) as f:
+        json.dump(
+            scores_obj,
+            f,
+            indent=4,
+            ensure_ascii=False,
+            default=str
+        )
 
     result = to_tabular_json(out['answer'])
-    #print(result["ApplicantSection"])
-    data_json=ref|result
-    data_json['ApplicantSection']['Applicant']=ref['Applicant']
-    data_json['ApplicantSection']['Address']=ref['Address']
-    template = json.loads(configs.TEMPLATE_PATH.read_text(encoding="utf-8"))
 
+    data_json = ref | result
 
+    data_json['ApplicantSection']['Applicant'] = ref['Applicant']
+    data_json['ApplicantSection']['Address'] = ref['Address']
+
+    template = json.loads(
+        configs.TEMPLATE_PATH.read_text(encoding="utf-8")
+    )
 
     data_json = limit_manufacturers_to_two(data_json)
+
     template = sheet1_json_main(data_json, template)
-    template = enrich_sheet1_extractions_by_headers(template, scores)
-    #print('confidence populated')
-    #template['Sheets'][0]['Items'][7]['text_support']=top5
-    #print('text_support populated')
-    #print('=================================================')
-    #print(template['Sheets'][0]['Items'][7]['text_support'])
-    #print('=================================================')
-    template = template = add_text_support_to_result_json(template, out['docs'], top_k=5)
-    OUTPUT_PATH.write_text(json.dumps(template, indent=2, ensure_ascii=False), encoding="utf-8")
-    #print("Saved:", OUTPUT_PATH)
+
+    template = enrich_sheet1_extractions_by_headers(
+        template,
+        scores
+    )
+
+    template = add_text_support_to_result_json(
+        template,
+        out['docs'],
+        top_k=5
+    )
+
+    OUTPUT_PATH.write_text(
+        json.dumps(
+            template,
+            indent=2,
+            ensure_ascii=False
+        ),
+        encoding="utf-8"
+    )
 
     return template
-#OUTPUT_PATH.write_text(json.dumps(template, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
- 
+# ========================================
+# SHARED TRACKING HELPER
+# ========================================
+
+def run_llm_with_tracking(chain, payload):
+
+    with get_openai_callback() as cb:
+        result = chain.invoke(payload)
+
+    token_tracker.update(
+        prompt_tokens=cb.prompt_tokens,
+        completion_tokens=cb.completion_tokens,
+        total_tokens=cb.total_tokens,
+    )
+
+    return result

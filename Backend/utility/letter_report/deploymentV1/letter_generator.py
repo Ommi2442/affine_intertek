@@ -1713,6 +1713,31 @@ def generate_letter_pipeline(
         stats=True,
     )
 
+    # Extract stats keys
+    results_stats = results.get("stats", {})
+    results_header_stats = results_header.get("stats", {})
+
+    # Final aggregated stats
+    final_stats = {
+        "total_llm_calls": (
+            results_stats.get("total_llm_calls", 0)
+            + results_header_stats.get("total_llm_calls", 0)
+        ),
+        "total_prompt_tokens": (
+            results_stats.get("total_prompt_tokens", 0)
+            + results_header_stats.get("total_prompt_tokens", 0)
+        ),
+        "total_completion_tokens": (
+            results_stats.get("total_completion_tokens", 0)
+            + results_header_stats.get("total_completion_tokens", 0)
+        ),
+        "total_tokens": (
+            results_stats.get("total_tokens", 0)
+            + results_header_stats.get("total_tokens", 0)
+        ),
+        "total_files": len(blob_urls),
+    }
+
     # -------------------------------------------------------
     # STEP 4 — Update Letter DOCX
     # -------------------------------------------------------
@@ -1905,40 +1930,34 @@ def generate_letter_pipeline(
         "letter_json": "letter_output.json",
         "header_json": "letter_header_output.json",
         "letter_docx": output_letter_docx,
+        "stats": final_stats,
     }
 
 
-def letter_gen(
-    blob_urls,
-    container_name,
-    src_files_dir,
-    src_files_trf,
-    letter_json_path,
-    letter_header_json_path,
-    letter_template_docx,
-    output_letter_docx,
-    letter_json_path_output,
-    letter_header_json_path_output,
-    project_Id,
-    blob_urls_trf,
-    text_container,
-    image_container,
-):
 
-    generate_letter_pipeline(
-        blob_urls,
-        container_name,
-        src_files_dir,
-        letter_json_path,
-        letter_header_json_path,
-        letter_template_docx,
-        output_letter_docx,
-        letter_json_path_output,
-        letter_header_json_path_output,
-        project_Id=project_Id,
-        text_container=text_container,
-        image_container=image_container,
-    )
+def letter_gen(blob_urls,    
+               container_name, src_files_dir,src_files_trf, letter_json_path,
+                letter_header_json_path,letter_template_docx,
+                output_letter_docx,
+                letter_json_path_output,
+                letter_header_json_path_output,
+                project_Id,blob_urls_trf,
+                text_container,
+                image_container):
+        
+        generate_letter_pipeline(
+            blob_urls,
+            container_name,
+            src_files_dir,
+            letter_json_path,
+            letter_header_json_path,
+            letter_template_docx,
+            output_letter_docx,
+            letter_json_path_output,
+            letter_header_json_path_output,
+            project_Id=project_Id,
+            text_container=text_container,
+            image_container=image_container)
 
     # ------------------------------------------------
     # STEP 2 — Extract Scope of Work Data (SAFE)
@@ -2015,3 +2034,5 @@ def letter_gen(
         database_name=DB_NAME,
         container_name=text_container,
     )
+
+    return letter_output

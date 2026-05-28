@@ -7,6 +7,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import utility.cdr_report.CDR_Pipelines.configs as configs
 import os
 from urllib.parse import urlparse
+from utility.cdr_report.CDR_Pipelines.token_tracker import token_tracker
+
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #                    COMPONENTS : UTILITIES
@@ -34,6 +36,7 @@ from azure.cosmos import CosmosClient, PartitionKey
 from openai import AzureOpenAI
 from docx import Document
 from pypdf import PdfReader
+
 
 
 # ===================== CLIENTS =====================
@@ -278,7 +281,18 @@ def _process_single_image(img_url):
             ]
         )
 
-        track_usage(response)
+        # =========================
+        # TRACK TOKEN USAGE
+        # =========================
+
+        usage = response.usage
+
+        if usage:
+            token_tracker.update(
+                prompt_tokens=usage.prompt_tokens,
+                completion_tokens=usage.completion_tokens,
+                total_tokens=usage.total_tokens,
+            )
 
         raw = response.choices[0].message.content.strip()
         raw = raw.removeprefix("```json").removesuffix("```").strip()
@@ -370,7 +384,19 @@ def _process_guide_chunk(chunk, guide_filename, guide_url, page_no):
             ]
         )
 
-        track_usage(response)
+        # =========================
+        # TRACK TOKEN USAGE
+        # =========================
+
+        usage = response.usage
+
+        if usage:
+            token_tracker.update(
+                prompt_tokens=usage.prompt_tokens,
+                completion_tokens=usage.completion_tokens,
+                total_tokens=usage.total_tokens,
+            )
+
         items = json.loads(response.choices[0].message.content)
 
         for it in items:
@@ -587,11 +613,14 @@ openai_client = get_openai_client()
 # ------------------------------------------------------------
 # BATCH CLASSIFICATION
 # ------------------------------------------------------------
+
 def classify_batch_llm(batch_rows, batch_indices):
+
     payload = [
         {"index": idx, "component_data": row}
         for idx, row in zip(batch_indices, batch_rows)
     ]
+
     prompt = f"""
 You are an IEC 61010-01 electrical safety certification engineer.
 Evaluate EACH component below independently.
@@ -623,33 +652,62 @@ RESPONSE FORMAT:
 COMPONENTS:
 {json.dumps(payload, indent=2)}
 """
+
     response = openai_client.chat.completions.create(
         model=configs.CLASSIFICATION_MODEL,
         temperature=0,
         messages=[
-            {"role": "system", "content": "You are a strict IEC 61010 compliance engineer."},
-            {"role": "user", "content": prompt}
+            {
+                "role": "system",
+                "content": (
+                    "You are a strict IEC 61010 compliance engineer."
+                )
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
         ]
     )
-    # Track usage logic handled in c2_utils, but here we track explicitly if needed
-    # for simplicity using the same object
-    usage = response.usage
-    if usage:
-        TOTAL_TOKENS["prompt"] += usage.prompt_tokens or 0
-        TOTAL_TOKENS["completion"] += usage.completion_tokens or 0
-        TOTAL_TOKENS["total"] += usage.total_tokens or 0
 
-    results = json.loads(response.choices[0].message.content)
+    # ========================================
+    # TRACK TOKEN USAGE
+    # ========================================
+
+    usage = response.usage
+
+    if usage:
+        token_tracker.update(
+            prompt_tokens=usage.prompt_tokens,
+            completion_tokens=usage.completion_tokens,
+            total_tokens=usage.total_tokens,
+        )
+
+    # ========================================
+    # PARSE RESPONSE
+    # ========================================
+
+    results = json.loads(
+        response.choices[0].message.content
+    )
+
     output = {}
+
     for r in results:
+
         output[r["index"]] = {
             "critical": bool(r.get("critical", False)),
             "confidence": int(r.get("confidence", 0)),
             "rules_passed": r.get("rules_passed", []),
-            "rules_passed_count": len(r.get("rules_passed", [])),
-            "rule_score": float(r.get("rule_score", 0.0)),
+            "rules_passed_count": len(
+                r.get("rules_passed", [])
+            ),
+            "rule_score": float(
+                r.get("rule_score", 0.0)
+            ),
             "reasoning": r.get("reasoning", ""),
         }
+
     return output
 
 def run_classification(df):
